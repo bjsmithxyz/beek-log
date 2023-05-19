@@ -3,7 +3,7 @@ title: ms paint
 description: some ms paint art I done made.
 date: 2019-01-31
 tags:
-  - illiustration
+  - illustration
 ---
 About a decade ago I was working in a job where I had considerable downtime in front of a computer. Naturally, I decided that the best way to spend my time was to draw things in MS Paint. In this time, my colleagues and I would shitpost via email to each other. A mate asked me to draw something for his girlfriends birthday. I ignored his request and drew this instead
 

@@ -2,6 +2,8 @@
 title: another day
 date: 2023-03-06
 draft: true
+tags:
+  - illustration
 ---
 Another dollar.
 
