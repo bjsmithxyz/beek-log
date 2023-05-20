@@ -1,7 +1,7 @@
 ---
 title: mates
+description: just guys bein' dudes
 date: 2022-11-14
-draft: true
 tags:
   - illustration
 ---

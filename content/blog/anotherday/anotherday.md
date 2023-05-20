@@ -1,7 +1,7 @@
 ---
 title: another day
+description: another dollar
 date: 2023-03-06
-draft: true
 tags:
   - illustration
 ---
