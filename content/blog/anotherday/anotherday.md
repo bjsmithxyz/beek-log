@@ -7,12 +7,12 @@ tags:
 ---
 Another dollar.
 
-<a href="./anotherday.png" target="anotherday.png">
-  <img src="./anotherday.png" style="width: 100%; height: auto;">
+<a href="./img/anotherday.png" target="anotherday.png">
+  <img src="./img/anotherday.png" style="width: 100%; height: auto;">
 </a>
-<a href="./givehimahandfolks.png" target="givehimahandfolks.png">
-  <img src="./givehimahandfolks.png" style="width: 100%; height: auto;">
+<a href="./img/givehimahandfolks.png" target="givehimahandfolks.png">
+  <img src="./img/givehimahandfolks.png" style="width: 100%; height: auto;">
 </a>
-<a href="./love.png" target="love.png">
-  <img src="./love.png" style="width: 100%; height: auto;">
+<a href="./img/love.png" target="love.png">
+  <img src="./img/love.png" style="width: 100%; height: auto;">
 </a>
