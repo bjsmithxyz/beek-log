@@ -6,37 +6,13 @@ tags:
   - dev
 ---
 
-## The App
+## What is it
 
-Can be found <a href="https://phrasing.azurewebsites.net/#">here.</a>
+It's a straightforward app that can be found <a href="https://phrasing.azurewebsites.net/#">here.</a>
 
-The TL;DR is it's a series of interesting business phrases, impressive phrases, conversational phrases, etc organised alphabetically.
+The app's primary function is to take Markdown formatted files from a folder named \md_files, convert them into HTML, and display the content on the rendered page. An index of the headings is also provided at the top of the page, which is derived from the Markdown headings.
 
-For example, under 'Conversational - I' you might find:
-
-```diff-js
-I am anxious to discharge the very onerous debt I owe you.
-```
-
-I don't know who would use it, writers maybe?
-
-## First attempt
-
-I was browsing <a href="https://www.gutenberg.org/">Project Gutenberg</a> earlier in the year looking for some books to download onto my iPad. I came across a book called Fifteen Thousand Useful Phrases by Grenville Kleiser which was originally published in 1910, I thought it was quite an interesting concept, and also pretty amusing imagining people saying this stuff.
-
-It's pretty funny having a flick through some of these phrases, so many are wildly out of date and would feel really old fashioned to use them in conversation today. Some are also a little questionable, but it's an interesting snapshot of history if nothing else.
-
-I was looking into data indexing cloud services (a string of words that would melt the frontal lobes of anyone who was alive in 1910) around the same time and thought that a search indexer of some description would be a way better method of consuming this data. Still working on the most effective method unfortunately, until such a time as that is found I'll keep it here...
-
-## The 2023 attempt
-
-I found myself needing to move from Dendron back to 11ty for various unimportant reasons, but that meant re-jigging this 'phrasing' thing from dendron-format to... something else. Originally the content was all just on individual half .md, half HTML files, I didn't really feel like remaking all of those individual files so decided to try to build it as some sort of Web App, or online Index, or something...
-
-As ML/LMMs/AI is such a hot topic currently, I wanted to see if ChatGPT could help me solve this annoying problem. I ended up building out a Node.js app and publishing it to Azure.
-
-The app turned out to be a little harder to develop than I originally anticipated, but there's honestly no way I would have gotten even 20% of the way there without ChatGPT helping...
-
-In short the site is effectively blank, it bases its entire structure on it's input. What I gave it was something like this:
+The site itself is essentially blank and bases its structure almost entirely on its input. Here's an example of the type of input the app can work with:
 
 ```md
 # Heading 1
@@ -44,9 +20,36 @@ In short the site is effectively blank, it bases its entire structure on it's in
 ## Heading 2
 
 - Data point 1
+  - sub data point
 - Data point 2
 - Data point 3
 
 ```
 
-So it will take the Markdown formatted files as input from a folder called 'md_files', then build and display the data as HTML in the rendered page with an index of the headings at the top. Id like to try some different input, if I can find another data set with the same formatting (or at least easy enough to massage).
+My goal is to experiment with different data sets that can be easily formatted into the Markdown language required for input.
+
+## Why is it called Phrasing
+
+The app draws its name from a book of phrases, which includes interesting business expressions, impressive phrases, conversational phrases, and more.
+
+For instance, under 'Conversational - I', you might find:
+
+```diff-js
+I am anxious to discharge the very onerous debt I owe you.
+```
+
+The app could potentially be a handy resource for writers seeking inspiration or unique phrasing.
+
+## History stuff
+
+Earlier in the year, while browsing Project Gutenberg, I stumbled upon a book titled 'Fifteen Thousand Useful Phrases' by Grenville Kleiser, first published in 1910. I found the book amusing, particularly envisioning people using these now-outdated phrases in everyday conversation.
+
+The phrases offer a fascinating snapshot of history, despite many of them being archaic or slightly questionable by today's standards.
+
+Around the same time, I was exploring data indexing cloud services. I thought that a search indexer might be a more effective way to access this treasure trove of phrases. I'm still working on the most efficient method, though.
+
+Originally, I extracted all the content from the book's PDF. However, it became clear that remaking all the individual .md/HTML files would be labor-intensive. Consequently, I decided to develop a Web App or online Index to make the content more accessible.
+
+With Machine Learning (ML), Language Models (LMMs), and AI being current hot topics, I turned to ChatGPT for assistance. As a result, I built a Node.js/Express.js app and published it on Azure. Despite the development process proving more challenging than anticipated, ChatGPT played a crucial role in advancing the project, and I doubt I would have gotten even 20% of the way without it...
+
+It even wrote this.
