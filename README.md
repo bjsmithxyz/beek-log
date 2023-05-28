@@ -16,5 +16,5 @@ find me on [twitter](https://twitter.com/bjsmithxyz), [ig](https://www.instagram
     `npx @11ty/eleventy --serve --quiet`
 1. Save changes
 
-    `npm run eleventy`
+    `npx @11ty/eleventy`
 1. Commit and push without message.
