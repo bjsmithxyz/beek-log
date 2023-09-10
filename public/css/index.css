@@ -13,9 +13,9 @@
 	--background-color: #282a36;
 
 	--text-color: var(--color-gray-90);
-	--text-color-link: #082840;
-	--text-color-link-active: #ff5555;
-	--text-color-link-visited: #17050F;
+	--text-color-link: #50fa7b;
+	--text-color-link-active: #ff79c6;
+	--text-color-link-visited: #bd93f9;
 
 	--syntax-tab-size: 2;
 }
