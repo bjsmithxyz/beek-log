@@ -14,7 +14,7 @@ The theme I've chosen is gross-ups. Think, the super detailed close ups from the
 
 I've always liked that super detailed 'gross' art, the kind of stuff you'd see in MAD Magazine, or on OddBodz cards.
 
-Anyway, here's week 1, i.e.; A.
+Anyway, here's week 3 i.e.; A.
 <a href="/img/a_text.png" target="/img/a_text.png">
   <img src="/img/a_text.png" style="width: 100%; height: auto;">
 </a>
