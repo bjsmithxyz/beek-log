@@ -1,7 +1,7 @@
 ---
 title: B
 description: alphabetSuperset - B
-date: 2023-17-10
+date: 2023-17-09
 tags:
   - illustration
   - alphabetSuperset
