@@ -6,7 +6,7 @@ tags:
   - illustration
   - alphabetSuperset
 ---
-Week 7 was a lil' break, so we've skipped ahead to eeek 8 of the <a href="https://www.alphabetsuperset.com/#">Alphabet Superset</a> art challenge.
+Week 7 was a lil' break, so we've skipped ahead to week 8 of the <a href="https://www.alphabetsuperset.com/#">Alphabet Superset</a> art challenge.
 
 <a href="/img/e_text.png" target="/img/e_text.png">
   <img src="/img/e_text.png" style="width: 100%; height: auto;">
