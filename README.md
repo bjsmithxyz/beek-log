@@ -9,12 +9,21 @@ find me on [twitter](https://twitter.com/bjsmithxyz), [ig](https://www.instagram
 1. Copy project locally
 1. Install 11ty:
 
-    `npm install @11ty/eleventy`
+```bash
+npm install @11ty/eleventy
+```
+
 1. Make changes
 1. Test locally:
 
-    `npx @11ty/eleventy --serve --quiet`
+```bash
+npx @11ty/eleventy --serve --quiet
+```
+
 1. Save changes
 
-    `npx @11ty/eleventy`
+```bash
+npx @11ty/eleventy
+```
+
 1. Commit and push without message.

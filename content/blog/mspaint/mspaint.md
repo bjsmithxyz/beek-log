@@ -10,9 +10,6 @@ About a decade ago I was working in a job where I had considerable downtime in f
 <a href="/img/hakimashita.png" target="/img/hakimashita.png">
   <img src="/img/hakimashita.png" style="width: 100%; height: auto;">
 </a>
-
-I had a job where I worked a night shift back in 2008-2009, it was pretty quiet a lot of the time so I used to pass the time by making weird art in mspaint.
-
 <a href="/img/licklick.png" target="/img/licklick.png">
   <img src="/img/licklick.png" style="width: 100%; height: auto;">
 </a>
