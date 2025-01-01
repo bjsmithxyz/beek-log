@@ -12,7 +12,7 @@ tags:
 <html>
 watercolour and black pen on paper.
 
-unfortunately the colour got a bit washed out during the scan (thanks a lot officeworks).
+unfortunately the colour got a bit washed out during the scan.
 <br>
 <br>
 <a href="/img/festy_bikkiez.png" target="/img/festy_bikkiez.png">
