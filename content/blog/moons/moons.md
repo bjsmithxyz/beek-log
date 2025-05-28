@@ -7,32 +7,23 @@ tags:
   - painting
   - acrylic
 ---
-<br>
-<br>
-<html>
+
+{% spacer %}
 
 acrylic on paper.
 
 i was testing out a few different things with acrylic paint here, including taping off sections. i used the inside edge of the tape to do the moon.
-<br>
-<br>
-<a href="/img/red_moon.png" target="/img/red_moon.png">
-  <img src="/img/red_moon.png" style="width: 100%; height: auto;">
-</a>
-<br>
-<br>
-<br>
-<br>
-<a href="/img/green_moon.png" target="/img/green_moon.png">
-  <img src="/img/green_moon.png" style="width: 100%; height: auto;">
-</a>
-<br>
-<br>
-<br>
-<br>
-<a href="/img/blue_moon.png" target="/img/blue_moon.png">
-  <img src="/img/blue_moon.png" style="width: 100%; height: auto;">
-</a>
-<br>
-<br>
-</html>
+
+{% spacer %}
+
+{% singleImage "red_moon.png", "Red moon acrylic painting" %}
+
+{% spacer "large" %}
+
+{% singleImage "green_moon.png", "Green moon acrylic painting" %}
+
+{% spacer "large" %}
+
+{% singleImage "blue_moon.png", "Blue moon acrylic painting" %}
+
+{% spacer %}

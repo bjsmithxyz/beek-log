@@ -7,15 +7,12 @@ tags:
   - painting
   - watercolour
 ---
-<br>
-<br>
-<html>
+{% spacer %}
+
 watercolour, black pen, whiteout pen on paper.
-<br>
-<br>
-<a href="/img/biblically_accurate_angels.png" target="/img/biblically_accurate_angels.png">
-  <img src="/img/biblically_accurate_angels.png" style="width: 100%; height: auto;">
-</a>
-<br>
-<br>
-</html>
+
+{% spacer %}
+
+{% singleImage "biblically_accurate_angels.png", "Biblically accurate angels watercolour painting" %}
+
+{% spacer %}

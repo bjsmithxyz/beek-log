@@ -7,17 +7,15 @@ tags:
   - painting
   - watercolour
 ---
-<br>
-<br>
-<html>
+
+{% spacer %}
+
 watercolour and black pen on paper.
 
 unfortunately the colour got a bit washed out during the scan.
-<br>
-<br>
-<a href="/img/festy_bikkiez.png" target="/img/festy_bikkiez.png">
-  <img src="/img/festy_bikkiez.png" style="width: 100%; height: auto;">
-</a>
-<br>
-<br>
-</html>
+
+{% spacer %}
+
+{% singleImage "festy_bikkiez.png", "Festy bikkies watercolour painting" %}
+
+{% spacer %}

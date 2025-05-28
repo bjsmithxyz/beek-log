@@ -268,3 +268,76 @@ a[href].header-anchor:focus,
 h2 + .header-anchor {
 	font-size: 1.5em;
 }
+
+/* Image Gallery Styles */
+.image-single {
+	display: block;
+	margin-bottom: 1rem;
+}
+
+.image-single img {
+	width: 100%;
+	height: auto;
+	display: block;
+}
+
+.image-grid {
+	display: flex;
+	justify-content: space-between;
+	gap: 10px;
+	margin-bottom: 1rem;
+}
+
+.image-grid-item {
+	flex: 1;
+}
+
+.image-grid-item img {
+	width: 100%;
+	height: auto;
+	display: block;
+}
+
+.image-grid-2 .image-grid-item {
+	flex-basis: calc(50% - 5px);
+}
+
+.image-grid-3 .image-grid-item {
+	flex-basis: calc(33.333% - 7px);
+}
+
+/* Responsive image grids */
+@media (max-width: 768px) {
+	.image-grid {
+		flex-direction: column;
+		gap: 1rem;
+	}
+	
+	.image-grid-item {
+		flex-basis: auto;
+	}
+}
+
+/* Image caption styles */
+.image-caption {
+	font-style: italic;
+	margin: 1rem 0;
+	text-align: left;
+}
+
+.image-caption br {
+	margin-bottom: 0.5rem;
+}
+
+/* Spacing utility classes */
+.spacer-small {
+	margin-bottom: 1rem;
+}
+
+.spacer-medium {
+	margin-bottom: 2rem;
+}
+
+.spacer-large {
+	margin-bottom: 3rem;
+}

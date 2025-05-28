@@ -41,4 +41,42 @@ module.exports = eleventyConfig => {
     const minutes = Math.ceil(words / 200);
     return `${minutes} min read`;
   });
+
+  // Image shortcodes for better content management
+  eleventyConfig.addShortcode("singleImage", function(src, alt = "") {
+    return `<a href="/img/${src}" target="_blank" class="image-single">
+			<img src="/img/${src}" alt="${alt}">
+		</a>`;
+  });
+
+  eleventyConfig.addShortcode("imageGrid", function(...images) {
+    const imageCount = images.length;
+    const gridClass = imageCount <= 2 ? 'image-grid-2' : 'image-grid-3';
+    
+    const imageElements = images.map(img => {
+      const [src, alt = ""] = Array.isArray(img) ? img : [img, ""];
+      return `<a href="/img/${src}" target="_blank" class="image-grid-item">
+				<img src="/img/${src}" alt="${alt}">
+			</a>`;
+    }).join('\n\t\t');
+
+    return `<div class="image-grid ${gridClass}">
+		${imageElements}
+	</div>`;
+  });
+
+  eleventyConfig.addShortcode("imageCaption", function(text) {
+		// Convert line breaks to proper HTML
+		const htmlText = text.replace(/\n/g, '<br>\n');
+		return `<div class="image-caption">
+		<i>${htmlText}</i>
+	</div>`;
+	});
+
+	// Spacing utility shortcode to replace repetitive <br> tags
+	eleventyConfig.addShortcode("spacer", function(size = "medium") {
+		const validSizes = ["small", "medium", "large"];
+		const safeSize = validSizes.includes(size) ? size : "medium";
+		return `<div class="spacer-${safeSize}"></div>`;
+	});
 };

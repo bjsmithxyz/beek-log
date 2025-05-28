@@ -7,17 +7,12 @@ tags:
   - painting
   - acrylic
 ---
-<br>
-<br>
-<html>
+{% spacer %}
 
 acrylics on paper.
-<br>
-<br>
-<a href="/img/ur_a_star.png" target="/img/ur_a_star.png">
-  <img src="/img/ur_a_star.png" style="width: 100%; height: auto;">
-</a>
-<br>
-<br>
 
-</html>
+{% spacer %}
+
+{% singleImage "ur_a_star.png", "You're a star acrylic painting" %}
+
+{% spacer %}

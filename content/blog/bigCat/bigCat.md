@@ -7,17 +7,14 @@ tags:
   - illustration
   - pencil
 ---
-<br>
-<br>
-<html>
+{% spacer %}
+
 pencil on paper.
 
 i had just found an easel on the side of the road up in northcote, came home, drew this. no, i dont really know what it means either lol `¯\_(ツ)_/¯`...
-<br>
-<br>
-<a href="/img/this_giant_cat_will_devour_us_all.png" target="/img/this_giant_cat_will_devour_us_all.png">
-  <img src="/img/this_giant_cat_will_devour_us_all.png" style="width: 100%; height: auto;">
-</a>
-<br>
-<br>
-</html>
+
+{% spacer %}
+
+{% singleImage "this_giant_cat_will_devour_us_all.png", "pencil drawing of a giant cat" %}
+
+{% spacer %}

@@ -1,6 +1,6 @@
 ---
 title: phrasing
-description: this is my first post.
+description: A markdown-to-HTML converter app for browsing phrase collections
 date: 2023-05-10
 tags:
   - dev
@@ -8,7 +8,7 @@ tags:
 
 ## What is it
 
-It's a straightforward app that can be found <a href="https://phrasing.azurewebsites.net/#">here.</a>
+It's a straightforward app that can be found at [phrasing.azurewebsites.net](https://phrasing.azurewebsites.net/#).
 
 The app's primary function is to take Markdown formatted files from a folder named \md_files, convert them into HTML, and display the content on the rendered page. An index of the headings is also provided at the top of the page, which is derived from the Markdown headings.
 

@@ -6,17 +6,12 @@ tags:
   - art
   - stencil
 ---
-<br>
-<br>
-<html>
+{% spacer %}
 
 first attempt at stenciling
-<br>
-<br>
-<a href="/img/conscious_unconscious.png" target="/img/conscious_unconscious.png">
-  <img src="/img/conscious_unconscious.png" style="width: 100%; height: auto;">
-</a>
-<br>
-<br>
 
-</html>
+{% spacer %}
+
+{% singleImage "conscious_unconscious.png", "stencil artwork showing conscious unconscious concept" %}
+
+{% spacer %}
