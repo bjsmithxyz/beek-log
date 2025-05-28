@@ -10,8 +10,17 @@
 		<link rel="alternate" href="/feed/feed.xml" type="application/atom+xml" title="{{ metadata.title }}">
 		<link rel="alternate" href="/feed/feed.json" type="application/json" title="{{ metadata.title }}">
 
-		{#- Uncomment this if you’d like folks to know that you used Eleventy to build your site!  #}
+		{#- Uncomment this if you'd like folks to know that you used Eleventy to build your site!  #}
 		{#- <meta name="generator" content="{{ eleventy.generator }}"> #}
+
+		{#- Add Open Graph and Twitter card metadata for better social sharing #}
+		<meta property="og:title" content="{{ title or metadata.title }}">
+		<meta property="og:description" content="{{ description or metadata.description }}">
+		<meta property="og:url" content="{{ page.url | htmlBaseUrl(metadata.url) }}">
+		<meta property="og:type" content="{{ 'article' if layout == 'layouts/post.njk' else 'website' }}">
+		<meta name="twitter:card" content="summary_large_image">
+		<meta name="twitter:creator" content="@bjsmithxyz">
+		<link rel="canonical" href="{{ page.url | htmlBaseUrl(metadata.url) }}">
 
 		{#-
 		CSS bundles are provided via the `eleventy-plugin-bundle` plugin:
@@ -25,6 +34,7 @@
 		{%- css %}* { box-sizing: border-box; }{% endcss %}
 		{#- Add the contents of a file to the bundle #}
 		{%- css %}{% include "public/css/index.css" %}{% endcss %}
+		{%- css %}{% include "public/css/theme-toggle.css" %}{% endcss %}
 		{#- Or add from node_modules #}
 		{# {%- css %}{% include "node_modules/prismjs/themes/prism-okaidia.css" %}{% endcss %} #}
 
@@ -46,6 +56,11 @@
 				{%- for entry in collections.all | eleventyNavigation %}
 					<li class="nav-item"><a href="{{ entry.url }}"{% if entry.url == page.url %} aria-current="page"{% endif %}>{{ entry.title }}</a></li>
 				{%- endfor %}
+				<li class="nav-item">
+					<button class="theme-toggle" id="theme-toggle" aria-label="Toggle dark/light mode">
+						<span class="theme-toggle-icon">🌙</span>
+					</button>
+				</li>
 				</ul>
 			</nav>
 		</header>
@@ -57,5 +72,37 @@
 		<footer></footer>
 
 		<!-- Current page: {{ page.url | htmlBaseUrl }} -->
+		
+		<script>
+			// Theme toggle functionality
+			(function() {
+				const themeToggle = document.getElementById('theme-toggle');
+				const htmlElement = document.documentElement;
+				const themeIcon = document.querySelector('.theme-toggle-icon');
+				
+				// Check for saved theme preference or use preferred color scheme
+				const savedTheme = localStorage.getItem('theme');
+				
+				if (savedTheme === 'light') {
+					htmlElement.classList.add('light-theme');
+					themeIcon.textContent = '☀️';
+				} else {
+					themeIcon.textContent = '🌙';
+				}
+				
+				// Toggle theme on button click
+				themeToggle.addEventListener('click', () => {
+					htmlElement.classList.toggle('light-theme');
+					
+					if (htmlElement.classList.contains('light-theme')) {
+						localStorage.setItem('theme', 'light');
+						themeIcon.textContent = '☀️';
+					} else {
+						localStorage.setItem('theme', 'dark');
+						themeIcon.textContent = '🌙';
+					}
+				});
+			})();
+		</script>
 	</body>
 </html>

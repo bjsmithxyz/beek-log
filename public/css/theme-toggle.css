@@ -1,0 +1,31 @@
+/* Theme Toggle Styles */
+.theme-toggle {
+  background: none;
+  border: none;
+  cursor: pointer;
+  padding: 0.5rem;
+  color: var(--text-color);
+  font-size: 1.25rem;
+  display: flex;
+  align-items: center;
+  position: relative;
+  top: 0.1rem;
+}
+
+.theme-toggle:hover {
+  color: var(--text-color-link);
+}
+
+/* Light Theme Variables */
+:root.light-theme {
+  --color-gray-20: #e0e0e0;
+  --color-gray-50: #C0C0C0;
+  --color-gray-90: #333;
+
+  --background-color: #f8f8f2;
+
+  --text-color: var(--color-gray-90);
+  --text-color-link: #0D6EFD;
+  --text-color-link-active: #0A58CA;
+  --text-color-link-visited: #6610F2;
+}

@@ -1,0 +1,66 @@
+---
+layout: layouts/home.njk
+eleventyNavigation:
+  key: projects
+  order: 3
+---
+<h1>projects</h1>
+
+<div class="projects-list">
+  <div class="project-card">
+    <h2>Phrasing</h2>
+    <p>A web app that converts Markdown files to HTML and displays an index of headings.</p>
+    <p class="project-links">
+      <a href="https://phrasing.azurewebsites.net/#" target="_blank">View Live</a>
+    </p>
+    <div class="project-tags">
+      <span class="project-tag">Node.js</span>
+      <span class="project-tag">Express</span>
+      <span class="project-tag">Azure</span>
+    </div>
+  </div>
+  
+  <!-- Add more project cards as needed -->
+</div>
+
+<style>
+  .projects-list {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+    gap: 2rem;
+    margin-top: 2rem;
+  }
+  
+  .project-card {
+    border: 1px solid var(--color-gray-50);
+    padding: 1.5rem;
+    border-radius: 4px;
+  }
+  
+  .project-card h2 {
+    margin-top: 0;
+  }
+  
+  .project-links {
+    margin-top: 1rem;
+  }
+  
+  .project-links a {
+    display: inline-block;
+    margin-right: 1rem;
+  }
+  
+  .project-tags {
+    margin-top: 1rem;
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.5rem;
+  }
+  
+  .project-tag {
+    background-color: var(--color-gray-20);
+    padding: 0.25rem 0.5rem;
+    border-radius: 3px;
+    font-size: 0.8rem;
+  }
+</style>
