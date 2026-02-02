@@ -1,17 +1,8 @@
 # bjsmith.xyz
 
-A modern, high-performance portfolio website built with **Astro 5**. This project showcases development work, art, and photography with a focus on clean aesthetics and smooth user experience.
+A portfolio website built with **Astro 5**. This project showcases development work, art, and photography with a focus on clean aesthetics and smooth user experience.
 
-## ✨ Features
-
-- **🚀 Astro 5**: Leveraging the latest content-driven features and server-side optimization.
-- **🎨 Content Collections**: Fully type-safe content management for projects and art pieces.
-- **🌙 Dark Mode First**: Premium aesthetic featuring deep blues, vibrant accents, and smooth gradients.
-- **📱 Responsive Design**: Fully optimized for all screen sizes from mobile to ultra-wide.
-- **⚡ Performance**: Lazy-loaded images (via Astro's `<Image />` component) and minimal JavaScript.
-- **🎭 Micro-animations**: Subtle CSS-based animations for an engaging interactive experience.
-
-## 📁 Project Structure
+## Project Structure
 
 ```text
 /
@@ -28,7 +19,7 @@ A modern, high-performance portfolio website built with **Astro 5**. This projec
 └── package.json     # Project dependencies and scripts
 ```
 
-## 🛠️ Development
+## Development
 
 ### Local Setup
 
@@ -45,7 +36,7 @@ A modern, high-performance portfolio website built with **Astro 5**. This projec
 
 ### Content Management
 
-New projects or art pieces can be added by creating a new `.md` file in `src/content/work/`. 
+New content can be added by creating a new `.md` file in `src/content/work/`. 
 
 Example frontmatter:
 ```markdown
@@ -61,7 +52,7 @@ liveUrl: "https://example.com"
 ---
 ```
 
-## 🧞 Commands
+## Commands
 
 | Command | Action |
 | :--- | :--- |
@@ -70,11 +61,6 @@ liveUrl: "https://example.com"
 | `npm run preview` | Preview your build locally |
 | `npm run astro ...` | Run Astro CLI commands |
 
-## 🚀 Deployment
+## Deployment
 
 This project is configured for deployment on **Netlify**. Any push to the `main` branch will automatically trigger a build and deploy.
-
-
----
-
-*Built with ❤️ by beek*
