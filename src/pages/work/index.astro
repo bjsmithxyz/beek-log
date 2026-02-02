@@ -1,0 +1,162 @@
+---
+import BaseLayout from '../../layouts/BaseLayout.astro';
+import WorkCard from '../../components/WorkCard.astro';
+import { getCollection } from 'astro:content';
+
+const allWork = await getCollection('work', ({ data }) => !data.draft);
+
+// Sort by date, newest first
+const sortedWork = allWork.sort((a, b) => b.data.date.valueOf() - a.data.date.valueOf());
+
+// Get unique categories
+const categories = [...new Set(allWork.map(w => w.data.category))];
+---
+
+<BaseLayout 
+  title="work"
+  description="collection of projects, artwork, and photography"
+>
+  <section class="work-page">
+    <div class="container">
+      <header class="page-header">
+        <h1 class="page-title animate-fade-in">work</h1>
+        <p class="page-description animate-fade-in" style="animation-delay: 0.1s">
+          A collection of technical projects, artwork, and creative experiments.
+        </p>
+      </header>
+      
+      <!-- Filters -->
+      <div class="filters animate-fade-in" style="animation-delay: 0.2s">
+        <button class="filter-btn active" data-filter="all">all</button>
+        {categories.map(cat => (
+          <button class="filter-btn" data-filter={cat}>
+            {cat}
+          </button>
+        ))}
+      </div>
+      
+      <!-- Work Grid -->
+      <div class="work-grid" id="work-grid">
+        {sortedWork.map((work, i) => (
+          <div class="work-item" data-category={work.data.category}>
+            <WorkCard work={work} index={i} />
+          </div>
+        ))}
+      </div>
+      
+      {sortedWork.length === 0 && (
+        <div class="empty-state">
+          <p>No work to display yet. Check back soon!</p>
+        </div>
+      )}
+    </div>
+  </section>
+</BaseLayout>
+
+<script>
+  const filterBtns = document.querySelectorAll('.filter-btn');
+  const workItems = document.querySelectorAll('.work-item');
+  
+  filterBtns.forEach(btn => {
+    btn.addEventListener('click', () => {
+      // Update active state
+      filterBtns.forEach(b => b.classList.remove('active'));
+      btn.classList.add('active');
+      
+      const filter = btn.getAttribute('data-filter');
+      
+      let visibleIndex = 0;
+      workItems.forEach((item) => {
+        const category = item.getAttribute('data-category');
+        const isMatch = filter === 'all' || category === filter;
+        
+        if (isMatch) {
+          (item as HTMLElement).style.display = 'block';
+          
+          // Update animation delay based on visual order
+          (item as HTMLElement).style.animation = 'none';
+          void (item as HTMLElement).offsetHeight; // Trigger reflow
+          
+          (item as HTMLElement).style.animation = `fadeInUp var(--transition-slow) forwards`;
+          (item as HTMLElement).style.animationDelay = `${visibleIndex * 0.05}s`;
+          
+          visibleIndex++;
+        } else {
+          (item as HTMLElement).style.display = 'none';
+        }
+      });
+    });
+  });
+</script>
+
+<style>
+  .work-page {
+    padding: var(--space-12) 0 var(--space-16);
+  }
+  
+  .page-header {
+    max-width: 600px;
+    margin-bottom: var(--space-8);
+  }
+  
+  .page-title {
+    font-size: var(--font-size-5xl);
+    margin-bottom: var(--space-4);
+  }
+  
+  .page-description {
+    font-size: var(--font-size-lg);
+    color: var(--color-text-secondary);
+    margin: 0;
+  }
+  
+  /* Filters */
+  .filters {
+    display: flex;
+    gap: var(--space-3);
+    margin-bottom: var(--space-8);
+    flex-wrap: wrap;
+  }
+  
+  .filter-btn {
+    padding: var(--space-2) var(--space-4);
+    font-size: var(--font-size-sm);
+    font-weight: var(--font-weight-medium);
+    color: var(--color-text-secondary);
+    background: transparent;
+    border: 1px solid var(--color-border);
+    border-radius: var(--radius-full);
+    cursor: pointer;
+    transition: all var(--transition-fast);
+    text-transform: lowercase;
+    font-family: inherit;
+  }
+  
+  .filter-btn:hover {
+    border-color: var(--color-accent-primary);
+    color: var(--color-accent-primary);
+  }
+  
+  .filter-btn.active {
+    background: var(--color-accent-primary);
+    border-color: var(--color-accent-primary);
+    color: white;
+  }
+  
+  /* Work Grid */
+  .work-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(320px, 1fr));
+    gap: var(--space-6);
+  }
+  
+  .work-item {
+    animation: fadeInUp var(--transition-slow) forwards;
+  }
+  
+  .empty-state {
+    text-align: center;
+    padding: var(--space-12) var(--space-4);
+    color: var(--color-text-muted);
+  }
+</style>
