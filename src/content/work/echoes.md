@@ -1,36 +1,36 @@
 ---
 title: "Echoes"
-description: "An interactive Mandarin character learning site"
+description: "An interactive art piece — type English, watch Mandarin drift into the void"
 date: 2025-09-26
 category: "dev"
 tags:
   - javascript
   - mandarin
-  - typing-test
+  - digital-art
   - web-app
 featured: true
 liveUrl: "https://bjsmithxyz.github.io/Echoes/"
 repoUrl: "https://github.com/bjsmithxyz/Echoes"
 ---
 
-**Echoes** is a web app designed to help me learn Mandarin characters through a focused typing experience. You type English words or phrases, and upon correct completion, the corresponding Mandarin character appears with visual effects.
+Echoes is an interactive web app made to test AI capabilities. Type the English word shown on screen; when input correctly the Mandarin translation manifests and drifts into a accumulating cloud in the background.
+
+No build step, no backend — just vanilla JS modules served from a static page.
 
 ## How it works
 
-1. A random English word (or phrase) is displayed at the top.
-2. As you type, the app provides immediate visual feedback on your accuracy.
-3. When you complete the word correctly, the Mandarin character "echoes" onto the screen and is added to a collection grid.
-4. The experience is designed to be fluid and minimalist, focusing on the relationship between the English meaning and the Mandarin form.
+1. A random English word (or phrase) appears at the top.
+2. As you type, letters highlight correct or incorrect in real time.
+3. On completion, the Mandarin character echoes onto the screen and drifts into the background.
+4. Completed characters collect in a grid below, building a visual record of the session.
 
-The app uses a dictionary of English-to-Mandarin mappings and features various visual effects that trigger upon successful word completion.
+There are no scores, timers, or penalties. Mistakes fade away, only the rhythm of typing and echoes remain.
 
-## Features
+## Under the hood
 
-- **Minimalist Interface**: A clean, distraction-free design focused on core learning.
-- **Mobile Friendly**: Works seamlessy on desktop and mobile devices with custom input handling.
-- **Customisable**: Easily expandable dictionary and effect system.
-- **Visual Feedback**: Smooth transitions and character cascades to reinforce learning.
+- `**words.json**` — English-to-Mandarin mappings; supports alternate spellings via `/` separators
+- `**sequences.json**` — typing certain word chains triggers special visual effects
+- `**effects.js**` — pluggable animation system (default: drift)
+- **Mobile input** — hidden input field handles touch keyboards without breaking the minimal UI
 
-## Test it
-
-You can find the project on GitHub [bjsmithxyz/Echoes](https://github.com/bjsmithxyz/Echoes) or test it live [here](https://bjsmithxyz.github.io/Echoes/).
+The vocabulary and effects are easy to extend — edit the JSON files and reload.

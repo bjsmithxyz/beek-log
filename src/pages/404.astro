@@ -2,22 +2,17 @@
 import BaseLayout from '../layouts/BaseLayout.astro';
 ---
 
-<BaseLayout title="page not found" description="The page you're looking for doesn't exist">
+<BaseLayout title="404" description="Page not found">
   <section class="error-page">
     <div class="container">
       <div class="error-content">
+        <p class="prompt">~/beek/404</p>
         <h1 class="error-code">404</h1>
-        <p class="error-message">¯\_(ツ)_/¯</p>
+        <p class="error-message">file not found</p>
         <p class="error-description">
-          The page you're looking for doesn't exist, maybe you imagined it?
+          The page you're looking for doesn't exist. Maybe you imagined it?
         </p>
-        <a href="/" class="back-home">
-          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-            <line x1="19" y1="12" x2="5" y2="12"></line>
-            <polyline points="12 19 5 12 12 5"></polyline>
-          </svg>
-          home
-        </a>
+        <a href="/" class="back-home">&gt; home</a>
       </div>
     </div>
   </section>
@@ -28,61 +23,52 @@ import BaseLayout from '../layouts/BaseLayout.astro';
     min-height: 60vh;
     display: flex;
     align-items: center;
-    justify-content: center;
-    text-align: center;
     padding: var(--space-16) 0;
   }
   
   .error-content {
-    max-width: 500px;
-    margin: 0 auto;
+    max-width: 480px;
+  }
+
+  .prompt {
+    font-size: var(--font-size-sm);
+    color: var(--color-text-muted);
+    margin-bottom: var(--space-2);
   }
   
   .error-code {
-    font-size: 8rem;
+    font-size: 5rem;
     font-weight: var(--font-weight-bold);
-    background: var(--gradient-accent);
-    -webkit-background-clip: text;
-    -webkit-text-fill-color: transparent;
-    background-clip: text;
+    color: var(--color-accent-primary);
     line-height: 1;
-    margin-bottom: var(--space-4);
+    margin-bottom: var(--space-3);
   }
   
   .error-message {
-    font-size: var(--font-size-2xl);
+    font-size: var(--font-size-lg);
     color: var(--color-text-primary);
-    margin-bottom: var(--space-3);
+    margin-bottom: var(--space-2);
   }
   
   .error-description {
     color: var(--color-text-secondary);
-    margin-bottom: var(--space-8);
+    font-size: var(--font-size-sm);
+    margin-bottom: var(--space-6);
   }
   
   .back-home {
-    display: inline-flex;
-    align-items: center;
-    gap: var(--space-2);
-    padding: var(--space-3) var(--space-6);
-    background: var(--color-bg-tertiary);
-    border: 1px solid var(--color-border);
-    border-radius: var(--radius-md);
+    display: inline-block;
+    padding: var(--space-2) var(--space-4);
+    font-size: var(--font-size-base);
     color: var(--color-text-primary);
-    font-weight: var(--font-weight-medium);
+    border: 1px solid var(--color-border);
+    background: var(--color-bg-secondary);
     transition: all var(--transition-fast);
   }
   
   .back-home:hover {
+    color: var(--color-accent-primary);
     border-color: var(--color-accent-primary);
-    gap: var(--space-3);
-  }
-  
-  .back-home svg {
-    transition: transform var(--transition-fast);
-  }
-  
-  .back-home:hover svg {
-    transform: translateX(-4px);
+    box-shadow: var(--shadow-hard-accent);
   }
 </style>

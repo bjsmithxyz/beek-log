@@ -1,11 +1,10 @@
-/* Ubuntu Font from Google Fonts */
-@import url('https://fonts.googleapis.com/css2?family=Ubuntu:ital,wght@0,300;0,400;0,500;0,700;1,300;1,400&display=swap');
+/* IBM Plex Mono — brutalist / file-browser UI */
+@import url('https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:ital,wght@0,400;0,500;0,600;1,400&display=swap');
 
 /* ==========================================
-   bjsmith.xyz - Global Styles
+   bjsmith.xyz — Brutalist file browser
    ========================================== */
 
-/* CSS Reset & Base */
 *,
 *::before,
 *::after {
@@ -14,53 +13,43 @@
     padding: 0;
 }
 
-/* ==========================================
-   CSS Custom Properties (Design Tokens)
-   ========================================== */
 :root {
-    /* Colors - Dark Mode Primary */
-    --color-bg-primary: #0a0a0f;
-    --color-bg-secondary: #12121a;
-    --color-bg-tertiary: #1a1a26;
-    --color-bg-elevated: #222230;
+    /* Colors — high contrast, no gradients */
+    --color-bg-primary: #0c0c0c;
+    --color-bg-secondary: #141414;
+    --color-bg-tertiary: #1a1a1a;
+    --color-bg-elevated: #222222;
 
-    --color-text-primary: #f0f0f5;
-    --color-text-secondary: #a0a0b0;
-    --color-text-muted: #606070;
+    --color-text-primary: #e8e8e8;
+    --color-text-secondary: #999999;
+    --color-text-muted: #555555;
 
-    --color-accent-primary: #7c6aff;
-    --color-accent-secondary: #ff6a9f;
-    --color-accent-tertiary: #6affcc;
+    --color-accent-primary: #33ff66;
+    --color-accent-secondary: #ffaa00;
+    --color-accent-tertiary: #66ccff;
 
-    --color-border: rgba(255, 255, 255, 0.08);
-    --color-border-hover: rgba(255, 255, 255, 0.15);
-
-    /* Gradients */
-    --gradient-accent: linear-gradient(135deg, var(--color-accent-primary), var(--color-accent-secondary));
-    --gradient-subtle: linear-gradient(180deg, var(--color-bg-secondary) 0%, var(--color-bg-primary) 100%);
-    --gradient-glow: radial-gradient(ellipse at center, rgba(124, 106, 255, 0.15) 0%, transparent 70%);
+    --color-border: #333333;
+    --color-border-strong: #555555;
 
     /* Typography */
-    --font-family: 'Ubuntu', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
-    --font-size-xs: 0.75rem;
-    --font-size-sm: 0.875rem;
-    --font-size-base: 1rem;
-    --font-size-lg: 1.125rem;
+    --font-family: 'IBM Plex Mono', 'Courier New', monospace;
+    --font-size-xs: 0.6875rem;
+    --font-size-sm: 0.8125rem;
+    --font-size-base: 0.9375rem;
+    --font-size-lg: 1.0625rem;
     --font-size-xl: 1.25rem;
     --font-size-2xl: 1.5rem;
     --font-size-3xl: 2rem;
     --font-size-4xl: 2.5rem;
-    --font-size-5xl: 3.5rem;
-    --font-size-6xl: 4.5rem;
+    --font-size-5xl: 3rem;
 
-    --line-height-tight: 1.1;
+    --line-height-tight: 1.2;
     --line-height-base: 1.6;
-    --line-height-relaxed: 1.8;
+    --line-height-relaxed: 1.75;
 
-    --font-weight-light: 300;
     --font-weight-regular: 400;
     --font-weight-medium: 500;
-    --font-weight-bold: 700;
+    --font-weight-bold: 600;
 
     /* Spacing */
     --space-1: 0.25rem;
@@ -75,56 +64,50 @@
     --space-16: 8rem;
 
     /* Layout */
-    --container-max: 1200px;
-    --container-narrow: 800px;
+    --container-max: 960px;
+    --container-narrow: 720px;
 
-    /* Border Radius */
-    --radius-sm: 4px;
-    --radius-md: 8px;
-    --radius-lg: 12px;
-    --radius-xl: 20px;
-    --radius-full: 9999px;
+    /* Brutalist — square everything */
+    --radius-sm: 0;
+    --radius-md: 0;
+    --radius-lg: 0;
+    --radius-xl: 0;
+    --radius-full: 0;
 
-    /* Shadows */
-    --shadow-sm: 0 2px 8px rgba(0, 0, 0, 0.3);
-    --shadow-md: 0 4px 16px rgba(0, 0, 0, 0.4);
-    --shadow-lg: 0 8px 32px rgba(0, 0, 0, 0.5);
-    --shadow-glow: 0 0 40px rgba(124, 106, 255, 0.3);
+    /* Hard shadow for interactive elements */
+    --shadow-hard: 3px 3px 0 var(--color-border-strong);
+    --shadow-hard-accent: 3px 3px 0 var(--color-accent-primary);
 
-    /* Transitions */
-    --transition-fast: 150ms ease;
-    --transition-base: 250ms ease;
-    --transition-slow: 400ms ease;
-    --transition-spring: 500ms cubic-bezier(0.34, 1.56, 0.64, 1);
+    /* Transitions — snappy, not floaty */
+    --transition-fast: 80ms ease;
+    --transition-base: 120ms ease;
+    --transition-slow: 200ms ease;
 }
 
-/* Light mode overrides */
 [data-theme="light"] {
-    --color-bg-primary: #fafafa;
-    --color-bg-secondary: #ffffff;
-    --color-bg-tertiary: #f5f5f7;
+    --color-bg-primary: #f4f4f0;
+    --color-bg-secondary: #eaeae4;
+    --color-bg-tertiary: #e0e0da;
     --color-bg-elevated: #ffffff;
 
-    --color-text-primary: #1a1a2e;
-    --color-text-secondary: #4a4a5a;
-    --color-text-muted: #8a8a9a;
+    --color-text-primary: #111111;
+    --color-text-secondary: #444444;
+    --color-text-muted: #888888;
 
-    --color-border: rgba(0, 0, 0, 0.08);
-    --color-border-hover: rgba(0, 0, 0, 0.15);
+    --color-accent-primary: #008833;
+    --color-accent-secondary: #cc7700;
+    --color-accent-tertiary: #0066aa;
 
-    --shadow-sm: 0 2px 8px rgba(0, 0, 0, 0.08);
-    --shadow-md: 0 4px 16px rgba(0, 0, 0, 0.1);
-    --shadow-lg: 0 8px 32px rgba(0, 0, 0, 0.12);
-    --shadow-glow: 0 0 40px rgba(124, 106, 255, 0.15);
+    --color-border: #cccccc;
+    --color-border-strong: #999999;
+
+    --shadow-hard: 3px 3px 0 #aaaaaa;
+    --shadow-hard-accent: 3px 3px 0 var(--color-accent-primary);
 }
 
-/* ==========================================
-   Base Styles
-   ========================================== */
 html {
     scroll-behavior: smooth;
     -webkit-font-smoothing: antialiased;
-    -moz-osx-font-smoothing: grayscale;
 }
 
 body {
@@ -138,33 +121,30 @@ body {
     overflow-x: hidden;
 }
 
-/* Typography */
-h1,
-h2,
-h3,
-h4,
-h5,
-h6 {
+/* Subtle grid texture */
+body::before {
+    content: '';
+    position: fixed;
+    inset: 0;
+    background-image:
+        linear-gradient(var(--color-border) 1px, transparent 1px),
+        linear-gradient(90deg, var(--color-border) 1px, transparent 1px);
+    background-size: 24px 24px;
+    opacity: 0.15;
+    pointer-events: none;
+    z-index: 0;
+}
+
+h1, h2, h3, h4, h5, h6 {
     font-weight: var(--font-weight-medium);
     line-height: var(--line-height-tight);
     color: var(--color-text-primary);
 }
 
-h1 {
-    font-size: var(--font-size-5xl);
-}
-
-h2 {
-    font-size: var(--font-size-3xl);
-}
-
-h3 {
-    font-size: var(--font-size-2xl);
-}
-
-h4 {
-    font-size: var(--font-size-xl);
-}
+h1 { font-size: var(--font-size-4xl); }
+h2 { font-size: var(--font-size-2xl); }
+h3 { font-size: var(--font-size-xl); }
+h4 { font-size: var(--font-size-lg); }
 
 p {
     margin-bottom: var(--space-4);
@@ -178,7 +158,7 @@ a {
 }
 
 a:hover {
-    color: var(--color-accent-secondary);
+    color: var(--color-text-primary);
 }
 
 img {
@@ -187,21 +167,16 @@ img {
     display: block;
 }
 
-/* Selection */
 ::selection {
     background-color: var(--color-accent-primary);
     color: var(--color-bg-primary);
 }
 
-/* Focus States */
 :focus-visible {
     outline: 2px solid var(--color-accent-primary);
     outline-offset: 2px;
 }
 
-/* ==========================================
-   Utility Classes
-   ========================================== */
 .container {
     width: 100%;
     max-width: var(--container-max);
@@ -224,158 +199,25 @@ img {
     border: 0;
 }
 
-/* Text utilities */
-.text-gradient {
-    background: var(--gradient-accent);
-    -webkit-background-clip: text;
-    -webkit-text-fill-color: transparent;
-    background-clip: text;
-}
+.text-muted { color: var(--color-text-muted); }
+.text-secondary { color: var(--color-text-secondary); }
 
-.text-muted {
-    color: var(--color-text-muted);
-}
+/* Category tag colours */
+.tag-dev { color: var(--color-accent-tertiary); }
+.tag-art { color: var(--color-accent-secondary); }
+.tag-photography { color: var(--color-accent-primary); }
 
-.text-secondary {
-    color: var(--color-text-secondary);
-}
-
-/* ==========================================
-   Animations
-   ========================================== */
 @keyframes fadeIn {
-    from {
-        opacity: 0;
-    }
-
-    to {
-        opacity: 1;
-    }
+    from { opacity: 0; }
+    to { opacity: 1; }
 }
 
-@keyframes fadeInUp {
-    from {
-        opacity: 0;
-        transform: translateY(20px);
-    }
-
-    to {
-        opacity: 1;
-        transform: translateY(0);
-    }
-}
-
-@keyframes slideInLeft {
-    from {
-        opacity: 0;
-        transform: translateX(-30px);
-    }
-
-    to {
-        opacity: 1;
-        transform: translateX(0);
-    }
-}
-
-@keyframes scaleIn {
-    from {
-        opacity: 0;
-        transform: scale(0.95);
-    }
-
-    to {
-        opacity: 1;
-        transform: scale(1);
-    }
-}
-
-@keyframes shimmer {
-    0% {
-        background-position: -200% 0;
-    }
-
-    100% {
-        background-position: 200% 0;
-    }
-}
-
-@keyframes float {
-
-    0%,
-    100% {
-        transform: translateY(0);
-    }
-
-    50% {
-        transform: translateY(-10px);
-    }
-}
-
-@keyframes pulse-glow {
-
-    0%,
-    100% {
-        box-shadow: 0 0 20px rgba(124, 106, 255, 0.3);
-    }
-
-    50% {
-        box-shadow: 0 0 40px rgba(124, 106, 255, 0.5);
-    }
-}
-
-/* Animation utilities */
 .animate-fade-in {
     animation: fadeIn var(--transition-slow) forwards;
 }
 
-.animate-fade-in-up {
-    animation: fadeInUp var(--transition-slow) forwards;
-}
-
-.animate-slide-in-left {
-    animation: slideInLeft var(--transition-slow) forwards;
-}
-
-.animate-scale-in {
-    animation: scaleIn var(--transition-slow) forwards;
-}
-
-/* Stagger children animations */
-.stagger-children>* {
-    opacity: 0;
-    animation: fadeInUp var(--transition-slow) forwards;
-}
-
-.stagger-children>*:nth-child(1) {
-    animation-delay: 0.1s;
-}
-
-.stagger-children>*:nth-child(2) {
-    animation-delay: 0.2s;
-}
-
-.stagger-children>*:nth-child(3) {
-    animation-delay: 0.3s;
-}
-
-.stagger-children>*:nth-child(4) {
-    animation-delay: 0.4s;
-}
-
-.stagger-children>*:nth-child(5) {
-    animation-delay: 0.5s;
-}
-
-.stagger-children>*:nth-child(6) {
-    animation-delay: 0.6s;
-}
-
-/* ==========================================
-   Code Blocks
-   ========================================== */
 pre {
     background-color: var(--color-bg-tertiary);
-    border-radius: var(--radius-md);
     padding: var(--space-4);
     overflow-x: auto;
     font-size: var(--font-size-sm);
@@ -384,22 +226,18 @@ pre {
 }
 
 code {
-    font-family: 'Ubuntu Mono', 'Fira Code', monospace;
+    font-family: inherit;
     font-size: 0.9em;
 }
 
-:not(pre)>code {
+:not(pre) > code {
     background-color: var(--color-bg-tertiary);
-    padding: 0.2em 0.4em;
-    border-radius: var(--radius-sm);
+    padding: 0.15em 0.35em;
+    border: 1px solid var(--color-border);
 }
 
-/* ==========================================
-   Responsive
-   ========================================== */
 @media (max-width: 768px) {
     :root {
-        --font-size-5xl: 2.5rem;
         --font-size-4xl: 2rem;
         --font-size-3xl: 1.5rem;
     }

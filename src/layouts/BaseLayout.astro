@@ -27,30 +27,25 @@ const fullTitle = title === 'bjsmith.xyz' ? title : `${title} | bjsmith.xyz`;
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <meta name="generator" content={Astro.generator} />
   
-  <!-- SEO -->
   <title>{fullTitle}</title>
   <meta name="description" content={description} />
   <link rel="canonical" href={canonicalURL} />
   
-  <!-- Open Graph -->
   <meta property="og:type" content="website" />
   <meta property="og:url" content={canonicalURL} />
   <meta property="og:title" content={fullTitle} />
   <meta property="og:description" content={description} />
   <meta property="og:image" content={new URL(image, Astro.site)} />
   
-  <!-- Twitter -->
   <meta name="twitter:card" content="summary_large_image" />
   <meta name="twitter:title" content={fullTitle} />
   <meta name="twitter:description" content={description} />
   <meta name="twitter:image" content={new URL(image, Astro.site)} />
   
-  <!-- Favicon -->
   <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
   
   <ViewTransitions />
 
-  <!-- Theme Script (prevent flash) -->
   <script is:inline>
     const theme = localStorage.getItem('theme') || 'dark';
     document.documentElement.setAttribute('data-theme', theme);
@@ -64,9 +59,6 @@ const fullTitle = title === 'bjsmith.xyz' ? title : `${title} | bjsmith.xyz`;
     </main>
     <Footer />
   </div>
-  
-  <!-- Background glow effect -->
-  <div class="bg-glow" aria-hidden="true"></div>
 </body>
 </html>
 
@@ -81,19 +73,5 @@ const fullTitle = title === 'bjsmith.xyz' ? title : `${title} | bjsmith.xyz`;
   
   main {
     flex: 1;
-  }
-  
-  .bg-glow {
-    position: fixed;
-    top: 0;
-    left: 50%;
-    transform: translateX(-50%);
-    width: 100%;
-    max-width: 1400px;
-    height: 600px;
-    background: var(--gradient-glow);
-    pointer-events: none;
-    z-index: 0;
-    opacity: 0.6;
   }
 </style>

@@ -35,18 +35,15 @@ const categoryColors = {
   <article class="work-detail">
     <div class="container container-narrow">
       <!-- Back link -->
-      <a href="/work" class="back-link animate-fade-in">
-        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-          <line x1="19" y1="12" x2="5" y2="12"></line>
-          <polyline points="12 19 5 12 12 5"></polyline>
-        </svg>
-        back to work
+      <a href="/work" class="back-link">
+        ← work/
       </a>
       
       <!-- Header -->
-      <header class="article-header animate-fade-in" style="animation-delay: 0.1s">
+      <header class="article-header">
+        <p class="file-path">work/{entry.slug}.md</p>
         <span class="category" style={`--category-color: ${categoryColors[category]}`}>
-          {category}
+          [{category}]
         </span>
         <h1 class="title">{title}</h1>
         <p class="description">{description}</p>
@@ -66,20 +63,12 @@ const categoryColors = {
           <div class="links">
             {liveUrl && (
               <a href={liveUrl} target="_blank" rel="noopener noreferrer" class="link-btn">
-                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                  <path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"></path>
-                  <polyline points="15 3 21 3 21 9"></polyline>
-                  <line x1="10" y1="14" x2="21" y2="3"></line>
-                </svg>
-                view live
+                view live →
               </a>
             )}
             {repoUrl && (
               <a href={repoUrl} target="_blank" rel="noopener noreferrer" class="link-btn link-btn-secondary">
-                <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor">
-                  <path d="M12 0c-6.626 0-12 5.373-12 12 0 5.302 3.438 9.8 8.207 11.387.599.111.793-.261.793-.577v-2.234c-3.338.726-4.033-1.416-4.033-1.416-.546-1.387-1.333-1.756-1.333-1.756-1.089-.745.083-.729.083-.729 1.205.084 1.839 1.237 1.839 1.237 1.07 1.834 2.807 1.304 3.492.997.107-.775.418-1.305.762-1.604-2.665-.305-5.467-1.334-5.467-5.931 0-1.311.469-2.381 1.236-3.221-.124-.303-.535-1.524.117-3.176 0 0 1.008-.322 3.301 1.23.957-.266 1.983-.399 3.003-.404 1.02.005 2.047.138 3.006.404 2.291-1.552 3.297-1.23 3.297-1.23.653 1.653.242 2.874.118 3.176.77.84 1.235 1.911 1.235 3.221 0 4.609-2.807 5.624-5.479 5.921.43.372.823 1.102.823 2.222v3.293c0 .319.192.694.801.576 4.765-1.589 8.199-6.086 8.199-11.386 0-6.627-5.373-12-12-12z"/>
-                </svg>
-                source
+                source →
               </a>
             )}
           </div>
@@ -88,7 +77,7 @@ const categoryColors = {
       
       <!-- Cover Image -->
       {cover && (
-        <div class="cover-image animate-fade-in" style="animation-delay: 0.2s">
+        <div class="cover-image">
           <Image 
             src={cover} 
             alt={title}
@@ -100,14 +89,14 @@ const categoryColors = {
       )}
       
       <!-- Content -->
-      <div class="content prose animate-fade-in" style="animation-delay: 0.3s">
+      <div class="content prose">
         <Content />
       </div>
       
       <!-- Gallery -->
       {images && images.length > 0 && (
-        <div class="gallery animate-fade-in" style="animation-delay: 0.4s">
-          <h2>gallery</h2>
+        <div class="gallery">
+          <h2>gallery/</h2>
           <div class="gallery-grid">
             {images.map((img, i) => (
               <figure class="gallery-item" style={`animation-delay: ${0.4 + i * 0.1}s`}>
@@ -233,56 +222,49 @@ const categoryColors = {
     padding: var(--space-8) 0 var(--space-16);
   }
   
-  /* Back Link */
   .back-link {
-    display: inline-flex;
-    align-items: center;
-    gap: var(--space-2);
-    color: var(--color-text-secondary);
+    display: inline-block;
+    color: var(--color-text-muted);
     font-size: var(--font-size-sm);
-    margin-bottom: var(--space-8);
-    transition: all var(--transition-fast);
+    margin-bottom: var(--space-6);
+    transition: color var(--transition-fast);
   }
   
   .back-link:hover {
     color: var(--color-accent-primary);
-    gap: var(--space-3);
+  }
+
+  .file-path {
+    font-size: var(--font-size-sm);
+    color: var(--color-text-muted);
+    margin-bottom: var(--space-3);
   }
   
-  .back-link svg {
-    transition: transform var(--transition-fast);
-  }
-  
-  .back-link:hover svg {
-    transform: translateX(-4px);
-  }
-  
-  /* Header */
   .article-header {
-    margin-bottom: var(--space-8);
+    margin-bottom: var(--space-6);
+    padding-bottom: var(--space-6);
+    border-bottom: 1px solid var(--color-border);
   }
   
   .category {
     display: inline-block;
-    font-size: var(--font-size-xs);
+    font-size: var(--font-size-sm);
     font-weight: var(--font-weight-medium);
-    text-transform: lowercase;
-    letter-spacing: 0.02em;
     color: var(--category-color);
     margin-bottom: var(--space-3);
   }
   
   .title {
-    font-size: var(--font-size-4xl);
+    font-size: var(--font-size-3xl);
     font-weight: var(--font-weight-bold);
-    margin-bottom: var(--space-4);
+    margin-bottom: var(--space-3);
   }
   
   .description {
-    font-size: var(--font-size-xl);
+    font-size: var(--font-size-base);
     color: var(--color-text-secondary);
     line-height: var(--line-height-relaxed);
-    margin-bottom: var(--space-5);
+    margin-bottom: var(--space-4);
   }
   
   .meta {
@@ -290,12 +272,13 @@ const categoryColors = {
     align-items: center;
     flex-wrap: wrap;
     gap: var(--space-4);
-    margin-bottom: var(--space-5);
+    margin-bottom: var(--space-4);
   }
   
   .meta time {
     color: var(--color-text-muted);
     font-size: var(--font-size-sm);
+    font-variant-numeric: tabular-nums;
   }
   
   .tags {
@@ -308,51 +291,49 @@ const categoryColors = {
     font-size: var(--font-size-xs);
     color: var(--color-text-muted);
     background: var(--color-bg-tertiary);
-    padding: var(--space-1) var(--space-3);
-    border-radius: var(--radius-full);
+    padding: var(--space-1) var(--space-2);
+    border: 1px solid var(--color-border);
   }
   
   .links {
     display: flex;
-    gap: var(--space-3);
+    gap: var(--space-2);
     flex-wrap: wrap;
   }
   
   .link-btn {
-    display: inline-flex;
-    align-items: center;
-    gap: var(--space-2);
+    display: inline-block;
     padding: var(--space-2) var(--space-4);
     font-size: var(--font-size-sm);
     font-weight: var(--font-weight-medium);
-    background: var(--color-accent-primary);
-    color: white;
-    border-radius: var(--radius-md);
+    background: var(--color-bg-tertiary);
+    color: var(--color-accent-primary);
+    border: 1px solid var(--color-accent-primary);
     transition: all var(--transition-fast);
   }
   
   .link-btn:hover {
-    transform: translateY(-2px);
-    box-shadow: var(--shadow-glow);
-    color: white;
+    background: var(--color-accent-primary);
+    color: var(--color-bg-primary);
+    box-shadow: var(--shadow-hard-accent);
   }
   
   .link-btn-secondary {
-    background: var(--color-bg-tertiary);
-    color: var(--color-text-primary);
+    color: var(--color-text-secondary);
+    border-color: var(--color-border);
+    background: var(--color-bg-secondary);
   }
   
   .link-btn-secondary:hover {
-    background: var(--color-bg-elevated);
     color: var(--color-text-primary);
-    box-shadow: var(--shadow-md);
+    border-color: var(--color-border-strong);
+    background: var(--color-bg-tertiary);
+    box-shadow: var(--shadow-hard);
   }
   
-  /* Cover Image */
   .cover-image {
-    margin-bottom: var(--space-8);
-    border-radius: var(--radius-lg);
-    overflow: hidden;
+    margin-bottom: var(--space-6);
+    border: 1px solid var(--color-border);
   }
   
   .cover {
@@ -361,9 +342,8 @@ const categoryColors = {
     display: block;
   }
   
-  /* Content */
   .content {
-    margin-bottom: var(--space-10);
+    margin-bottom: var(--space-8);
   }
   
   .prose {
@@ -372,17 +352,17 @@ const categoryColors = {
   }
   
   .prose :global(h2) {
-    font-size: var(--font-size-2xl);
+    font-size: var(--font-size-xl);
     color: var(--color-text-primary);
     margin-top: var(--space-8);
-    margin-bottom: var(--space-4);
+    margin-bottom: var(--space-3);
   }
   
   .prose :global(h3) {
-    font-size: var(--font-size-xl);
+    font-size: var(--font-size-lg);
     color: var(--color-text-primary);
     margin-top: var(--space-6);
-    margin-bottom: var(--space-3);
+    margin-bottom: var(--space-2);
   }
   
   .prose :global(p) {
@@ -411,57 +391,48 @@ const categoryColors = {
   }
   
   .prose :global(a:hover) {
-    color: var(--color-accent-secondary);
+    color: var(--color-text-primary);
   }
   
   .prose :global(img) {
-    border-radius: var(--radius-md);
+    border: 1px solid var(--color-border);
     margin: var(--space-6) 0;
   }
   
-  /* Gallery */
   .gallery {
     border-top: 1px solid var(--color-border);
-    padding-top: var(--space-8);
+    padding-top: var(--space-6);
   }
   
   .gallery h2 {
-    font-size: var(--font-size-2xl);
-    margin-bottom: var(--space-6);
+    font-size: var(--font-size-base);
+    color: var(--color-text-muted);
+    margin-bottom: var(--space-4);
+    font-weight: var(--font-weight-medium);
   }
   
   .gallery-grid {
     display: grid;
-    grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
-    gap: var(--space-4);
+    grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+    gap: var(--space-3);
   }
   
   .gallery-item {
     margin: 0;
-    animation: fadeInUp var(--transition-slow) forwards;
-    opacity: 0;
+    border: 1px solid var(--color-border);
   }
   
   .gallery-image {
     width: 100%;
     height: auto;
-    border-radius: var(--radius-md);
-    transition: transform var(--transition-base);
-  }
-  
-  .gallery-item:hover .gallery-image {
-    transform: scale(1.02);
+    cursor: pointer;
   }
   
   .gallery-item figcaption {
-    margin-top: var(--space-2);
-    font-size: var(--font-size-sm);
+    padding: var(--space-2) var(--space-3);
+    font-size: var(--font-size-xs);
     color: var(--color-text-muted);
-    text-align: center;
-  }
-
-  .gallery-image {
-    cursor: pointer;
+    border-top: 1px solid var(--color-border);
   }
 
   /* Lightbox */
@@ -505,9 +476,7 @@ const categoryColors = {
     max-width: 100%;
     max-height: calc(90vh - 80px);
     object-fit: contain;
-    border-radius: var(--radius-sm);
-    box-shadow: 0 20px 50px rgba(0, 0, 0, 0.5);
-    border: 1px solid rgba(255, 255, 255, 0.1);
+    border: 1px solid var(--color-border);
   }
 
   :global(.lightbox-content p) {
@@ -523,12 +492,11 @@ const categoryColors = {
     position: absolute;
     top: var(--space-8);
     right: var(--space-8);
-    background: rgba(255, 255, 255, 0.1);
-    border: 1px solid rgba(255, 255, 255, 0.2);
-    color: white;
+    background: var(--color-bg-secondary);
+    border: 1px solid var(--color-border);
+    color: var(--color-text-primary);
     width: 48px;
     height: 48px;
-    border-radius: 50%;
     display: flex;
     align-items: center;
     justify-content: center;
@@ -541,19 +509,18 @@ const categoryColors = {
   :global(.lightbox-close:hover) {
     background: var(--color-accent-primary);
     border-color: var(--color-accent-primary);
-    transform: rotate(90deg);
+    color: var(--color-bg-primary);
   }
 
   :global(.lightbox-nav) {
     position: absolute;
     top: 50%;
     transform: translateY(-50%);
-    background: rgba(255, 255, 255, 0.05);
-    border: 1px solid rgba(255, 255, 255, 0.1);
-    color: white;
-    width: 60px;
-    height: 60px;
-    border-radius: 50%;
+    background: var(--color-bg-secondary);
+    border: 1px solid var(--color-border);
+    color: var(--color-text-primary);
+    width: 48px;
+    height: 48px;
     display: flex;
     align-items: center;
     justify-content: center;
@@ -565,7 +532,7 @@ const categoryColors = {
   :global(.lightbox-nav:hover) {
     background: var(--color-accent-primary);
     border-color: var(--color-accent-primary);
-    transform: translateY(-50%) scale(1.1);
+    color: var(--color-bg-primary);
   }
 
   :global(.lightbox-prev) {

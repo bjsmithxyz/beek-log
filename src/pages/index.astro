@@ -1,265 +1,131 @@
 ---
 import BaseLayout from '../layouts/BaseLayout.astro';
-import WorkCard from '../components/WorkCard.astro';
+import WorkRow from '../components/WorkRow.astro';
 import { getCollection } from 'astro:content';
 
 const allWork = await getCollection('work', ({ data }) => !data.draft);
-
-// Sort by date, newest first
 const sortedWork = allWork.sort((a, b) => b.data.date.valueOf() - a.data.date.valueOf());
-
-// Get featured items or latest 6
-const featuredWork = sortedWork.filter(w => w.data.featured).slice(0, 6);
-const displayWork = featuredWork.length >= 3 ? featuredWork : sortedWork.slice(0, 6);
+const recentWork = sortedWork.slice(0, 8);
 ---
 
 <BaseLayout>
-  <!-- Hero Section -->
-  <section class="hero">
+  <section class="home">
     <div class="container">
-      <div class="hero-content">
-        <p class="hero-greeting animate-fade-in">Hi, I'm</p>
-        <h1 class="hero-name">
-          <span class="text-gradient animate-fade-in" style="animation-delay: 0.1s">beek</span>
-        </h1>
-        <p class="hero-tagline animate-fade-in" style="animation-delay: 0.2s">
-          tech guy & creative
-        </p>
-        <p class="hero-description animate-fade-in" style="animation-delay: 0.3s">
-          Building things creating stuff.<br />
+      <header class="home-header">
+        <p class="prompt">~/beek</p>
+        <h1 class="home-name">beek</h1>
+        <p class="home-role">tech guy & creative</p>
+        <p class="home-desc">
+          Building things, creating stuff.<br />
           If I make something I like, I'll upload it here.
         </p>
-        <div class="hero-cta animate-fade-in" style="animation-delay: 0.4s">
-          <a href="/work" class="btn btn-primary">work</a>
-          <a href="/about" class="btn btn-secondary">about</a>
-        </div>
-      </div>
-    </div>
-    
-    <!-- Decorative elements -->
-    <div class="hero-decoration" aria-hidden="true">
-      <div class="deco-circle deco-circle-1"></div>
-      <div class="deco-circle deco-circle-2"></div>
-      <div class="deco-circle deco-circle-3"></div>
-    </div>
-  </section>
-  
-  <!-- Featured Work -->
-  <section class="featured-section">
-    <div class="container">
-      <div class="section-header">
-        <h2 class="section-title">recent</h2>
-        <a href="/work" class="section-link">
-          view all
-          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-            <line x1="5" y1="12" x2="19" y2="12"></line>
-            <polyline points="12 5 19 12 12 19"></polyline>
-          </svg>
-        </a>
-      </div>
-      
-      <div class="work-grid">
-        {displayWork.map((work, i) => (
-          <WorkCard work={work} index={i} />
-        ))}
-      </div>
-      
-      {displayWork.length === 0 && (
-        <div class="empty-state">
-          <p>No work to display yet. Check back soon!</p>
-        </div>
+      </header>
+
+      <nav class="home-nav" aria-label="Primary">
+        <a href="/work" class="nav-cmd">&gt; work</a>
+        <a href="/about" class="nav-cmd">&gt; about</a>
+      </nav>
+
+      {recentWork.length > 0 && (
+        <section class="recent" aria-labelledby="recent-heading">
+          <div class="dir-header">
+            <h2 id="recent-heading" class="dir-path">recent/</h2>
+            <a href="/work" class="dir-link">view all →</a>
+          </div>
+          <div class="dir-list">
+            {recentWork.map(work => (
+              <WorkRow work={work} showDescription={false} />
+            ))}
+          </div>
+        </section>
       )}
     </div>
   </section>
 </BaseLayout>
 
 <style>
-  /* Hero */
-  .hero {
-    position: relative;
-    padding: var(--space-16) 0;
-    min-height: 80vh;
-    display: flex;
-    align-items: center;
-    overflow: hidden;
+  .home {
+    padding: var(--space-10) 0 var(--space-16);
   }
-  
-  .hero-content {
-    max-width: 700px;
-    position: relative;
-    z-index: 1;
+
+  .home-header {
+    margin-bottom: var(--space-8);
   }
-  
-  .hero-greeting {
-    font-size: var(--font-size-lg);
-    color: var(--color-text-secondary);
+
+  .prompt {
+    font-size: var(--font-size-sm);
+    color: var(--color-text-muted);
     margin-bottom: var(--space-2);
-    font-weight: var(--font-weight-light);
   }
-  
-  .hero-name {
-    font-size: clamp(3rem, 12vw, var(--font-size-6xl));
+
+  .home-name {
+    font-size: var(--font-size-5xl);
     font-weight: var(--font-weight-bold);
-    line-height: 1;
-    margin-bottom: var(--space-4);
+    margin-bottom: var(--space-2);
+    letter-spacing: -0.02em;
   }
-  
-  .hero-tagline {
-    font-size: var(--font-size-2xl);
-    color: var(--color-text-primary);
-    margin-bottom: var(--space-5);
-    font-weight: var(--font-weight-medium);
-  }
-  
-  .hero-description {
+
+  .home-role {
     font-size: var(--font-size-lg);
+    color: var(--color-accent-primary);
+    margin-bottom: var(--space-5);
+  }
+
+  .home-desc {
+    font-size: var(--font-size-base);
     color: var(--color-text-secondary);
     line-height: var(--line-height-relaxed);
-    margin-bottom: var(--space-8);
-  }
-  
-  .hero-cta {
-    display: flex;
-    gap: var(--space-4);
-    flex-wrap: wrap;
-  }
-  
-  /* Buttons */
-  .btn {
-    display: inline-flex;
-    align-items: center;
-    gap: var(--space-2);
-    padding: var(--space-3) var(--space-6);
-    font-size: var(--font-size-base);
-    font-weight: var(--font-weight-medium);
-    border-radius: var(--radius-md);
-    transition: all var(--transition-fast);
-    cursor: pointer;
-  }
-  
-  .btn-primary {
-    background: var(--gradient-accent);
-    color: white;
-    border: none;
-  }
-  
-  .btn-primary:hover {
-    transform: translateY(-2px);
-    box-shadow: var(--shadow-glow);
-    color: white;
-  }
-  
-  .btn-secondary {
-    background: transparent;
-    color: var(--color-text-primary);
-    border: 1px solid var(--color-border);
-  }
-  
-  .btn-secondary:hover {
-    border-color: var(--color-accent-primary);
-    color: var(--color-accent-primary);
-  }
-  
-  /* Decorative Elements */
-  .hero-decoration {
-    position: absolute;
-    top: 0;
-    right: 0;
-    bottom: 0;
-    width: 50%;
-    pointer-events: none;
-  }
-  
-  .deco-circle {
-    position: absolute;
-    border-radius: 50%;
-    border: 1px solid var(--color-border);
-    opacity: 0.5;
-  }
-  
-  .deco-circle-1 {
-    width: 400px;
-    height: 400px;
-    right: -100px;
-    top: 10%;
-    animation: float 8s ease-in-out infinite;
-  }
-  
-  .deco-circle-2 {
-    width: 250px;
-    height: 250px;
-    right: 20%;
-    top: 50%;
-    animation: float 6s ease-in-out infinite;
-    animation-delay: -2s;
-  }
-  
-  .deco-circle-3 {
-    width: 150px;
-    height: 150px;
-    right: 10%;
-    bottom: 20%;
-    animation: float 5s ease-in-out infinite;
-    animation-delay: -4s;
-  }
-  
-  @media (max-width: 768px) {
-    .hero-decoration {
-      display: none;
-    }
-  }
-  
-  /* Featured Section */
-  .featured-section {
-    padding: var(--space-12) 0 var(--space-16);
-  }
-  
-  .section-header {
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
-    margin-bottom: var(--space-8);
-    flex-wrap: wrap;
-    gap: var(--space-4);
-  }
-  
-  .section-title {
-    font-size: var(--font-size-3xl);
+    max-width: 480px;
     margin: 0;
   }
-  
-  .section-link {
+
+  .home-nav {
     display: flex;
-    align-items: center;
+    flex-direction: column;
     gap: var(--space-2);
-    color: var(--color-text-secondary);
-    font-weight: var(--font-weight-medium);
-    transition: all var(--transition-fast);
+    margin-bottom: var(--space-10);
+    padding-bottom: var(--space-8);
+    border-bottom: 1px solid var(--color-border);
   }
-  
-  .section-link:hover {
+
+  .nav-cmd {
+    display: inline-block;
+    font-size: var(--font-size-lg);
+    color: var(--color-text-primary);
+    padding: var(--space-2) 0;
+    transition: color var(--transition-fast), padding-left var(--transition-fast);
+  }
+
+  .nav-cmd:hover {
     color: var(--color-accent-primary);
-    gap: var(--space-3);
+    padding-left: var(--space-3);
   }
-  
-  .section-link svg {
-    transition: transform var(--transition-fast);
+
+  .dir-header {
+    display: flex;
+    align-items: baseline;
+    justify-content: space-between;
+    margin-bottom: var(--space-4);
+    gap: var(--space-4);
   }
-  
-  .section-link:hover svg {
-    transform: translateX(4px);
-  }
-  
-  /* Work Grid */
-  .work-grid {
-    display: grid;
-    grid-template-columns: repeat(auto-fill, minmax(320px, 1fr));
-    gap: var(--space-6);
-  }
-  
-  .empty-state {
-    text-align: center;
-    padding: var(--space-12) var(--space-4);
+
+  .dir-path {
+    font-size: var(--font-size-base);
+    font-weight: var(--font-weight-medium);
     color: var(--color-text-muted);
+    margin: 0;
+  }
+
+  .dir-link {
+    font-size: var(--font-size-sm);
+    color: var(--color-text-muted);
+  }
+
+  .dir-link:hover {
+    color: var(--color-accent-primary);
+  }
+
+  .dir-list {
+    border-top: 1px solid var(--color-border);
   }
 </style>

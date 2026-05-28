@@ -1,6 +1,6 @@
 ---
 title: "Phrasing"
-description: "A static phrase library with instant search and sidebar navigation"
+description: "A static phrase library with fuzzy search, dataset switching, and theme support"
 date: 2023-05-10
 category: "dev"
 tags:
@@ -11,49 +11,50 @@ tags:
   - web-app
 featured: true
 liveUrl: "https://bjsmithxyz.github.io/phrasing/"
+repoUrl: "https://github.com/bjsmithxyz/phrasing"
 ---
 
-## What is it
+Phrasing is a lightweight static app for browsing and searching phrase collections stored as Markdown. Built-in corpora ship with the site; you can switch datasets in the browser or upload your own `.md` files without a page reload.
 
-It's a lightweight, static app that takes a curated set of Markdown phrase collections and turns them into a browsable library with fast search, category navigation, and a Dracula-themed UI.
+## What it does
 
-The build process converts Markdown files from a `md_files` directory into a single HTML page, generates a searchable data set, and wires up Fuse.js for instant, fuzzy filtering. The UI mirrors the original layout with a fixed sidebar, per-category A–Z links, and a search bar pinned at the top of the content area.
+The build pipeline converts Markdown under `data/builtin/` into a searchable static site. Fuse.js handles fuzzy search; a fixed sidebar provides category navigation and A–Z section links. The same parsing logic runs at build time and in the browser via shared `content-core.js`, so uploaded files behave identically to built-in datasets.
 
-The input format stays intentionally simple, so new collections can be added quickly. Here's an example of the structure the app expects:
+Input format stays deliberately simple:
 
 ```md
-# Heading 1
+# Category name
 
-## Heading 2
+## A
 
-- Data point 1
-  - sub data point
-- Data point 2
-- Data point 3
+- First phrase
+- Second phrase
 ```
 
-My goal is to keep experimenting with new phrase collections and datasets that fit the Markdown-first workflow while keeping the browsing experience fast and readable.
+A single file can contain multiple `#` sections. List items under `##` letter headings become searchable entries.
 
-## Why is it called Phrasing
+## Built-in datasets
 
-The app draws its name from a book of phrases that includes interesting business expressions, impressive phrases, conversational phrases, and more.
+| Dataset | Contents |
+| --- | --- |
+| **phrasing** | ~15,000 entries from *Fifteen Thousand Useful Phrases* (Grenville Kleiser, 1910) |
+| **insults** | Shakespeare insults, grouped by play and type |
 
-For instance, under 'Conversational - I', you might find:
+Add a folder under `data/builtin/` and rebuild — the manifest picks it up automatically.
+
+## Why "Phrasing"
+
+The default corpus comes from a Project Gutenberg find: a 1910 reference book of business expressions, conversational phrases, impressive formulations, and more. Under *Conversational — I*, you might find:
 
 > I am anxious to discharge the very onerous debt I owe you.
 
-The app could be a handy resource for writers seeking inspiration or unique phrasing.
+Most entries are archaic or slightly questionable by modern standards, which is part of the charm — a searchable snapshot of how people were told to sound articulate a century ago.
 
-## History
+## Current features
 
-Earlier in the year, while browsing Project Gutenberg, I stumbled upon a book titled 'Fifteen Thousand Useful Phrases' by Grenville Kleiser, first published in 1910. I found the book amusing, particularly envisioning people using these now-outdated phrases in everyday conversation.
+- **Dataset switching** — toggle between built-in corpora or upload custom Markdown via the data control
+- **Instant search** — Fuse.js fuzzy matching across all indexed phrases
+- **Themes** — Dracula, Cursor, Orangde, Black & White, Light, Sepia, and Rose
+- **Static hosting** — `npm run build` outputs to `dist/`; deploys to GitHub Pages on push via Actions
 
-The phrases offer a fascinating snapshot of history, despite many of them being archaic or slightly questionable by today's standards.
-
-Around the same time, I was exploring data indexing services and realized a search-first interface would make this treasure trove much easier to navigate. The current version focuses on a static build for speed, with Fuse.js providing instant search across the phrase library.
-
-Originally, I extracted all the content from the book's PDF. However, it became clear that remaking all the individual .md/HTML files would be labor-intensive. Consequently, I decided to develop a web-based index to make the content more accessible.
-
-With Machine Learning (ML), Language Models (LLMs), and AI being current hot topics, I turned to ChatGPT for assistance. The result was a Node.js-driven build pipeline (plus an optional Express server for local development) that outputs a static site ideal for GitHub Pages or other lightweight hosting. Despite the development process proving more challenging than anticipated, ChatGPT played a crucial role in advancing the project, and I doubt I would have gotten even 20% of the way without it...
-
-It even wrote this.
+Stack: Node.js build script, markdown-it, Fuse.js, optional Express dev server.
