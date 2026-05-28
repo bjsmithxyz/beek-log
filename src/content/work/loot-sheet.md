@@ -6,8 +6,6 @@ category: "dev"
 tags:
   - react
   - vite
-  - world-of-warcraft
-  - loot-council
   - web-app
 featured: true
 cover: "../../assets/images/loot_sheet.png"
