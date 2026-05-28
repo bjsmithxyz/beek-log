@@ -7,7 +7,6 @@ tags:
   - illustration
   - challenge
 featured: true
-cover: "../../assets/images/alphabet_superset_thumb.png"
 images:
   - src: "../../assets/images/a_cute.png"
     alt: "I want to believe"

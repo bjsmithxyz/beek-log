@@ -11,7 +11,7 @@ tags:
   - leaflet
   - supabase
 featured: true
-cover: "../../assets/images/one_star_maccas_thumb.png"
+cover: "../../assets/images/one_star_maccas.png"
 liveUrl: "https://bjsmithxyz.github.io/one-star-maccas/"
 repoUrl: "https://github.com/bjsmithxyz/one-star-maccas"
 ---

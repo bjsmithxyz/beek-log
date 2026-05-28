@@ -6,7 +6,6 @@ category: "art"
 tags:
   - painting
   - acrylic
-cover: "../../assets/images/red_moon_thumb.png"
 images:
   - src: "../../assets/images/red_moon.png"
     alt: "Red moon"

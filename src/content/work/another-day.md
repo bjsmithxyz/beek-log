@@ -5,7 +5,6 @@ date: 2023-03-06
 category: "art"
 tags:
   - illustration
-cover: "../../assets/images/anotherday_thumb.png"
 images:
   - src: "../../assets/images/anotherday.png"
     alt: "another day"

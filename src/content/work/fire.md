@@ -7,7 +7,6 @@ tags:
   - painting
   - acrylic
   - gouache
-cover: "../../assets/images/maccas_thumb.png"
 images:
   - src: "../../assets/images/maccas.png"
     alt: "maccas"

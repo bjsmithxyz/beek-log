@@ -35,10 +35,12 @@ A single file can contain multiple `#` sections. List items under `##` letter he
 
 ## Built-in datasets
 
-| Dataset | Contents |
-| --- | --- |
+
+| Dataset      | Contents                                                                         |
+| ------------ | -------------------------------------------------------------------------------- |
 | **phrasing** | ~15,000 entries from *Fifteen Thousand Useful Phrases* (Grenville Kleiser, 1910) |
-| **insults** | Shakespeare insults, grouped by play and type |
+| **insults**  | Shakespeare insults, grouped by type                                             |
+
 
 Add a folder under `data/builtin/` and rebuild — the manifest picks it up automatically.
 

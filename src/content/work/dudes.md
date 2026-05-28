@@ -7,7 +7,6 @@ tags:
   - illustration
   - watercolour
   - acrylics
-cover: "../../assets/images/night_thumb.png"
 images:
   - src: "../../assets/images/night.png"
     alt: "Night"

@@ -7,7 +7,6 @@ tags:
   - illustration
   - digital
   - mspaint
-cover: "../../assets/images/hakimashita_thumb.png"
 images:
   - src: "../../assets/images/hakimashita.png"
     alt: "hakimashita"

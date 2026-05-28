@@ -5,7 +5,6 @@ date: 2022-11-14
 category: "art"
 tags:
   - illustration
-cover: "../../assets/images/redandblue_thumb.png"
 images:
   - src: "../../assets/images/redandblue.png"
     alt: "Red and blue mates"

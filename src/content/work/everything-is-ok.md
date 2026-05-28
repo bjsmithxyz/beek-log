@@ -5,7 +5,6 @@ date: 2019-01-04
 category: "art"
 tags:
   - illustration
-cover: "../../assets/images/littlefella.png"
 images:
   - src: "../../assets/images/club.png"
     alt: "club"
