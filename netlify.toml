@@ -28,8 +28,5 @@
 [images]
   remote_images = []
 
-# SPA-like behavior for client-side routing (optional)
-[[redirects]]
-  from = "/*"
-  to = "/404.html"
-  status = 404
+# 404 handling: Netlify serves /404.html for unmatched routes automatically;
+# an explicit /* redirect breaks dev-server route emulation, so don't add one.

@@ -1,0 +1,168 @@
+---
+import BaseLayout from '../../layouts/BaseLayout.astro';
+import FilmStrip from '../../components/FilmStrip.astro';
+import Lightbox from '../../components/Lightbox.astro';
+import { getCollection, type CollectionEntry } from 'astro:content';
+import { filmStocks } from '../../data/film-stocks';
+
+export async function getStaticPaths() {
+  // drafts render in dev for previewing, never in production builds
+  const rolls = await getCollection('photos', ({ data }) => import.meta.env.DEV || !data.draft);
+  return rolls.map(entry => ({
+    params: { roll: entry.slug },
+    props: { entry },
+  }));
+}
+
+interface Props {
+  entry: CollectionEntry<'photos'>;
+}
+
+const FRAMES_PER_STRIP = 6;
+
+const { entry } = Astro.props;
+const { Content } = await entry.render();
+const { title, stock, date, location, photos } = entry.data;
+const film = filmStocks[stock as keyof typeof filmStocks];
+
+const formattedDate = date.toLocaleDateString('en-US', {
+  year: 'numeric',
+  month: 'long',
+});
+const shortDate = date.toLocaleDateString('en-US', { year: 'numeric', month: 'short' }).toUpperCase();
+
+const strips: (typeof photos)[] = [];
+for (let i = 0; i < photos.length; i += FRAMES_PER_STRIP) {
+  strips.push(photos.slice(i, i + FRAMES_PER_STRIP));
+}
+---
+
+<BaseLayout title={title} description={`${film.name} · ${location.name} — ${photos.length} frames`}>
+  <article class="roll-detail">
+    <div class="container">
+      <a href="/photos" class="back-link">
+        ← photos/
+      </a>
+
+      <header class="article-header">
+        <p class="file-path">photos/{entry.slug}.md</p>
+        <span class="stock-tag" data-type={film.type}>[{film.name}]</span>
+        <h1 class="title">{title}</h1>
+
+        <div class="meta">
+          <time datetime={date.toISOString()}>{formattedDate}</time>
+          <span class="meta-sep" aria-hidden="true">·</span>
+          <span class="location">{location.name}</span>
+          <span class="meta-sep" aria-hidden="true">·</span>
+          <span class="frames-count">{photos.length} frames</span>
+        </div>
+      </header>
+
+      <div class="content prose">
+        <Content />
+      </div>
+
+      <div class="contact-sheet">
+        <h2>contact-sheet/</h2>
+        {strips.map((strip, i) => (
+          <FilmStrip
+            photos={strip}
+            stockName={film.name}
+            stockType={film.type}
+            startFrame={i * FRAMES_PER_STRIP + 1}
+            meta={`${shortDate} · ${location.name.toUpperCase()}`}
+          />
+        ))}
+      </div>
+    </div>
+  </article>
+
+  <Lightbox />
+</BaseLayout>
+
+<style>
+  .roll-detail {
+    padding: var(--space-8) 0 var(--space-16);
+  }
+
+  .back-link {
+    display: inline-block;
+    color: var(--color-text-muted);
+    font-size: var(--font-size-sm);
+    margin-bottom: var(--space-6);
+    transition: color var(--transition-fast);
+  }
+
+  .back-link:hover {
+    color: var(--color-accent-primary);
+  }
+
+  .file-path {
+    font-size: var(--font-size-sm);
+    color: var(--color-text-muted);
+    margin-bottom: var(--space-3);
+  }
+
+  .article-header {
+    margin-bottom: var(--space-6);
+    padding-bottom: var(--space-6);
+    border-bottom: 1px solid var(--color-border);
+  }
+
+  .stock-tag {
+    display: inline-block;
+    font-size: var(--font-size-sm);
+    font-weight: var(--font-weight-medium);
+    color: var(--color-accent-secondary);
+    margin-bottom: var(--space-3);
+  }
+
+  .stock-tag[data-type='bw'] {
+    color: var(--color-text-secondary);
+  }
+
+  .title {
+    font-size: var(--font-size-3xl);
+    font-weight: var(--font-weight-bold);
+    margin-bottom: var(--space-3);
+  }
+
+  .meta {
+    display: flex;
+    align-items: center;
+    flex-wrap: wrap;
+    gap: var(--space-2);
+    color: var(--color-text-muted);
+    font-size: var(--font-size-sm);
+  }
+
+  .meta time {
+    font-variant-numeric: tabular-nums;
+  }
+
+  .content {
+    margin-bottom: var(--space-8);
+  }
+
+  .prose {
+    color: var(--color-text-secondary);
+    line-height: var(--line-height-relaxed);
+  }
+
+  .prose :global(p) {
+    margin-bottom: var(--space-4);
+  }
+
+  .prose :global(a) {
+    color: var(--color-accent-primary);
+    text-decoration: underline;
+    text-underline-offset: 2px;
+  }
+
+  .contact-sheet h2 {
+    font-size: var(--font-size-base);
+    color: var(--color-text-muted);
+    margin-bottom: var(--space-4);
+    font-weight: var(--font-weight-medium);
+  }
+</style>
