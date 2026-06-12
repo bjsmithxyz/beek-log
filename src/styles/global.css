@@ -1,5 +1,4 @@
-/* IBM Plex Mono — brutalist / file-browser UI */
-@import url('https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:ital,wght@0,400;0,500;0,600;1,400&display=swap');
+/* IBM Plex Mono is self-hosted via @fontsource (imported in BaseLayout.astro) */
 
 /* ==========================================
    bjsmith.xyz — Brutalist file browser
