@@ -1,4 +1,5 @@
 import { defineCollection, z } from 'astro:content';
+import { filmStocks } from '../data/film-stocks';
 
 const workCollection = defineCollection({
   type: 'content',
@@ -23,6 +24,31 @@ const workCollection = defineCollection({
   }),
 });
 
+// One file per film roll: src/content/photos/<roll-slug>.md
+// Photos live in src/assets/photos/<roll-slug>/; markdown body = roll notes.
+const photosCollection = defineCollection({
+  type: 'content',
+  schema: ({ image }) => z.object({
+    title: z.string(),
+    stock: z.string().refine((s): s is keyof typeof filmStocks => s in filmStocks, {
+      message: 'unknown film stock slug — add it to src/data/film-stocks.ts',
+    }),
+    date: z.coerce.date(),
+    location: z.object({
+      name: z.string(),
+      lat: z.number().min(-90).max(90),
+      lng: z.number().min(-180).max(180),
+    }),
+    draft: z.boolean().default(false),
+    photos: z.array(z.object({
+      src: image(),
+      alt: z.string(),
+      caption: z.string().optional(),
+    })).min(1),
+  }),
+});
+
 export const collections = {
   work: workCollection,
+  photos: photosCollection,
 };
