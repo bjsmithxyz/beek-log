@@ -4,7 +4,7 @@ import { Image } from 'astro:assets';
 import { getCollection, type CollectionEntry } from 'astro:content';
 
 export async function getStaticPaths() {
-  const work = await getCollection('work');
+  const work = await getCollection('work', ({ data }) => !data.draft);
   return work.map(entry => ({
     params: { slug: entry.slug },
     props: { entry },
@@ -78,12 +78,14 @@ const categoryColors = {
       <!-- Cover Image -->
       {cover && (
         <div class="cover-image">
-          <Image 
-            src={cover} 
+          <Image
+            src={cover}
             alt={title}
             width={1200}
             height={800}
             class="cover"
+            loading="eager"
+            fetchpriority="high"
           />
         </div>
       )}

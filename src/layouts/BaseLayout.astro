@@ -47,7 +47,9 @@ const fullTitle = title === 'bjsmith.xyz' ? title : `${title} | bjsmith.xyz`;
   <meta name="twitter:image" content={new URL(image, Astro.site)} />
   
   <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
-  
+  <link rel="alternate" type="application/rss+xml" title="bjsmith.xyz" href="/rss.xml" />
+  <link rel="sitemap" href="/sitemap-index.xml" />
+
   <ViewTransitions />
 
   <script is:inline>
