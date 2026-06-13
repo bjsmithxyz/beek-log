@@ -1,4 +1,5 @@
 // Pure helpers for the roll-import admin. No I/O, no Astro imports.
+import { parse as parseYaml, stringify as stringifyYaml } from 'yaml';
 
 // Folder convention: "YYYY-MM-DD - <film-stock-slug>-<ISO>"
 // e.g. "2026-06-02 - kodak-portra-400-PT"
@@ -42,4 +43,34 @@ export function deriveSlug({ date, stockSlug, placeName }) {
   const ym = (date || '').slice(0, 7); // YYYY-MM
   const place = slugify((placeName || '').split(',')[0] || '');
   return [ym, stockSlug, place].filter(Boolean).join('-');
+}
+
+function sameLocation(a, b) {
+  return a && b && a.name === b.name && a.lat === b.lat && a.lng === b.lng;
+}
+
+export function buildRollMarkdown({ title, stock, date, location, draft, photos, body = '' }) {
+  const fm = {
+    title,
+    stock,
+    date,
+    location: { name: location.name, lat: location.lat, lng: location.lng },
+  };
+  if (draft) fm.draft = true;
+  fm.photos = photos.map((p) => {
+    const o = { src: p.src, alt: p.alt };
+    if (p.caption) o.caption = p.caption;
+    if (p.location && !sameLocation(p.location, location)) {
+      o.location = { name: p.location.name, lat: p.location.lat, lng: p.location.lng };
+    }
+    return o;
+  });
+  const yaml = stringifyYaml(fm).trimEnd();
+  return `---\n${yaml}\n---\n\n${String(body).trim()}\n`;
+}
+
+export function parseRollMarkdown(text) {
+  const m = text.match(/^---\n([\s\S]*?)\n---\n?([\s\S]*)$/);
+  if (!m) throw new Error('no frontmatter found');
+  return { data: parseYaml(m[1]), body: (m[2] || '').trim() };
 }

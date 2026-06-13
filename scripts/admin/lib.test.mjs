@@ -34,3 +34,45 @@ test('deriveSlug builds YYYY-MM-stock-place', () => {
     '2026-06-kodak-portra-400-lisbon',
   );
 });
+
+import { buildRollMarkdown, parseRollMarkdown } from './lib.mjs';
+
+const roll = {
+  title: 'lisbon in june',
+  stock: 'kodak-portra-400',
+  date: '2026-06-02',
+  location: { name: 'Lisbon, Portugal', lat: 38.7223, lng: -9.1393 },
+  draft: false,
+  body: 'shot on a borrowed camera.',
+  photos: [
+    { src: '../../assets/photos/r/001.jpg', alt: 'tram 28' },
+    { src: '../../assets/photos/r/002.jpg', alt: 'alfama', caption: 'dusk' },
+    {
+      src: '../../assets/photos/r/003.jpg',
+      alt: 'border',
+      location: { name: 'Badajoz, Spain', lat: 38.8794, lng: -6.9707 },
+    },
+  ],
+};
+
+test('buildRollMarkdown omits per-photo location equal to roll default', () => {
+  const md = buildRollMarkdown({
+    ...roll,
+    photos: [{ src: 'x', alt: 'a', location: { ...roll.location } }],
+  });
+  const { data } = parseRollMarkdown(md);
+  assert.equal(data.photos[0].location, undefined);
+});
+
+test('buildRollMarkdown ↔ parseRollMarkdown round-trips overrides and body', () => {
+  const md = buildRollMarkdown(roll);
+  const { data, body } = parseRollMarkdown(md);
+  assert.equal(data.title, 'lisbon in june');
+  assert.equal(data.stock, 'kodak-portra-400');
+  assert.deepEqual(data.location, roll.location);
+  assert.equal(data.photos.length, 3);
+  assert.equal(data.photos[0].location, undefined);
+  assert.equal(data.photos[1].caption, 'dusk');
+  assert.deepEqual(data.photos[2].location, roll.photos[2].location);
+  assert.equal(body, 'shot on a borrowed camera.');
+});
