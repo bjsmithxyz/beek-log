@@ -1,10 +1,12 @@
 // Dev-only local admin server. Binds 127.0.0.1 — never deployed (not part of
 // the Astro build). Start with: npm run admin
 import { createServer } from 'node:http';
-import { readFile } from 'node:fs/promises';
+import { readFile, readdir } from 'node:fs/promises';
 import { fileURLToPath } from 'node:url';
-import { dirname, join } from 'node:path';
+import { basename, dirname, join } from 'node:path';
 import { filmStocks } from '../../src/data/film-stocks.ts';
+import sharp from 'sharp';
+import { parseFolderName } from './lib.mjs';
 
 const __dirname = dirname(fileURLToPath(import.meta.url));
 const repoRoot = process.cwd();
@@ -36,6 +38,37 @@ route('GET', /^\/global\.css$/, async (req, res) => {
 route('GET', /^\/api\/config$/, async (req, res) => {
   const stocks = Object.entries(filmStocks).map(([slug, v]) => ({ slug, name: v.name, type: v.type }));
   send(res, 200, { stocks });
+});
+
+const IMAGE_RE = /\.(jpe?g|png|tiff?|webp)$/i;
+
+async function thumb(path) {
+  const buf = await sharp(path)
+    .rotate()
+    .resize({ width: 220, height: 220, fit: 'inside' })
+    .jpeg({ quality: 60 })
+    .toBuffer();
+  return `data:image/jpeg;base64,${buf.toString('base64')}`;
+}
+
+route('POST', /^\/api\/scan$/, async (req, res) => {
+  const { folder } = await readBody(req);
+  if (!folder) return send(res, 400, { error: 'folder required' });
+  let names;
+  try {
+    names = (await readdir(folder)).filter((f) => IMAGE_RE.test(f)).sort();
+  } catch {
+    return send(res, 400, { error: `cannot read folder: ${folder}` });
+  }
+  if (names.length === 0) return send(res, 400, { error: 'no images found in folder' });
+
+  const frames = [];
+  for (const name of names) {
+    const srcPath = join(folder, name);
+    frames.push({ srcPath, thumb: await thumb(srcPath) });
+  }
+  const parsed = parseFolderName(basename(folder), filmStocks);
+  send(res, 200, { parsed, frames });
 });
 
 const server = createServer(async (req, res) => {
