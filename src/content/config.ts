@@ -26,6 +26,12 @@ const workCollection = defineCollection({
 
 // One file per film roll: src/content/photos/<roll-slug>.md
 // Photos live in src/assets/photos/<roll-slug>/; markdown body = roll notes.
+const locationSchema = z.object({
+  name: z.string(),
+  lat: z.number().min(-90).max(90),
+  lng: z.number().min(-180).max(180),
+});
+
 const photosCollection = defineCollection({
   type: 'content',
   schema: ({ image }) => z.object({
@@ -34,16 +40,13 @@ const photosCollection = defineCollection({
       message: 'unknown film stock slug — add it to src/data/film-stocks.ts',
     }),
     date: z.coerce.date(),
-    location: z.object({
-      name: z.string(),
-      lat: z.number().min(-90).max(90),
-      lng: z.number().min(-180).max(180),
-    }),
+    location: locationSchema,
     draft: z.boolean().default(false),
     photos: z.array(z.object({
       src: image(),
       alt: z.string(),
       caption: z.string().optional(),
+      location: locationSchema.optional(),
     })).min(1),
   }),
 });
