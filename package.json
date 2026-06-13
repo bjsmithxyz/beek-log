@@ -7,7 +7,7 @@
     "build": "astro build",
     "preview": "astro preview",
     "astro": "astro",
-    "admin": "node scripts/admin/server.mjs",
+    "admin": "node --disable-warning=ExperimentalWarning scripts/admin/server.mjs",
     "test": "node --test"
   },
   "dependencies": {
