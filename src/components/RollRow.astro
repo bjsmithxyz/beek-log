@@ -1,6 +1,7 @@
 ---
 import type { CollectionEntry } from 'astro:content';
 import { filmStocks } from '../data/film-stocks';
+import { effectiveLocations } from '../data/locations';
 
 interface Props {
   roll: CollectionEntry<'photos'>;
@@ -9,6 +10,8 @@ interface Props {
 const { roll } = Astro.props;
 const { title, stock, date, location, photos } = roll.data;
 const film = filmStocks[stock as keyof typeof filmStocks];
+const locCount = effectiveLocations(roll).length;
+const locLabel = locCount > 1 ? `${location.name} +${locCount - 1}` : location.name;
 
 const formattedDate = date.toLocaleDateString('en-CA', {
   year: 'numeric',
@@ -27,7 +30,7 @@ const year = date.getFullYear().toString();
   <span class="row-stock" data-type={film.type}>[{film.name}]</span>
   <span class="row-date">{formattedDate}</span>
   <span class="row-title">{title}</span>
-  <span class="row-location">{location.name}</span>
+  <span class="row-location">{locLabel}</span>
   <span class="row-frames">{photos.length}f</span>
   <span class="row-arrow" aria-hidden="true">→</span>
 </a>
