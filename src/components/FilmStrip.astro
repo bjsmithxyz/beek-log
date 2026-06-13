@@ -8,6 +8,7 @@ interface Photo {
   src: ImageMetadata;
   alt: string;
   caption?: string;
+  locName: string;
 }
 
 interface Props {
@@ -15,10 +16,10 @@ interface Props {
   stockName: string;
   stockType: 'color' | 'bw';
   startFrame?: number;
-  meta?: string;
+  shortDate: string;
 }
 
-const { photos, stockName, stockType, startFrame = 1, meta = '' } = Astro.props;
+const { photos, stockName, stockType, startFrame = 1, shortDate } = Astro.props;
 
 // colour negative edge print is orange; B&W rebate text is grey
 const edgeColor = stockType === 'bw' ? 'var(--color-text-secondary)' : 'var(--color-accent-secondary)';
@@ -48,7 +49,7 @@ const fullImages = await Promise.all(
           data-lightbox
           data-full={fullImages[i].src}
           data-caption={p.caption ?? p.alt}
-          data-meta={`${stockName.toUpperCase()} · ${startFrame + i}A${meta ? ` · ${meta}` : ''}`}
+          data-meta={`${stockName.toUpperCase()} · ${startFrame + i}A · ${shortDate} · ${photos[i].locName.toUpperCase()}`}
         />
         <figcaption class="frame-no">
           <span>{startFrame + i}</span>

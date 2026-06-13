@@ -31,9 +31,11 @@ const formattedDate = date.toLocaleDateString('en-US', {
 });
 const shortDate = date.toLocaleDateString('en-US', { year: 'numeric', month: 'short' }).toUpperCase();
 
-const strips: (typeof photos)[] = [];
-for (let i = 0; i < photos.length; i += FRAMES_PER_STRIP) {
-  strips.push(photos.slice(i, i + FRAMES_PER_STRIP));
+const photosWithLoc = photos.map((p) => ({ ...p, locName: p.location?.name ?? location.name }));
+
+const strips: (typeof photosWithLoc)[] = [];
+for (let i = 0; i < photosWithLoc.length; i += FRAMES_PER_STRIP) {
+  strips.push(photosWithLoc.slice(i, i + FRAMES_PER_STRIP));
 }
 ---
 
@@ -70,7 +72,7 @@ for (let i = 0; i < photos.length; i += FRAMES_PER_STRIP) {
             stockName={film.name}
             stockType={film.type}
             startFrame={i * FRAMES_PER_STRIP + 1}
-            meta={`${shortDate} · ${location.name.toUpperCase()}`}
+            shortDate={shortDate}
           />
         ))}
       </div>

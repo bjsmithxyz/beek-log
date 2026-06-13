@@ -1,8 +1,9 @@
 ---
 import BaseLayout from '../../layouts/BaseLayout.astro';
 import RollRow from '../../components/RollRow.astro';
-import WorldMap, { type Pin } from '../../components/WorldMap.astro';
+import WorldMap from '../../components/WorldMap.astro';
 import { getCollection } from 'astro:content';
+import { effectiveLocations } from '../../data/locations';
 
 // drafts render in dev for previewing, never in production builds
 const rolls = await getCollection('photos', ({ data }) => import.meta.env.DEV || !data.draft);
@@ -11,15 +12,15 @@ const sortedRolls = rolls.sort((a, b) => b.data.date.valueOf() - a.data.date.val
 const totalFrames = sortedRolls.reduce((sum, r) => sum + r.data.photos.length, 0);
 const years = [...new Set(sortedRolls.map((r) => r.data.date.getFullYear().toString()))];
 
-// one pin per location, anchored to the most recent roll shot there
-const pinMap = new Map<string, Pin>();
+// one pin per distinct location across all photos; jump to the most recent
+// roll that has a photo there (sortedRolls is date-descending)
+const pinMap = new Map();
 for (const roll of sortedRolls) {
-  const { name, lat, lng } = roll.data.location;
-  const existing = pinMap.get(name);
-  if (existing) {
-    existing.count += 1;
-  } else {
-    pinMap.set(name, { slug: roll.slug, name, lat, lng, count: 1 });
+  for (const loc of effectiveLocations(roll)) {
+    const key = loc.name.toLowerCase();
+    const existing = pinMap.get(key);
+    if (existing) existing.count += loc.count;
+    else pinMap.set(key, { slug: roll.slug, name: loc.name, lat: loc.lat, lng: loc.lng, count: loc.count });
   }
 }
 const pins = [...pinMap.values()];

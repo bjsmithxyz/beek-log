@@ -28,5 +28,5 @@ photos:
 
 Sample roll with generated placeholder frames — it stays `draft: true` so it
 only renders in `npm run dev`, never in production builds. Import a real roll
-with `node scripts/import-roll.mjs <roll-slug> <scans-dir>` and delete this
-file plus `src/assets/photos/2026-05-portra-400-tokyo/`.
+with `npm run admin` and delete this file plus
+`src/assets/photos/2026-05-portra-400-tokyo/`.

@@ -1,11 +1,15 @@
 ---
 import BaseLayout from '../layouts/BaseLayout.astro';
 import WorkRow from '../components/WorkRow.astro';
+import RollRow from '../components/RollRow.astro';
 import { getCollection } from 'astro:content';
 
 const allWork = await getCollection('work', ({ data }) => !data.draft);
 const sortedWork = allWork.sort((a, b) => b.data.date.valueOf() - a.data.date.valueOf());
 const recentWork = sortedWork.slice(0, 8);
+
+const allRolls = await getCollection('photos', ({ data }) => import.meta.env.DEV || !data.draft);
+const recentRolls = allRolls.sort((a, b) => b.data.date.valueOf() - a.data.date.valueOf()).slice(0, 5);
 ---
 
 <BaseLayout>
@@ -35,6 +39,20 @@ const recentWork = sortedWork.slice(0, 8);
           <div class="dir-list">
             {recentWork.map(work => (
               <WorkRow work={work} showDescription={false} />
+            ))}
+          </div>
+        </section>
+      )}
+
+      {recentRolls.length > 0 && (
+        <section class="recent" aria-labelledby="rolls-heading">
+          <div class="dir-header">
+            <h2 id="rolls-heading" class="dir-path">rolls/</h2>
+            <a href="/photos" class="dir-link">view all →</a>
+          </div>
+          <div class="dir-list">
+            {recentRolls.map(roll => (
+              <RollRow roll={roll} />
             ))}
           </div>
         </section>
@@ -99,6 +117,10 @@ const recentWork = sortedWork.slice(0, 8);
   .nav-cmd:hover {
     color: var(--color-accent-primary);
     padding-left: var(--space-3);
+  }
+
+  .recent + .recent {
+    margin-top: var(--space-10);
   }
 
   .dir-header {

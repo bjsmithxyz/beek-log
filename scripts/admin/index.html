@@ -1,0 +1,107 @@
+<!doctype html>
+<html lang="en" data-theme="dark">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>roll admin</title>
+  <link rel="stylesheet" href="/global.css" />
+  <style>
+    body { padding: 2rem; max-width: 1000px; margin: 0 auto; }
+    h1 { font-size: var(--font-size-2xl); margin-bottom: 1rem; }
+    fieldset { border: 1px solid var(--color-border); padding: 1rem; margin-bottom: 1rem; }
+    legend { color: var(--color-text-muted); padding: 0 .5rem; }
+    label { display: block; font-size: var(--font-size-sm); color: var(--color-text-secondary); margin: .5rem 0 .15rem; }
+    input, select, textarea, button {
+      font-family: inherit; font-size: var(--font-size-sm);
+      background: var(--color-bg-secondary); color: var(--color-text-primary);
+      border: 1px solid var(--color-border); padding: .4rem .5rem;
+    }
+    input, textarea, select { width: 100%; }
+    button { cursor: pointer; width: auto; }
+    button.primary { border-color: var(--color-accent-primary); color: var(--color-accent-primary); }
+    .row { display: flex; gap: .5rem; }
+    .row > * { flex: 1; }
+    .frames { display: flex; flex-wrap: wrap; gap: .5rem; }
+    .frame {
+      width: 150px; border: 1px solid var(--color-border); background: var(--color-bg-secondary);
+      padding: .35rem; cursor: grab;
+    }
+    .frame.dragover { border-color: var(--color-accent-primary); }
+    .frame img { width: 100%; aspect-ratio: 3/2; object-fit: cover; display: block; }
+    .frame .n { color: var(--color-accent-secondary); font-size: var(--font-size-xs); }
+    .frame .loc { color: var(--color-text-muted); font-size: var(--font-size-xs);
+      overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+    .frame input { font-size: var(--font-size-xs); padding: .2rem; margin-top: .2rem; }
+    .geo-results { list-style: none; padding: 0; margin: .25rem 0; }
+    .geo-results li { padding: .3rem; border: 1px solid var(--color-border); cursor: pointer; font-size: var(--font-size-xs); }
+    .geo-results li:hover { border-color: var(--color-accent-primary); }
+    #log { white-space: pre-wrap; font-size: var(--font-size-xs); color: var(--color-text-secondary);
+      border: 1px solid var(--color-border); padding: .75rem; min-height: 3rem; }
+    .muted { color: var(--color-text-muted); font-size: var(--font-size-xs); }
+  </style>
+</head>
+<body>
+  <h1>~/beek/roll-admin</h1>
+
+  <fieldset>
+    <legend>mode</legend>
+    <div class="row">
+      <div>
+        <label>edit existing roll</label>
+        <select id="roll-picker"><option value="">— new roll —</option></select>
+      </div>
+      <div>
+        <label>source folder (new frames)</label>
+        <input id="folder" placeholder="/home/beek/scans/2026-06-02 - kodak-portra-400-PT" />
+      </div>
+      <div style="flex:0 0 auto; align-self:end;">
+        <button id="scan">scan / add frames</button>
+      </div>
+    </div>
+  </fieldset>
+
+  <fieldset>
+    <legend>frames — drag to reorder</legend>
+    <div style="margin-bottom:.5rem;">
+      <button id="bulk-loc">set location for selected ☑</button>
+      <span class="muted">tip: setting one frame's location fills forward to following frames.</span>
+    </div>
+    <div class="frames" id="frames"></div>
+  </fieldset>
+
+  <fieldset>
+    <legend>roll metadata</legend>
+    <div class="row">
+      <div><label>title</label><input id="title" /></div>
+      <div><label>stock</label><select id="stock"></select></div>
+      <div><label>date</label><input id="date" type="date" /></div>
+    </div>
+    <label>primary location — search</label>
+    <div class="row">
+      <input id="loc-search" placeholder="Lisbon, Portugal" />
+      <button id="loc-go" style="flex:0 0 auto;">search</button>
+    </div>
+    <ul class="geo-results" id="loc-results"></ul>
+    <div class="row">
+      <div><label>location name</label><input id="loc-name" /></div>
+      <div><label>lat</label><input id="loc-lat" type="number" step="any" /></div>
+      <div><label>lng</label><input id="loc-lng" type="number" step="any" /></div>
+    </div>
+    <div class="row">
+      <div><label>slug</label><input id="slug" /></div>
+      <div style="flex:0 0 auto; align-self:end;"><label>draft</label><input id="draft" type="checkbox" style="width:auto;" /></div>
+    </div>
+    <label>roll notes (markdown body)</label>
+    <textarea id="body" rows="3"></textarea>
+  </fieldset>
+
+  <fieldset>
+    <legend>publish</legend>
+    <button id="write">write roll</button>
+    <button id="publish" class="primary">write + commit + push</button>
+    <div id="log" style="margin-top:.5rem;"></div>
+  </fieldset>
+
+  <script src="/app.js" type="module"></script>
+</body>
+</html>
