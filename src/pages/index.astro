@@ -119,6 +119,10 @@ const recentRolls = allRolls.sort((a, b) => b.data.date.valueOf() - a.data.date.
     padding-left: var(--space-3);
   }
 
+  .recent + .recent {
+    margin-top: var(--space-10);
+  }
+
   .dir-header {
     display: flex;
     align-items: baseline;
