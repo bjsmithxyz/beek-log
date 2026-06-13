@@ -127,16 +127,35 @@ $('loc-go').onclick = async () => {
   });
 };
 
+// Cyrillic → Latin so non-Latin place/stock names produce valid slugs
+// (the server requires slugs to match ^[a-z0-9-]+$).
+const CYRILLIC = {
+  а: 'a', б: 'b', в: 'v', г: 'g', д: 'd', е: 'e', ё: 'yo', ж: 'zh', з: 'z',
+  и: 'i', й: 'y', к: 'k', л: 'l', м: 'm', н: 'n', о: 'o', п: 'p', р: 'r',
+  с: 's', т: 't', у: 'u', ф: 'f', х: 'kh', ц: 'ts', ч: 'ch', ш: 'sh',
+  щ: 'shch', ъ: '', ы: 'y', ь: '', э: 'e', ю: 'yu', я: 'ya', і: 'i', ї: 'yi',
+  є: 'ye', ґ: 'g', ў: 'w',
+};
+function slugify(s) {
+  return String(s)
+    .toLowerCase()
+    .replace(/[Ѐ-ӿ]/g, (c) => CYRILLIC[c] ?? '')
+    .normalize('NFKD').replace(/[̀-ͯ]/g, '')
+    .replace(/[^a-z0-9]+/g, '-')
+    .replace(/^-+|-+$/g, '');
+}
+
 function refreshSlug() {
   if (mode === 'edit') return;
   const date = $('date').value, stock = $('stock').value;
   const place = ($('loc-name').value || '').split(',')[0];
   const ym = date.slice(0, 7);
-  const slugPlace = place.toLowerCase().normalize('NFKD').replace(/[^a-z0-9]+/g, '-').replace(/^-+|-+$/g, '');
-  $('slug').value = [ym, stock, slugPlace].filter(Boolean).join('-');
+  $('slug').value = [ym, stock, slugify(place)].filter(Boolean).join('-');
 }
 $('date').onchange = refreshSlug;
 $('stock').onchange = refreshSlug;
+// sanitise a hand-edited slug when the field loses focus
+$('slug').onchange = (e) => { e.target.value = slugify(e.target.value); };
 
 $('roll-picker').onchange = async (e) => {
   const slug = e.target.value;
@@ -161,7 +180,7 @@ $('roll-picker').onchange = async (e) => {
 
 function payload(commit) {
   return {
-    mode, commit, slug: $('slug').value.trim(),
+    mode, commit, slug: slugify($('slug').value),
     title: $('title').value.trim(), stock: $('stock').value, date: $('date').value,
     location: rollLoc(), draft: $('draft').checked, bodyText: $('body').value,
     frames: frames.map((f) => ({
