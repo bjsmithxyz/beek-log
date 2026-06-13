@@ -71,6 +71,24 @@ route('POST', /^\/api\/scan$/, async (req, res) => {
   send(res, 200, { parsed, frames });
 });
 
+route('POST', /^\/api\/geocode$/, async (req, res) => {
+  const { query } = await readBody(req);
+  if (!query || !query.trim()) return send(res, 400, { error: 'query required' });
+  const url = `https://nominatim.openstreetmap.org/search?format=jsonv2&limit=5&q=${encodeURIComponent(query)}`;
+  try {
+    const r = await fetch(url, { headers: { 'User-Agent': 'beek-log-admin (local dev tool)' } });
+    if (!r.ok) return send(res, 502, { error: `geocoder ${r.status}` });
+    const data = await r.json();
+    send(res, 200, data.map((d) => ({
+      name: d.display_name,
+      lat: Number(d.lat),
+      lng: Number(d.lon),
+    })));
+  } catch (err) {
+    send(res, 502, { error: `geocode failed: ${err.message}` });
+  }
+});
+
 const server = createServer(async (req, res) => {
   try {
     const url = new URL(req.url, `http://${HOST}:${PORT}`);
