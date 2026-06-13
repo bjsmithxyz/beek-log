@@ -23,6 +23,8 @@ homepage in a dedicated `rolls/` list.
 - Derive date, film stock, and country from a folder named
   `YYYY-MM-DD - <film-stock>-<ISO>`; everything else entered in the form.
 - Place-name search → automatic lat/lng (free, keyless), manual fallback.
+- **Per-photo location**: a roll can span multiple places (e.g. China then
+  Hong Kong) and each shows as its own pin on the map.
 - One action writes files and commits + pushes (with a confirm step).
 - Recent rolls listed on the homepage, each line linking to its roll page.
 - No production surface area: the tool can never be deployed.
@@ -61,6 +63,36 @@ scripts/admin/lib.test.mjs   # node:test unit tests for lib.mjs
 `scripts/import-roll.mjs` is removed (superseded). README updated to document
 `npm run admin`.
 
+## Content model change (per-photo location)
+
+`src/content/config.ts` photos collection gains an **optional per-photo
+location override**; the existing roll-level `location` stays **required** and
+acts as the primary/default:
+
+```ts
+const locationSchema = z.object({
+  name: z.string(),
+  lat: z.number().min(-90).max(90),
+  lng: z.number().min(-180).max(180),
+});
+
+// roll-level (unchanged, required) — the roll's primary location + default
+location: locationSchema,
+
+photos: z.array(z.object({
+  src: image(),
+  alt: z.string(),
+  caption: z.string().optional(),
+  location: locationSchema.optional(),   // NEW: overrides roll default
+})).min(1),
+```
+
+**Effective location** of a photo = `photo.location ?? roll.location`. This is
+backward compatible: the existing sample roll (roll location, no overrides) is
+unaffected. A small helper `effectiveLocations(roll)` is added (in a shared
+module importable by the Astro pages, e.g. `src/data/locations.ts`) and used by
+the map and roll views.
+
 ## Components
 
 ### server.mjs — endpoints
@@ -70,7 +102,7 @@ scripts/admin/lib.test.mjs   # node:test unit tests for lib.mjs
   by reading `src/content/photos/*.md`. Powers the edit picker.
 - `GET /api/roll/:slug` → returns one roll's parsed frontmatter + body + the
   ordered existing frames as base64 thumbnails (read from
-  `src/assets/photos/<slug>/`).
+  `src/assets/photos/<slug>/`), including each frame's per-photo location override.
 - `POST /api/scan` `{folder}` → reads image files in the folder, returns
   `{ parsed, frames: [{ srcPath, thumb }] }` where `parsed` is the
   folder-name derivation and `thumb` is an in-memory ~200px base64 JPEG.
@@ -81,10 +113,15 @@ scripts/admin/lib.test.mjs   # node:test unit tests for lib.mjs
 - `POST /api/publish` → see Save logic. Body:
   ```
   { mode: 'create' | 'edit', slug, title, stock, date,
-    location: { name, lat, lng }, draft,
-    frames: [ { srcPath } | { existing: 3 }, alt, caption? ],
+    location: { name, lat, lng },            // roll primary/default
+    draft,
+    frames: [ { srcPath } | { existing: 3 },
+              alt, caption?,
+              location?: { name, lat, lng } ],  // per-photo override
     commit: boolean }
   ```
+  A frame's `location` is omitted when it equals the roll default (kept out of
+  the `.md` to avoid noise).
 
 ### index.html — UI
 
@@ -92,12 +129,20 @@ Landing offers **New roll** or **Edit roll** (dropdown from `/api/rolls`).
 
 Shared editor view:
 - Folder input + **Scan** (create mode) / **Add frames** (edit mode).
-- Thumbnail grid, **drag to reorder** (HTML5 drag-and-drop), per-frame `alt`
+- Thumbnail grid, **drag to reorder** (HTML5 drag-and-drop). Per frame: `alt`
   (pre-filled `"<location> — frame N"`, editable; satisfies the schema's
-  required alt) and optional `caption`, plus a remove (×) per frame.
+  required alt), optional `caption`, a **location** label, a checkbox for
+  multi-select, and a remove (×).
 - Metadata form: title; **stock** dropdown (from `film-stocks.ts`); date
-  (defaults today or folder-derived); **location** search box → results list →
-  pick fills name + lat/lng (manual lat/lng inputs as fallback); `draft` toggle.
+  (defaults today or folder-derived); roll **primary location** search box →
+  results list → pick fills name + lat/lng (manual lat/lng inputs as fallback);
+  `draft` toggle.
+- **Per-photo location (auto-tagging)**: every frame defaults to the roll
+  primary location. A per-frame "set location" control opens the same place
+  search; choosing a place **fills forward** to all following frames until the
+  next explicit change. A "set location for selected" action bulk-assigns the
+  multi-selected frames. Each thumbnail shows its effective location label so
+  multi-place rolls are visible at a glance.
 - **Slug** field auto-derived `YYYY-MM-<stock>-<place>`, editable, validated
   `^[a-z0-9-]+$`.
 - Buttons: **Write roll** (commit: false) and **Write + commit + push**
@@ -118,7 +163,14 @@ Shared editor view:
 - `orderFrames(frames)` → final ordered list with `001…` numbering metadata.
 - `buildFrontmatter({ ... })` / `parseRollFile(text)` → serialize and parse the
   `---` fenced YAML + markdown body (using `yaml`), round-tripping against the
-  zod schema's shape (stock, date, location{name,lat,lng}, draft, photos[]).
+  zod schema's shape (stock, date, location{name,lat,lng}, draft, photos[]
+  with optional per-photo location). `buildFrontmatter` omits a frame's
+  `location` when it equals the roll default.
+- `effectiveLocations(roll)` → de-duplicated list of `{ name, lat, lng, count }`
+  across the roll's photos (using `photo.location ?? roll.location`). Lives in a
+  shared module (`src/data/locations.ts`) so the Astro map/index/roll pages
+  import the same logic. Locations are keyed by name (case-insensitive) so
+  "Hong Kong" frames collapse to one entry.
 
 ## Folder-name derivation
 
@@ -132,8 +184,9 @@ country. The user still picks the precise place (which sets lat/lng).
 `/api/publish` resolves the final ordered frame list, then:
 
 1. Validate: slug matches `^[a-z0-9-]+$`; stock exists in `film-stocks.ts`;
-   date is valid; location has name + numeric lat/lng; ≥1 frame; every frame
-   has non-empty alt.
+   date is valid; roll location has name + numeric lat/lng; ≥1 frame; every
+   frame has non-empty alt; any per-photo location override has a valid
+   name + numeric lat/lng.
 2. Build the frame directory in a temp path `src/assets/photos/.tmp-<slug>/`:
    for each frame in order, **new** frames (`srcPath`) are sharp-processed
    (auto-orient, ≤2048px, JPEG q80, mozjpeg, metadata stripped) and **existing**
@@ -155,10 +208,23 @@ lossless copies of unchanged frames avoid re-encode quality loss.
 
 `src/pages/index.astro` additionally loads
 `getCollection('photos', ({ data }) => !data.draft)`, sorts by date desc, takes
-the most recent few (5), and renders a new `rolls/` directory list below
+the most recent **5**, and renders a new `rolls/` directory list below
 `recent/`, reusing the existing `RollRow.astro` (already links to
 `/photos/<slug>`), with a "view all →" link to `/photos`. Section hidden when
-there are no published rolls.
+there are no published rolls. A roll's row shows its primary location name,
+suffixed `+N` when `effectiveLocations(roll)` finds additional distinct places.
+
+## Map and roll views (per-photo location)
+
+- `src/pages/photos/index.astro` builds map pins from
+  `effectiveLocations(roll)` across all rolls instead of one pin per roll.
+  Pins are de-duplicated by location name; the tooltip shows the location name
+  and total photo count there; clicking jumps to the most recent roll that has
+  a photo at that location (`#roll-<slug>`, unchanged anchor behaviour).
+- `src/pages/photos/[roll].astro` lightbox `data-meta` shows each frame's
+  **effective** location (override or roll default), so a China/Hong-Kong roll
+  reads correctly frame to frame. `WorldMap.astro` pin props are unchanged in
+  shape; only the index page's aggregation changes.
 
 ## Error handling
 
@@ -186,11 +252,14 @@ there are no published rolls.
 
 - `lib.test.mjs` (`node:test`): `parseFolderName` (happy path, multi-token
   stock, missing/garbled name, lowercase iso, unknown stock), `deriveSlug`,
-  `orderFrames`, and `buildFrontmatter`↔`parseRollFile` round-trip whose output
-  parses against the photos zod schema.
+  `orderFrames`, `effectiveLocations` (single location, override fill,
+  de-dup by name), and `buildFrontmatter`↔`parseRollFile` round-trip (including
+  per-photo location overrides, and omission when equal to the roll default)
+  whose output parses against the photos zod schema.
 - Smoke test: `scan` a fixture folder, `publish` with `commit:false` into a temp
   repo path, assert frames written `001…` in order and the `.md` parses; then an
-  edit round (reorder + add + remove) and assert renumbering.
+  edit round (reorder + add + remove + a per-photo location override) and assert
+  renumbering and that the override survives the round-trip.
 - Manual: `npm run admin`, create the sample roll, edit it, confirm the homepage
   `rolls/` list and `/photos` map/listing update after `npm run dev`.
 
@@ -198,7 +267,17 @@ there are no published rolls.
 
 - Runtime: unchanged (no new deps).
 - Dev: add `yaml` (explicit; already in tree).
-- Removed: `scripts/import-roll.mjs`.
+
+## Cleanup (remove superseded artefacts)
+
+- Remove `scripts/import-roll.mjs` (replaced by the admin).
+- Update README's "Adding a Roll of Film" section to document `npm run admin`
+  (create + edit, folder-name convention, per-photo location) and drop the old
+  manual `import-roll.mjs` instructions.
+- Remove any now-dead references to the old flow; keep
+  `scripts/compress-images.mjs` and `generate-*` scripts (still used).
+- The draft sample roll `2026-05-portra-400-tokyo` is retained as a dev fixture
+  (useful for exercising edit mode); remove once a real roll exists.
 
 ## Deferred (not in this work)
 
