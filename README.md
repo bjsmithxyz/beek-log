@@ -61,52 +61,37 @@ liveUrl: "https://example.com"
 ---
 ```
 
-### Adding a Roll of Film
+### Adding or Editing a Roll of Film
 
 Photography lives at `/photos` as one page per developed roll, rendered as a
-contact sheet (negative strips with film-edge markings). Shoot locations are
-pinned on the dot-matrix world map on the photos index.
+contact sheet. Rolls are managed through a local, dev-only admin app — it never
+deploys (it is not part of the Astro build).
 
-1. **Import the scans** (resizes to ≤2048px JPEG q80, strips GPS metadata,
-   numbers frames `001.jpg`, `002.jpg`, …):
+```sh
+npm run admin   # opens http://127.0.0.1:4322
+```
 
-   ```sh
-   node scripts/import-roll.mjs <roll-slug> <path-to-scans>
-   # e.g. node scripts/import-roll.mjs 2026-06-gold-200-lisbon ~/scans/lisbon
-   ```
+**Create a roll:**
 
-   Slug convention: `YYYY-MM-<stock>-<place>`. The script prints a ready-made
-   frontmatter skeleton when it finishes.
+1. Name your scans folder `YYYY-MM-DD - <film-stock-slug>-<ISO>` (e.g.
+   `2026-06-02 - kodak-portra-400-PT`). The admin derives the date, film stock,
+   and country from it; anything that doesn't match is left for manual entry.
+2. Paste the folder path and **scan** — thumbnails appear.
+3. **Drag** thumbnails to set frame order; edit each frame's alt/caption.
+4. Search the **primary location** to fill lat/lng (or type them).
+5. **Per-photo location:** if a roll spans places (e.g. China then Hong Kong),
+   set a frame's location — it fills forward to following frames until the next
+   change; or multi-select frames and bulk-assign. Each location becomes its own
+   map pin.
+6. **Write + commit + push** to publish (Netlify deploys on push), or **write
+   roll** to only write files and commit yourself.
 
-2. **Create the roll file** at `src/content/photos/<roll-slug>.md`:
+**Edit a roll:** pick it from the edit dropdown — frames and metadata load;
+reorder, relabel, add frames (scan another folder), remove frames, or change
+locations, then publish again.
 
-   ```markdown
-   ---
-   title: lisbon in june
-   stock: kodak-gold-200        # slug from src/data/film-stocks.ts
-   date: 2026-06-02
-   location:
-     name: Lisbon, Portugal
-     lat: 38.7223
-     lng: -9.1393
-   photos:
-     - src: ../../assets/photos/2026-06-gold-200-lisbon/001.jpg
-       alt: tram 28 climbing alfama
-     - src: ../../assets/photos/2026-06-gold-200-lisbon/002.jpg
-       alt: miradouro at dusk
-       caption: optional nicer caption for the lightbox
-   ---
-
-   Optional roll notes — camera, what went wrong, what went right.
-   ```
-
-3. **Shooting a new film stock?** Add it to `src/data/film-stocks.ts` first.
-   The `type` field (`color` | `bw`) sets the edge-marking colour on the
-   contact sheet: orange for colour negative, grey for B&W rebate.
-
-The map pin is placed from `location.lat`/`lng` (equirectangular projection),
-and clicking it jumps to that roll in the list. Set `draft: true` while a
-roll is work-in-progress.
+**New film stock?** Add it to `src/data/film-stocks.ts` first (its `type`,
+`color` or `bw`, sets the contact-sheet edge-marking colour).
 
 ### Images
 
@@ -128,7 +113,8 @@ roll is work-in-progress.
 | `npm run build` | Build your production site to `./dist/` |
 | `npm run preview` | Preview your build locally |
 | `npm run astro ...` | Run Astro CLI commands |
-| `node scripts/import-roll.mjs <slug> <dir>` | Import a developed film roll |
+| `npm run admin` | Local roll-import admin at `127.0.0.1:4322` (create/edit rolls) |
+| `npm test` | Run the unit test suite |
 | `node scripts/compress-images.mjs [dir]` | Compress source images in place |
 
 ## Deployment
