@@ -6,7 +6,7 @@ import { fileURLToPath } from 'node:url';
 import { basename, dirname, join } from 'node:path';
 import { filmStocks } from '../../src/data/film-stocks.ts';
 import sharp from 'sharp';
-import { parseFolderName } from './lib.mjs';
+import { parseFolderName, parseRollMarkdown } from './lib.mjs';
 
 const __dirname = dirname(fileURLToPath(import.meta.url));
 const repoRoot = process.cwd();
@@ -87,6 +87,56 @@ route('POST', /^\/api\/geocode$/, async (req, res) => {
   } catch (err) {
     send(res, 502, { error: `geocode failed: ${err.message}` });
   }
+});
+
+const CONTENT_DIR = join(repoRoot, 'src/content/photos');
+const PHOTOS_DIR = join(repoRoot, 'src/assets/photos');
+
+route('GET', /^\/api\/rolls$/, async (req, res) => {
+  let files = [];
+  try {
+    files = (await readdir(CONTENT_DIR)).filter((f) => f.endsWith('.md'));
+  } catch { /* no rolls yet */ }
+  const rolls = [];
+  for (const file of files) {
+    const slug = file.replace(/\.md$/, '');
+    const { data } = parseRollMarkdown(await readFile(join(CONTENT_DIR, file), 'utf8'));
+    rolls.push({
+      slug, title: data.title, stock: data.stock, date: data.date,
+      frameCount: data.photos.length, draft: !!data.draft,
+    });
+  }
+  rolls.sort((a, b) => String(b.date).localeCompare(String(a.date)));
+  send(res, 200, rolls);
+});
+
+route('GET', /^\/api\/roll\/([a-z0-9-]+)$/, async (req, res) => {
+  const slug = req.params[1];
+  let text;
+  try {
+    text = await readFile(join(CONTENT_DIR, `${slug}.md`), 'utf8');
+  } catch {
+    return send(res, 404, { error: `no roll ${slug}` });
+  }
+  const { data, body } = parseRollMarkdown(text);
+  const frames = [];
+  for (let i = 0; i < data.photos.length; i++) {
+    const p = data.photos[i];
+    const filePath = join(PHOTOS_DIR, slug, `${String(i + 1).padStart(3, '0')}.jpg`);
+    frames.push({
+      existing: i + 1,
+      thumb: await thumb(filePath),
+      alt: p.alt,
+      caption: p.caption ?? '',
+      location: p.location ?? null,
+    });
+  }
+  send(res, 200, {
+    slug,
+    meta: { title: data.title, stock: data.stock, date: String(data.date).slice(0, 10), location: data.location, draft: !!data.draft },
+    body,
+    frames,
+  });
 });
 
 const server = createServer(async (req, res) => {
