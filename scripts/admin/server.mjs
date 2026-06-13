@@ -7,6 +7,7 @@ import { basename, dirname, join } from 'node:path';
 import { filmStocks } from '../../src/data/film-stocks.ts';
 import sharp from 'sharp';
 import { parseFolderName, parseRollMarkdown } from './lib.mjs';
+import { writeRollFiles, gitPublish } from './publish.mjs';
 
 const __dirname = dirname(fileURLToPath(import.meta.url));
 const repoRoot = process.cwd();
@@ -137,6 +138,53 @@ route('GET', /^\/api\/roll\/([a-z0-9-]+)$/, async (req, res) => {
     body,
     frames,
   });
+});
+
+route('GET', /^\/app\.js$/, async (req, res) => {
+  send(res, 200, await readFile(join(__dirname, 'app.js')), 'text/javascript');
+});
+
+route('POST', /^\/api\/publish$/, async (req, res) => {
+  const body = await readBody(req);
+  const { slug, title, stock, date, location, draft, frames, commit, bodyText = '' } = body;
+
+  const errors = [];
+  if (!/^[a-z0-9-]+$/.test(slug || '')) errors.push('slug must match [a-z0-9-]');
+  if (!(stock in filmStocks)) errors.push(`unknown stock: ${stock}`);
+  if (!/^\d{4}-\d{2}-\d{2}$/.test(date || '')) errors.push('date must be YYYY-MM-DD');
+  if (!location || !location.name || !Number.isFinite(location.lat) || !Number.isFinite(location.lng)) {
+    errors.push('roll location needs name + numeric lat/lng');
+  }
+  if (!Array.isArray(frames) || frames.length === 0) errors.push('at least one frame required');
+  (frames || []).forEach((f, i) => {
+    if (!f.alt || !f.alt.trim()) errors.push(`frame ${i + 1} needs alt text`);
+    if (f.location && (!f.location.name || !Number.isFinite(f.location.lat) || !Number.isFinite(f.location.lng))) {
+      errors.push(`frame ${i + 1} location invalid`);
+    }
+  });
+  if (errors.length) return send(res, 400, { error: errors.join('; ') });
+
+  const log = [];
+  const written = await writeRollFiles({
+    repoRoot, slug, body: bodyText,
+    meta: { title, stock, date, location, draft },
+    frames,
+  });
+  log.push(`wrote ${written.frameCount} frames → ${written.photosDir}`);
+  log.push(`wrote ${written.contentFile}`);
+
+  let committed = false;
+  if (commit) {
+    const message = `${body.mode === 'edit' ? 'Update' : 'Add'} ${title} roll (${filmStocks[stock].name})`;
+    const gitLog = await gitPublish({
+      repoRoot,
+      paths: [written.photosDir, written.contentFile],
+      message,
+    });
+    log.push(...gitLog);
+    committed = true;
+  }
+  send(res, 200, { ok: true, committed, log });
 });
 
 const server = createServer(async (req, res) => {
