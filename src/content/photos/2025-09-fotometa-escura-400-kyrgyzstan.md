@@ -3,50 +3,66 @@ title: Кыргызстан - Song-Köl Lake
 stock: fotometa-escura-400
 date: 2025-09-06
 location:
-  name: Kyrgyzstan
-  lat: 41.5089324
-  lng: 74.724091
+  name: Song-Köl Lake, Кочкор району, Кыргызстан
+  lat: 41.8937437
+  lng: 75.2013968
 photos:
   - src: ../../assets/photos/2025-09-fotometa-escura-400-kyrgyzstan/001.jpg
-    alt: Кыргызстан — frame 1
+    alt: frame 1
+    caption: Bishkek
+    location:
+      name: Бишкек шаары, Кыргызстан
+      lat: 42.8761424
+      lng: 74.6036724
   - src: ../../assets/photos/2025-09-fotometa-escura-400-kyrgyzstan/002.jpg
-    alt: Кыргызстан — frame 2
+    alt: frame 2
+    caption: On the way to Song-Köl
   - src: ../../assets/photos/2025-09-fotometa-escura-400-kyrgyzstan/003.jpg
-    alt: Кыргызстан — frame 3
+    alt: frame 3
   - src: ../../assets/photos/2025-09-fotometa-escura-400-kyrgyzstan/004.jpg
-    alt: Кыргызстан — frame 4
+    alt: frame 4
+    caption: Domes by Song-Köl lake.
   - src: ../../assets/photos/2025-09-fotometa-escura-400-kyrgyzstan/005.jpg
-    alt: Кыргызстан — frame 5
+    alt: frame 5
+    caption: Wild horses.
   - src: ../../assets/photos/2025-09-fotometa-escura-400-kyrgyzstan/006.jpg
-    alt: Кыргызстан — frame 6
+    alt: frame 6
+    caption: Wild horses.
   - src: ../../assets/photos/2025-09-fotometa-escura-400-kyrgyzstan/007.jpg
-    alt: Кыргызстан — frame 7
+    alt: frame 7
   - src: ../../assets/photos/2025-09-fotometa-escura-400-kyrgyzstan/008.jpg
-    alt: Кыргызстан — frame 8
+    alt: frame 8
+    caption: A horse as seen from inside our sleeping yurt.
   - src: ../../assets/photos/2025-09-fotometa-escura-400-kyrgyzstan/009.jpg
-    alt: Кыргызстан — frame 9
+    alt: frame 9
   - src: ../../assets/photos/2025-09-fotometa-escura-400-kyrgyzstan/010.jpg
-    alt: Кыргызстан — frame 10
+    alt: frame 10
+    caption: One of our guides, who also owned all of the horses which apparently
+      made him a rich man.
   - src: ../../assets/photos/2025-09-fotometa-escura-400-kyrgyzstan/011.jpg
-    alt: Кыргызстан — frame 11
+    alt: frame 11
   - src: ../../assets/photos/2025-09-fotometa-escura-400-kyrgyzstan/012.jpg
-    alt: Кыргызстан — frame 12
+    alt: frame 12
   - src: ../../assets/photos/2025-09-fotometa-escura-400-kyrgyzstan/013.jpg
-    alt: Кыргызстан — frame 13
+    alt: frame 13
   - src: ../../assets/photos/2025-09-fotometa-escura-400-kyrgyzstan/014.jpg
-    alt: Кыргызстан — frame 14
+    alt: frame 14
   - src: ../../assets/photos/2025-09-fotometa-escura-400-kyrgyzstan/015.jpg
-    alt: Кыргызстан — frame 15
+    alt: frame 15
   - src: ../../assets/photos/2025-09-fotometa-escura-400-kyrgyzstan/016.jpg
-    alt: Кыргызстан — frame 16
+    alt: frame 16
   - src: ../../assets/photos/2025-09-fotometa-escura-400-kyrgyzstan/017.jpg
-    alt: Кыргызстан — frame 17
+    alt: frame 17
+    caption: Puppies <3
   - src: ../../assets/photos/2025-09-fotometa-escura-400-kyrgyzstan/018.jpg
-    alt: Кыргызстан — frame 18
+    alt: frame 18
+    caption: Yurt.
   - src: ../../assets/photos/2025-09-fotometa-escura-400-kyrgyzstan/019.jpg
-    alt: Кыргызстан — frame 19
+    alt: frame 19
+    caption: Yurts.
   - src: ../../assets/photos/2025-09-fotometa-escura-400-kyrgyzstan/020.jpg
-    alt: Кыргызстан — frame 20
+    alt: frame 20
+    caption: Yurts.
 ---
 
-I picked up this roll of film in Hong Kong, unfortunately when I was removing it from the camera I accidentally exposed the roll which is why it's so badly damaged and has such intense light-leaking. Most of these shots have been heavily edited which I typically avoid to keep the original feel of the film.
+I picked up this roll of film in Hong Kong, unfortunately when I was removing it from the camera I accidentally exposed the roll which is why it's so badly damaged and has such intense light-leaking. Most of these shots have been heavily edited, which I typically avoid in lieu of maintaining the original feel of the film.
