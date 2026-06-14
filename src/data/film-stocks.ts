@@ -8,12 +8,12 @@ export interface FilmStock {
 }
 
 export const filmStocks = {
-  'fujifilm-neopan-100': { name: 'fujufulm neopan 100', type: 'bw' },
-  'kodak-color-200': { name: 'kodak color 200', type: 'color' },
-  'kentmere-400': { name: 'kentmere 400', type: 'bw' },
-  'kodak-ultramax-400': { name: 'kodak ultramax 400', type: 'color' },
-  'kodak-portra-400': { name: 'kodak portra 400', type: 'color' },
-  'kodak-colorplus-200': { name: 'kodak colorplus 200', type: 'color' },
+  'fujifilm-neopan-100': { name: 'Fujifilm Neopan 100', type: 'bw' },
+  'kodak-color-200': { name: 'Kodak Color 200', type: 'color' },
+  'kentmere-400': { name: 'Kentmere 400', type: 'bw' },
+  'kodak-ultramax-400': { name: 'Kodak Ultramax 400', type: 'color' },
+  'kodak-portra-400': { name: 'Kodak Portra 400', type: 'color' },
+  'kodak-colorplus-200': { name: 'Kodak ColorPlus 200', type: 'color' },
   '1hundred-800': { name: '1Hundred 800', type: 'color' },
   'kodak-gold-200': { name: 'Kodak Gold 200', type: 'color' },
   'rollei-rpx-400': { name: 'Rollei RPX 400', type: 'bw' },
