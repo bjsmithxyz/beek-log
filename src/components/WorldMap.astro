@@ -1,8 +1,9 @@
 ---
 // Dot-matrix world map in the site's terminal aesthetic. The land mask is a
 // precomputed 240x120 grid (see scripts/generate-world-dots.mjs); shoot
-// locations are plotted with an equirectangular projection. Pins are plain
-// anchors that jump to the roll list below — no client JS.
+// locations are plotted with an equirectangular projection. Pins are anchors
+// that jump to the roll list below; a small script cross-highlights each pin
+// with its roll row on hover and lifts the hovered pin above its neighbours.
 import dots from '../data/world-dots.json';
 
 export interface Pin {
@@ -54,8 +55,8 @@ const project = (lat: number, lng: number) => ({
     const rectX = Math.min(Math.max(x - rectW / 2, 1), COLS - rectW - 1);
     const rectY = Math.max(1, y - 3 - rectH);
     return (
-      <a href={`#roll-${p.slug}`} class="pin-link" aria-label={label}>
-        <circle cx={x} cy={y} r="4.8" class="pin-halo" />
+      <a href={`#roll-${p.slug}`} class="pin-link" aria-label={label} data-slug={p.slug}>
+        <circle cx={x} cy={y} r="3.4" class="pin-halo" />
         <circle cx={x} cy={y} r="1" class="pin" />
         <g class="tooltip" aria-hidden="true">
           <rect x={rectX} y={rectY} width={rectW} height={rectH} rx="0.8" class="tooltip-box" />
@@ -73,6 +74,41 @@ const project = (lat: number, lng: number) => ({
   })}
 </svg>
 
+<script>
+  function setupMapHover() {
+    const svg = document.querySelector('.world-map');
+    if (!svg) return;
+
+    // bring a pin to the end of the SVG so its tooltip paints above neighbours
+    const lift = (pin: Element) => svg.appendChild(pin);
+
+    const setPin = (pin: Element, on: boolean) => {
+      pin.classList.toggle('is-active', on);
+      if (on) lift(pin);
+    };
+
+    svg.querySelectorAll<HTMLElement>('.pin-link').forEach((pin) => {
+      const slug = pin.dataset.slug;
+      const row = slug ? document.getElementById(`roll-${slug}`) : null;
+      const on = () => { setPin(pin, true); row?.classList.add('is-pin-active'); };
+      const off = () => { setPin(pin, false); row?.classList.remove('is-pin-active'); };
+      pin.addEventListener('mouseenter', on);
+      pin.addEventListener('mouseleave', off);
+      pin.addEventListener('focus', on);
+      pin.addEventListener('blur', off);
+    });
+
+    document.querySelectorAll<HTMLElement>('.roll-row[data-slug]').forEach((row) => {
+      const slug = row.dataset.slug;
+      const pins = svg.querySelectorAll(`.pin-link[data-slug="${slug}"]`);
+      row.addEventListener('mouseenter', () => pins.forEach((p) => setPin(p, true)));
+      row.addEventListener('mouseleave', () => pins.forEach((p) => setPin(p, false)));
+    });
+  }
+
+  document.addEventListener('astro:page-load', setupMapHover);
+</script>
+
 <style>
   .world-map {
     width: 100%;
@@ -89,6 +125,7 @@ const project = (lat: number, lng: number) => ({
 
   .pin {
     fill: var(--color-accent-primary);
+    transition: filter 0.12s ease;
   }
 
   .pin-halo {
@@ -101,9 +138,17 @@ const project = (lat: number, lng: number) => ({
     cursor: pointer;
   }
 
+  /* hover/focus the pin directly, or .is-active set by the row-hover script */
   .pin-link:hover .pin-halo,
-  .pin-link:focus .pin-halo {
-    opacity: 0.4;
+  .pin-link:focus .pin-halo,
+  .pin-link.is-active .pin-halo {
+    opacity: 0.3;
+  }
+
+  .pin-link:hover .pin,
+  .pin-link:focus .pin,
+  .pin-link.is-active .pin {
+    filter: brightness(0.82);
   }
 
   .tooltip {
@@ -113,7 +158,8 @@ const project = (lat: number, lng: number) => ({
   }
 
   .pin-link:hover .tooltip,
-  .pin-link:focus .tooltip {
+  .pin-link:focus .tooltip,
+  .pin-link.is-active .tooltip {
     opacity: 1;
   }
 

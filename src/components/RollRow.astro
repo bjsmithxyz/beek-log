@@ -26,6 +26,7 @@ const year = date.getFullYear().toString();
   class="roll-row"
   id={`roll-${roll.slug}`}
   data-year={year}
+  data-slug={roll.slug}
 >
   <span class="row-stock" data-type={film.type}>[{film.name}]</span>
   <span class="row-date">{formattedDate}</span>
@@ -68,6 +69,12 @@ const year = date.getFullYear().toString();
   .roll-row:target {
     border-color: var(--color-accent-primary);
     box-shadow: var(--shadow-hard-accent);
+  }
+
+  /* highlighted from hovering its pin on the map */
+  .roll-row.is-pin-active {
+    border-color: var(--color-accent-primary);
+    outline: 1px solid var(--color-accent-primary);
   }
 
   .row-stock {
