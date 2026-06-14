@@ -19,17 +19,7 @@ const recentRolls = allRolls.sort((a, b) => b.data.date.valueOf() - a.data.date.
         <p class="prompt">~/beek</p>
         <h1 class="home-name">beek</h1>
         <p class="home-role">tech guy & creative</p>
-        <p class="home-desc">
-          Building things, creating stuff.<br />
-          If I make something I like, I'll upload it here.
-        </p>
       </header>
-
-      <nav class="home-nav" aria-label="Primary">
-        <a href="/work" class="nav-cmd">&gt; work</a>
-        <a href="/photos" class="nav-cmd">&gt; photos</a>
-        <a href="/about" class="nav-cmd">&gt; about</a>
-      </nav>
 
       {recentRolls.length > 0 && (
         <section class="recent" aria-labelledby="rolls-heading">
@@ -88,36 +78,6 @@ const recentRolls = allRolls.sort((a, b) => b.data.date.valueOf() - a.data.date.
     font-size: var(--font-size-lg);
     color: var(--color-accent-primary);
     margin-bottom: var(--space-5);
-  }
-
-  .home-desc {
-    font-size: var(--font-size-base);
-    color: var(--color-text-secondary);
-    line-height: var(--line-height-relaxed);
-    max-width: 480px;
-    margin: 0;
-  }
-
-  .home-nav {
-    display: flex;
-    flex-direction: column;
-    gap: var(--space-2);
-    margin-bottom: var(--space-10);
-    padding-bottom: var(--space-8);
-    border-bottom: 1px solid var(--color-border);
-  }
-
-  .nav-cmd {
-    display: inline-block;
-    font-size: var(--font-size-lg);
-    color: var(--color-text-primary);
-    padding: var(--space-2) 0;
-    transition: color var(--transition-fast), padding-left var(--transition-fast);
-  }
-
-  .nav-cmd:hover {
-    color: var(--color-accent-primary);
-    padding-left: var(--space-3);
   }
 
   .recent + .recent {
