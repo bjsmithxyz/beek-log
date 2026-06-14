@@ -1,10 +1,10 @@
 ---
 import BaseLayout from '../../layouts/BaseLayout.astro';
 import WorkRow from '../../components/WorkRow.astro';
-import { getCollection } from 'astro:content';
+import { getWorkEntries, byDateDesc } from '../../lib/collections';
 
-const allWork = await getCollection('work', ({ data }) => !data.draft);
-const sortedWork = allWork.sort((a, b) => b.data.date.valueOf() - a.data.date.valueOf());
+const allWork = await getWorkEntries();
+const sortedWork = allWork.sort(byDateDesc);
 const categories = [...new Set(allWork.map(w => w.data.category))];
 ---
 

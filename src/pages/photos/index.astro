@@ -2,12 +2,10 @@
 import BaseLayout from '../../layouts/BaseLayout.astro';
 import RollRow from '../../components/RollRow.astro';
 import WorldMap from '../../components/WorldMap.astro';
-import { getCollection } from 'astro:content';
+import { getPhotoRolls, byDateDesc } from '../../lib/collections';
 import { effectiveLocations } from '../../data/locations';
 
-// drafts render in dev for previewing, never in production builds
-const rolls = await getCollection('photos', ({ data }) => import.meta.env.DEV || !data.draft);
-const sortedRolls = rolls.sort((a, b) => b.data.date.valueOf() - a.data.date.valueOf());
+const sortedRolls = (await getPhotoRolls()).sort(byDateDesc);
 
 const totalFrames = sortedRolls.reduce((sum, r) => sum + r.data.photos.length, 0);
 const years = [...new Set(sortedRolls.map((r) => r.data.date.getFullYear().toString()))];

@@ -28,3 +28,8 @@ export const filmStocks = {
 } satisfies Record<string, FilmStock>;
 
 export type FilmStockSlug = keyof typeof filmStocks;
+
+// The `stock` field is validated against these keys by the content schema, so
+// the lookup is always safe; this centralises the cast.
+export const getFilmStock = (slug: string): FilmStock =>
+  filmStocks[slug as FilmStockSlug];

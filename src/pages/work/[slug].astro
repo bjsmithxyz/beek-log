@@ -2,11 +2,11 @@
 import BaseLayout from '../../layouts/BaseLayout.astro';
 import Lightbox from '../../components/Lightbox.astro';
 import { Image } from 'astro:assets';
-import { getCollection, render, type CollectionEntry } from 'astro:content';
+import { render, type CollectionEntry } from 'astro:content';
+import { getWorkEntries, byDateDesc } from '../../lib/collections';
 
 export async function getStaticPaths() {
-  const work = await getCollection('work', ({ data }) => !data.draft);
-  const sorted = work.sort((a, b) => b.data.date.valueOf() - a.data.date.valueOf());
+  const sorted = (await getWorkEntries()).sort(byDateDesc);
   const neighbor = (e: CollectionEntry<'work'>) => ({ slug: e.id, title: e.data.title });
   return sorted.map((entry, i) => ({
     params: { slug: entry.id },

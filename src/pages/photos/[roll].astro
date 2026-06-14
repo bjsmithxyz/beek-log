@@ -2,12 +2,12 @@
 import BaseLayout from '../../layouts/BaseLayout.astro';
 import FilmStrip from '../../components/FilmStrip.astro';
 import Lightbox from '../../components/Lightbox.astro';
-import { getCollection, render, type CollectionEntry } from 'astro:content';
-import { filmStocks } from '../../data/film-stocks';
+import { render, type CollectionEntry } from 'astro:content';
+import { getFilmStock } from '../../data/film-stocks';
+import { getPhotoRolls } from '../../lib/collections';
 
 export async function getStaticPaths() {
-  // drafts render in dev for previewing, never in production builds
-  const rolls = await getCollection('photos', ({ data }) => import.meta.env.DEV || !data.draft);
+  const rolls = await getPhotoRolls();
   return rolls.map(entry => ({
     params: { roll: entry.id },
     props: { entry },
@@ -23,7 +23,7 @@ const FRAMES_PER_STRIP = 6;
 const { entry } = Astro.props;
 const { Content } = await render(entry);
 const { title, stock, date, location, photos } = entry.data;
-const film = filmStocks[stock as keyof typeof filmStocks];
+const film = getFilmStock(stock);
 
 const formattedDate = date.toLocaleDateString('en-US', {
   year: 'numeric',

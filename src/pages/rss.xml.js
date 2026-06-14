@@ -1,10 +1,10 @@
 import rss from '@astrojs/rss';
-import { getCollection } from 'astro:content';
-import { filmStocks } from '../data/film-stocks';
+import { getFilmStock } from '../data/film-stocks';
+import { getWorkEntries, getPhotoRolls } from '../lib/collections';
 
 export async function GET(context) {
-  const work = await getCollection('work', ({ data }) => !data.draft);
-  const rolls = await getCollection('photos', ({ data }) => !data.draft);
+  const work = await getWorkEntries();
+  const rolls = await getPhotoRolls();
 
   const items = [
     ...work.map((entry) => ({
@@ -15,7 +15,7 @@ export async function GET(context) {
     })),
     ...rolls.map((entry) => ({
       title: entry.data.title,
-      description: `${filmStocks[entry.data.stock].name} · ${entry.data.location.name} — ${entry.data.photos.length} frames`,
+      description: `${getFilmStock(entry.data.stock).name} · ${entry.data.location.name} — ${entry.data.photos.length} frames`,
       pubDate: entry.data.date,
       link: `/photos/${entry.id}/`,
     })),

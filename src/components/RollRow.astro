@@ -1,6 +1,6 @@
 ---
 import type { CollectionEntry } from 'astro:content';
-import { filmStocks } from '../data/film-stocks';
+import { getFilmStock } from '../data/film-stocks';
 import { effectiveLocations } from '../data/locations';
 
 interface Props {
@@ -9,7 +9,7 @@ interface Props {
 
 const { roll } = Astro.props;
 const { title, stock, date, location } = roll.data;
-const film = filmStocks[stock as keyof typeof filmStocks];
+const film = getFilmStock(stock);
 const locCount = effectiveLocations(roll).length;
 const locLabel = locCount > 1 ? `${location.name} +${locCount - 1}` : location.name;
 

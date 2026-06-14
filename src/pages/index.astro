@@ -2,14 +2,10 @@
 import BaseLayout from '../layouts/BaseLayout.astro';
 import WorkRow from '../components/WorkRow.astro';
 import RollRow from '../components/RollRow.astro';
-import { getCollection } from 'astro:content';
+import { getWorkEntries, getPhotoRolls, byDateDesc } from '../lib/collections';
 
-const allWork = await getCollection('work', ({ data }) => !data.draft);
-const sortedWork = allWork.sort((a, b) => b.data.date.valueOf() - a.data.date.valueOf());
-const recentWork = sortedWork.slice(0, 8);
-
-const allRolls = await getCollection('photos', ({ data }) => import.meta.env.DEV || !data.draft);
-const recentRolls = allRolls.sort((a, b) => b.data.date.valueOf() - a.data.date.valueOf()).slice(0, 5);
+const recentWork = (await getWorkEntries()).sort(byDateDesc).slice(0, 8);
+const recentRolls = (await getPhotoRolls()).sort(byDateDesc).slice(0, 5);
 ---
 
 <BaseLayout>
