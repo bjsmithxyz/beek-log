@@ -14,7 +14,7 @@ export const getStaticPaths: GetStaticPaths = async () => {
 
   return [
     ...work.map((e) => ({
-      params: { collection: 'work', slug: e.slug },
+      params: { collection: 'work', slug: e.id },
       props: {
         eyebrow: '~/beek/work',
         title: e.data.title,
@@ -22,7 +22,7 @@ export const getStaticPaths: GetStaticPaths = async () => {
       } satisfies OgCardOptions,
     })),
     ...photos.map((e) => ({
-      params: { collection: 'photos', slug: e.slug },
+      params: { collection: 'photos', slug: e.id },
       props: {
         eyebrow: '~/beek/photos',
         title: e.data.title,

@@ -2,14 +2,14 @@
 import BaseLayout from '../../layouts/BaseLayout.astro';
 import FilmStrip from '../../components/FilmStrip.astro';
 import Lightbox from '../../components/Lightbox.astro';
-import { getCollection, type CollectionEntry } from 'astro:content';
+import { getCollection, render, type CollectionEntry } from 'astro:content';
 import { filmStocks } from '../../data/film-stocks';
 
 export async function getStaticPaths() {
   // drafts render in dev for previewing, never in production builds
   const rolls = await getCollection('photos', ({ data }) => import.meta.env.DEV || !data.draft);
   return rolls.map(entry => ({
-    params: { roll: entry.slug },
+    params: { roll: entry.id },
     props: { entry },
   }));
 }
@@ -21,7 +21,7 @@ interface Props {
 const FRAMES_PER_STRIP = 6;
 
 const { entry } = Astro.props;
-const { Content } = await entry.render();
+const { Content } = await render(entry);
 const { title, stock, date, location, photos } = entry.data;
 const film = filmStocks[stock as keyof typeof filmStocks];
 
@@ -38,12 +38,12 @@ for (let i = 0; i < photosWithLoc.length; i += FRAMES_PER_STRIP) {
   strips.push(photosWithLoc.slice(i, i + FRAMES_PER_STRIP));
 }
 
-const ogImage = `/og/photos/${entry.slug}.png`;
+const ogImage = `/og/photos/${entry.id}.png`;
 const jsonLd = {
   '@type': 'ImageGallery',
   name: title,
   datePublished: date.toISOString(),
-  url: new URL(`/photos/${entry.slug}/`, Astro.site).href,
+  url: new URL(`/photos/${entry.id}/`, Astro.site).href,
   image: new URL(ogImage, Astro.site).href,
   contentLocation: {
     '@type': 'Place',
@@ -66,7 +66,7 @@ const jsonLd = {
       </a>
 
       <header class="article-header">
-        <p class="file-path">photos/{entry.slug}.md</p>
+        <p class="file-path">photos/{entry.id}.md</p>
         <span class="stock-tag" data-type={film.type}>[{film.name}]</span>
         <h1 class="title">{title}</h1>
 

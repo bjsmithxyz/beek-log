@@ -2,7 +2,7 @@
 
 ## Stack
 
-- **[Astro 5](https://astro.build)** — static-first site generator. Every page
+- **[Astro 6](https://astro.build)** — static-first site generator. Every page
   is prerendered to HTML at build time.
 - **[@astrojs/netlify](https://docs.astro.build/en/guides/integrations-guide/netlify/)**
   adapter — routes `astro:assets` images through the Netlify Image CDN in
@@ -44,7 +44,9 @@ light toggle. Tokens live in `src/styles/global.css`.
 
 ## Content collections
 
-Defined in `src/content/config.ts` with Zod schemas.
+Defined in `src/content.config.ts` with Zod schemas. Both collections use the
+Content Layer `glob()` loader; entries are keyed by `id` (the filename slug) and
+rendered with `render(entry)` from `astro:content`.
 
 **`work`** — dev / art / photography entries. Fields: `title`, `description`,
 `date`, `category` (`dev` | `art` | `photography`), `tags`, `featured`,
@@ -63,8 +65,11 @@ production builds, RSS, and the sitemap.
 ## The photos map
 
 `/photos` renders a dot-matrix world map (`src/components/WorldMap.astro`). The
-land mask is a precomputed 120×60 grid in `src/data/world-dots.json`; shoot
-locations are projected equirectangularly as pins.
+land mask is a precomputed 240×120 grid in `src/data/world-dots.json` (dots
+south of −60° lat are dropped — Antarctica's ice reads as ocean to the mask);
+shoot locations are projected equirectangularly as pins. A small client script
+cross-highlights each pin with its roll row on hover and lifts the hovered pin
+above its neighbours so the tooltip is not clipped.
 
 Pins are aggregated from **per-photo effective locations**, not per roll:
 `src/data/locations.ts` exports `effectiveLocations(roll)`, which collapses a

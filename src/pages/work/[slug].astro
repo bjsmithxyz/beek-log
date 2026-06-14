@@ -2,14 +2,14 @@
 import BaseLayout from '../../layouts/BaseLayout.astro';
 import Lightbox from '../../components/Lightbox.astro';
 import { Image } from 'astro:assets';
-import { getCollection, type CollectionEntry } from 'astro:content';
+import { getCollection, render, type CollectionEntry } from 'astro:content';
 
 export async function getStaticPaths() {
   const work = await getCollection('work', ({ data }) => !data.draft);
   const sorted = work.sort((a, b) => b.data.date.valueOf() - a.data.date.valueOf());
-  const neighbor = (e: CollectionEntry<'work'>) => ({ slug: e.slug, title: e.data.title });
+  const neighbor = (e: CollectionEntry<'work'>) => ({ slug: e.id, title: e.data.title });
   return sorted.map((entry, i) => ({
-    params: { slug: entry.slug },
+    params: { slug: entry.id },
     props: {
       entry,
       newer: i > 0 ? neighbor(sorted[i - 1]) : null,
@@ -25,7 +25,7 @@ interface Props {
 }
 
 const { entry, newer, older } = Astro.props;
-const { Content } = await entry.render();
+const { Content } = await render(entry);
 const { title, description, date, category, tags, liveUrl, repoUrl, cover, images } = entry.data;
 
 const formattedDate = date.toLocaleDateString('en-US', {
@@ -39,13 +39,13 @@ const categoryColors = {
   photography: 'var(--color-accent-primary)',
 };
 
-const ogImage = `/og/work/${entry.slug}.png`;
+const ogImage = `/og/work/${entry.id}.png`;
 const jsonLd = {
   '@type': 'CreativeWork',
   name: title,
   description,
   datePublished: date.toISOString(),
-  url: new URL(`/work/${entry.slug}/`, Astro.site).href,
+  url: new URL(`/work/${entry.id}/`, Astro.site).href,
   image: new URL(ogImage, Astro.site).href,
   ...(repoUrl ? { codeRepository: repoUrl } : {}),
 };
@@ -61,7 +61,7 @@ const jsonLd = {
       
       <!-- Header -->
       <header class="article-header">
-        <p class="file-path">work/{entry.slug}.md</p>
+        <p class="file-path">work/{entry.id}.md</p>
         <span class="category" style={`--category-color: ${categoryColors[category]}`}>
           [{category}]
         </span>

@@ -1,7 +1,7 @@
 # bjsmith.xyz
 
 Personal site of **beek** — a place to put development work, art, and film
-photography. Built with [Astro 5](https://astro.build) in a terminal /
+photography. Built with [Astro 6](https://astro.build) in a terminal /
 file-browser aesthetic, and hosted on Netlify.
 
 ## Quick start

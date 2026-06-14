@@ -1,8 +1,9 @@
 import { defineCollection, z } from 'astro:content';
-import { filmStocks } from '../data/film-stocks';
+import { glob } from 'astro/loaders';
+import { filmStocks } from './data/film-stocks';
 
 const workCollection = defineCollection({
-  type: 'content',
+  loader: glob({ pattern: '**/*.md', base: './src/content/work' }),
   schema: ({ image }) => z.object({
     title: z.string(),
     description: z.string(),
@@ -33,7 +34,7 @@ const locationSchema = z.object({
 });
 
 const photosCollection = defineCollection({
-  type: 'content',
+  loader: glob({ pattern: '**/*.md', base: './src/content/photos' }),
   schema: ({ image }) => z.object({
     title: z.string(),
     stock: z.string().refine((s): s is keyof typeof filmStocks => s in filmStocks, {

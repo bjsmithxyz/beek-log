@@ -18,10 +18,10 @@ const formattedDate = date.toLocaleDateString('en-CA', {
 const categoryClass = `tag-${category}`;
 ---
 
-<a href={`/work/${work.slug}`} class="work-row" data-category={category}>
+<a href={`/work/${work.id}`} class="work-row" data-category={category}>
   <span class={`row-tag ${categoryClass}`}>[{category}]</span>
   <span class="row-date">{formattedDate}</span>
-  <span class="row-slug">{work.slug}</span>
+  <span class="row-slug">{work.id}</span>
   {showDescription && (
     <span class="row-desc">{description}</span>
   )}

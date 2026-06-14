@@ -20,7 +20,7 @@ for (const roll of sortedRolls) {
     const key = loc.name.toLowerCase();
     const existing = pinMap.get(key);
     if (existing) existing.count += loc.count;
-    else pinMap.set(key, { slug: roll.slug, name: loc.name, lat: loc.lat, lng: loc.lng, count: loc.count });
+    else pinMap.set(key, { slug: roll.id, name: loc.name, lat: loc.lat, lng: loc.lng, count: loc.count });
   }
 }
 const pins = [...pinMap.values()];

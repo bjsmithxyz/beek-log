@@ -11,13 +11,13 @@ export async function GET(context) {
       title: entry.data.title,
       description: entry.data.description,
       pubDate: entry.data.date,
-      link: `/work/${entry.slug}/`,
+      link: `/work/${entry.id}/`,
     })),
     ...rolls.map((entry) => ({
       title: entry.data.title,
       description: `${filmStocks[entry.data.stock].name} · ${entry.data.location.name} — ${entry.data.photos.length} frames`,
       pubDate: entry.data.date,
-      link: `/photos/${entry.slug}/`,
+      link: `/photos/${entry.id}/`,
     })),
   ].sort((a, b) => b.pubDate - a.pubDate);
 

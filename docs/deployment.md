@@ -31,8 +31,15 @@ Hashed build assets under `/_assets/*` are served `immutable` with a one-year
 - The roll-import admin (`scripts/admin/`) is intentionally **not** part of the
   Astro build, so it never reaches `dist/` and never deploys.
 
-## Deferred upgrade
+## Upgrades
 
-`astro` (5 → 6) and `@astrojs/netlify` (6 → 7) are held back deliberately: that
-pair is a breaking migration (the legacy content-collections API the site uses
-moves to the Content Layer). Tackle it as its own effort, not a drive-by bump.
+`astro` (6) and `@astrojs/netlify` (7) are on their current majors. The 5 → 6
+migration moved content collections to the Content Layer (`glob()` loaders in
+`src/content.config.ts`, `entry.id` instead of `entry.slug`, `render(entry)`
+instead of `entry.render()`) and renamed `<ViewTransitions />` to
+`<ClientRouter />`. Astro 6 requires Node ≥ 22.12.
+
+`npm audit` reports high-severity advisories against `esbuild` pulled in
+transitively by `vite` and the Netlify dev tooling. These affect the local dev
+server only (esbuild's dev server CORS behaviour); there is no non-breaking
+upstream fix yet, so they are left as-is rather than forced.

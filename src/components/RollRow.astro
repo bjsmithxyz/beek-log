@@ -22,11 +22,11 @@ const year = date.getFullYear().toString();
 ---
 
 <a
-  href={`/photos/${roll.slug}`}
+  href={`/photos/${roll.id}`}
   class="roll-row"
-  id={`roll-${roll.slug}`}
+  id={`roll-${roll.id}`}
   data-year={year}
-  data-slug={roll.slug}
+  data-slug={roll.id}
 >
   <span class="row-stock" data-type={film.type}>[{film.name}]</span>
   <span class="row-date">{formattedDate}</span>
