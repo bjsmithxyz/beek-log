@@ -22,6 +22,10 @@ const { pins } = Astro.props;
 const COLS = 240;
 const ROWS = 120;
 
+// Antarctica's ice reads as ocean to the land mask, leaving a stray spray of
+// dots; drop everything south of -60° lat (no shoot locations down there).
+const ANTARCTICA_CUTOFF_ROW = Math.round(((90 - -60) / 180) * ROWS);
+
 const project = (lat: number, lng: number) => ({
   x: +(((lng + 180) / 360) * COLS).toFixed(1),
   y: +(((90 - lat) / 180) * ROWS).toFixed(1),
@@ -35,17 +39,35 @@ const project = (lat: number, lng: number) => ({
   aria-label={`Map of shoot locations: ${pins.map((p) => p.name).join(', ')}`}
 >
   {(dots as string[]).flatMap((row, y) =>
-    [...row].map((c, x) =>
-      c === '1' ? <circle cx={x + 0.5} cy={y + 0.5} r="0.4" class="dot" /> : null
-    )
+    y >= ANTARCTICA_CUTOFF_ROW
+      ? []
+      : [...row].map((c, x) =>
+          c === '1' ? <circle cx={x + 0.5} cy={y + 0.5} r="0.4" class="dot" /> : null
+        )
   )}
   {pins.map((p) => {
     const { x, y } = project(p.lat, p.lng);
+    const label = `${p.name} — ${p.count} ${p.count === 1 ? 'frame' : 'frames'}`;
+    const fontSize = 3.2;
+    const rectW = label.length * fontSize * 0.6 + 4;
+    const rectH = fontSize + 3.2;
+    const rectX = Math.min(Math.max(x - rectW / 2, 1), COLS - rectW - 1);
+    const rectY = Math.max(1, y - 3 - rectH);
     return (
-      <a href={`#roll-${p.slug}`} class="pin-link">
+      <a href={`#roll-${p.slug}`} class="pin-link" aria-label={label}>
         <circle cx={x} cy={y} r="4.8" class="pin-halo" />
-        <circle cx={x} cy={y} r="2" class="pin" />
-        <title>{`${p.name} — ${p.count} ${p.count === 1 ? 'frame' : 'frames'}`}</title>
+        <circle cx={x} cy={y} r="1" class="pin" />
+        <g class="tooltip" aria-hidden="true">
+          <rect x={rectX} y={rectY} width={rectW} height={rectH} rx="0.8" class="tooltip-box" />
+          <text
+            x={rectX + rectW / 2}
+            y={rectY + rectH / 2}
+            font-size={fontSize}
+            text-anchor="middle"
+            dominant-baseline="central"
+            class="tooltip-text"
+          >{label}</text>
+        </g>
       </a>
     );
   })}
@@ -71,7 +93,8 @@ const project = (lat: number, lng: number) => ({
 
   .pin-halo {
     fill: var(--color-accent-primary);
-    opacity: 0.18;
+    opacity: 0;
+    transition: opacity 0.12s ease;
   }
 
   .pin-link {
@@ -81,5 +104,27 @@ const project = (lat: number, lng: number) => ({
   .pin-link:hover .pin-halo,
   .pin-link:focus .pin-halo {
     opacity: 0.4;
+  }
+
+  .tooltip {
+    opacity: 0;
+    pointer-events: none;
+    transition: opacity 0.12s ease;
+  }
+
+  .pin-link:hover .tooltip,
+  .pin-link:focus .tooltip {
+    opacity: 1;
+  }
+
+  .tooltip-box {
+    fill: var(--color-bg-primary);
+    stroke: var(--color-border-strong);
+    stroke-width: 0.3;
+  }
+
+  .tooltip-text {
+    fill: var(--color-text-primary);
+    font-family: monospace;
   }
 </style>
