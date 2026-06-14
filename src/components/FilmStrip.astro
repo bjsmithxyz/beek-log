@@ -47,6 +47,7 @@ const fullImages = await Promise.all(
           class="frame-img"
           loading="lazy"
           data-lightbox
+          data-lightbox-id={`frame-${startFrame + i}`}
           data-full={fullImages[i].src}
           data-caption={p.caption ?? p.alt}
           data-meta={`${stockName.toUpperCase()} · ${startFrame + i}A · ${shortDate} · ${photos[i].locName.toUpperCase()}`}

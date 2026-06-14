@@ -6,17 +6,25 @@ import { getCollection, type CollectionEntry } from 'astro:content';
 
 export async function getStaticPaths() {
   const work = await getCollection('work', ({ data }) => !data.draft);
-  return work.map(entry => ({
+  const sorted = work.sort((a, b) => b.data.date.valueOf() - a.data.date.valueOf());
+  const neighbor = (e: CollectionEntry<'work'>) => ({ slug: e.slug, title: e.data.title });
+  return sorted.map((entry, i) => ({
     params: { slug: entry.slug },
-    props: { entry },
+    props: {
+      entry,
+      newer: i > 0 ? neighbor(sorted[i - 1]) : null,
+      older: i < sorted.length - 1 ? neighbor(sorted[i + 1]) : null,
+    },
   }));
 }
 
 interface Props {
   entry: CollectionEntry<'work'>;
+  newer: { slug: string; title: string } | null;
+  older: { slug: string; title: string } | null;
 }
 
-const { entry } = Astro.props;
+const { entry, newer, older } = Astro.props;
 const { Content } = await entry.render();
 const { title, description, date, category, tags, liveUrl, repoUrl, cover, images } = entry.data;
 
@@ -30,9 +38,20 @@ const categoryColors = {
   art: 'var(--color-accent-secondary)',
   photography: 'var(--color-accent-primary)',
 };
+
+const ogImage = `/og/work/${entry.slug}.png`;
+const jsonLd = {
+  '@type': 'CreativeWork',
+  name: title,
+  description,
+  datePublished: date.toISOString(),
+  url: new URL(`/work/${entry.slug}/`, Astro.site).href,
+  image: new URL(ogImage, Astro.site).href,
+  ...(repoUrl ? { codeRepository: repoUrl } : {}),
+};
 ---
 
-<BaseLayout title={title} description={description}>
+<BaseLayout title={title} description={description} image={ogImage} jsonLd={jsonLd}>
   <article class="work-detail">
     <div class="container container-narrow">
       <!-- Back link -->
@@ -110,12 +129,30 @@ const categoryColors = {
                   height={600}
                   class="gallery-image"
                   data-lightbox
+                  data-lightbox-id={`img-${i}`}
                 />
                 {img.alt && <figcaption>{img.alt.split(' - ')[0]}</figcaption>}
               </figure>
             ))}
           </div>
         </div>
+      )}
+
+      {(newer || older) && (
+        <nav class="project-nav" aria-label="More work">
+          {newer ? (
+            <a href={`/work/${newer.slug}`} class="project-nav-link prev">
+              <span class="project-nav-dir">← newer</span>
+              <span class="project-nav-title">{newer.title}</span>
+            </a>
+          ) : <span />}
+          {older ? (
+            <a href={`/work/${older.slug}`} class="project-nav-link next">
+              <span class="project-nav-dir">older →</span>
+              <span class="project-nav-title">{older.title}</span>
+            </a>
+          ) : <span />}
+        </nav>
       )}
     </div>
   </article>
@@ -339,5 +376,61 @@ const categoryColors = {
     font-size: var(--font-size-xs);
     color: var(--color-text-muted);
     border-top: 1px solid var(--color-border);
+  }
+
+  .project-nav {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: var(--space-3);
+    margin-top: var(--space-8);
+    padding-top: var(--space-6);
+    border-top: 1px solid var(--color-border);
+  }
+
+  .project-nav-link {
+    display: flex;
+    flex-direction: column;
+    gap: var(--space-1);
+    min-width: 0;
+    padding: var(--space-3) var(--space-4);
+    border: 1px solid var(--color-border);
+    background: var(--color-bg-secondary);
+    color: var(--color-text-primary);
+    transition: all var(--transition-fast);
+  }
+
+  .project-nav-link.next {
+    text-align: right;
+  }
+
+  .project-nav-link:hover {
+    border-color: var(--color-accent-primary);
+    box-shadow: var(--shadow-hard-accent);
+  }
+
+  .project-nav-dir {
+    font-size: var(--font-size-xs);
+    color: var(--color-text-muted);
+  }
+
+  .project-nav-link:hover .project-nav-dir {
+    color: var(--color-accent-primary);
+  }
+
+  .project-nav-title {
+    font-size: var(--font-size-sm);
+    font-weight: var(--font-weight-medium);
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+  }
+
+  @media (max-width: 768px) {
+    .project-nav {
+      grid-template-columns: 1fr;
+    }
+    .project-nav-link.next {
+      text-align: left;
+    }
   }
 </style>

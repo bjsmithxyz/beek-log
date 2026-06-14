@@ -198,6 +198,29 @@ img {
     border: 0;
 }
 
+/* Skip link — off-screen until focused, sits above the sticky header (z 100) */
+.skip-link {
+    position: absolute;
+    top: -3rem;
+    left: var(--space-4);
+    z-index: 200;
+    padding: var(--space-2) var(--space-4);
+    font-size: var(--font-size-sm);
+    color: var(--color-text-primary);
+    background: var(--color-bg-secondary);
+    border: 1px solid var(--color-accent-primary);
+    transition: top var(--transition-base);
+}
+
+.skip-link:focus {
+    top: var(--space-3);
+    color: var(--color-accent-primary);
+}
+
+#main-content:focus {
+    outline: none;
+}
+
 .text-muted { color: var(--color-text-muted); }
 .text-secondary { color: var(--color-text-secondary); }
 
@@ -243,5 +266,17 @@ code {
 
     .container {
         padding: 0 var(--space-4);
+    }
+}
+
+/* Respect users who ask for less motion — neutralise animations/transitions */
+@media (prefers-reduced-motion: reduce) {
+    *,
+    *::before,
+    *::after {
+        animation-duration: 0.01ms !important;
+        animation-iteration-count: 1 !important;
+        transition-duration: 0.01ms !important;
+        scroll-behavior: auto !important;
     }
 }

@@ -1,0 +1,11 @@
+---
+// Emits a schema.org JSON-LD block. `schema` is any structured-data object
+// (usually a { "@context", "@graph": [...] } graph built by the caller).
+interface Props {
+  schema: Record<string, unknown>;
+}
+
+const { schema } = Astro.props;
+---
+
+<script type="application/ld+json" is:inline set:html={JSON.stringify(schema)} />

@@ -6,22 +6,39 @@ import '@fontsource/ibm-plex-mono/600.css';
 import '../styles/global.css';
 import Header from '../components/Header.astro';
 import Footer from '../components/Footer.astro';
+import JsonLd from '../components/JsonLd.astro';
 import { ViewTransitions } from 'astro:transitions';
 
 interface Props {
   title?: string;
   description?: string;
   image?: string;
+  jsonLd?: Record<string, unknown> | Record<string, unknown>[];
 }
 
-const { 
-  title = 'bjsmith.xyz', 
+const {
+  title = 'bjsmith.xyz',
   description = 'Portfolio of beek - tech guy & creative',
-  image = '/og-image.png'
+  image = '/og-image.png',
+  jsonLd,
 } = Astro.props;
 
 const canonicalURL = new URL(Astro.url.pathname, Astro.site);
 const fullTitle = title === 'bjsmith.xyz' ? title : `${title} | bjsmith.xyz`;
+
+// Base structured data on every page; pages may add CreativeWork/ImageGallery.
+const siteUrl = Astro.site?.href;
+const baseGraph = [
+  { '@type': 'WebSite', name: 'bjsmith.xyz', url: siteUrl },
+  {
+    '@type': 'Person',
+    name: 'beek',
+    url: siteUrl,
+    sameAs: ['https://github.com/bjsmithxyz/', 'https://www.instagram.com/bjsmith.xyz/'],
+  },
+];
+const pageGraph = jsonLd ? (Array.isArray(jsonLd) ? jsonLd : [jsonLd]) : [];
+const structuredData = { '@context': 'https://schema.org', '@graph': [...baseGraph, ...pageGraph] };
 ---
 
 <!DOCTYPE html>
@@ -30,7 +47,8 @@ const fullTitle = title === 'bjsmith.xyz' ? title : `${title} | bjsmith.xyz`;
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <meta name="generator" content={Astro.generator} />
-  
+  <meta name="theme-color" content="#0c0c0c" />
+
   <title>{fullTitle}</title>
   <meta name="description" content={description} />
   <link rel="canonical" href={canonicalURL} />
@@ -47,20 +65,25 @@ const fullTitle = title === 'bjsmith.xyz' ? title : `${title} | bjsmith.xyz`;
   <meta name="twitter:image" content={new URL(image, Astro.site)} />
   
   <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
+  <link rel="manifest" href="/site.webmanifest" />
   <link rel="alternate" type="application/rss+xml" title="bjsmith.xyz" href="/rss.xml" />
   <link rel="sitemap" href="/sitemap-index.xml" />
+
+  <JsonLd schema={structuredData} />
 
   <ViewTransitions />
 
   <script is:inline>
-    const theme = localStorage.getItem('theme') || 'dark';
+    const theme = localStorage.getItem('theme') || (matchMedia('(prefers-color-scheme: light)').matches ? 'light' : 'dark');
     document.documentElement.setAttribute('data-theme', theme);
+    document.querySelector('meta[name="theme-color"]')?.setAttribute('content', theme === 'light' ? '#f4f4f0' : '#0c0c0c');
   </script>
 </head>
 <body>
+  <a href="#main-content" class="skip-link">skip to content</a>
   <div class="page-wrapper">
     <Header />
-    <main id="main-content">
+    <main id="main-content" tabindex="-1">
       <slot />
     </main>
     <Footer />

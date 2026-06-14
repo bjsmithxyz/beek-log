@@ -76,11 +76,42 @@ const navItems = [
 </header>
 
 <script>
+  // Reflect the active theme into the document + mobile browser chrome.
+  function applyTheme(theme: string) {
+    document.documentElement.setAttribute('data-theme', theme);
+    document
+      .querySelector('meta[name="theme-color"]')
+      ?.setAttribute('content', theme === 'light' ? '#f4f4f0' : '#0c0c0c');
+  }
+
+  function closeMobileMenu(focusToggle = false) {
+    const toggle = document.getElementById('mobile-menu-toggle');
+    const menu = document.getElementById('mobile-menu');
+    toggle?.setAttribute('aria-expanded', 'false');
+    menu?.setAttribute('aria-hidden', 'true');
+    menu?.classList.remove('open');
+    document.body.style.overflow = '';
+    if (focusToggle) (toggle as HTMLElement | null)?.focus();
+  }
+
+  // Module-scope handlers so remove-then-add keeps a single registration even
+  // though setupHeader re-runs on every client-side navigation.
+  function handleHeaderEscape(e: KeyboardEvent) {
+    if (e.key === 'Escape' && document.getElementById('mobile-menu')?.classList.contains('open')) {
+      closeMobileMenu(true);
+    }
+  }
+
+  const desktopQuery = window.matchMedia('(min-width: 768px)');
+  function handleDesktopChange(e: MediaQueryListEvent) {
+    if (e.matches) closeMobileMenu();
+  }
+
   function setupHeader() {
     const themeToggle = document.getElementById('theme-toggle');
-    
+
     function setTheme(theme: string) {
-      document.documentElement.setAttribute('data-theme', theme);
+      applyTheme(theme);
       localStorage.setItem('theme', theme);
       themeToggle?.setAttribute(
         'aria-label',
@@ -89,42 +120,44 @@ const navItems = [
     }
 
     const initialTheme = document.documentElement.getAttribute('data-theme') || 'dark';
+    applyTheme(initialTheme);
     themeToggle?.setAttribute(
       'aria-label',
       initialTheme === 'dark' ? 'Switch to light mode' : 'Switch to dark mode'
     );
-    
+
     themeToggle?.addEventListener('click', () => {
       const currentTheme = document.documentElement.getAttribute('data-theme');
-      const newTheme = currentTheme === 'dark' ? 'light' : 'dark';
-      setTheme(newTheme);
-    });
-    
-    const mobileMenuToggle = document.getElementById('mobile-menu-toggle');
-    const mobileMenu = document.getElementById('mobile-menu');
-    
-    mobileMenuToggle?.addEventListener('click', () => {
-      const isExpanded = mobileMenuToggle.getAttribute('aria-expanded') === 'true';
-      mobileMenuToggle.setAttribute('aria-expanded', (!isExpanded).toString());
-      mobileMenu?.setAttribute('aria-hidden', isExpanded.toString());
-      mobileMenu?.classList.toggle('open');
-      document.body.style.overflow = isExpanded ? '' : 'hidden';
+      setTheme(currentTheme === 'dark' ? 'light' : 'dark');
     });
 
-    const mobileLinks = document.querySelectorAll('.mobile-nav-link');
-    mobileLinks.forEach(link => {
-      link.addEventListener('click', () => {
-        mobileMenuToggle?.setAttribute('aria-expanded', 'false');
-        mobileMenu?.setAttribute('aria-hidden', 'true');
-        mobileMenu?.classList.remove('open');
-        document.body.style.overflow = '';
-      });
+    const mobileMenuToggle = document.getElementById('mobile-menu-toggle');
+    const mobileMenu = document.getElementById('mobile-menu');
+
+    mobileMenuToggle?.addEventListener('click', () => {
+      if (mobileMenu?.classList.contains('open')) {
+        closeMobileMenu();
+      } else {
+        mobileMenuToggle.setAttribute('aria-expanded', 'true');
+        mobileMenu?.setAttribute('aria-hidden', 'false');
+        mobileMenu?.classList.add('open');
+        document.body.style.overflow = 'hidden';
+      }
     });
+
+    document.querySelectorAll('.mobile-nav-link').forEach(link => {
+      link.addEventListener('click', () => closeMobileMenu());
+    });
+
+    document.removeEventListener('keydown', handleHeaderEscape);
+    document.addEventListener('keydown', handleHeaderEscape);
+    desktopQuery.removeEventListener('change', handleDesktopChange);
+    desktopQuery.addEventListener('change', handleDesktopChange);
   }
 
   document.addEventListener('astro:after-swap', () => {
-    const theme = localStorage.getItem('theme') || 'dark';
-    document.documentElement.setAttribute('data-theme', theme);
+    const theme = localStorage.getItem('theme') || (window.matchMedia('(prefers-color-scheme: light)').matches ? 'light' : 'dark');
+    applyTheme(theme);
   });
 
   document.addEventListener('astro:page-load', setupHeader);

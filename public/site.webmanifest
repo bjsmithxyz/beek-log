@@ -1,0 +1,12 @@
+{
+  "name": "bjsmith.xyz",
+  "short_name": "beek",
+  "description": "Portfolio of beek — tech guy & creative",
+  "start_url": "/",
+  "display": "standalone",
+  "background_color": "#0c0c0c",
+  "theme_color": "#0c0c0c",
+  "icons": [
+    { "src": "/favicon.svg", "sizes": "any", "type": "image/svg+xml" }
+  ]
+}

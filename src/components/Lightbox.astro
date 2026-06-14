@@ -30,6 +30,32 @@
 </div>
 
 <script>
+  // Current page's lightbox controller; the document/window listeners below
+  // delegate to it so they can be registered once instead of stacking on every
+  // client-side navigation.
+  let lb: {
+    ids: string[];
+    isActive: () => boolean;
+    show: (i: number) => void;
+    hide: () => void;
+    navigate: (dir: number) => void;
+    requestClose: () => void;
+  } | null = null;
+
+  function onKeydown(e: KeyboardEvent) {
+    if (!lb || !lb.isActive()) return;
+    if (e.key === 'Escape') lb.requestClose();
+    if (e.key === 'ArrowLeft') lb.navigate(-1);
+    if (e.key === 'ArrowRight') lb.navigate(1);
+  }
+
+  function onPopstate() {
+    if (!lb) return;
+    const idx = lb.ids.indexOf(location.hash.slice(1));
+    if (idx >= 0) lb.show(idx);
+    else if (lb.isActive()) lb.hide();
+  }
+
   function setupLightbox() {
     const lightbox = document.getElementById('lightbox');
     const lightboxImg = document.getElementById('lightbox-img') as HTMLImageElement;
@@ -40,11 +66,16 @@
     const nextBtn = document.querySelector('.lightbox-next');
     const galleryItems = document.querySelectorAll('[data-lightbox]') as NodeListOf<HTMLImageElement>;
 
-    if (!lightbox || !lightboxImg || !lightboxCaption || !lightboxMeta || !closeBtn || !prevBtn || !nextBtn) return;
+    if (!lightbox || !lightboxImg || !lightboxCaption || !lightboxMeta || !closeBtn || !prevBtn || !nextBtn) {
+      lb = null;
+      return;
+    }
 
     let currentIndex = 0;
+    const ids = Array.from(galleryItems).map((el, i) => el.dataset.lightboxId || `img-${i}`);
+    const isActive = () => lightbox.classList.contains('active');
 
-    const updateLightbox = (index: number) => {
+    const render = (index: number) => {
       currentIndex = index;
       const item = galleryItems[currentIndex];
       if (!item) return;
@@ -60,23 +91,14 @@
       lightboxMeta.textContent = item.dataset.meta ?? '';
     };
 
-    const navigate = (direction: number) => {
-      let nextIndex = currentIndex + direction;
-      if (nextIndex < 0) nextIndex = galleryItems.length - 1;
-      if (nextIndex >= galleryItems.length) nextIndex = 0;
-      updateLightbox(nextIndex);
+    const show = (index: number) => {
+      render(index);
+      lightbox.classList.add('active');
+      lightbox.setAttribute('aria-hidden', 'false');
+      document.body.style.overflow = 'hidden';
     };
 
-    galleryItems.forEach((item, index) => {
-      item.addEventListener('click', () => {
-        updateLightbox(index);
-        lightbox.classList.add('active');
-        lightbox.setAttribute('aria-hidden', 'false');
-        document.body.style.overflow = 'hidden';
-      });
-    });
-
-    const closeLightbox = () => {
+    const hide = () => {
       lightbox.classList.remove('active');
       lightbox.setAttribute('aria-hidden', 'true');
       document.body.style.overflow = '';
@@ -85,7 +107,36 @@
       }, 300);
     };
 
-    closeBtn.addEventListener('click', closeLightbox);
+    // Open via a pushed history entry so the URL carries the frame id and the
+    // browser Back button closes the lightbox.
+    const openAt = (index: number) => {
+      history.pushState({ lb: true }, '', '#' + ids[index]);
+      show(index);
+    };
+
+    const navigate = (direction: number) => {
+      let next = currentIndex + direction;
+      if (next < 0) next = galleryItems.length - 1;
+      if (next >= galleryItems.length) next = 0;
+      history.replaceState({ lb: true }, '', '#' + ids[next]);
+      render(next);
+    };
+
+    const requestClose = () => {
+      // unwind our pushed entry if present, else just drop the hash
+      if (history.state && (history.state as { lb?: boolean }).lb) {
+        history.back();
+      } else {
+        history.replaceState(null, '', location.pathname + location.search);
+        hide();
+      }
+    };
+
+    galleryItems.forEach((item, index) => {
+      item.addEventListener('click', () => openAt(index));
+    });
+
+    closeBtn.addEventListener('click', requestClose);
     prevBtn.addEventListener('click', (e) => {
       e.stopPropagation();
       navigate(-1);
@@ -97,17 +148,20 @@
 
     lightbox.addEventListener('click', (e) => {
       if (e.target === lightbox || e.target === document.querySelector('.lightbox-content')) {
-        closeLightbox();
+        requestClose();
       }
     });
 
-    document.addEventListener('keydown', (e) => {
-      if (!lightbox.classList.contains('active')) return;
+    lb = { ids, isActive, show, hide, navigate, requestClose };
 
-      if (e.key === 'Escape') closeLightbox();
-      if (e.key === 'ArrowLeft') navigate(-1);
-      if (e.key === 'ArrowRight') navigate(1);
-    });
+    document.removeEventListener('keydown', onKeydown);
+    document.addEventListener('keydown', onKeydown);
+    window.removeEventListener('popstate', onPopstate);
+    window.addEventListener('popstate', onPopstate);
+
+    // deep link: open the frame named in the URL hash on initial load
+    const initialIdx = ids.indexOf(location.hash.slice(1));
+    if (initialIdx >= 0) show(initialIdx);
   }
 
   document.addEventListener('astro:page-load', setupLightbox);

@@ -37,9 +37,28 @@ const strips: (typeof photosWithLoc)[] = [];
 for (let i = 0; i < photosWithLoc.length; i += FRAMES_PER_STRIP) {
   strips.push(photosWithLoc.slice(i, i + FRAMES_PER_STRIP));
 }
+
+const ogImage = `/og/photos/${entry.slug}.png`;
+const jsonLd = {
+  '@type': 'ImageGallery',
+  name: title,
+  datePublished: date.toISOString(),
+  url: new URL(`/photos/${entry.slug}/`, Astro.site).href,
+  image: new URL(ogImage, Astro.site).href,
+  contentLocation: {
+    '@type': 'Place',
+    name: location.name,
+    geo: { '@type': 'GeoCoordinates', latitude: location.lat, longitude: location.lng },
+  },
+};
 ---
 
-<BaseLayout title={title} description={`${film.name} · ${location.name} — ${photos.length} frames`}>
+<BaseLayout
+  title={title}
+  description={`${film.name} · ${location.name} — ${photos.length} frames`}
+  image={ogImage}
+  jsonLd={jsonLd}
+>
   <article class="roll-detail">
     <div class="container">
       <a href="/photos" class="back-link">
