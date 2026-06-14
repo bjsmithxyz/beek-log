@@ -99,9 +99,29 @@ const fullImages = await Promise.all(
   .frames {
     display: flex;
     gap: 6px;
-    padding: 2px 10px;
+    padding: 2px 10px 6px;
     overflow-x: auto;
+    /* Firefox: thin, square, themed */
     scrollbar-width: thin;
+    scrollbar-color: var(--color-border-strong) transparent;
+  }
+
+  /* WebKit: square brutalist scrollbar matching the site */
+  .frames::-webkit-scrollbar {
+    height: 8px;
+  }
+
+  .frames::-webkit-scrollbar-track {
+    background: transparent;
+  }
+
+  .frames::-webkit-scrollbar-thumb {
+    background: var(--color-border-strong);
+    border: 1px solid #000;
+  }
+
+  .frames::-webkit-scrollbar-thumb:hover {
+    background: var(--edge-color);
   }
 
   .frame {

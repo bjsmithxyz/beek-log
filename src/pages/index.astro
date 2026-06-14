@@ -27,22 +27,9 @@ const recentRolls = allRolls.sort((a, b) => b.data.date.valueOf() - a.data.date.
 
       <nav class="home-nav" aria-label="Primary">
         <a href="/work" class="nav-cmd">&gt; work</a>
+        <a href="/photos" class="nav-cmd">&gt; photos</a>
         <a href="/about" class="nav-cmd">&gt; about</a>
       </nav>
-
-      {recentWork.length > 0 && (
-        <section class="recent" aria-labelledby="recent-heading">
-          <div class="dir-header">
-            <h2 id="recent-heading" class="dir-path">recent/</h2>
-            <a href="/work" class="dir-link">view all →</a>
-          </div>
-          <div class="dir-list">
-            {recentWork.map(work => (
-              <WorkRow work={work} showDescription={false} />
-            ))}
-          </div>
-        </section>
-      )}
 
       {recentRolls.length > 0 && (
         <section class="recent" aria-labelledby="rolls-heading">
@@ -53,6 +40,20 @@ const recentRolls = allRolls.sort((a, b) => b.data.date.valueOf() - a.data.date.
           <div class="dir-list">
             {recentRolls.map(roll => (
               <RollRow roll={roll} />
+            ))}
+          </div>
+        </section>
+      )}
+
+      {recentWork.length > 0 && (
+        <section class="recent" aria-labelledby="recent-heading">
+          <div class="dir-header">
+            <h2 id="recent-heading" class="dir-path">recent/</h2>
+            <a href="/work" class="dir-link">view all →</a>
+          </div>
+          <div class="dir-list">
+            {recentWork.map(work => (
+              <WorkRow work={work} showDescription={false} />
             ))}
           </div>
         </section>

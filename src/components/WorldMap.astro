@@ -45,7 +45,7 @@ const project = (lat: number, lng: number) => ({
       <a href={`#roll-${p.slug}`} class="pin-link">
         <circle cx={x} cy={y} r="2.4" class="pin-halo" />
         <circle cx={x} cy={y} r="1" class="pin" />
-        <title>{`${p.name} — ${p.count} ${p.count === 1 ? 'roll' : 'rolls'}`}</title>
+        <title>{`${p.name} — ${p.count} ${p.count === 1 ? 'frame' : 'frames'}`}</title>
       </a>
     );
   })}

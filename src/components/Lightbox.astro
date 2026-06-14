@@ -23,6 +23,7 @@
 
   <div class="lightbox-content">
     <img id="lightbox-img" src="" alt="" />
+    <div class="lightbox-loading" aria-hidden="true">loading…</div>
     <p id="lightbox-caption"></p>
     <p id="lightbox-meta"></p>
   </div>
@@ -48,7 +49,12 @@
       const item = galleryItems[currentIndex];
       if (!item) return;
 
+      lightbox.classList.add('is-loading');
+      lightboxImg.onload = () => lightbox.classList.remove('is-loading');
+      lightboxImg.onerror = () => lightbox.classList.remove('is-loading');
       lightboxImg.src = item.dataset.full || item.src;
+      // cached/same-source images may not fire onload — clear immediately
+      if (lightboxImg.complete && lightboxImg.naturalWidth) lightbox.classList.remove('is-loading');
       lightboxImg.alt = item.alt;
       lightboxCaption.textContent = item.dataset.caption ?? item.alt.split(' - ')[0];
       lightboxMeta.textContent = item.dataset.meta ?? '';
@@ -149,6 +155,37 @@
     max-height: calc(90vh - 80px);
     object-fit: contain;
     border: 1px solid var(--color-border);
+  }
+
+  .lightbox-loading {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    font-family: var(--font-family);
+    font-size: var(--font-size-sm);
+    letter-spacing: 0.18em;
+    color: var(--color-accent-primary);
+    text-shadow: 0 1px 4px rgba(0, 0, 0, 0.6);
+    pointer-events: none;
+    display: none;
+    animation: lightbox-blink 1s steps(2, start) infinite;
+  }
+
+  .lightbox.is-loading .lightbox-loading {
+    display: block;
+  }
+
+  .lightbox.is-loading #lightbox-img {
+    opacity: 0.3;
+  }
+
+  @keyframes lightbox-blink {
+    50% { opacity: 0.3; }
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    .lightbox-loading { animation: none; }
   }
 
   .lightbox-content p {
