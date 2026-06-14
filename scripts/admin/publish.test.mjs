@@ -1,6 +1,6 @@
 import { test } from 'node:test';
 import assert from 'node:assert/strict';
-import { mkdtemp, mkdir, readdir, readFile, rm } from 'node:fs/promises';
+import { mkdtemp, mkdir, readdir, readFile, writeFile, rm } from 'node:fs/promises';
 import { tmpdir } from 'node:os';
 import { join } from 'node:path';
 import sharp from 'sharp';
@@ -71,6 +71,31 @@ test('writeRollFiles copies existing frames by number during an edit', async () 
   assert.equal(res.frameCount, 2);
   const files = (await readdir(photosDir)).sort();
   assert.deepEqual(files, ['001.jpg', '002.jpg']);
+
+  await rm(root, { recursive: true, force: true });
+});
+
+test('writeRollFiles renames the slug during an edit, removing the old roll', async () => {
+  const root = await mkdtemp(join(tmpdir(), 'roll-'));
+  const oldDir = join(root, 'src/assets/photos/2026-06-old');
+  await mkdir(oldDir, { recursive: true });
+  await mkdir(join(root, 'src/content/photos'), { recursive: true });
+  await makeImage(join(oldDir, '001.jpg'), '#0000ff');
+  await writeFile(join(root, 'src/content/photos/2026-06-old.md'), 'x', 'utf8');
+
+  const meta = {
+    title: 't', stock: 'kodak-portra-400', date: '2026-06-02',
+    location: { name: 'X', lat: 1, lng: 2 }, draft: true,
+  };
+  const res = await writeRollFiles({
+    repoRoot: root, slug: '2026-06-new', sourceSlug: '2026-06-old', meta, body: '',
+    frames: [{ existing: 1, alt: 'kept' }],
+  });
+
+  assert.equal(res.frameCount, 1);
+  assert.deepEqual(res.removed, ['src/assets/photos/2026-06-old', 'src/content/photos/2026-06-old.md']);
+  assert.deepEqual((await readdir(join(root, 'src/assets/photos/2026-06-new'))).sort(), ['001.jpg']);
+  await assert.rejects(() => readdir(oldDir));
 
   await rm(root, { recursive: true, force: true });
 });

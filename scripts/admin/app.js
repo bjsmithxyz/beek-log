@@ -9,6 +9,7 @@ const api = async (path, body) => {
 
 let frames = [];      // { srcPath?|existing, thumb, alt, caption, location|null, explicit }
 let mode = 'create';  // 'create' | 'edit'
+let editSlug = null;  // original slug when editing (existing frames copy from it)
 let stocks = [];
 
 function log(msg) { $('log').textContent += msg + '\n'; }
@@ -159,9 +160,10 @@ $('slug').onchange = (e) => { e.target.value = slugify(e.target.value); };
 
 $('roll-picker').onchange = async (e) => {
   const slug = e.target.value;
-  if (!slug) { mode = 'create'; frames = []; render(); return; }
+  if (!slug) { mode = 'create'; editSlug = null; frames = []; render(); return; }
   mode = 'edit';
   const roll = await api('/api/roll/' + slug);
+  editSlug = roll.slug;
   $('title').value = roll.meta.title;
   $('stock').value = roll.meta.stock;
   $('date').value = roll.meta.date;
@@ -181,6 +183,7 @@ $('roll-picker').onchange = async (e) => {
 function payload(commit) {
   return {
     mode, commit, slug: slugify($('slug').value),
+    sourceSlug: mode === 'edit' ? editSlug : undefined,
     title: $('title').value.trim(), stock: $('stock').value, date: $('date').value,
     location: rollLoc(), draft: $('draft').checked, bodyText: $('body').value,
     frames: frames.map((f) => ({

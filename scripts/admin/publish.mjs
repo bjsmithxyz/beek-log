@@ -12,12 +12,17 @@ const MAX_EDGE = 2048;
 
 // frames: [{ srcPath? , existing?: number, alt, caption?, location? }]
 // New frames (srcPath) are sharp-processed; existing frames (number) are copied
-// losslessly from the current roll dir. Everything is built in a temp dir and
-// swapped in, so reorder/add/remove can't collide.
-export async function writeRollFiles({ repoRoot, slug, meta, frames, body = '' }) {
+// losslessly from the source roll dir (`sourceSlug`, defaults to `slug`).
+// Everything is built in a temp dir and swapped in, so reorder/add/remove can't
+// collide. When an edit renames the slug (sourceSlug !== slug), the old roll dir
+// and markdown are removed and returned in `removed` so the caller can stage
+// the deletions.
+export async function writeRollFiles({ repoRoot, slug, meta, frames, body = '', sourceSlug = slug }) {
   if (!/^[a-z0-9-]+$/.test(slug)) throw new Error(`invalid slug: ${slug}`);
+  if (!/^[a-z0-9-]+$/.test(sourceSlug)) throw new Error(`invalid sourceSlug: ${sourceSlug}`);
 
   const photosDir = join(repoRoot, 'src/assets/photos', slug);
+  const sourceDir = join(repoRoot, 'src/assets/photos', sourceSlug);
   const tmpDir = join(repoRoot, 'src/assets/photos', `.tmp-${slug}`);
   const contentDir = join(repoRoot, 'src/content/photos');
   const contentFile = join(contentDir, `${slug}.md`);
@@ -38,7 +43,7 @@ export async function writeRollFiles({ repoRoot, slug, meta, frames, body = '' }
         .jpeg({ quality: 80, mozjpeg: true })
         .toFile(outPath);
     } else if (f.existing != null) {
-      await copyFile(join(photosDir, `${String(f.existing).padStart(3, '0')}.jpg`), outPath);
+      await copyFile(join(sourceDir, `${String(f.existing).padStart(3, '0')}.jpg`), outPath);
     } else {
       throw new Error('frame has neither srcPath nor existing');
     }
@@ -57,10 +62,19 @@ export async function writeRollFiles({ repoRoot, slug, meta, frames, body = '' }
   await mkdir(contentDir, { recursive: true });
   await writeFile(contentFile, md, 'utf8');
 
+  // slug rename: drop the old roll dir + markdown so there's no duplicate
+  const removed = [];
+  if (sourceSlug !== slug) {
+    await rm(sourceDir, { recursive: true, force: true });
+    await rm(join(contentDir, `${sourceSlug}.md`), { force: true });
+    removed.push(`src/assets/photos/${sourceSlug}`, `src/content/photos/${sourceSlug}.md`);
+  }
+
   return {
     frameCount: n,
     photosDir: `src/assets/photos/${slug}`,
     contentFile: `src/content/photos/${slug}.md`,
+    removed,
   };
 }
 

@@ -150,10 +150,11 @@ route('GET', /^\/app\.js$/, async (req, res) => {
 
 route('POST', /^\/api\/publish$/, async (req, res) => {
   const body = await readBody(req);
-  const { slug, title, stock, date, location, draft, frames, commit, bodyText = '' } = body;
+  const { slug, sourceSlug, title, stock, date, location, draft, frames, commit, bodyText = '' } = body;
 
   const errors = [];
   if (!/^[a-z0-9-]+$/.test(slug || '')) errors.push('slug must match [a-z0-9-]');
+  if (sourceSlug && !/^[a-z0-9-]+$/.test(sourceSlug)) errors.push('sourceSlug must match [a-z0-9-]');
   if (!(stock in filmStocks)) errors.push(`unknown stock: ${stock}`);
   if (!/^\d{4}-\d{2}-\d{2}$/.test(date || '')) errors.push('date must be YYYY-MM-DD');
   if (!location || !location.name || !Number.isFinite(location.lat) || !Number.isFinite(location.lng)) {
@@ -171,18 +172,20 @@ route('POST', /^\/api\/publish$/, async (req, res) => {
   const log = [];
   const written = await writeRollFiles({
     repoRoot, slug, body: bodyText,
+    sourceSlug: body.mode === 'edit' ? (sourceSlug || slug) : slug,
     meta: { title, stock, date, location, draft },
     frames,
   });
   log.push(`wrote ${written.frameCount} frames → ${written.photosDir}`);
   log.push(`wrote ${written.contentFile}`);
+  if (written.removed.length) log.push(`removed old roll → ${written.removed.join(', ')}`);
 
   let committed = false;
   if (commit) {
     const message = `${body.mode === 'edit' ? 'Update' : 'Add'} ${title} roll (${filmStocks[stock].name})`;
     const gitLog = await gitPublish({
       repoRoot,
-      paths: [written.photosDir, written.contentFile],
+      paths: [written.photosDir, written.contentFile, ...written.removed],
       message,
     });
     log.push(...gitLog);
