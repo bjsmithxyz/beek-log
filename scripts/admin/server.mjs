@@ -36,6 +36,10 @@ route('GET', /^\/global\.css$/, async (req, res) => {
   send(res, 200, await readFile(join(repoRoot, 'src/styles/global.css')), 'text/css');
 });
 
+route('GET', /^\/favicon\.svg$/, async (req, res) => {
+  send(res, 200, await readFile(join(__dirname, 'favicon.svg')), 'image/svg+xml');
+});
+
 route('GET', /^\/api\/config$/, async (req, res) => {
   const stocks = Object.entries(filmStocks).map(([slug, v]) => ({ slug, name: v.name, type: v.type }));
   send(res, 200, { stocks });

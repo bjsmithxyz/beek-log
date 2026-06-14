@@ -19,7 +19,7 @@ function clearLog() { $('log').textContent = ''; }
   $('stock').innerHTML = stocks.map((s) => `<option value="${s.slug}">${s.name}</option>`).join('');
   const rolls = await api('/api/rolls');
   $('roll-picker').innerHTML = '<option value="">— new roll —</option>' +
-    rolls.map((r) => `<option value="${r.slug}">${r.slug} (${r.frameCount}f${r.draft ? ', draft' : ''})</option>`).join('');
+    rolls.map((r) => `<option value="${r.slug}">${r.slug}${r.draft ? ' (draft)' : ''}</option>`).join('');
   $('date').value = new Date().toISOString().slice(0, 10);
 })();
 
@@ -192,17 +192,27 @@ function payload(commit) {
 }
 
 async function doPublish(commit) {
-  clearLog();
   const p = payload(commit);
   if (commit) {
     const msg = `${mode === 'edit' ? 'Update' : 'Add'} ${p.title} roll (${(stocks.find((s) => s.slug === p.stock) || {}).name})`;
     if (!confirm(`commit + push?\n\n${msg}`)) return;
   }
+  clearLog();
+  $('write').disabled = true;
+  $('publish').disabled = true;
+  log(commit
+    ? `submitting "${p.slug}" — processing ${p.frames.length} frames, committing & pushing…`
+    : `writing "${p.slug}" — processing ${p.frames.length} frames…`);
   try {
     const res = await api('/api/publish', p);
     res.log.forEach(log);
-    log(res.committed ? '✓ committed + pushed' : '✓ written (not committed)');
-  } catch (e) { log('publish error: ' + e.message); }
+    log(res.committed ? '✓ committed + pushed — Netlify will deploy shortly' : '✓ written (not committed)');
+  } catch (e) {
+    log('✗ publish error: ' + e.message);
+  } finally {
+    $('write').disabled = false;
+    $('publish').disabled = false;
+  }
 }
 $('write').onclick = () => doPublish(false);
 $('publish').onclick = () => doPublish(true);
