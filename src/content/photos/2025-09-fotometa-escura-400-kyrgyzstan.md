@@ -1,5 +1,5 @@
 ---
-title: Кыргызстан - Song-Köl Lake
+title: Кыргызстан
 stock: fotometa-escura-400
 date: 2025-09-06
 location:
