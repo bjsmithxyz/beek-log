@@ -14,8 +14,8 @@ if (!src) {
   process.exit(1);
 }
 
-const COLS = 120;
-const ROWS = 60;
+const COLS = 240;
+const ROWS = 120;
 
 const { data, info } = await sharp(src)
   .resize(COLS, ROWS, { fit: 'fill' })

@@ -102,7 +102,7 @@ $('scan').onclick = async () => {
     const start = frames.length;
     scanned.forEach((f, k) => frames.push({
       srcPath: f.srcPath, thumb: f.thumb,
-      alt: `${($('loc-name').value || parsed.country || 'frame')} — frame ${start + k + 1}`,
+      alt: `frame ${start + k + 1}`,
       caption: '', location: null, explicit: false,
     }));
     if (parsed.date) $('date').value = parsed.date;

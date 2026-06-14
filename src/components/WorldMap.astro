@@ -1,6 +1,6 @@
 ---
 // Dot-matrix world map in the site's terminal aesthetic. The land mask is a
-// precomputed 120x60 grid (see scripts/generate-world-dots.mjs); shoot
+// precomputed 240x120 grid (see scripts/generate-world-dots.mjs); shoot
 // locations are plotted with an equirectangular projection. Pins are plain
 // anchors that jump to the roll list below — no client JS.
 import dots from '../data/world-dots.json';
@@ -19,8 +19,8 @@ interface Props {
 
 const { pins } = Astro.props;
 
-const COLS = 120;
-const ROWS = 60;
+const COLS = 240;
+const ROWS = 120;
 
 const project = (lat: number, lng: number) => ({
   x: +(((lng + 180) / 360) * COLS).toFixed(1),
@@ -29,22 +29,22 @@ const project = (lat: number, lng: number) => ({
 ---
 
 <svg
-  viewBox="0 0 120 60"
+  viewBox="0 0 240 120"
   class="world-map"
   role="img"
   aria-label={`Map of shoot locations: ${pins.map((p) => p.name).join(', ')}`}
 >
   {(dots as string[]).flatMap((row, y) =>
     [...row].map((c, x) =>
-      c === '1' ? <circle cx={x + 0.5} cy={y + 0.5} r="0.32" class="dot" /> : null
+      c === '1' ? <circle cx={x + 0.5} cy={y + 0.5} r="0.4" class="dot" /> : null
     )
   )}
   {pins.map((p) => {
     const { x, y } = project(p.lat, p.lng);
     return (
       <a href={`#roll-${p.slug}`} class="pin-link">
-        <circle cx={x} cy={y} r="2.4" class="pin-halo" />
-        <circle cx={x} cy={y} r="1" class="pin" />
+        <circle cx={x} cy={y} r="4.8" class="pin-halo" />
+        <circle cx={x} cy={y} r="2" class="pin" />
         <title>{`${p.name} — ${p.count} ${p.count === 1 ? 'frame' : 'frames'}`}</title>
       </a>
     );
