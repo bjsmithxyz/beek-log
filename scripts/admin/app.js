@@ -300,6 +300,7 @@ $('pk-ok').onclick = () => {
   closePicker(loc);
 };
 $('loc-edit').onclick = async () => {
-  const loc = await openLocationPicker({ initial: rollLoc(), known: knownLocations(rollLoc(), frames) });
+  const current = rollLoc();
+  const loc = await openLocationPicker({ initial: current, known: knownLocations(current, frames) });
   if (loc) setRollLocation(loc);
 };
