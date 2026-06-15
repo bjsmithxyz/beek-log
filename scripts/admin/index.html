@@ -53,7 +53,8 @@
     .pk-map .leaflet-tile { filter: grayscale(1) brightness(.9); }
     .chips { display: flex; flex-wrap: wrap; gap: .3rem; margin: .25rem 0; }
     .chip { font-size: var(--font-size-xs); padding: .2rem .4rem; cursor: pointer; width: auto; }
-    .gh-badge { position: fixed; bottom: 1rem; right: 1rem; z-index: 1100;
+    .publish-row { display: flex; align-items: center; gap: .5rem; }
+    .gh-badge { margin-left: auto;
       font-size: var(--font-size-xs); padding: .35rem .6rem; cursor: pointer;
       background: var(--color-bg-secondary); border: 1px solid var(--color-border);
       user-select: none; }
@@ -118,8 +119,11 @@
 
   <fieldset>
     <legend>publish</legend>
-    <button id="write">write roll</button>
-    <button id="publish" class="primary">write + commit + push</button>
+    <div class="publish-row">
+      <button id="write">write roll</button>
+      <button id="publish" class="primary">write + commit + push</button>
+      <div id="gh-badge" class="gh-badge checking" title="click to recheck GitHub auth">● github: checking…</div>
+    </div>
     <div id="log" style="margin-top:.5rem;"></div>
   </fieldset>
 
@@ -146,7 +150,6 @@
     </div>
   </div>
 
-  <div id="gh-badge" class="gh-badge checking" title="click to recheck GitHub auth">● github: checking…</div>
   <script src="/app.js" type="module"></script>
 </body>
 </html>
