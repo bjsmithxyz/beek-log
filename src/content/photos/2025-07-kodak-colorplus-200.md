@@ -1,231 +1,228 @@
 ---
-title: Chiang Mai / Hanoi
+title: Hà Nội / Ninh Bình
 stock: kodak-colorplus-200
-date: 2025-07-10
+date: 2025-07-15
 location:
-  name: จังหวัดเชียงใหม่, ประเทศไทย
-  lat: 18.6951714
-  lng: 98.4462684
+  name: Hà Nội, Việt Nam
+  lat: 21.0283334
+  lng: 105.854041
 photos:
   - src: ../../assets/photos/2025-07-kodak-colorplus-200/001.jpg
     alt: frame 1
-    caption: Somewhere in Chiang Mai.
-    location:
-      name: Chiang Mai City Municipality
-      lat: 18.7882778
-      lng: 98.9858802
-      region:
-        name: Thailand
-        lat: 14.8971921
-        lng: 100.83273
-  - src: ../../assets/photos/2025-07-kodak-colorplus-200/002.jpg
-    alt: frame 2
-    location:
-      name: Chiang Mai City Municipality
-      lat: 18.7882778
-      lng: 98.9858802
-      region:
-        name: Thailand
-        lat: 14.8971921
-        lng: 100.83273
-  - src: ../../assets/photos/2025-07-kodak-colorplus-200/003.jpg
-    alt: frame 3
-    location:
-      name: Chiang Mai City Municipality
-      lat: 18.7882778
-      lng: 98.9858802
-      region:
-        name: Thailand
-        lat: 14.8971921
-        lng: 100.83273
-  - src: ../../assets/photos/2025-07-kodak-colorplus-200/004.jpg
-    alt: frame 4
-    location:
-      name: Chiang Mai City Municipality
-      lat: 18.7882778
-      lng: 98.9858802
-      region:
-        name: Thailand
-        lat: 14.8971921
-        lng: 100.83273
-  - src: ../../assets/photos/2025-07-kodak-colorplus-200/005.jpg
-    alt: frame 5
-    location:
-      name: Chiang Mai City Municipality
-      lat: 18.7882778
-      lng: 98.9858802
-      region:
-        name: Thailand
-        lat: 14.8971921
-        lng: 100.83273
-  - src: ../../assets/photos/2025-07-kodak-colorplus-200/006.jpg
-    alt: frame 6
-    caption: Kayan woman in  Thailand, a Tibeto-Burman ethnic minority of Myanmar.
-    location:
-      name: Chiang Rai Province
-      lat: 19.7589517
-      lng: 99.6734592
-      region:
-        name: Thailand
-        lat: 14.8971921
-        lng: 100.83273
-  - src: ../../assets/photos/2025-07-kodak-colorplus-200/007.jpg
-    alt: frame 7
-    caption: Kayan mother and daughter.
-    location:
-      name: Chiang Rai Province
-      lat: 19.7589517
-      lng: 99.6734592
-      region:
-        name: Thailand
-        lat: 14.8971921
-        lng: 100.83273
-  - src: ../../assets/photos/2025-07-kodak-colorplus-200/008.jpg
-    alt: frame 8
-    caption: Wat Rong Khun
-    location:
-      name: Chiang Rai Province
-      lat: 19.7589517
-      lng: 99.6734592
-      region:
-        name: Thailand
-        lat: 14.8971921
-        lng: 100.83273
-  - src: ../../assets/photos/2025-07-kodak-colorplus-200/009.jpg
-    alt: frame 9
-    caption: Wat Rong Khun
-    location:
-      name: Chiang Rai Province
-      lat: 19.7589517
-      lng: 99.6734592
-      region:
-        name: Thailand
-        lat: 14.8971921
-        lng: 100.83273
-  - src: ../../assets/photos/2025-07-kodak-colorplus-200/010.jpg
-    alt: frame 10
-    caption: Baan Dam museum grounds.
-    location:
-      name: Chiang Rai Province
-      lat: 19.7589517
-      lng: 99.6734592
-      region:
-        name: Thailand
-        lat: 14.8971921
-        lng: 100.83273
-  - src: ../../assets/photos/2025-07-kodak-colorplus-200/011.jpg
-    alt: frame 11
-    caption: Baan Dam museum grounds.
-    location:
-      name: Chiang Rai Province
-      lat: 19.7589517
-      lng: 99.6734592
-      region:
-        name: Thailand
-        lat: 14.8971921
-        lng: 100.83273
-  - src: ../../assets/photos/2025-07-kodak-colorplus-200/012.jpg
-    alt: frame 12
-    caption: Baan Dam museum grounds.
-    location:
-      name: Chiang Rai Province
-      lat: 19.7589517
-      lng: 99.6734592
-      region:
-        name: Thailand
-        lat: 14.8971921
-        lng: 100.83273
-  - src: ../../assets/photos/2025-07-kodak-colorplus-200/013.jpg
-    alt: frame 13
-    caption: Mekong River.
-    location:
-      name: Chiang Rai Province
-      lat: 19.7589517
-      lng: 99.6734592
-      region:
-        name: Thailand
-        lat: 14.8971921
-        lng: 100.83273
-  - src: ../../assets/photos/2025-07-kodak-colorplus-200/014.jpg
-    alt: frame 14
-    caption: Mekong River, looking at Laos.
-    location:
-      name: Chiang Rai Province
-      lat: 19.7589517
-      lng: 99.6734592
-      region:
-        name: Thailand
-        lat: 14.8971921
-        lng: 100.83273
-  - src: ../../assets/photos/2025-07-kodak-colorplus-200/015.jpg
-    alt: frame 15
-    caption: Van Pak Len, Laos.
-    location:
-      name: Chiang Rai Province
-      lat: 19.7589517
-      lng: 99.6734592
-      region:
-        name: Thailand
-        lat: 14.8971921
-        lng: 100.83273
-  - src: ../../assets/photos/2025-07-kodak-colorplus-200/016.jpg
-    alt: frame 16
-    location:
-      name: Chiang Mai City Municipality
-      lat: 18.7882778
-      lng: 98.9858802
-      region:
-        name: Thailand
-        lat: 14.8971921
-        lng: 100.83273
-  - src: ../../assets/photos/2025-07-kodak-colorplus-200/017.jpg
-    alt: frame 17
-    location:
-      name: Chiang Mai City Municipality
-      lat: 18.7882778
-      lng: 98.9858802
-      region:
-        name: Thailand
-        lat: 14.8971921
-        lng: 100.83273
-  - src: ../../assets/photos/2025-07-kodak-colorplus-200/018.jpg
-    alt: frame 18
-    location:
-      name: Chiang Mai City Municipality
-      lat: 18.7882778
-      lng: 98.9858802
-      region:
-        name: Thailand
-        lat: 14.8971921
-        lng: 100.83273
-  - src: ../../assets/photos/2025-07-kodak-colorplus-200/019.jpg
-    alt: frame 19
     location:
       name: Hà Nội
       lat: 21.0283334
       lng: 105.854041
+      region:
+        name: Vietnam
+        lat: 15.9266657
+        lng: 107.9650855
+  - src: ../../assets/photos/2025-07-kodak-colorplus-200/002.jpg
+    alt: frame 2
+    location:
+      name: Hà Nội
+      lat: 21.0283334
+      lng: 105.854041
+      region:
+        name: Vietnam
+        lat: 15.9266657
+        lng: 107.9650855
+  - src: ../../assets/photos/2025-07-kodak-colorplus-200/003.jpg
+    alt: frame 3
+    location:
+      name: Hà Nội
+      lat: 21.0283334
+      lng: 105.854041
+      region:
+        name: Vietnam
+        lat: 15.9266657
+        lng: 107.9650855
+  - src: ../../assets/photos/2025-07-kodak-colorplus-200/004.jpg
+    alt: frame 4
+    location:
+      name: Hà Nội
+      lat: 21.0283334
+      lng: 105.854041
+      region:
+        name: Vietnam
+        lat: 15.9266657
+        lng: 107.9650855
+  - src: ../../assets/photos/2025-07-kodak-colorplus-200/005.jpg
+    alt: frame 5
+    location:
+      name: Hoa Lư Ward
+      lat: 20.2421142
+      lng: 105.9746207
+      region:
+        name: Vietnam
+        lat: 15.9266657
+        lng: 107.9650855
+  - src: ../../assets/photos/2025-07-kodak-colorplus-200/006.jpg
+    alt: frame 6
+    location:
+      name: Hoa Lư Ward
+      lat: 20.2421142
+      lng: 105.9746207
+      region:
+        name: Vietnam
+        lat: 15.9266657
+        lng: 107.9650855
+  - src: ../../assets/photos/2025-07-kodak-colorplus-200/007.jpg
+    alt: frame 7
+    location:
+      name: Hoa Lư Ward
+      lat: 20.2421142
+      lng: 105.9746207
+      region:
+        name: Vietnam
+        lat: 15.9266657
+        lng: 107.9650855
+  - src: ../../assets/photos/2025-07-kodak-colorplus-200/008.jpg
+    alt: frame 8
+    location:
+      name: Hoa Lư Ward
+      lat: 20.2421142
+      lng: 105.9746207
+      region:
+        name: Vietnam
+        lat: 15.9266657
+        lng: 107.9650855
+  - src: ../../assets/photos/2025-07-kodak-colorplus-200/009.jpg
+    alt: frame 9
+    location:
+      name: Hoa Lư Ward
+      lat: 20.2421142
+      lng: 105.9746207
+      region:
+        name: Vietnam
+        lat: 15.9266657
+        lng: 107.9650855
+  - src: ../../assets/photos/2025-07-kodak-colorplus-200/010.jpg
+    alt: frame 10
+    location:
+      name: Hoa Lư Ward
+      lat: 20.2421142
+      lng: 105.9746207
+      region:
+        name: Vietnam
+        lat: 15.9266657
+        lng: 107.9650855
+  - src: ../../assets/photos/2025-07-kodak-colorplus-200/011.jpg
+    alt: frame 11
+    caption: Động Hoàng Hổ.
+    location:
+      name: Hoa Lư Ward
+      lat: 20.2421142
+      lng: 105.9746207
+      region:
+        name: Vietnam
+        lat: 15.9266657
+        lng: 107.9650855
+  - src: ../../assets/photos/2025-07-kodak-colorplus-200/012.jpg
+    alt: frame 12
+    caption: Động Hoàng Hổ.
+    location:
+      name: Hoa Lư Ward
+      lat: 20.2421142
+      lng: 105.9746207
+      region:
+        name: Vietnam
+        lat: 15.9266657
+        lng: 107.9650855
+  - src: ../../assets/photos/2025-07-kodak-colorplus-200/013.jpg
+    alt: frame 13
+    caption: Động Hoàng Hổ.
+    location:
+      name: Hoa Lư Ward
+      lat: 20.2421142
+      lng: 105.9746207
+      region:
+        name: Vietnam
+        lat: 15.9266657
+        lng: 107.9650855
+  - src: ../../assets/photos/2025-07-kodak-colorplus-200/014.jpg
+    alt: frame 14
+    caption: Động Hoàng Hổ.
+    location:
+      name: Hoa Lư Ward
+      lat: 20.2421142
+      lng: 105.9746207
+      region:
+        name: Vietnam
+        lat: 15.9266657
+        lng: 107.9650855
+  - src: ../../assets/photos/2025-07-kodak-colorplus-200/015.jpg
+    alt: frame 15
+    caption: Động Hoàng Hổ.
+    location:
+      name: Hoa Lư Ward
+      lat: 20.2421142
+      lng: 105.9746207
+      region:
+        name: Vietnam
+        lat: 15.9266657
+        lng: 107.9650855
+  - src: ../../assets/photos/2025-07-kodak-colorplus-200/016.jpg
+    alt: frame 16
+    caption: Động Hoàng Hổ.
+    location:
+      name: Hoa Lư Ward
+      lat: 20.2421142
+      lng: 105.9746207
+      region:
+        name: Vietnam
+        lat: 15.9266657
+        lng: 107.9650855
+  - src: ../../assets/photos/2025-07-kodak-colorplus-200/017.jpg
+    alt: frame 17
+    caption: Động Hoàng Hổ.
+    location:
+      name: Hoa Lư Ward
+      lat: 20.2421142
+      lng: 105.9746207
+      region:
+        name: Vietnam
+        lat: 15.9266657
+        lng: 107.9650855
+  - src: ../../assets/photos/2025-07-kodak-colorplus-200/018.jpg
+    alt: frame 18
+    caption: Động Hoàng Hổ.
+    location:
+      name: Hoa Lư Ward
+      lat: 20.2421142
+      lng: 105.9746207
+      region:
+        name: Vietnam
+        lat: 15.9266657
+        lng: 107.9650855
+  - src: ../../assets/photos/2025-07-kodak-colorplus-200/019.jpg
+    alt: frame 19
+    caption: Chùa Bái Đính.
+    location:
+      name: Hoa Lư Ward
+      lat: 20.2421142
+      lng: 105.9746207
       region:
         name: Vietnam
         lat: 15.9266657
         lng: 107.9650855
   - src: ../../assets/photos/2025-07-kodak-colorplus-200/020.jpg
     alt: frame 20
-    caption: Train street.
+    caption: Chùa Bái Đính.
     location:
-      name: Hà Nội
-      lat: 21.0283334
-      lng: 105.854041
+      name: Hoa Lư Ward
+      lat: 20.2421142
+      lng: 105.9746207
       region:
         name: Vietnam
         lat: 15.9266657
         lng: 107.9650855
   - src: ../../assets/photos/2025-07-kodak-colorplus-200/021.jpg
     alt: frame 21
-    caption: Train street.
     location:
-      name: Hà Nội
-      lat: 21.0283334
-      lng: 105.854041
+      name: Hoa Lư Ward
+      lat: 20.2421142
+      lng: 105.9746207
       region:
         name: Vietnam
         lat: 15.9266657
@@ -262,7 +259,7 @@ photos:
         lng: 107.9650855
   - src: ../../assets/photos/2025-07-kodak-colorplus-200/025.jpg
     alt: frame 25
-    caption: Uncle Ho's tomb.
+    caption: Chợ Đồng Xuân.
     location:
       name: Hà Nội
       lat: 21.0283334
@@ -283,7 +280,16 @@ photos:
         lng: 107.9650855
   - src: ../../assets/photos/2025-07-kodak-colorplus-200/027.jpg
     alt: frame 27
-    caption: oh hi doggy
+    location:
+      name: Hà Nội
+      lat: 21.0283334
+      lng: 105.854041
+      region:
+        name: Vietnam
+        lat: 15.9266657
+        lng: 107.9650855
+  - src: ../../assets/photos/2025-07-kodak-colorplus-200/028.jpg
+    alt: frame 28
     location:
       name: Hà Nội
       lat: 21.0283334
