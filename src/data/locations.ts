@@ -46,12 +46,8 @@ export interface Pin {
   members: string[];
 }
 
-interface PinRoll {
+interface PinRoll extends RollLike {
   id: string;
-  data: {
-    location: Location;
-    photos: { location?: Location }[];
-  };
 }
 
 // One pin per primary: group every roll's effective locations by region name
@@ -83,15 +79,18 @@ export function aggregatePins(rolls: PinRoll[]): Pin[] {
       g.places.set(loc.name, (g.places.get(loc.name) ?? 0) + loc.count);
     }
   }
-  return [...groups.values()].map((g) => ({
-    slug: g.slug,
-    label: g.label,
-    lat: g.lat,
-    lng: g.lng,
-    count: g.count,
-    members: [...g.places.entries()]
-      .filter(([name]) => name.toLowerCase() !== g.label.toLowerCase())
-      .sort((a, b) => b[1] - a[1])
-      .map(([name]) => name),
-  }));
+  return [...groups.values()].map((g) => {
+    const labelKey = g.label.toLowerCase();
+    return {
+      slug: g.slug,
+      label: g.label,
+      lat: g.lat,
+      lng: g.lng,
+      count: g.count,
+      members: [...g.places.entries()]
+        .filter(([name]) => name.toLowerCase() !== labelKey)
+        .sort((a, b) => b[1] - a[1])
+        .map(([name]) => name),
+    };
+  });
 }
