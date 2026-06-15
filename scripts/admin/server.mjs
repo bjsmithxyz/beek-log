@@ -2,6 +2,7 @@
 // the Astro build). Start with: npm run admin
 import { createServer } from 'node:http';
 import { readFile, readdir } from 'node:fs/promises';
+import { existsSync } from 'node:fs';
 import { fileURLToPath } from 'node:url';
 import { basename, dirname, join } from 'node:path';
 import { filmStocks } from '../../src/data/film-stocks.ts';
@@ -208,6 +209,15 @@ route('POST', /^\/api\/publish$/, async (req, res) => {
     if (badRegion(f.location)) errors.push(`frame ${i + 1} region invalid`);
   });
   if (errors.length) return send(res, 400, { error: errors.join('; ') });
+
+  // Overwrite guard: a write may only land on its own roll. Writing a slug that
+  // already belongs to a different roll (a fresh create, or an edit renamed onto
+  // another roll's slug) is refused so one roll can never clobber another.
+  const isEdit = body.mode === 'edit';
+  const targetExists = existsSync(join(CONTENT_DIR, `${slug}.md`));
+  if (targetExists && !(isEdit && sourceSlug === slug)) {
+    return send(res, 409, { error: `roll "${slug}" already exists — choose a different slug, or edit that roll directly` });
+  }
 
   const log = [];
   const written = await writeRollFiles({

@@ -86,6 +86,7 @@ async function setFrameLocation(i) {
   });
   if (!loc) return;
   fillForward(frames, i, loc);
+  refreshSlug();
   render();
 }
 
@@ -102,6 +103,7 @@ $('bulk-loc').onclick = async () => {
   const loc = await openLocationPicker({ initial: null, known: knownLocations(rollLoc(), frames) });
   if (!loc) return;
   selected.forEach((i) => { frames[i].location = loc; frames[i].explicit = true; });
+  refreshSlug();
   render();
 };
 
@@ -144,7 +146,10 @@ function slugify(s) {
 function refreshSlug() {
   if (mode === 'edit') return;
   const date = $('date').value, stock = $('stock').value;
-  const place = ($('loc-name').value || '').split(',')[0];
+  // prefer the roll primary, else the first frame that has a location, so the
+  // slug carries a place even when only per-frame locations were set
+  const primary = rollLoc() || (frames.find((f) => f.location) || {}).location;
+  const place = (primary && primary.name ? primary.name : '').split(',')[0];
   const ym = date.slice(0, 7);
   $('slug').value = [ym, stock, slugify(place)].filter(Boolean).join('-');
 }
