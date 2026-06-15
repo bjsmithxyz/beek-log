@@ -30,52 +30,59 @@ export async function writeRollFiles({ repoRoot, slug, meta, frames, body = '', 
   await rm(tmpDir, { recursive: true, force: true });
   await mkdir(tmpDir, { recursive: true });
 
-  const outPhotos = [];
-  let n = 0;
-  for (const f of frames) {
-    n += 1;
-    const outName = `${String(n).padStart(3, '0')}.jpg`;
-    const outPath = join(tmpDir, outName);
-    if (f.srcPath) {
-      await sharp(f.srcPath)
-        .rotate()
-        .resize({ width: MAX_EDGE, height: MAX_EDGE, fit: 'inside', withoutEnlargement: true })
-        .jpeg({ quality: 80, mozjpeg: true })
-        .toFile(outPath);
-    } else if (f.existing != null) {
-      await copyFile(join(sourceDir, `${String(f.existing).padStart(3, '0')}.jpg`), outPath);
-    } else {
-      throw new Error('frame has neither srcPath nor existing');
+  // Everything is staged in tmpDir and swapped in atomically; the finally
+  // clears tmpDir so a failed write never leaves a stray .tmp-<slug> behind.
+  // (On success tmpDir was renamed away, so the cleanup is a no-op.)
+  try {
+    const outPhotos = [];
+    let n = 0;
+    for (const f of frames) {
+      n += 1;
+      const outName = `${String(n).padStart(3, '0')}.jpg`;
+      const outPath = join(tmpDir, outName);
+      if (f.srcPath) {
+        await sharp(f.srcPath)
+          .rotate()
+          .resize({ width: MAX_EDGE, height: MAX_EDGE, fit: 'inside', withoutEnlargement: true })
+          .jpeg({ quality: 80, mozjpeg: true })
+          .toFile(outPath);
+      } else if (f.existing != null) {
+        await copyFile(join(sourceDir, `${String(f.existing).padStart(3, '0')}.jpg`), outPath);
+      } else {
+        throw new Error('frame has neither srcPath nor existing');
+      }
+      outPhotos.push({
+        src: `../../assets/photos/${slug}/${outName}`,
+        alt: f.alt,
+        caption: f.caption,
+        location: f.location,
+      });
     }
-    outPhotos.push({
-      src: `../../assets/photos/${slug}/${outName}`,
-      alt: f.alt,
-      caption: f.caption,
-      location: f.location,
-    });
+
+    const md = buildRollMarkdown({ ...meta, photos: outPhotos, body });
+
+    await rm(photosDir, { recursive: true, force: true });
+    await rename(tmpDir, photosDir);
+    await mkdir(contentDir, { recursive: true });
+    await writeFile(contentFile, md, 'utf8');
+
+    // slug rename: drop the old roll dir + markdown so there's no duplicate
+    const removed = [];
+    if (sourceSlug !== slug) {
+      await rm(sourceDir, { recursive: true, force: true });
+      await rm(join(contentDir, `${sourceSlug}.md`), { force: true });
+      removed.push(`src/assets/photos/${sourceSlug}`, `src/content/photos/${sourceSlug}.md`);
+    }
+
+    return {
+      frameCount: n,
+      photosDir: `src/assets/photos/${slug}`,
+      contentFile: `src/content/photos/${slug}.md`,
+      removed,
+    };
+  } finally {
+    await rm(tmpDir, { recursive: true, force: true });
   }
-
-  const md = buildRollMarkdown({ ...meta, photos: outPhotos, body });
-
-  await rm(photosDir, { recursive: true, force: true });
-  await rename(tmpDir, photosDir);
-  await mkdir(contentDir, { recursive: true });
-  await writeFile(contentFile, md, 'utf8');
-
-  // slug rename: drop the old roll dir + markdown so there's no duplicate
-  const removed = [];
-  if (sourceSlug !== slug) {
-    await rm(sourceDir, { recursive: true, force: true });
-    await rm(join(contentDir, `${sourceSlug}.md`), { force: true });
-    removed.push(`src/assets/photos/${sourceSlug}`, `src/content/photos/${sourceSlug}.md`);
-  }
-
-  return {
-    frameCount: n,
-    photosDir: `src/assets/photos/${slug}`,
-    contentFile: `src/content/photos/${slug}.md`,
-    removed,
-  };
 }
 
 export async function gitPublish({ repoRoot, paths, message }) {

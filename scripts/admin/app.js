@@ -14,8 +14,16 @@ let mode = 'create';  // 'create' | 'edit'
 let editSlug = null;  // original slug when editing (existing frames copy from it)
 let stocks = [];
 
-function log(msg) { $('log').textContent += msg + '\n'; }
-function clearLog() { $('log').textContent = ''; }
+function logLine(msg, cls) {
+  const line = document.createElement('div');
+  if (cls) line.className = cls;
+  line.textContent = msg;
+  $('log').appendChild(line);
+}
+function log(msg) { logLine(msg); }          // normal line (single-arg: safe as a forEach callback)
+function logErr(msg) { logLine(msg, 'err'); } // red
+function logOk(msg) { logLine(msg, 'ok'); }   // green
+function clearLog() { $('log').replaceChildren(); }
 
 (async () => {
   ({ stocks } = await api('/api/config'));
@@ -122,7 +130,7 @@ $('scan').onclick = async () => {
     refreshSlug();
     render();
     log(`added ${scanned.length} frames`);
-  } catch (e) { log('scan error: ' + e.message); }
+  } catch (e) { logErr('scan error: ' + e.message); }
 };
 
 // Cyrillic → Latin so non-Latin place/stock names produce valid slugs
@@ -207,9 +215,9 @@ async function doPublish(commit) {
   try {
     const res = await api('/api/publish', p);
     res.log.forEach(log);
-    log(res.committed ? '✓ committed + pushed — Netlify will deploy shortly' : '✓ written (not committed)');
+    logOk(res.committed ? '✓ committed + pushed — Netlify will deploy shortly' : '✓ written (not committed)');
   } catch (e) {
-    log('✗ publish error: ' + e.message);
+    logErr('✗ publish error: ' + e.message);
   } finally {
     $('write').disabled = false;
     $('publish').disabled = false;
