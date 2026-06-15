@@ -3,61 +3,25 @@ title: Chiang Mai / Hanoi
 stock: kodak-colorplus-200
 date: 2025-07-10
 location:
-  name: จังหวัดเชียงใหม่, ประเทศไทย
-  lat: 18.6951714
-  lng: 98.4462684
+  name: Chiang Mai City Municipality
+  lat: 18.7882778
+  lng: 98.9858802
+  region:
+    name: Thailand
+    lat: 14.8971921
+    lng: 100.83273
 photos:
   - src: ../../assets/photos/2025-07-kodak-colorplus-200-chiang-mai/001.jpg
     alt: frame 1
     caption: Somewhere in Chiang Mai.
-    location:
-      name: Chiang Mai City Municipality
-      lat: 18.7882778
-      lng: 98.9858802
-      region:
-        name: Thailand
-        lat: 14.8971921
-        lng: 100.83273
   - src: ../../assets/photos/2025-07-kodak-colorplus-200-chiang-mai/002.jpg
     alt: frame 2
-    location:
-      name: Chiang Mai City Municipality
-      lat: 18.7882778
-      lng: 98.9858802
-      region:
-        name: Thailand
-        lat: 14.8971921
-        lng: 100.83273
   - src: ../../assets/photos/2025-07-kodak-colorplus-200-chiang-mai/003.jpg
     alt: frame 3
-    location:
-      name: Chiang Mai City Municipality
-      lat: 18.7882778
-      lng: 98.9858802
-      region:
-        name: Thailand
-        lat: 14.8971921
-        lng: 100.83273
   - src: ../../assets/photos/2025-07-kodak-colorplus-200-chiang-mai/004.jpg
     alt: frame 4
-    location:
-      name: Chiang Mai City Municipality
-      lat: 18.7882778
-      lng: 98.9858802
-      region:
-        name: Thailand
-        lat: 14.8971921
-        lng: 100.83273
   - src: ../../assets/photos/2025-07-kodak-colorplus-200-chiang-mai/005.jpg
     alt: frame 5
-    location:
-      name: Chiang Mai City Municipality
-      lat: 18.7882778
-      lng: 98.9858802
-      region:
-        name: Thailand
-        lat: 14.8971921
-        lng: 100.83273
   - src: ../../assets/photos/2025-07-kodak-colorplus-200-chiang-mai/006.jpg
     alt: frame 6
     caption: Kayan woman in  Thailand, a Tibeto-Burman ethnic minority of Myanmar.
@@ -170,34 +134,10 @@ photos:
         lng: 100.83273
   - src: ../../assets/photos/2025-07-kodak-colorplus-200-chiang-mai/016.jpg
     alt: frame 16
-    location:
-      name: Chiang Mai City Municipality
-      lat: 18.7882778
-      lng: 98.9858802
-      region:
-        name: Thailand
-        lat: 14.8971921
-        lng: 100.83273
   - src: ../../assets/photos/2025-07-kodak-colorplus-200-chiang-mai/017.jpg
     alt: frame 17
-    location:
-      name: Chiang Mai City Municipality
-      lat: 18.7882778
-      lng: 98.9858802
-      region:
-        name: Thailand
-        lat: 14.8971921
-        lng: 100.83273
   - src: ../../assets/photos/2025-07-kodak-colorplus-200-chiang-mai/018.jpg
     alt: frame 18
-    location:
-      name: Chiang Mai City Municipality
-      lat: 18.7882778
-      lng: 98.9858802
-      region:
-        name: Thailand
-        lat: 14.8971921
-        lng: 100.83273
   - src: ../../assets/photos/2025-07-kodak-colorplus-200-chiang-mai/019.jpg
     alt: frame 19
     location:
