@@ -35,6 +35,12 @@ npm run admin   # opens http://127.0.0.1:4322
    roll** to only write the files and commit yourself. The console below logs
    progress — errors in red, a green line on success.
 
+A GitHub-auth badge sits in the bottom-right corner. It checks `gh` on load
+(click it to re-check) and the **write + commit + push** button stays disabled
+unless `gh` holds a valid github.com token — run `gh auth login` if it shows red.
+The server enforces the same check before committing, so a failed push can't
+leave an unpushed commit behind. **Write roll** is never blocked.
+
 ## Edit a roll
 
 Pick a roll from the edit dropdown — its frames and metadata load. Reorder,
