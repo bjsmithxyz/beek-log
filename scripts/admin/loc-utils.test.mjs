@@ -11,6 +11,11 @@ test('dedupeByName keeps first of each name, case-insensitive, in order', () => 
   assert.equal(out[0].lat, 15.88);
 });
 
+test('dedupeByName skips null/undefined and name-less entries', () => {
+  const out = dedupeByName([null, undefined, { name: '' }, daNang]);
+  assert.deepEqual(out.map((l) => l.name), ['Da Nang']);
+});
+
 test('knownLocations gathers roll primary + frame locations, deduped, region kept', () => {
   const frames = [{ location: daNang }, { location: { ...hoiAn } }, {}];
   const out = knownLocations(hoiAn, frames);

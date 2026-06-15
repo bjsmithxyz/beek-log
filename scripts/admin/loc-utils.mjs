@@ -25,7 +25,8 @@ export function knownLocations(rollPrimary, frames) {
 }
 
 // Assign a location to one frame and cascade to following frames that have not
-// been explicitly set.
+// been explicitly set. Mutates `frames` in place (the admin holds a single
+// module-level array and re-renders manually after); returns it for convenience.
 export function fillForward(frames, fromIndex, loc) {
   frames[fromIndex].location = loc;
   frames[fromIndex].explicit = true;
