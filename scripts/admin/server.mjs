@@ -8,7 +8,7 @@ import { basename, dirname, join } from 'node:path';
 import { filmStocks } from '../../src/data/film-stocks.ts';
 import sharp from 'sharp';
 import { parseFolderName, parseRollMarkdown } from './lib.mjs';
-import { writeRollFiles, gitPublish } from './publish.mjs';
+import { writeRollFiles, gitPublish, checkGitHubAuth } from './publish.mjs';
 
 const __dirname = dirname(fileURLToPath(import.meta.url));
 const repoRoot = process.cwd();
@@ -44,6 +44,10 @@ route('GET', /^\/favicon\.svg$/, async (req, res) => {
 route('GET', /^\/api\/config$/, async (req, res) => {
   const stocks = Object.entries(filmStocks).map(([slug, v]) => ({ slug, name: v.name, type: v.type }));
   send(res, 200, { stocks });
+});
+
+route('GET', /^\/api\/auth$/, async (req, res) => {
+  send(res, 200, await checkGitHubAuth());
 });
 
 const IMAGE_RE = /\.(jpe?g|png|tiff?|webp)$/i;
@@ -217,6 +221,16 @@ route('POST', /^\/api\/publish$/, async (req, res) => {
   const targetExists = existsSync(join(CONTENT_DIR, `${slug}.md`));
   if (targetExists && !(isEdit && sourceSlug === slug)) {
     return send(res, 409, { error: `roll "${slug}" already exists — choose a different slug, or edit that roll directly` });
+  }
+
+  // Auth gate: a commit needs a valid github.com token, or the push fails after
+  // the commit has already landed (orphan local commit). Check before writing
+  // anything so a failed auth leaves the working tree untouched.
+  if (commit) {
+    const auth = await checkGitHubAuth();
+    if (!auth.ok) {
+      return send(res, 401, { error: `GitHub ${auth.detail}`, authFailed: true });
+    }
   }
 
   const log = [];
