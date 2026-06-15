@@ -3,25 +3,17 @@ title: Кыргызстан
 stock: fotometa-escura-400
 date: 2025-09-06
 location:
-  name: Song-Köl Lake
+  name: Song-Köl Lake, Кочкор району, Кыргызстан
   lat: 41.8937437
   lng: 75.2013968
-  region:
-    name: Кыргызстан
-    lat: 41.5089324
-    lng: 74.724091
 photos:
   - src: ../../assets/photos/2025-09-fotometa-escura-400-kyrgyzstan/001.jpg
     alt: frame 1
     caption: Bishkek
     location:
-      name: Бишкек шаары
+      name: Бишкек шаары, Кыргызстан
       lat: 42.8761424
       lng: 74.6036724
-      region:
-        name: Кыргызстан
-        lat: 41.5089324
-        lng: 74.724091
   - src: ../../assets/photos/2025-09-fotometa-escura-400-kyrgyzstan/002.jpg
     alt: frame 2
     caption: On the way to Song-Köl
