@@ -5,15 +5,7 @@
 // that jump to the roll list below; a small script cross-highlights each pin
 // with its roll row on hover and lifts the hovered pin above its neighbours.
 import dots from '../data/world-dots.json';
-
-export interface Pin {
-  slug: string;
-  label: string;
-  lat: number;
-  lng: number;
-  count: number;
-  members: string[];
-}
+import type { Pin } from '../data/locations';
 
 interface Props {
   pins: Pin[];
