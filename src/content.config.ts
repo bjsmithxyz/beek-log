@@ -27,10 +27,14 @@ const workCollection = defineCollection({
 
 // One file per film roll: src/content/photos/<roll-slug>.md
 // Photos live in src/assets/photos/<roll-slug>/; markdown body = roll notes.
-const locationSchema = z.object({
+const pointSchema = z.object({
   name: z.string(),
   lat: z.number().min(-90).max(90),
   lng: z.number().min(-180).max(180),
+});
+
+const locationSchema = pointSchema.extend({
+  region: pointSchema.optional(),
 });
 
 const photosCollection = defineCollection({

@@ -28,3 +28,15 @@ test('de-dup is case-insensitive on name', () => {
   assert.equal(effectiveLocations(roll).length, 1);
   assert.equal(effectiveLocations(roll)[0].count, 2);
 });
+
+const viet = { name: 'Hoi An', lat: 15.8801, lng: 108.338, region: { name: 'Vietnam', lat: 14.06, lng: 108.28 } };
+
+test('region is carried through onto the counted location', () => {
+  const roll = { data: { location: viet, photos: [{}, {}] } };
+  assert.deepEqual(effectiveLocations(roll), [{ ...viet, count: 2 }]);
+});
+
+test('locations without a region gain no region key', () => {
+  const roll = { data: { location: cn, photos: [{}] } };
+  assert.deepEqual(Object.keys(effectiveLocations(roll)[0]).sort(), ['count', 'lat', 'lng', 'name']);
+});

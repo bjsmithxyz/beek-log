@@ -1,7 +1,11 @@
-export interface Location {
+export interface Point {
   name: string;
   lat: number;
   lng: number;
+}
+
+export interface Location extends Point {
+  region?: Point;
 }
 
 interface RollLike {
@@ -22,7 +26,13 @@ export function effectiveLocations(roll: RollLike): CountedLocation[] {
     const key = loc.name.toLowerCase();
     const existing = map.get(key);
     if (existing) existing.count += 1;
-    else map.set(key, { name: loc.name, lat: loc.lat, lng: loc.lng, count: 1 });
+    // only attach `region` when present, so region-less locations keep their
+    // exact shape (no `region: undefined` key)
+    else map.set(key, {
+      name: loc.name, lat: loc.lat, lng: loc.lng,
+      ...(loc.region ? { region: loc.region } : {}),
+      count: 1,
+    });
   }
   return [...map.values()];
 }
