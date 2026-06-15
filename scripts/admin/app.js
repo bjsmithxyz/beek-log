@@ -25,6 +25,36 @@ function logErr(msg) { logLine(msg, 'err'); } // red
 function logOk(msg) { logLine(msg, 'ok'); }   // green
 function clearLog() { $('log').replaceChildren(); }
 
+// ---- GitHub auth badge ------------------------------------------------------
+// Badge text is keyed by state (server `detail` is used as the tooltip/hint).
+// Publish is enabled only when state === 'authed'; the server re-checks on
+// commit, so a stale badge can't let an unauthed push through.
+const BADGE_LABEL = {
+  checking: 'github: checking…',
+  authed: 'github: authed',
+  unauthed: 'github: not authed',
+  'gh-missing': 'github: gh not found',
+  error: 'github: check failed',
+};
+function setAuthBadge(state, detail) {
+  const el = $('gh-badge');
+  el.className = 'gh-badge ' + state;
+  el.textContent = '● ' + (BADGE_LABEL[state] || 'github: ?');
+  el.title = detail || 'click to recheck GitHub auth';
+  $('publish').disabled = state !== 'authed';
+}
+async function refreshAuthBadge() {
+  setAuthBadge('checking', 'checking GitHub auth…');
+  try {
+    const a = await api('/api/auth');
+    setAuthBadge(a.state, a.detail);
+  } catch (e) {
+    setAuthBadge('error', 'auth check failed: ' + e.message);
+  }
+}
+$('gh-badge').onclick = refreshAuthBadge;
+refreshAuthBadge();
+
 (async () => {
   ({ stocks } = await api('/api/config'));
   $('stock').innerHTML = stocks.map((s) => `<option value="${s.slug}">${s.name}</option>`).join('');
@@ -234,7 +264,7 @@ async function doPublish(commit) {
     logErr('✗ publish error: ' + e.message);
   } finally {
     $('write').disabled = false;
-    $('publish').disabled = false;
+    refreshAuthBadge(); // re-derives the publish button's enabled state from /api/auth
   }
 }
 $('write').onclick = () => doPublish(false);
