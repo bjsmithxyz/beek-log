@@ -85,6 +85,28 @@ export async function writeRollFiles({ repoRoot, slug, meta, frames, body = '', 
   }
 }
 
+// Probes whether `gh` holds a valid github.com token — the credential the HTTPS
+// push helper (`gh auth git-credential`) hands to git. Returns { ok, state,
+// detail }; state ∈ 'authed' | 'unauthed' | 'gh-missing' | 'error'. `run` is
+// injectable for tests and must mirror node execFile semantics: resolve on exit
+// 0, reject otherwise (err.code = exit number, or 'ENOENT' if gh is missing).
+export async function checkGitHubAuth({
+  run = () => exec('gh', ['auth', 'status', '-h', 'github.com']),
+} = {}) {
+  try {
+    await run();
+    return { ok: true, state: 'authed', detail: 'authenticated to github.com' };
+  } catch (err) {
+    if (err && err.code === 'ENOENT') {
+      return { ok: false, state: 'gh-missing', detail: 'gh not installed — install GitHub CLI' };
+    }
+    if (err && typeof err.code === 'number') {
+      return { ok: false, state: 'unauthed', detail: 'not authed — run: gh auth login' };
+    }
+    return { ok: false, state: 'error', detail: `auth check failed: ${(err && err.message) || err}` };
+  }
+}
+
 export async function gitPublish({ repoRoot, paths, message }) {
   const log = [];
   const run = async (args) => {

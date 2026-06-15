@@ -4,7 +4,7 @@ import { mkdtemp, mkdir, readdir, readFile, writeFile, rm } from 'node:fs/promis
 import { tmpdir } from 'node:os';
 import { join } from 'node:path';
 import sharp from 'sharp';
-import { writeRollFiles } from './publish.mjs';
+import { writeRollFiles, checkGitHubAuth } from './publish.mjs';
 import { parseRollMarkdown } from './lib.mjs';
 
 async function makeImage(path, color) {
@@ -98,4 +98,41 @@ test('writeRollFiles renames the slug during an edit, removing the old roll', as
   await assert.rejects(() => readdir(oldDir));
 
   await rm(root, { recursive: true, force: true });
+});
+
+// checkGitHubAuth classifies the result of the injected `run` (which mirrors
+// node execFile semantics: resolves on exit 0, rejects otherwise with err.code
+// = exit number, or 'ENOENT' when the gh binary is missing).
+test('checkGitHubAuth: run resolves (exit 0) → authed', async () => {
+  const r = await checkGitHubAuth({ run: async () => {} });
+  assert.equal(r.ok, true);
+  assert.equal(r.state, 'authed');
+  assert.match(r.detail, /github\.com/);
+});
+
+test('checkGitHubAuth: non-zero exit → unauthed', async () => {
+  const r = await checkGitHubAuth({
+    run: async () => { const e = new Error('exit 1'); e.code = 1; throw e; },
+  });
+  assert.equal(r.ok, false);
+  assert.equal(r.state, 'unauthed');
+  assert.match(r.detail, /gh auth login/);
+});
+
+test('checkGitHubAuth: ENOENT (gh not installed) → gh-missing', async () => {
+  const r = await checkGitHubAuth({
+    run: async () => { const e = new Error('spawn gh ENOENT'); e.code = 'ENOENT'; throw e; },
+  });
+  assert.equal(r.ok, false);
+  assert.equal(r.state, 'gh-missing');
+  assert.match(r.detail, /gh not installed/);
+});
+
+test('checkGitHubAuth: other failure → error', async () => {
+  const r = await checkGitHubAuth({
+    run: async () => { throw new Error('weird'); },
+  });
+  assert.equal(r.ok, false);
+  assert.equal(r.state, 'error');
+  assert.match(r.detail, /weird/);
 });
