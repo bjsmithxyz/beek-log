@@ -1,3 +1,5 @@
+import { knownLocations, fillForward } from '/loc-utils.mjs';
+
 const $ = (id) => document.getElementById(id);
 const api = async (path, body) => {
   const opts = body ? { method: 'POST', headers: { 'content-type': 'application/json' }, body: JSON.stringify(body) } : {};
@@ -24,10 +26,22 @@ function clearLog() { $('log').textContent = ''; }
   $('date').value = new Date().toISOString().slice(0, 10);
 })();
 
+let rollRegion = null;
 function rollLoc() {
   const name = $('loc-name').value.trim();
   const lat = parseFloat($('loc-lat').value), lng = parseFloat($('loc-lng').value);
-  return name && Number.isFinite(lat) && Number.isFinite(lng) ? { name, lat, lng } : null;
+  if (!name || !Number.isFinite(lat) || !Number.isFinite(lng)) return null;
+  const loc = { name, lat, lng };
+  if (rollRegion) loc.region = rollRegion;
+  return loc;
+}
+function setRollLocation(loc) {
+  $('loc-name').value = loc ? loc.name : '';
+  $('loc-lat').value = loc ? loc.lat : '';
+  $('loc-lng').value = loc ? loc.lng : '';
+  rollRegion = (loc && loc.region) || null;
+  $('loc-display').textContent = loc ? (loc.name + (loc.region ? ` · ${loc.region.name}` : '')) : '(none set)';
+  refreshSlug();
 }
 function frameLocName(f) { return (f.location || rollLoc() || {}).name || '(set roll location)'; }
 
@@ -66,30 +80,19 @@ function render() {
 }
 
 async function setFrameLocation(i) {
-  const q = prompt('location for this frame (place name):', frameLocName(frames[i]));
-  if (!q) return;
-  const loc = await pickLocation(q);
+  const loc = await openLocationPicker({
+    initial: frames[i].location || rollLoc(),
+    known: knownLocations(rollLoc(), frames),
+  });
   if (!loc) return;
-  frames[i].location = loc;
-  frames[i].explicit = true;
-  for (let j = i + 1; j < frames.length && !frames[j].explicit; j++) frames[j].location = loc;
+  fillForward(frames, i, loc);
   render();
-}
-
-async function pickLocation(q) {
-  try {
-    const results = await api('/api/geocode', { query: q });
-    if (!results.length) { alert('no results; enter lat/lng manually'); return null; }
-    const idx = results.length === 1 ? 0 :
-      parseInt(prompt(results.map((r, n) => `${n}: ${r.name}`).join('\n') + '\n\npick #:', '0'), 10);
-    return results[idx] || null;
-  } catch (e) { alert('geocode failed: ' + e.message); return null; }
 }
 
 $('bulk-loc').onclick = async () => {
   const selected = [...document.querySelectorAll('.frame')].filter((el) => el.querySelector('.sel').checked).map((el) => +el.dataset.i);
   if (!selected.length) return alert('select frames first');
-  const loc = await pickLocation(prompt('location for selected frames:') || '');
+  const loc = await openLocationPicker({ initial: null, known: knownLocations(rollLoc(), frames) });
   if (!loc) return;
   selected.forEach((i) => { frames[i].location = loc; frames[i].explicit = true; });
   render();
@@ -107,25 +110,10 @@ $('scan').onclick = async () => {
     }));
     if (parsed.date) $('date').value = parsed.date;
     if (parsed.stockSlug) $('stock').value = parsed.stockSlug;
-    if (parsed.country && !$('loc-search').value) $('loc-search').value = parsed.country;
     refreshSlug();
     render();
     log(`added ${scanned.length} frames`);
   } catch (e) { log('scan error: ' + e.message); }
-};
-
-$('loc-go').onclick = async () => {
-  const results = await api('/api/geocode', { query: $('loc-search').value });
-  $('loc-results').innerHTML = results.map((r, i) =>
-    `<li data-i="${i}">${r.name} <span class="muted">(${r.lat.toFixed(3)}, ${r.lng.toFixed(3)})</span></li>`).join('');
-  [...$('loc-results').children].forEach((li, i) => {
-    li.onclick = () => {
-      const r = results[i];
-      $('loc-name').value = r.name; $('loc-lat').value = r.lat; $('loc-lng').value = r.lng;
-      $('loc-results').innerHTML = '';
-      refreshSlug(); render();
-    };
-  });
 };
 
 // Cyrillic → Latin so non-Latin place/stock names produce valid slugs
@@ -167,9 +155,7 @@ $('roll-picker').onchange = async (e) => {
   $('title').value = roll.meta.title;
   $('stock').value = roll.meta.stock;
   $('date').value = roll.meta.date;
-  $('loc-name').value = roll.meta.location.name;
-  $('loc-lat').value = roll.meta.location.lat;
-  $('loc-lng').value = roll.meta.location.lng;
+  setRollLocation(roll.meta.location);
   $('slug').value = roll.slug;
   $('draft').checked = roll.meta.draft;
   $('body').value = roll.body;
@@ -219,3 +205,101 @@ async function doPublish(commit) {
 }
 $('write').onclick = () => doPublish(false);
 $('publish').onclick = () => doPublish(true);
+
+// ---- shared location picker -------------------------------------------------
+let pickerMap = null, pickerMarker = null, pickerResolve = null, pickerRegion = null;
+
+function ensurePickerMap() {
+  if (pickerMap || !window.L) return;
+  pickerMap = L.map('pk-map').setView([20, 0], 1);
+  L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', { attribution: '© OpenStreetMap', maxZoom: 19 }).addTo(pickerMap);
+  pickerMarker = L.marker([20, 0], { draggable: true }).addTo(pickerMap);
+  pickerMarker.on('dragend', () => {
+    const { lat, lng } = pickerMarker.getLatLng();
+    $('pk-lat').value = lat.toFixed(4);
+    $('pk-lng').value = lng.toFixed(4);
+  });
+}
+
+function setPickerPin(lat, lng, zoom) {
+  if (!pickerMap) return;
+  pickerMarker.setLatLng([lat, lng]);
+  pickerMap.setView([lat, lng], zoom ?? 8);
+}
+
+function fillPickerFields(loc) {
+  $('pk-name').value = loc ? loc.name : '';
+  $('pk-lat').value = loc ? loc.lat : '';
+  $('pk-lng').value = loc ? loc.lng : '';
+  $('pk-region').value = (loc && loc.region) ? loc.region.name : '';
+  pickerRegion = (loc && loc.region) || null;
+  if (loc && window.L) setPickerPin(loc.lat, loc.lng);
+}
+
+function renderChips(known) {
+  $('pk-chips').innerHTML = known
+    .map((l, i) => `<button type="button" class="chip" data-i="${i}">${l.name}${l.region ? ` · ${l.region.name}` : ''}</button>`)
+    .join('');
+  [...$('pk-chips').children].forEach((btn, i) => { btn.onclick = () => fillPickerFields(known[i]); });
+}
+
+async function pkSearch() {
+  const q = $('pk-search').value.trim();
+  if (!q) return;
+  $('pk-msg').textContent = 'searching…';
+  try {
+    const results = await api('/api/geocode', { query: q });
+    if (!results.length) { $('pk-msg').textContent = 'no results — drag the pin or type coords'; $('pk-results').innerHTML = ''; return; }
+    $('pk-msg').textContent = '';
+    $('pk-results').innerHTML = results
+      .map((r, i) => `<li data-i="${i}">${r.name}${r.region ? ` · ${r.region.name}` : ''} <span class="muted">(${r.lat.toFixed(2)}, ${r.lng.toFixed(2)})</span></li>`)
+      .join('');
+    [...$('pk-results').children].forEach((li, i) => {
+      li.onclick = () => { fillPickerFields(results[i]); $('pk-results').innerHTML = ''; };
+    });
+  } catch (e) { $('pk-msg').textContent = 'geocode failed: ' + e.message; }
+}
+
+function currentPickerLocation() {
+  const name = $('pk-name').value.trim();
+  const lat = parseFloat($('pk-lat').value), lng = parseFloat($('pk-lng').value);
+  if (!name || !Number.isFinite(lat) || !Number.isFinite(lng)) return null;
+  const loc = { name, lat, lng };
+  const regionName = $('pk-region').value.trim();
+  // region needs coords; reuse the geocoded region, applying a renamed label if edited
+  if (pickerRegion && regionName) loc.region = regionName === pickerRegion.name ? pickerRegion : { ...pickerRegion, name: regionName };
+  return loc;
+}
+
+function closePicker(result) {
+  $('picker').hidden = true;
+  const r = pickerResolve; pickerResolve = null;
+  if (r) r(result);
+}
+
+function openLocationPicker({ initial, known } = {}) {
+  return new Promise((resolve) => {
+    pickerResolve = resolve;
+    $('picker').hidden = false;
+    ensurePickerMap();
+    if (pickerMap) setTimeout(() => pickerMap.invalidateSize(), 0);
+    $('pk-search').value = '';
+    $('pk-results').innerHTML = '';
+    $('pk-msg').textContent = window.L ? '' : 'map unavailable — use search + coords';
+    renderChips(known || []);
+    fillPickerFields(initial || null);
+  });
+}
+
+$('pk-go').onclick = pkSearch;
+$('pk-search').addEventListener('keydown', (e) => { if (e.key === 'Enter') { e.preventDefault(); pkSearch(); } });
+$('pk-cancel').onclick = () => closePicker(null);
+$('pk-ok').onclick = () => {
+  const loc = currentPickerLocation();
+  if (!loc) { $('pk-msg').textContent = 'need a place name + lat/lng'; return; }
+  closePicker(loc);
+};
+$('loc-edit').onclick = async () => {
+  const loc = await openLocationPicker({ initial: rollLoc(), known: knownLocations(rollLoc(), frames) });
+  if (loc) setRollLocation(loc);
+};

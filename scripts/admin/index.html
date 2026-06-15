@@ -6,6 +6,8 @@
   <title>roll admin</title>
   <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
   <link rel="stylesheet" href="/global.css" />
+  <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
+  <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
   <style>
     body { padding: 2rem; max-width: 1000px; margin: 0 auto; }
     h1 { font-size: var(--font-size-2xl); margin-bottom: 1rem; }
@@ -39,6 +41,16 @@
     #log { white-space: pre-wrap; font-size: var(--font-size-xs); color: var(--color-text-secondary);
       border: 1px solid var(--color-border); padding: .75rem; min-height: 3rem; }
     .muted { color: var(--color-text-muted); font-size: var(--font-size-xs); }
+    .picker-overlay { position: fixed; inset: 0; background: rgba(0,0,0,.6);
+      display: flex; align-items: center; justify-content: center; z-index: 1000; }
+    .picker-overlay[hidden] { display: none; }
+    .picker-panel { width: min(560px, 92vw); max-height: 90vh; overflow: auto;
+      background: var(--color-bg-primary); border: 1px solid var(--color-border-strong); padding: 1rem; }
+    .picker-head { display: flex; justify-content: space-between; align-items: center; margin-bottom: .5rem; }
+    .pk-map { height: 260px; margin: .5rem 0; border: 1px solid var(--color-border); }
+    .pk-map .leaflet-tile { filter: grayscale(1) brightness(.9); }
+    .chips { display: flex; flex-wrap: wrap; gap: .3rem; margin: .25rem 0; }
+    .chip { font-size: var(--font-size-xs); padding: .2rem .4rem; cursor: pointer; width: auto; }
   </style>
 </head>
 <body>
@@ -77,17 +89,14 @@
       <div><label>stock</label><select id="stock"></select></div>
       <div><label>date</label><input id="date" type="date" /></div>
     </div>
-    <label>primary location — search</label>
+    <label>primary location</label>
     <div class="row">
-      <input id="loc-search" placeholder="Lisbon, Portugal" />
-      <button id="loc-go" style="flex:0 0 auto;">search</button>
+      <div id="loc-display" class="muted" style="flex:1; align-self:center;">(none set)</div>
+      <button id="loc-edit" type="button" style="flex:0 0 auto;">set location</button>
     </div>
-    <ul class="geo-results" id="loc-results"></ul>
-    <div class="row">
-      <div><label>location name</label><input id="loc-name" /></div>
-      <div><label>lat</label><input id="loc-lat" type="number" step="any" /></div>
-      <div><label>lng</label><input id="loc-lng" type="number" step="any" /></div>
-    </div>
+    <input id="loc-name" type="hidden" />
+    <input id="loc-lat" type="hidden" />
+    <input id="loc-lng" type="hidden" />
     <div class="row">
       <div><label>slug</label><input id="slug" /></div>
       <div style="flex:0 0 auto; align-self:end;"><label>draft</label><input id="draft" type="checkbox" style="width:auto;" /></div>
@@ -102,6 +111,29 @@
     <button id="publish" class="primary">write + commit + push</button>
     <div id="log" style="margin-top:.5rem;"></div>
   </fieldset>
+
+  <div id="picker" class="picker-overlay" hidden>
+    <div class="picker-panel">
+      <div class="picker-head"><strong>set location</strong><button id="pk-cancel" type="button">✕</button></div>
+      <div class="row">
+        <input id="pk-search" placeholder="search place…" />
+        <button id="pk-go" type="button" style="flex:0 0 auto;">search</button>
+      </div>
+      <ul class="geo-results" id="pk-results"></ul>
+      <div id="pk-chips" class="chips"></div>
+      <div id="pk-map" class="pk-map"></div>
+      <div class="row">
+        <div><label>place</label><input id="pk-name" /></div>
+        <div><label>lat</label><input id="pk-lat" type="number" step="any" /></div>
+        <div><label>lng</label><input id="pk-lng" type="number" step="any" /></div>
+      </div>
+      <div class="row"><div><label>region (country)</label><input id="pk-region" /></div></div>
+      <div id="pk-msg" class="muted"></div>
+      <div class="row" style="justify-content:flex-end;">
+        <button id="pk-ok" class="primary" type="button" style="flex:0 0 auto;">use location</button>
+      </div>
+    </div>
+  </div>
 
   <script src="/app.js" type="module"></script>
 </body>
