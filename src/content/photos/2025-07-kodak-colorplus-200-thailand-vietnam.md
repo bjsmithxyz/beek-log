@@ -3,9 +3,13 @@ title: Chiang Mai / Hanoi
 stock: kodak-colorplus-200
 date: 2025-07-10
 location:
-  name: จังหวัดเชียงใหม่, ประเทศไทย
+  name: จังหวัดเชียงใหม่
   lat: 18.6951714
   lng: 98.4462684
+  region:
+    name: ประเทศไทย
+    lat: 14.8971921
+    lng: 100.83273
 photos:
   - src: ../../assets/photos/2025-07-kodak-colorplus-200-thailand-vietnam/001.jpg
     alt: frame 1
@@ -66,44 +70,68 @@ photos:
     alt: frame 10
     caption: Baan Dam museum grounds.
     location:
-      name: เทศบาลนครเชียงราย, อำเภอเมืองเชียงราย, จังหวัดเชียงราย, 57000, ประเทศไทย
+      name: เทศบาลนครเชียงราย
       lat: 19.9068867
       lng: 99.8332739
+      region:
+        name: ประเทศไทย
+        lat: 14.8971921
+        lng: 100.83273
   - src: ../../assets/photos/2025-07-kodak-colorplus-200-thailand-vietnam/011.jpg
     alt: frame 11
     caption: Baan Dam museum grounds.
     location:
-      name: เทศบาลนครเชียงราย, อำเภอเมืองเชียงราย, จังหวัดเชียงราย, 57000, ประเทศไทย
+      name: เทศบาลนครเชียงราย
       lat: 19.9068867
       lng: 99.8332739
+      region:
+        name: ประเทศไทย
+        lat: 14.8971921
+        lng: 100.83273
   - src: ../../assets/photos/2025-07-kodak-colorplus-200-thailand-vietnam/012.jpg
     alt: frame 12
     caption: Baan Dam museum grounds.
     location:
-      name: เทศบาลนครเชียงราย, อำเภอเมืองเชียงราย, จังหวัดเชียงราย, 57000, ประเทศไทย
+      name: เทศบาลนครเชียงราย
       lat: 19.9068867
       lng: 99.8332739
+      region:
+        name: ประเทศไทย
+        lat: 14.8971921
+        lng: 100.83273
   - src: ../../assets/photos/2025-07-kodak-colorplus-200-thailand-vietnam/013.jpg
     alt: frame 13
     caption: Mekong River.
     location:
-      name: เทศบาลนครเชียงราย, อำเภอเมืองเชียงราย, จังหวัดเชียงราย, 57000, ประเทศไทย
+      name: เทศบาลนครเชียงราย
       lat: 19.9068867
       lng: 99.8332739
+      region:
+        name: ประเทศไทย
+        lat: 14.8971921
+        lng: 100.83273
   - src: ../../assets/photos/2025-07-kodak-colorplus-200-thailand-vietnam/014.jpg
     alt: frame 14
     caption: Mekong River, looking at Laos.
     location:
-      name: เทศบาลนครเชียงราย, อำเภอเมืองเชียงราย, จังหวัดเชียงราย, 57000, ประเทศไทย
+      name: เทศบาลนครเชียงราย
       lat: 19.9068867
       lng: 99.8332739
+      region:
+        name: ประเทศไทย
+        lat: 14.8971921
+        lng: 100.83273
   - src: ../../assets/photos/2025-07-kodak-colorplus-200-thailand-vietnam/015.jpg
     alt: frame 15
     caption: Van Pak Len, Laos.
     location:
-      name: เทศบาลนครเชียงราย, อำเภอเมืองเชียงราย, จังหวัดเชียงราย, 57000, ประเทศไทย
+      name: เทศบาลนครเชียงราย
       lat: 19.9068867
       lng: 99.8332739
+      region:
+        name: ประเทศไทย
+        lat: 14.8971921
+        lng: 100.83273
   - src: ../../assets/photos/2025-07-kodak-colorplus-200-thailand-vietnam/016.jpg
     alt: frame 16
     location:
@@ -125,60 +153,96 @@ photos:
   - src: ../../assets/photos/2025-07-kodak-colorplus-200-thailand-vietnam/019.jpg
     alt: frame 19
     location:
-      name: Thành phố Hà Nội, Việt Nam
+      name: Thành phố Hà Nội
       lat: 21.0283334
       lng: 105.854041
+      region:
+        name: Việt Nam
+        lat: 15.9266657
+        lng: 107.9650855
   - src: ../../assets/photos/2025-07-kodak-colorplus-200-thailand-vietnam/020.jpg
     alt: frame 20
     caption: Train street.
     location:
-      name: Thành phố Hà Nội, Việt Nam
+      name: Thành phố Hà Nội
       lat: 21.0283334
       lng: 105.854041
+      region:
+        name: Việt Nam
+        lat: 15.9266657
+        lng: 107.9650855
   - src: ../../assets/photos/2025-07-kodak-colorplus-200-thailand-vietnam/021.jpg
     alt: frame 21
     caption: Train street.
     location:
-      name: Thành phố Hà Nội, Việt Nam
+      name: Thành phố Hà Nội
       lat: 21.0283334
       lng: 105.854041
+      region:
+        name: Việt Nam
+        lat: 15.9266657
+        lng: 107.9650855
   - src: ../../assets/photos/2025-07-kodak-colorplus-200-thailand-vietnam/022.jpg
     alt: frame 22
     location:
-      name: Thành phố Hà Nội, Việt Nam
+      name: Thành phố Hà Nội
       lat: 21.0283334
       lng: 105.854041
+      region:
+        name: Việt Nam
+        lat: 15.9266657
+        lng: 107.9650855
   - src: ../../assets/photos/2025-07-kodak-colorplus-200-thailand-vietnam/023.jpg
     alt: frame 23
     location:
-      name: Thành phố Hà Nội, Việt Nam
+      name: Thành phố Hà Nội
       lat: 21.0283334
       lng: 105.854041
+      region:
+        name: Việt Nam
+        lat: 15.9266657
+        lng: 107.9650855
   - src: ../../assets/photos/2025-07-kodak-colorplus-200-thailand-vietnam/024.jpg
     alt: frame 24
     location:
-      name: Thành phố Hà Nội, Việt Nam
+      name: Thành phố Hà Nội
       lat: 21.0283334
       lng: 105.854041
+      region:
+        name: Việt Nam
+        lat: 15.9266657
+        lng: 107.9650855
   - src: ../../assets/photos/2025-07-kodak-colorplus-200-thailand-vietnam/025.jpg
     alt: frame 25
     caption: Uncle Ho's tomb.
     location:
-      name: Thành phố Hà Nội, Việt Nam
+      name: Thành phố Hà Nội
       lat: 21.0283334
       lng: 105.854041
+      region:
+        name: Việt Nam
+        lat: 15.9266657
+        lng: 107.9650855
   - src: ../../assets/photos/2025-07-kodak-colorplus-200-thailand-vietnam/026.jpg
     alt: frame 26
     location:
-      name: Thành phố Hà Nội, Việt Nam
+      name: Thành phố Hà Nội
       lat: 21.0283334
       lng: 105.854041
+      region:
+        name: Việt Nam
+        lat: 15.9266657
+        lng: 107.9650855
   - src: ../../assets/photos/2025-07-kodak-colorplus-200-thailand-vietnam/027.jpg
     alt: frame 27
     location:
-      name: Thành phố Hà Nội, Việt Nam
+      name: Thành phố Hà Nội
       lat: 21.0283334
       lng: 105.854041
+      region:
+        name: Việt Nam
+        lat: 15.9266657
+        lng: 107.9650855
 ---
 
 
