@@ -76,19 +76,50 @@ route('POST', /^\/api\/scan$/, async (req, res) => {
   send(res, 200, { parsed, frames });
 });
 
+const countryCache = new Map(); // country name → { name, lat, lng } | undefined
+
+async function nominatim(query, detail) {
+  const url = `https://nominatim.openstreetmap.org/search?format=jsonv2&limit=5${detail ? '&addressdetails=1' : ''}&q=${encodeURIComponent(query)}`;
+  const r = await fetch(url, { headers: { 'User-Agent': 'beek-log-admin (local dev tool)' } });
+  if (!r.ok) throw new Error(`geocoder ${r.status}`);
+  return r.json();
+}
+
+function placeName(d) {
+  const a = d.address || {};
+  return a.city || a.town || a.village || a.hamlet || a.state || (d.display_name || '').split(',')[0].trim();
+}
+
+async function regionFor(address) {
+  const country = address && address.country;
+  if (!country) return undefined;
+  if (countryCache.has(country)) return countryCache.get(country);
+  let region;
+  try {
+    const [c] = await nominatim(country, false);
+    region = c ? { name: country, lat: Number(c.lat), lng: Number(c.lon) } : undefined;
+  } catch {
+    region = undefined;
+  }
+  countryCache.set(country, region);
+  return region;
+}
+
 route('POST', /^\/api\/geocode$/, async (req, res) => {
   const { query } = await readBody(req);
   if (!query || !query.trim()) return send(res, 400, { error: 'query required' });
-  const url = `https://nominatim.openstreetmap.org/search?format=jsonv2&limit=5&q=${encodeURIComponent(query)}`;
   try {
-    const r = await fetch(url, { headers: { 'User-Agent': 'beek-log-admin (local dev tool)' } });
-    if (!r.ok) return send(res, 502, { error: `geocoder ${r.status}` });
-    const data = await r.json();
-    send(res, 200, data.map((d) => ({
-      name: d.display_name,
-      lat: Number(d.lat),
-      lng: Number(d.lon),
-    })));
+    const data = await nominatim(query, true);
+    const results = [];
+    for (const d of data) {
+      results.push({
+        name: placeName(d),
+        lat: Number(d.lat),
+        lng: Number(d.lon),
+        region: await regionFor(d.address),
+      });
+    }
+    send(res, 200, results);
   } catch (err) {
     send(res, 502, { error: `geocode failed: ${err.message}` });
   }
@@ -148,6 +179,10 @@ route('GET', /^\/app\.js$/, async (req, res) => {
   send(res, 200, await readFile(join(__dirname, 'app.js')), 'text/javascript');
 });
 
+route('GET', /^\/loc-utils\.mjs$/, async (req, res) => {
+  send(res, 200, await readFile(join(__dirname, 'loc-utils.mjs')), 'text/javascript');
+});
+
 route('POST', /^\/api\/publish$/, async (req, res) => {
   const body = await readBody(req);
   const { slug, sourceSlug, title, stock, date, location, draft, frames, commit, bodyText = '' } = body;
@@ -160,12 +195,15 @@ route('POST', /^\/api\/publish$/, async (req, res) => {
   if (!location || !location.name || !Number.isFinite(location.lat) || !Number.isFinite(location.lng)) {
     errors.push('roll location needs name + numeric lat/lng');
   }
+  const badRegion = (l) => l && l.region && (!l.region.name || !Number.isFinite(l.region.lat) || !Number.isFinite(l.region.lng));
+  if (badRegion(location)) errors.push('roll region invalid');
   if (!Array.isArray(frames) || frames.length === 0) errors.push('at least one frame required');
   (frames || []).forEach((f, i) => {
     if (!f.alt || !f.alt.trim()) errors.push(`frame ${i + 1} needs alt text`);
     if (f.location && (!f.location.name || !Number.isFinite(f.location.lat) || !Number.isFinite(f.location.lng))) {
       errors.push(`frame ${i + 1} location invalid`);
     }
+    if (badRegion(f.location)) errors.push(`frame ${i + 1} region invalid`);
   });
   if (errors.length) return send(res, 400, { error: errors.join('; ') });
 
