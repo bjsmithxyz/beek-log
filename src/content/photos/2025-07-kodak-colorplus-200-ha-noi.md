@@ -3,50 +3,22 @@ title: Hà Nội / Ninh Bình
 stock: kodak-colorplus-200
 date: 2025-07-15
 location:
-  name: Hà Nội, Việt Nam
+  name: Hà Nội
   lat: 21.0283334
   lng: 105.854041
+  region:
+    name: Vietnam
+    lat: 15.9266657
+    lng: 107.9650855
 photos:
   - src: ../../assets/photos/2025-07-kodak-colorplus-200-ha-noi/001.jpg
     alt: frame 1
-    location:
-      name: Hà Nội
-      lat: 21.0283334
-      lng: 105.854041
-      region:
-        name: Vietnam
-        lat: 15.9266657
-        lng: 107.9650855
   - src: ../../assets/photos/2025-07-kodak-colorplus-200-ha-noi/002.jpg
     alt: frame 2
-    location:
-      name: Hà Nội
-      lat: 21.0283334
-      lng: 105.854041
-      region:
-        name: Vietnam
-        lat: 15.9266657
-        lng: 107.9650855
   - src: ../../assets/photos/2025-07-kodak-colorplus-200-ha-noi/003.jpg
     alt: frame 3
-    location:
-      name: Hà Nội
-      lat: 21.0283334
-      lng: 105.854041
-      region:
-        name: Vietnam
-        lat: 15.9266657
-        lng: 107.9650855
   - src: ../../assets/photos/2025-07-kodak-colorplus-200-ha-noi/004.jpg
     alt: frame 4
-    location:
-      name: Hà Nội
-      lat: 21.0283334
-      lng: 105.854041
-      region:
-        name: Vietnam
-        lat: 15.9266657
-        lng: 107.9650855
   - src: ../../assets/photos/2025-07-kodak-colorplus-200-ha-noi/005.jpg
     alt: frame 5
     location:
@@ -229,75 +201,19 @@ photos:
         lng: 107.9650855
   - src: ../../assets/photos/2025-07-kodak-colorplus-200-ha-noi/022.jpg
     alt: frame 22
-    location:
-      name: Hà Nội
-      lat: 21.0283334
-      lng: 105.854041
-      region:
-        name: Vietnam
-        lat: 15.9266657
-        lng: 107.9650855
   - src: ../../assets/photos/2025-07-kodak-colorplus-200-ha-noi/023.jpg
     alt: frame 23
-    location:
-      name: Hà Nội
-      lat: 21.0283334
-      lng: 105.854041
-      region:
-        name: Vietnam
-        lat: 15.9266657
-        lng: 107.9650855
   - src: ../../assets/photos/2025-07-kodak-colorplus-200-ha-noi/024.jpg
     alt: frame 24
-    location:
-      name: Hà Nội
-      lat: 21.0283334
-      lng: 105.854041
-      region:
-        name: Vietnam
-        lat: 15.9266657
-        lng: 107.9650855
   - src: ../../assets/photos/2025-07-kodak-colorplus-200-ha-noi/025.jpg
     alt: frame 25
     caption: Chợ Đồng Xuân.
-    location:
-      name: Hà Nội
-      lat: 21.0283334
-      lng: 105.854041
-      region:
-        name: Vietnam
-        lat: 15.9266657
-        lng: 107.9650855
   - src: ../../assets/photos/2025-07-kodak-colorplus-200-ha-noi/026.jpg
     alt: frame 26
-    location:
-      name: Hà Nội
-      lat: 21.0283334
-      lng: 105.854041
-      region:
-        name: Vietnam
-        lat: 15.9266657
-        lng: 107.9650855
   - src: ../../assets/photos/2025-07-kodak-colorplus-200-ha-noi/027.jpg
     alt: frame 27
-    location:
-      name: Hà Nội
-      lat: 21.0283334
-      lng: 105.854041
-      region:
-        name: Vietnam
-        lat: 15.9266657
-        lng: 107.9650855
   - src: ../../assets/photos/2025-07-kodak-colorplus-200-ha-noi/028.jpg
     alt: frame 28
-    location:
-      name: Hà Nội
-      lat: 21.0283334
-      lng: 105.854041
-      region:
-        name: Vietnam
-        lat: 15.9266657
-        lng: 107.9650855
 ---
 
 
