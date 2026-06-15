@@ -8,10 +8,11 @@ import dots from '../data/world-dots.json';
 
 export interface Pin {
   slug: string;
-  name: string;
+  label: string;
   lat: number;
   lng: number;
   count: number;
+  members: string[];
 }
 
 interface Props {
@@ -37,7 +38,7 @@ const project = (lat: number, lng: number) => ({
   viewBox="0 0 240 120"
   class="world-map"
   role="img"
-  aria-label={`Map of shoot locations: ${pins.map((p) => p.name).join(', ')}`}
+  aria-label={`Map of shoot locations: ${pins.map((p) => p.label).join(', ')}`}
 >
   {(dots as string[]).flatMap((row, y) =>
     y >= ANTARCTICA_CUTOFF_ROW
@@ -48,26 +49,39 @@ const project = (lat: number, lng: number) => ({
   )}
   {pins.map((p) => {
     const { x, y } = project(p.lat, p.lng);
-    const label = `${p.name} — ${p.count} ${p.count === 1 ? 'frame' : 'frames'}`;
+    const line1 = `${p.label} — ${p.count} ${p.count === 1 ? 'frame' : 'frames'}`;
+    const line2 = p.members.join(' · ');
     const fontSize = 3.2;
-    const rectW = label.length * fontSize * 0.6 + 4;
-    const rectH = fontSize + 3.2;
-    const rectX = Math.min(Math.max(x - rectW / 2, 1), COLS - rectW - 1);
+    const subSize = 2.6;
+    const width = Math.max(line1.length * fontSize * 0.6, line2.length * subSize * 0.6) + 4;
+    const rectH = (line2 ? fontSize + subSize + 1.4 : fontSize) + 3.2;
+    const rectX = Math.min(Math.max(x - width / 2, 1), COLS - width - 1);
     const rectY = Math.max(1, y - 3 - rectH);
+    const cx = rectX + width / 2;
     return (
-      <a href={`#roll-${p.slug}`} class="pin-link" aria-label={label} data-slug={p.slug}>
+      <a href={`#roll-${p.slug}`} class="pin-link" aria-label={line1} data-slug={p.slug}>
         <circle cx={x} cy={y} r="3.4" class="pin-halo" />
         <circle cx={x} cy={y} r="1" class="pin" />
         <g class="tooltip" aria-hidden="true">
-          <rect x={rectX} y={rectY} width={rectW} height={rectH} rx="0.8" class="tooltip-box" />
+          <rect x={rectX} y={rectY} width={width} height={rectH} rx="0.8" class="tooltip-box" />
           <text
-            x={rectX + rectW / 2}
-            y={rectY + rectH / 2}
+            x={cx}
+            y={rectY + (line2 ? rectH * 0.36 : rectH / 2)}
             font-size={fontSize}
             text-anchor="middle"
             dominant-baseline="central"
             class="tooltip-text"
-          >{label}</text>
+          >{line1}</text>
+          {line2 && (
+            <text
+              x={cx}
+              y={rectY + rectH * 0.72}
+              font-size={subSize}
+              text-anchor="middle"
+              dominant-baseline="central"
+              class="tooltip-sub"
+            >{line2}</text>
+          )}
         </g>
       </a>
     );
@@ -171,6 +185,11 @@ const project = (lat: number, lng: number) => ({
 
   .tooltip-text {
     fill: var(--color-text-primary);
+    font-family: monospace;
+  }
+
+  .tooltip-sub {
+    fill: var(--color-text-muted);
     font-family: monospace;
   }
 </style>
