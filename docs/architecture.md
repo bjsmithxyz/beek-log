@@ -59,6 +59,10 @@ rendered with `render(entry)` from `astro:content`.
 `src`, `alt`, optional `caption`, and an optional per-photo `location` override.
 See [photography.md](photography.md).
 
+Each `location` is `{ name, lat, lng }` with an optional `region` (the primary,
+e.g. a country) of the same shape — the place is the secondary. `region` is
+optional and backward compatible.
+
 Entries with `draft: true` render in the dev server but are excluded from
 production builds, RSS, and the sitemap.
 
@@ -71,9 +75,9 @@ shoot locations are projected equirectangularly as pins. A small client script
 cross-highlights each pin with its roll row on hover and lifts the hovered pin
 above its neighbours so the tooltip is not clipped.
 
-Pins are aggregated from **per-photo effective locations**, not per roll:
-`src/data/locations.ts` exports `effectiveLocations(roll)`, which collapses a
-roll's photos to distinct locations (each photo uses its own `location` override
-or the roll default) de-duplicated by name. So a roll shot across two countries
-shows a pin in each, and a pin's count is the number of frames there. The same
-helper drives the `+N` multi-location label on `RollRow`.
+Pins are aggregated by **primary region**: `src/data/locations.ts` exports
+`aggregatePins(rolls)`, which groups every roll's effective locations by
+`region.name` (falling back to the place name), yielding one pin per country
+positioned at the region, with the member cities listed in the tooltip. Counts
+sum across the group. `effectiveLocations(roll)` still drives the per-roll `+N`
+label on `RollRow`.

@@ -55,6 +55,15 @@ The admin writes:
 - `src/assets/photos/<slug>/001.jpg, 002.jpg, …` — frames resized to ≤2048px,
   JPEG quality 80, numbered in display order.
 
+Locations carry an optional `region` (country) alongside the specific place, so
+the map shows one pin per country with a city breakdown. The roll-import admin
+(`npm run admin`) fills both from one search — its location picker (search +
+interactive map + reusable chips of the roll's known locations) replaces typing,
+and the chosen place's country becomes the `region` automatically. Drag the map
+pin to fine-tune coordinates. Older rolls created before this keep working
+(`region` is optional); re-open one in the admin and re-pick its locations to
+add regions.
+
 Slugs must match `^[a-z0-9-]+$` (they become directory names and URLs). The
 admin transliterates Cyrillic and strips accents/punctuation when generating or
 sanitising a slug, so non-Latin place names still produce a valid slug.
