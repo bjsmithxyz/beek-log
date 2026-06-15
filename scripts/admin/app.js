@@ -166,9 +166,23 @@ $('stock').onchange = refreshSlug;
 // sanitise a hand-edited slug when the field loses focus
 $('slug').onchange = (e) => { e.target.value = slugify(e.target.value); };
 
+function resetForm() {
+  mode = 'create';
+  editSlug = null;
+  frames = [];
+  $('folder').value = '';
+  $('title').value = '';
+  $('stock').selectedIndex = 0;
+  $('date').value = new Date().toISOString().slice(0, 10);
+  $('draft').checked = false;
+  $('body').value = '';
+  setRollLocation(null); // clears loc fields + display, then refreshSlug
+  render();
+}
+
 $('roll-picker').onchange = async (e) => {
   const slug = e.target.value;
-  if (!slug) { mode = 'create'; editSlug = null; frames = []; render(); return; }
+  if (!slug) { resetForm(); return; }
   mode = 'edit';
   const roll = await api('/api/roll/' + slug);
   editSlug = roll.slug;
