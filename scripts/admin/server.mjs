@@ -79,7 +79,9 @@ route('POST', /^\/api\/scan$/, async (req, res) => {
 const countryCache = new Map(); // country name → { name, lat, lng } | undefined
 
 async function nominatim(query, detail) {
-  const url = `https://nominatim.openstreetmap.org/search?format=jsonv2&limit=5${detail ? '&addressdetails=1' : ''}&q=${encodeURIComponent(query)}`;
+  // accept-language=en so place/country names come back in English (the site's
+  // content language), not the location's local script.
+  const url = `https://nominatim.openstreetmap.org/search?format=jsonv2&accept-language=en&limit=5${detail ? '&addressdetails=1' : ''}&q=${encodeURIComponent(query)}`;
   const r = await fetch(url, { headers: { 'User-Agent': 'beek-log-admin (local dev tool)' } });
   if (!r.ok) throw new Error(`geocoder ${r.status}`);
   return r.json();
