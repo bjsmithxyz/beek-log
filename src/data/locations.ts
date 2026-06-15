@@ -19,6 +19,11 @@ export type CountedLocation = Location & { count: number };
 
 // Distinct shoot locations across a roll's photos, using each photo's override
 // or the roll's primary location. De-duplicated by name (case-insensitive).
+// Extend RollLike with id for aggregatePins (content layer entries use .id as slug)
+interface RollWithId extends RollLike {
+  id: string;
+}
+
 export function effectiveLocations(roll: RollLike): CountedLocation[] {
   const map = new Map<string, CountedLocation>();
   for (const photo of roll.data.photos) {
@@ -35,4 +40,63 @@ export function effectiveLocations(roll: RollLike): CountedLocation[] {
     });
   }
   return [...map.values()];
+}
+
+export interface Pin {
+  slug: string;
+  label: string;
+  lat: number;
+  lng: number;
+  count: number;
+  members: string[];
+}
+
+interface PinRoll {
+  id: string;
+  data: {
+    location: Location;
+    photos: { location?: Location }[];
+  };
+}
+
+// One pin per primary: group every roll's effective locations by region name
+// (falling back to the place name). The pin sits at the region (or the place if
+// none); `members` lists the distinct secondary places for the tooltip.
+export function aggregatePins(rolls: PinRoll[]): Pin[] {
+  const groups = new Map<string, {
+    slug: string; label: string; lat: number; lng: number;
+    count: number; places: Map<string, number>;
+  }>();
+  for (const roll of rolls) {
+    for (const loc of effectiveLocations(roll)) {
+      const region = loc.region;
+      const label = region ? region.name : loc.name;
+      const key = label.toLowerCase();
+      let g = groups.get(key);
+      if (!g) {
+        g = {
+          slug: roll.id,
+          label,
+          lat: region ? region.lat : loc.lat,
+          lng: region ? region.lng : loc.lng,
+          count: 0,
+          places: new Map(),
+        };
+        groups.set(key, g);
+      }
+      g.count += loc.count;
+      g.places.set(loc.name, (g.places.get(loc.name) ?? 0) + loc.count);
+    }
+  }
+  return [...groups.values()].map((g) => ({
+    slug: g.slug,
+    label: g.label,
+    lat: g.lat,
+    lng: g.lng,
+    count: g.count,
+    members: [...g.places.entries()]
+      .filter(([name]) => name.toLowerCase() !== g.label.toLowerCase())
+      .sort((a, b) => b[1] - a[1])
+      .map(([name]) => name),
+  }));
 }
