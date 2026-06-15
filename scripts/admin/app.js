@@ -89,6 +89,13 @@ async function setFrameLocation(i) {
   render();
 }
 
+// toggle: select all frames, or deselect all when every frame is already selected
+$('select-all').onclick = () => {
+  const boxes = [...document.querySelectorAll('.frame .sel')];
+  const allChecked = boxes.length > 0 && boxes.every((b) => b.checked);
+  boxes.forEach((b) => { b.checked = !allChecked; });
+};
+
 $('bulk-loc').onclick = async () => {
   const selected = [...document.querySelectorAll('.frame')].filter((el) => el.querySelector('.sel').checked).map((el) => +el.dataset.i);
   if (!selected.length) return alert('select frames first');
