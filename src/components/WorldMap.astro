@@ -51,6 +51,9 @@ const project = (lat: number, lng: number) => ({
     const { x, y } = project(p.lat, p.lng);
     const line1 = `${p.label} — ${p.count} ${p.count === 1 ? 'frame' : 'frames'}`;
     const line2 = p.members.join(' · ');
+    // tooltip box sized in viewBox units: ~0.6 advance per monospace char, +4
+    // horizontal padding; height = text + 3.2 (1.6 top/bottom) and, for two
+    // lines, +1.4 inter-line gap. line1 sits ~1/3 down, line2 ~3/4 down.
     const fontSize = 3.2;
     const subSize = 2.6;
     const width = Math.max(line1.length * fontSize * 0.6, line2.length * subSize * 0.6) + 4;
