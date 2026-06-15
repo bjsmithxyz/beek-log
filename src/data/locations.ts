@@ -19,11 +19,6 @@ export type CountedLocation = Location & { count: number };
 
 // Distinct shoot locations across a roll's photos, using each photo's override
 // or the roll's primary location. De-duplicated by name (case-insensitive).
-// Extend RollLike with id for aggregatePins (content layer entries use .id as slug)
-interface RollWithId extends RollLike {
-  id: string;
-}
-
 export function effectiveLocations(roll: RollLike): CountedLocation[] {
   const map = new Map<string, CountedLocation>();
   for (const photo of roll.data.photos) {
