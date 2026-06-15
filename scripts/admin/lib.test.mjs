@@ -76,3 +76,17 @@ test('buildRollMarkdown ↔ parseRollMarkdown round-trips overrides and body', (
   assert.deepEqual(data.photos[2].location, roll.photos[2].location);
   assert.equal(body, 'shot on a borrowed camera.');
 });
+
+test('buildRollMarkdown round-trips a nested region on roll + photo', () => {
+  const withRegion = {
+    ...roll,
+    location: { name: 'Hoi An', lat: 15.8801, lng: 108.338, region: { name: 'Vietnam', lat: 14.06, lng: 108.28 } },
+    photos: [
+      { src: 'x', alt: 'a' },
+      { src: 'y', alt: 'b', location: { name: 'Da Nang', lat: 16.054, lng: 108.202, region: { name: 'Vietnam', lat: 14.06, lng: 108.28 } } },
+    ],
+  };
+  const { data } = parseRollMarkdown(buildRollMarkdown(withRegion));
+  assert.deepEqual(data.location.region, { name: 'Vietnam', lat: 14.06, lng: 108.28 });
+  assert.deepEqual(data.photos[1].location.region, { name: 'Vietnam', lat: 14.06, lng: 108.28 });
+});

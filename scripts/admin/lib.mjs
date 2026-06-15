@@ -45,8 +45,19 @@ export function deriveSlug({ date, stockSlug, placeName }) {
   return [ym, stockSlug, place].filter(Boolean).join('-');
 }
 
+function locationFM(loc) {
+  const o = { name: loc.name, lat: loc.lat, lng: loc.lng };
+  if (loc.region) o.region = { name: loc.region.name, lat: loc.region.lat, lng: loc.region.lng };
+  return o;
+}
+
+function sameRegion(a, b) {
+  if (!a && !b) return true;
+  return !!a && !!b && a.name === b.name && a.lat === b.lat && a.lng === b.lng;
+}
+
 function sameLocation(a, b) {
-  return a && b && a.name === b.name && a.lat === b.lat && a.lng === b.lng;
+  return a && b && a.name === b.name && a.lat === b.lat && a.lng === b.lng && sameRegion(a.region, b.region);
 }
 
 export function buildRollMarkdown({ title, stock, date, location, draft, photos, body = '' }) {
@@ -54,14 +65,14 @@ export function buildRollMarkdown({ title, stock, date, location, draft, photos,
     title,
     stock,
     date,
-    location: { name: location.name, lat: location.lat, lng: location.lng },
+    location: locationFM(location),
   };
   if (draft) fm.draft = true;
   fm.photos = photos.map((p) => {
     const o = { src: p.src, alt: p.alt };
     if (p.caption) o.caption = p.caption;
     if (p.location && !sameLocation(p.location, location)) {
-      o.location = { name: p.location.name, lat: p.location.lat, lng: p.location.lng };
+      o.location = locationFM(p.location);
     }
     return o;
   });
