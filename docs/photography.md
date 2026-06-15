@@ -23,13 +23,17 @@ npm run admin   # opens http://127.0.0.1:4322
 2. Paste the folder path and **scan** — thumbnails appear.
 3. **Drag** thumbnails to set frame order; edit each frame's alt text and
    optional caption.
-4. Search the **primary location** to fill latitude/longitude (or type them).
-5. **Per-photo location:** if a roll spans places (e.g. China then Hong Kong),
-   set a frame's location — it fills forward to the following frames until the
-   next explicit change, or multi-select frames and bulk-assign. Each distinct
-   location becomes its own map pin.
+4. Set the **primary location** with the picker — search a place and pick a
+   result, drag the pin on the map to fine-tune, or click a chip to reuse a
+   location already on the roll. The place's country is captured as its
+   `region` automatically (in English).
+5. **Per-photo location:** if a roll spans places (e.g. Chiang Mai then
+   Hanoi), set a frame's location — it fills forward to the following frames
+   until the next explicit change, or select frames (or **select all**) and
+   bulk-assign with the same picker. Pins are grouped by country on the map.
 6. **Write + commit + push** to publish (Netlify deploys on push), or **write
-   roll** to only write the files and commit yourself.
+   roll** to only write the files and commit yourself. The console below logs
+   progress — errors in red, a green line on success.
 
 ## Edit a roll
 
@@ -64,6 +68,11 @@ pin to fine-tune coordinates. Older rolls created before this keep working
 (`region` is optional); re-open one in the admin and re-pick its locations to
 add regions.
 
-Slugs must match `^[a-z0-9-]+$` (they become directory names and URLs). The
-admin transliterates Cyrillic and strips accents/punctuation when generating or
-sanitising a slug, so non-Latin place names still produce a valid slug.
+Slugs must match `^[a-z0-9-]+$` (they become directory names and URLs) and are
+derived from the date, stock, and place — the primary location, or the first
+frame's location if no primary is set. The admin transliterates Cyrillic and
+strips accents/punctuation, so non-Latin place names still produce a valid slug.
+
+Each roll needs a **unique** slug. The admin refuses a write whose slug already
+belongs to a different roll, so one roll can never overwrite another — give a
+colliding roll a distinct slug (e.g. add the city) before writing.
