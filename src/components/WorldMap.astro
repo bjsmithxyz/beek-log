@@ -99,10 +99,10 @@ const tooltipWidth =
         <g class="tooltip" aria-hidden="true" data-cx={cx} data-y={rectY} data-h={rectH} data-w={width}>
           <rect x={rectX} y={rectY} width={width} height={rectH} rx="0.8" class="tooltip-box" />
           <text
-            x={cx}
+            x={rectX + TT.padX}
             y={rectY + TT.padTop + TT.fontSize / 2}
             font-size={TT.fontSize}
-            text-anchor="middle"
+            text-anchor="start"
             dominant-baseline="central"
             class="tooltip-text"
           >{title}</text>
