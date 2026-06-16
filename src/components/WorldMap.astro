@@ -45,7 +45,8 @@ const tooltipWidth =
     ...pins.map((p) =>
       Math.max(
         titleFor(p).length * TT.fontSize * 0.6,
-        ...p.members.map((m) => m.length * TT.subSize * 0.6)
+        // sub-region lines carry a "· " bullet prefix (+2 chars)
+        ...p.members.map((m) => (m.length + 2) * TT.subSize * 0.6)
       )
     )
   ) +
@@ -93,13 +94,13 @@ const tooltipWidth =
           >{title}</text>
           {p.members.map((m, i) => (
             <text
-              x={cx}
+              x={rectX + TT.padX}
               y={rectY + TT.padTop + TT.fontSize + TT.titleGap + TT.lineH * i + TT.lineH / 2}
               font-size={TT.subSize}
-              text-anchor="middle"
+              text-anchor="start"
               dominant-baseline="central"
               class="tooltip-sub"
-            >{m}</text>
+            >{`· ${m}`}</text>
           ))}
         </g>
       </a>
