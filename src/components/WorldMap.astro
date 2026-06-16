@@ -24,6 +24,32 @@ const project = (lat: number, lng: number) => ({
   x: +(((lng + 180) / 360) * COLS).toFixed(1),
   y: +(((90 - lat) / 180) * ROWS).toFixed(1),
 });
+
+// Tooltip geometry, in viewBox units. Monospace advance ≈ 0.6em. Every box gets
+// the same width — the widest line across all pins — so tooltips are uniform;
+// the title sits on top with each sub-region stacked on its own line below.
+const TT = {
+  fontSize: 3.2, // title line: "Label — N frames"
+  subSize: 2.6, // sub-region lines
+  padX: 2, // left/right inner padding
+  padTop: 1.8,
+  padBottom: 1.6,
+  titleGap: 1.8, // title baseline to first sub-region
+  lineH: 3, // per sub-region line height
+};
+
+const titleFor = (p: Pin) => `${p.label} — ${p.count} ${p.count === 1 ? 'frame' : 'frames'}`;
+
+const tooltipWidth =
+  Math.max(
+    ...pins.map((p) =>
+      Math.max(
+        titleFor(p).length * TT.fontSize * 0.6,
+        ...p.members.map((m) => m.length * TT.subSize * 0.6)
+      )
+    )
+  ) +
+  TT.padX * 2;
 ---
 
 <svg
@@ -41,42 +67,40 @@ const project = (lat: number, lng: number) => ({
   )}
   {pins.map((p) => {
     const { x, y } = project(p.lat, p.lng);
-    const line1 = `${p.label} — ${p.count} ${p.count === 1 ? 'frame' : 'frames'}`;
-    const line2 = p.members.join(' · ');
-    // tooltip box sized in viewBox units: ~0.6 advance per monospace char, +4
-    // horizontal padding; height = text + 3.2 (1.6 top/bottom) and, for two
-    // lines, +1.4 inter-line gap. line1 sits ~1/3 down, line2 ~3/4 down.
-    const fontSize = 3.2;
-    const subSize = 2.6;
-    const width = Math.max(line1.length * fontSize * 0.6, line2.length * subSize * 0.6) + 4;
-    const rectH = (line2 ? fontSize + subSize + 1.4 : fontSize) + 3.2;
+    const title = titleFor(p);
+    const width = tooltipWidth;
+    const rectH =
+      TT.padTop +
+      TT.fontSize +
+      (p.members.length ? TT.titleGap + TT.lineH * p.members.length : 0) +
+      TT.padBottom;
     const rectX = Math.min(Math.max(x - width / 2, 1), COLS - width - 1);
     const rectY = Math.max(1, y - 3 - rectH);
     const cx = rectX + width / 2;
     return (
-      <a href={`#roll-${p.slug}`} class="pin-link" aria-label={line1} data-slugs={p.slugs.join(' ')}>
+      <a href={`#roll-${p.slug}`} class="pin-link" aria-label={title} data-slugs={p.slugs.join(' ')}>
         <circle cx={x} cy={y} r="3.4" class="pin-halo" />
         <circle cx={x} cy={y} r="1" class="pin" />
-        <g class="tooltip" aria-hidden="true">
+        <g class="tooltip" aria-hidden="true" data-cx={cx} data-y={rectY} data-h={rectH} data-w={width}>
           <rect x={rectX} y={rectY} width={width} height={rectH} rx="0.8" class="tooltip-box" />
           <text
             x={cx}
-            y={rectY + (line2 ? rectH * 0.36 : rectH / 2)}
-            font-size={fontSize}
+            y={rectY + TT.padTop + TT.fontSize / 2}
+            font-size={TT.fontSize}
             text-anchor="middle"
             dominant-baseline="central"
             class="tooltip-text"
-          >{line1}</text>
-          {line2 && (
+          >{title}</text>
+          {p.members.map((m, i) => (
             <text
               x={cx}
-              y={rectY + rectH * 0.72}
-              font-size={subSize}
+              y={rectY + TT.padTop + TT.fontSize + TT.titleGap + TT.lineH * i + TT.lineH / 2}
+              font-size={TT.subSize}
               text-anchor="middle"
               dominant-baseline="central"
               class="tooltip-sub"
-            >{line2}</text>
-          )}
+            >{m}</text>
+          ))}
         </g>
       </a>
     );
@@ -96,6 +120,29 @@ const project = (lat: number, lng: number) => ({
       if (on) lift(pin);
     };
 
+    // A single roll can light up several nearby pins at once (e.g. a trip across
+    // Thailand + Vietnam). Their tooltips are each centred on their own pin and
+    // would overlap, so nudge colliding boxes downward into a clean stack.
+    const num = (el: Element, k: string) => +((el as HTMLElement).dataset[k] || 0);
+    const relayoutTooltips = () => {
+      const all = svg.querySelectorAll<SVGGElement>('.tooltip');
+      all.forEach((t) => t.removeAttribute('transform'));
+      const boxes = [...svg.querySelectorAll<SVGGElement>('.pin-link.is-active .tooltip')]
+        .map((el) => ({ el, cx: num(el, 'cx'), y: num(el, 'y'), h: num(el, 'h'), w: num(el, 'w') }))
+        .sort((a, b) => a.y - b.y); // topmost first; later boxes cascade below
+      const gap = 1;
+      const placed: typeof boxes = [];
+      for (const b of boxes) {
+        let y = b.y;
+        for (const p of placed) {
+          const overlapX = Math.abs(b.cx - p.cx) < (b.w + p.w) / 2;
+          if (overlapX && y < p.y + p.h + gap && y + b.h > p.y) y = p.y + p.h + gap;
+        }
+        if (y !== b.y) b.el.setAttribute('transform', `translate(0 ${(y - b.y).toFixed(2)})`);
+        placed.push({ ...b, y });
+      }
+    };
+
     // A pin can stand for several rolls (same country grouped into one pin), and
     // a roll can span several pins (photos in different countries). Cross-
     // highlight every matching counterpart, not just one.
@@ -106,8 +153,8 @@ const project = (lat: number, lng: number) => ({
 
     svg.querySelectorAll<HTMLElement>('.pin-link').forEach((pin) => {
       const rows = rowsForPin(pin);
-      const on = () => { setPin(pin, true); rows.forEach((r) => r.classList.add('is-pin-active')); };
-      const off = () => { setPin(pin, false); rows.forEach((r) => r.classList.remove('is-pin-active')); };
+      const on = () => { setPin(pin, true); rows.forEach((r) => r.classList.add('is-pin-active')); relayoutTooltips(); };
+      const off = () => { setPin(pin, false); rows.forEach((r) => r.classList.remove('is-pin-active')); relayoutTooltips(); };
       pin.addEventListener('mouseenter', on);
       pin.addEventListener('mouseleave', off);
       pin.addEventListener('focus', on);
@@ -118,8 +165,8 @@ const project = (lat: number, lng: number) => ({
       const slug = row.dataset.slug;
       // ~= matches the slug as one whitespace-separated token within data-slugs
       const pins = svg.querySelectorAll(`.pin-link[data-slugs~="${slug}"]`);
-      row.addEventListener('mouseenter', () => pins.forEach((p) => setPin(p, true)));
-      row.addEventListener('mouseleave', () => pins.forEach((p) => setPin(p, false)));
+      row.addEventListener('mouseenter', () => { pins.forEach((p) => setPin(p, true)); relayoutTooltips(); });
+      row.addEventListener('mouseleave', () => { pins.forEach((p) => setPin(p, false)); relayoutTooltips(); });
     });
   }
 
