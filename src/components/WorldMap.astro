@@ -54,7 +54,7 @@ const project = (lat: number, lng: number) => ({
     const rectY = Math.max(1, y - 3 - rectH);
     const cx = rectX + width / 2;
     return (
-      <a href={`#roll-${p.slug}`} class="pin-link" aria-label={line1} data-slug={p.slug}>
+      <a href={`#roll-${p.slug}`} class="pin-link" aria-label={line1} data-slugs={p.slugs.join(' ')}>
         <circle cx={x} cy={y} r="3.4" class="pin-halo" />
         <circle cx={x} cy={y} r="1" class="pin" />
         <g class="tooltip" aria-hidden="true">
@@ -96,11 +96,18 @@ const project = (lat: number, lng: number) => ({
       if (on) lift(pin);
     };
 
+    // A pin can stand for several rolls (same country grouped into one pin), and
+    // a roll can span several pins (photos in different countries). Cross-
+    // highlight every matching counterpart, not just one.
+    const rowsForPin = (pin: Element) =>
+      ((pin as HTMLElement).dataset.slugs || '').split(' ').filter(Boolean)
+        .map((s) => document.getElementById(`roll-${s}`))
+        .filter((r): r is HTMLElement => !!r);
+
     svg.querySelectorAll<HTMLElement>('.pin-link').forEach((pin) => {
-      const slug = pin.dataset.slug;
-      const row = slug ? document.getElementById(`roll-${slug}`) : null;
-      const on = () => { setPin(pin, true); row?.classList.add('is-pin-active'); };
-      const off = () => { setPin(pin, false); row?.classList.remove('is-pin-active'); };
+      const rows = rowsForPin(pin);
+      const on = () => { setPin(pin, true); rows.forEach((r) => r.classList.add('is-pin-active')); };
+      const off = () => { setPin(pin, false); rows.forEach((r) => r.classList.remove('is-pin-active')); };
       pin.addEventListener('mouseenter', on);
       pin.addEventListener('mouseleave', off);
       pin.addEventListener('focus', on);
@@ -109,7 +116,8 @@ const project = (lat: number, lng: number) => ({
 
     document.querySelectorAll<HTMLElement>('.roll-row[data-slug]').forEach((row) => {
       const slug = row.dataset.slug;
-      const pins = svg.querySelectorAll(`.pin-link[data-slug="${slug}"]`);
+      // ~= matches the slug as one whitespace-separated token within data-slugs
+      const pins = svg.querySelectorAll(`.pin-link[data-slugs~="${slug}"]`);
       row.addEventListener('mouseenter', () => pins.forEach((p) => setPin(p, true)));
       row.addEventListener('mouseleave', () => pins.forEach((p) => setPin(p, false)));
     });

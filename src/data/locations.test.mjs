@@ -59,7 +59,7 @@ test('aggregatePins groups by region: one pin at the region with a member breakd
 
 test('aggregatePins keeps region-less locations standalone with no members', () => {
   const pins = aggregatePins([{ id: 'r2', data: { location: cn, photos: [{}] } }]);
-  assert.deepEqual(pins, [{ slug: 'r2', label: 'Shenzhen, China', lat: 22.5, lng: 114.05, count: 1, members: [] }]);
+  assert.deepEqual(pins, [{ slug: 'r2', slugs: ['r2'], label: 'Shenzhen, China', lat: 22.5, lng: 114.05, count: 1, members: [] }]);
 });
 
 test('aggregatePins sums one region across multiple rolls, slug = first (most recent)', () => {
@@ -71,4 +71,23 @@ test('aggregatePins sums one region across multiple rolls, slug = first (most re
   assert.equal(pins.length, 1);
   assert.equal(pins[0].slug, 'newer');
   assert.equal(pins[0].count, 3);
+});
+
+test('aggregatePins records every contributing roll in slugs (so each roll row can cross-highlight its pin)', () => {
+  const rolls = [
+    { id: 'newer', data: { location: hoiAn, photos: [{}] } },
+    { id: 'older', data: { location: daNang, photos: [{}, {}] } },
+  ];
+  const pins = aggregatePins(rolls);
+  assert.equal(pins.length, 1);
+  assert.deepEqual([...pins[0].slugs].sort(), ['newer', 'older']);
+});
+
+test('a roll spanning two regions is listed in both pins\' slugs', () => {
+  const kunming = { name: 'Kunming', lat: 25.04, lng: 102.71, region: { name: 'China', lat: 35, lng: 103 } };
+  const pins = aggregatePins([
+    { id: 'multi', data: { location: hoiAn, photos: [{}, { location: kunming }] } },
+  ]);
+  assert.equal(pins.length, 2);
+  for (const p of pins) assert.ok(p.slugs.includes('multi'), `pin ${p.label} should list 'multi'`);
 });

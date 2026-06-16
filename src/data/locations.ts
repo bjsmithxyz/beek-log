@@ -38,7 +38,8 @@ export function effectiveLocations(roll: RollLike): CountedLocation[] {
 }
 
 export interface Pin {
-  slug: string;
+  slug: string;       // representative roll (jump target for the pin anchor)
+  slugs: string[];    // every roll that contributes to this pin (for cross-highlight)
   label: string;
   lat: number;
   lng: number;
@@ -55,7 +56,7 @@ interface PinRoll extends RollLike {
 // none); `members` lists the distinct secondary places for the tooltip.
 export function aggregatePins(rolls: PinRoll[]): Pin[] {
   const groups = new Map<string, {
-    slug: string; label: string; lat: number; lng: number;
+    slug: string; slugs: Set<string>; label: string; lat: number; lng: number;
     count: number; places: Map<string, number>;
   }>();
   for (const roll of rolls) {
@@ -67,6 +68,7 @@ export function aggregatePins(rolls: PinRoll[]): Pin[] {
       if (!g) {
         g = {
           slug: roll.id,
+          slugs: new Set(),
           label,
           lat: region ? region.lat : loc.lat,
           lng: region ? region.lng : loc.lng,
@@ -75,6 +77,7 @@ export function aggregatePins(rolls: PinRoll[]): Pin[] {
         };
         groups.set(key, g);
       }
+      g.slugs.add(roll.id);
       g.count += loc.count;
       g.places.set(loc.name, (g.places.get(loc.name) ?? 0) + loc.count);
     }
@@ -83,6 +86,7 @@ export function aggregatePins(rolls: PinRoll[]): Pin[] {
     const labelKey = g.label.toLowerCase();
     return {
       slug: g.slug,
+      slugs: [...g.slugs],
       label: g.label,
       lat: g.lat,
       lng: g.lng,
