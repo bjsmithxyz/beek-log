@@ -13,12 +13,18 @@ interface Props {
 
 const { pins } = Astro.props;
 
+// Projection / viewBox space. Kept at 240x120 regardless of the land-mask
+// resolution so pin and tooltip geometry below is unaffected.
 const COLS = 240;
 const ROWS = 120;
 
-// Antarctica's ice reads as ocean to the land mask, leaving a stray spray of
-// dots; drop everything south of -60° lat (no shoot locations down there).
-const ANTARCTICA_CUTOFF_ROW = Math.round(((90 - -60) / 180) * ROWS);
+// The land-mask grid is finer than the viewBox; scale each cell into 240x120.
+const grid = dots as string[];
+const GRID_ROWS = grid.length;
+const GRID_COLS = grid[0].length;
+const cellW = COLS / GRID_COLS;
+const cellH = ROWS / GRID_ROWS;
+const dotR = +(cellW * 0.4).toFixed(2);
 
 const project = (lat: number, lng: number) => ({
   x: +(((lng + 180) / 360) * COLS).toFixed(1),
@@ -59,12 +65,17 @@ const tooltipWidth =
   role="img"
   aria-label={`Map of shoot locations: ${pins.map((p) => p.label).join(', ')}`}
 >
-  {(dots as string[]).flatMap((row, y) =>
-    y >= ANTARCTICA_CUTOFF_ROW
-      ? []
-      : [...row].map((c, x) =>
-          c === '1' ? <circle cx={x + 0.5} cy={y + 0.5} r="0.4" class="dot" /> : null
-        )
+  {grid.flatMap((row, gy) =>
+    [...row].map((c, gx) =>
+      c === '1' ? (
+        <circle
+          cx={+((gx + 0.5) * cellW).toFixed(1)}
+          cy={+((gy + 0.5) * cellH).toFixed(1)}
+          r={dotR}
+          class="dot"
+        />
+      ) : null
+    )
   )}
   {pins.map((p) => {
     const { x, y } = project(p.lat, p.lng);
