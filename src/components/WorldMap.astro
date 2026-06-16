@@ -34,14 +34,17 @@ const project = (lat: number, lng: number) => ({
 // Tooltip geometry, in viewBox units. Monospace advance ≈ 0.6em. Every box gets
 // the same width — the widest line across all pins — so tooltips are uniform;
 // the title sits on top with each sub-region stacked on its own line below.
+// Sizes are in viewBox units, so on-screen text scales with map width. The map
+// is ~2.6x narrower on mobile than desktop, so these are tuned up for mobile
+// legibility; desktop tooltips render larger but they're transient hover popups.
 const TT = {
-  fontSize: 3.2, // title line: "Label — N frames"
-  subSize: 2.6, // sub-region lines
-  padX: 2, // left/right inner padding
-  padTop: 1.8,
-  padBottom: 1.6,
-  titleGap: 1.8, // title baseline to first sub-region
-  lineH: 3, // per sub-region line height
+  fontSize: 6, // title line: "Label — N frames"
+  subSize: 4.6, // sub-region lines
+  padX: 2.6, // left/right inner padding
+  padTop: 2.4,
+  padBottom: 2.2,
+  titleGap: 2.2, // title baseline to first sub-region
+  lineH: 5.2, // per sub-region line height
 };
 
 const titleFor = (p: Pin) => `${p.label} — ${p.count} ${p.count === 1 ? 'frame' : 'frames'}`;
