@@ -12,7 +12,7 @@ location:
     lng: 107.9650855
 photos:
   - src: ../../assets/photos/2025-07-kodak-colorplus-200-ha-noi-ha-giang/001.jpg
-    alt: frame 1
+    alt: ""
     location:
       name: Hà Nội
       lat: 21.0283334
@@ -22,7 +22,7 @@ photos:
         lat: 15.9266657
         lng: 107.9650855
   - src: ../../assets/photos/2025-07-kodak-colorplus-200-ha-noi-ha-giang/002.jpg
-    alt: frame 2
+    alt: ""
     location:
       name: Hà Nội
       lat: 21.0283334
@@ -32,7 +32,7 @@ photos:
         lat: 15.9266657
         lng: 107.9650855
   - src: ../../assets/photos/2025-07-kodak-colorplus-200-ha-noi-ha-giang/003.jpg
-    alt: frame 3
+    alt: ""
     location:
       name: Hà Nội
       lat: 21.0283334
@@ -42,7 +42,7 @@ photos:
         lat: 15.9266657
         lng: 107.9650855
   - src: ../../assets/photos/2025-07-kodak-colorplus-200-ha-noi-ha-giang/004.jpg
-    alt: frame 4
+    alt: ""
     location:
       name: Hà Nội
       lat: 21.0283334
@@ -52,7 +52,7 @@ photos:
         lat: 15.9266657
         lng: 107.9650855
   - src: ../../assets/photos/2025-07-kodak-colorplus-200-ha-noi-ha-giang/005.jpg
-    alt: frame 5
+    alt: ""
     location:
       name: Hà Nội
       lat: 21.0283334
@@ -62,7 +62,7 @@ photos:
         lat: 15.9266657
         lng: 107.9650855
   - src: ../../assets/photos/2025-07-kodak-colorplus-200-ha-noi-ha-giang/006.jpg
-    alt: frame 6
+    alt: ""
     location:
       name: Hà Nội
       lat: 21.0283334
@@ -72,7 +72,7 @@ photos:
         lat: 15.9266657
         lng: 107.9650855
   - src: ../../assets/photos/2025-07-kodak-colorplus-200-ha-noi-ha-giang/007.jpg
-    alt: frame 7
+    alt: ""
     location:
       name: Hà Nội
       lat: 21.0283334
@@ -82,7 +82,7 @@ photos:
         lat: 15.9266657
         lng: 107.9650855
   - src: ../../assets/photos/2025-07-kodak-colorplus-200-ha-noi-ha-giang/008.jpg
-    alt: frame 8
+    alt: ""
     location:
       name: Hà Nội
       lat: 21.0283334
@@ -92,49 +92,49 @@ photos:
         lat: 15.9266657
         lng: 107.9650855
   - src: ../../assets/photos/2025-07-kodak-colorplus-200-ha-noi-ha-giang/009.jpg
-    alt: frame 9
+    alt: ""
   - src: ../../assets/photos/2025-07-kodak-colorplus-200-ha-noi-ha-giang/010.jpg
-    alt: frame 10
+    alt: ""
   - src: ../../assets/photos/2025-07-kodak-colorplus-200-ha-noi-ha-giang/011.jpg
-    alt: frame 11
+    alt: ""
   - src: ../../assets/photos/2025-07-kodak-colorplus-200-ha-noi-ha-giang/012.jpg
-    alt: frame 12
+    alt: ""
   - src: ../../assets/photos/2025-07-kodak-colorplus-200-ha-noi-ha-giang/013.jpg
-    alt: frame 13
+    alt: ""
   - src: ../../assets/photos/2025-07-kodak-colorplus-200-ha-noi-ha-giang/014.jpg
-    alt: frame 14
+    alt: ""
   - src: ../../assets/photos/2025-07-kodak-colorplus-200-ha-noi-ha-giang/015.jpg
-    alt: frame 15
+    alt: ""
   - src: ../../assets/photos/2025-07-kodak-colorplus-200-ha-noi-ha-giang/016.jpg
-    alt: frame 16
+    alt: ""
   - src: ../../assets/photos/2025-07-kodak-colorplus-200-ha-noi-ha-giang/017.jpg
-    alt: frame 17
+    alt: ""
   - src: ../../assets/photos/2025-07-kodak-colorplus-200-ha-noi-ha-giang/018.jpg
-    alt: frame 18
+    alt: ""
   - src: ../../assets/photos/2025-07-kodak-colorplus-200-ha-noi-ha-giang/019.jpg
-    alt: frame 19
+    alt: ""
   - src: ../../assets/photos/2025-07-kodak-colorplus-200-ha-noi-ha-giang/020.jpg
-    alt: frame 20
+    alt: ""
   - src: ../../assets/photos/2025-07-kodak-colorplus-200-ha-noi-ha-giang/021.jpg
-    alt: frame 21
+    alt: ""
   - src: ../../assets/photos/2025-07-kodak-colorplus-200-ha-noi-ha-giang/022.jpg
-    alt: frame 22
+    alt: ""
   - src: ../../assets/photos/2025-07-kodak-colorplus-200-ha-noi-ha-giang/023.jpg
-    alt: frame 23
+    alt: ""
   - src: ../../assets/photos/2025-07-kodak-colorplus-200-ha-noi-ha-giang/024.jpg
-    alt: frame 24
+    alt: ""
   - src: ../../assets/photos/2025-07-kodak-colorplus-200-ha-noi-ha-giang/025.jpg
-    alt: frame 25
+    alt: ""
   - src: ../../assets/photos/2025-07-kodak-colorplus-200-ha-noi-ha-giang/026.jpg
-    alt: frame 26
+    alt: ""
   - src: ../../assets/photos/2025-07-kodak-colorplus-200-ha-noi-ha-giang/027.jpg
-    alt: frame 27
+    alt: ""
   - src: ../../assets/photos/2025-07-kodak-colorplus-200-ha-noi-ha-giang/028.jpg
-    alt: frame 28
+    alt: ""
   - src: ../../assets/photos/2025-07-kodak-colorplus-200-ha-noi-ha-giang/029.jpg
-    alt: frame 29
+    alt: ""
   - src: ../../assets/photos/2025-07-kodak-colorplus-200-ha-noi-ha-giang/030.jpg
-    alt: frame 30
+    alt: ""
 ---
 
 

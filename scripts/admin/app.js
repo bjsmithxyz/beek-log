@@ -149,10 +149,9 @@ $('scan').onclick = async () => {
   clearLog();
   try {
     const { parsed, frames: scanned } = await api('/api/scan', { folder: $('folder').value.trim() });
-    const start = frames.length;
-    scanned.forEach((f, k) => frames.push({
+    scanned.forEach((f) => frames.push({
       srcPath: f.srcPath, thumb: f.thumb,
-      alt: `frame ${start + k + 1}`,
+      alt: '',
       caption: '', location: null, explicit: false,
     }));
     if (parsed.date) $('date').value = parsed.date;

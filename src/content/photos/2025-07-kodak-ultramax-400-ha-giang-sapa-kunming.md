@@ -8,7 +8,7 @@ location:
   lng: 75.1551824
 photos:
   - src: ../../assets/photos/2025-07-kodak-ultramax-400-ha-giang-sapa-kunming/001.jpg
-    alt: frame 1
+    alt: ""
     location:
       name: Ha Giang province
       lat: 22.7336097
@@ -18,7 +18,7 @@ photos:
         lat: 15.9266657
         lng: 107.9650855
   - src: ../../assets/photos/2025-07-kodak-ultramax-400-ha-giang-sapa-kunming/002.jpg
-    alt: frame 2
+    alt: ""
     location:
       name: Ha Giang province
       lat: 22.7336097
@@ -28,7 +28,7 @@ photos:
         lat: 15.9266657
         lng: 107.9650855
   - src: ../../assets/photos/2025-07-kodak-ultramax-400-ha-giang-sapa-kunming/003.jpg
-    alt: frame 3
+    alt: ""
     location:
       name: Ha Giang province
       lat: 22.7336097
@@ -38,7 +38,7 @@ photos:
         lat: 15.9266657
         lng: 107.9650855
   - src: ../../assets/photos/2025-07-kodak-ultramax-400-ha-giang-sapa-kunming/004.jpg
-    alt: frame 4
+    alt: ""
     location:
       name: Ha Giang province
       lat: 22.7336097
@@ -48,7 +48,7 @@ photos:
         lat: 15.9266657
         lng: 107.9650855
   - src: ../../assets/photos/2025-07-kodak-ultramax-400-ha-giang-sapa-kunming/005.jpg
-    alt: frame 5
+    alt: ""
     location:
       name: Ha Giang province
       lat: 22.7336097
@@ -58,7 +58,7 @@ photos:
         lat: 15.9266657
         lng: 107.9650855
   - src: ../../assets/photos/2025-07-kodak-ultramax-400-ha-giang-sapa-kunming/006.jpg
-    alt: frame 6
+    alt: ""
     location:
       name: Ha Giang province
       lat: 22.7336097
@@ -68,7 +68,7 @@ photos:
         lat: 15.9266657
         lng: 107.9650855
   - src: ../../assets/photos/2025-07-kodak-ultramax-400-ha-giang-sapa-kunming/007.jpg
-    alt: frame 7
+    alt: ""
     location:
       name: Ha Giang province
       lat: 22.7336097
@@ -78,7 +78,7 @@ photos:
         lat: 15.9266657
         lng: 107.9650855
   - src: ../../assets/photos/2025-07-kodak-ultramax-400-ha-giang-sapa-kunming/008.jpg
-    alt: frame 8
+    alt: ""
     location:
       name: Ha Giang province
       lat: 22.7336097
@@ -88,7 +88,7 @@ photos:
         lat: 15.9266657
         lng: 107.9650855
   - src: ../../assets/photos/2025-07-kodak-ultramax-400-ha-giang-sapa-kunming/009.jpg
-    alt: frame 9
+    alt: ""
     location:
       name: Ha Giang province
       lat: 22.7336097
@@ -98,7 +98,7 @@ photos:
         lat: 15.9266657
         lng: 107.9650855
   - src: ../../assets/photos/2025-07-kodak-ultramax-400-ha-giang-sapa-kunming/010.jpg
-    alt: frame 10
+    alt: ""
     location:
       name: Lào Cai Province
       lat: 22.3153883
@@ -108,7 +108,7 @@ photos:
         lat: 15.9266657
         lng: 107.9650855
   - src: ../../assets/photos/2025-07-kodak-ultramax-400-ha-giang-sapa-kunming/011.jpg
-    alt: frame 11
+    alt: ""
     location:
       name: Lào Cai Province
       lat: 22.3153883
@@ -118,7 +118,7 @@ photos:
         lat: 15.9266657
         lng: 107.9650855
   - src: ../../assets/photos/2025-07-kodak-ultramax-400-ha-giang-sapa-kunming/012.jpg
-    alt: frame 12
+    alt: ""
     location:
       name: Lào Cai Province
       lat: 22.3153883
@@ -128,7 +128,7 @@ photos:
         lat: 15.9266657
         lng: 107.9650855
   - src: ../../assets/photos/2025-07-kodak-ultramax-400-ha-giang-sapa-kunming/013.jpg
-    alt: frame 13
+    alt: ""
     location:
       name: Lào Cai Province
       lat: 22.3153883
@@ -138,7 +138,7 @@ photos:
         lat: 15.9266657
         lng: 107.9650855
   - src: ../../assets/photos/2025-07-kodak-ultramax-400-ha-giang-sapa-kunming/014.jpg
-    alt: frame 14
+    alt: ""
     location:
       name: Lào Cai Province
       lat: 22.3153883
@@ -148,7 +148,7 @@ photos:
         lat: 15.9266657
         lng: 107.9650855
   - src: ../../assets/photos/2025-07-kodak-ultramax-400-ha-giang-sapa-kunming/015.jpg
-    alt: frame 15
+    alt: ""
     location:
       name: Lào Cai Province
       lat: 22.3153883
@@ -158,7 +158,7 @@ photos:
         lat: 15.9266657
         lng: 107.9650855
   - src: ../../assets/photos/2025-07-kodak-ultramax-400-ha-giang-sapa-kunming/016.jpg
-    alt: frame 16
+    alt: ""
     location:
       name: Lào Cai Province
       lat: 22.3153883
@@ -168,7 +168,7 @@ photos:
         lat: 15.9266657
         lng: 107.9650855
   - src: ../../assets/photos/2025-07-kodak-ultramax-400-ha-giang-sapa-kunming/017.jpg
-    alt: frame 17
+    alt: ""
     location:
       name: Lào Cai Province
       lat: 22.3153883
@@ -178,7 +178,7 @@ photos:
         lat: 15.9266657
         lng: 107.9650855
   - src: ../../assets/photos/2025-07-kodak-ultramax-400-ha-giang-sapa-kunming/018.jpg
-    alt: frame 18
+    alt: ""
     location:
       name: Lào Cai Province
       lat: 22.3153883
@@ -188,7 +188,7 @@ photos:
         lat: 15.9266657
         lng: 107.9650855
   - src: ../../assets/photos/2025-07-kodak-ultramax-400-ha-giang-sapa-kunming/019.jpg
-    alt: frame 19
+    alt: ""
     location:
       name: Lào Cai Province
       lat: 22.3153883
@@ -198,7 +198,7 @@ photos:
         lat: 15.9266657
         lng: 107.9650855
   - src: ../../assets/photos/2025-07-kodak-ultramax-400-ha-giang-sapa-kunming/020.jpg
-    alt: frame 20
+    alt: ""
     location:
       name: Lào Cai Province
       lat: 22.3153883
@@ -208,7 +208,7 @@ photos:
         lat: 15.9266657
         lng: 107.9650855
   - src: ../../assets/photos/2025-07-kodak-ultramax-400-ha-giang-sapa-kunming/021.jpg
-    alt: frame 21
+    alt: ""
     location:
       name: Lào Cai Province
       lat: 22.3153883
@@ -218,7 +218,7 @@ photos:
         lat: 15.9266657
         lng: 107.9650855
   - src: ../../assets/photos/2025-07-kodak-ultramax-400-ha-giang-sapa-kunming/022.jpg
-    alt: frame 22
+    alt: ""
     location:
       name: Lao Cai Ward
       lat: 22.4877525
@@ -228,7 +228,7 @@ photos:
         lat: 15.9266657
         lng: 107.9650855
   - src: ../../assets/photos/2025-07-kodak-ultramax-400-ha-giang-sapa-kunming/023.jpg
-    alt: frame 23
+    alt: ""
     location:
       name: Kunming
       lat: 25.0399353
@@ -238,7 +238,7 @@ photos:
         lat: 34.5412252
         lng: 108.9237067
   - src: ../../assets/photos/2025-07-kodak-ultramax-400-ha-giang-sapa-kunming/024.jpg
-    alt: frame 24
+    alt: ""
     location:
       name: Kunming
       lat: 25.0399353
@@ -248,7 +248,7 @@ photos:
         lat: 34.5412252
         lng: 108.9237067
   - src: ../../assets/photos/2025-07-kodak-ultramax-400-ha-giang-sapa-kunming/025.jpg
-    alt: frame 25
+    alt: ""
     location:
       name: Kunming
       lat: 25.0399353
@@ -258,7 +258,7 @@ photos:
         lat: 34.5412252
         lng: 108.9237067
   - src: ../../assets/photos/2025-07-kodak-ultramax-400-ha-giang-sapa-kunming/026.jpg
-    alt: frame 26
+    alt: ""
     location:
       name: Kunming
       lat: 25.0399353

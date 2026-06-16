@@ -12,45 +12,45 @@ location:
     lng: 100.83273
 photos:
   - src: ../../assets/photos/2025-07-kodak-tri-x-400-chiang-mai/001.jpg
-    alt: frame 1
+    alt: ""
     caption: Silver craftsman.
   - src: ../../assets/photos/2025-07-kodak-tri-x-400-chiang-mai/002.jpg
-    alt: frame 2
+    alt: ""
     caption: Roadworkers.
   - src: ../../assets/photos/2025-07-kodak-tri-x-400-chiang-mai/003.jpg
-    alt: frame 3
+    alt: ""
   - src: ../../assets/photos/2025-07-kodak-tri-x-400-chiang-mai/004.jpg
-    alt: frame 4
+    alt: ""
     caption: Nap’s Coffee Roaster CNX.
   - src: ../../assets/photos/2025-07-kodak-tri-x-400-chiang-mai/005.jpg
-    alt: frame 5
+    alt: ""
   - src: ../../assets/photos/2025-07-kodak-tri-x-400-chiang-mai/006.jpg
-    alt: frame 6
+    alt: ""
   - src: ../../assets/photos/2025-07-kodak-tri-x-400-chiang-mai/007.jpg
-    alt: frame 7
+    alt: ""
   - src: ../../assets/photos/2025-07-kodak-tri-x-400-chiang-mai/008.jpg
-    alt: frame 8
+    alt: ""
     caption: Family.
   - src: ../../assets/photos/2025-07-kodak-tri-x-400-chiang-mai/009.jpg
-    alt: frame 9
+    alt: ""
   - src: ../../assets/photos/2025-07-kodak-tri-x-400-chiang-mai/010.jpg
-    alt: frame 10
+    alt: ""
   - src: ../../assets/photos/2025-07-kodak-tri-x-400-chiang-mai/011.jpg
-    alt: frame 11
+    alt: ""
   - src: ../../assets/photos/2025-07-kodak-tri-x-400-chiang-mai/012.jpg
-    alt: frame 12
+    alt: ""
   - src: ../../assets/photos/2025-07-kodak-tri-x-400-chiang-mai/013.jpg
-    alt: frame 13
+    alt: ""
   - src: ../../assets/photos/2025-07-kodak-tri-x-400-chiang-mai/014.jpg
-    alt: frame 14
+    alt: ""
   - src: ../../assets/photos/2025-07-kodak-tri-x-400-chiang-mai/015.jpg
-    alt: frame 15
+    alt: ""
   - src: ../../assets/photos/2025-07-kodak-tri-x-400-chiang-mai/016.jpg
-    alt: frame 16
+    alt: ""
   - src: ../../assets/photos/2025-07-kodak-tri-x-400-chiang-mai/017.jpg
-    alt: frame 17
+    alt: ""
   - src: ../../assets/photos/2025-07-kodak-tri-x-400-chiang-mai/018.jpg
-    alt: frame 18
+    alt: ""
 ---
 
 Expired roll gifted to me.

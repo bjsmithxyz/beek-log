@@ -12,18 +12,18 @@ location:
     lng: 100.83273
 photos:
   - src: ../../assets/photos/2025-07-kodak-colorplus-200-chiang-mai-ha-noi/001.jpg
-    alt: frame 1
+    alt: ""
     caption: Somewhere in Chiang Mai.
   - src: ../../assets/photos/2025-07-kodak-colorplus-200-chiang-mai-ha-noi/002.jpg
-    alt: frame 2
+    alt: ""
   - src: ../../assets/photos/2025-07-kodak-colorplus-200-chiang-mai-ha-noi/003.jpg
-    alt: frame 3
+    alt: ""
   - src: ../../assets/photos/2025-07-kodak-colorplus-200-chiang-mai-ha-noi/004.jpg
-    alt: frame 4
+    alt: ""
   - src: ../../assets/photos/2025-07-kodak-colorplus-200-chiang-mai-ha-noi/005.jpg
-    alt: frame 5
+    alt: ""
   - src: ../../assets/photos/2025-07-kodak-colorplus-200-chiang-mai-ha-noi/006.jpg
-    alt: frame 6
+    alt: ""
     caption: Kayan woman in  Thailand, a Tibeto-Burman ethnic minority of Myanmar.
     location:
       name: Chiang Rai Province
@@ -34,7 +34,7 @@ photos:
         lat: 14.8971921
         lng: 100.83273
   - src: ../../assets/photos/2025-07-kodak-colorplus-200-chiang-mai-ha-noi/007.jpg
-    alt: frame 7
+    alt: ""
     caption: Kayan mother and daughter.
     location:
       name: Chiang Rai Province
@@ -45,7 +45,7 @@ photos:
         lat: 14.8971921
         lng: 100.83273
   - src: ../../assets/photos/2025-07-kodak-colorplus-200-chiang-mai-ha-noi/008.jpg
-    alt: frame 8
+    alt: ""
     caption: Wat Rong Khun
     location:
       name: Chiang Rai Province
@@ -56,7 +56,7 @@ photos:
         lat: 14.8971921
         lng: 100.83273
   - src: ../../assets/photos/2025-07-kodak-colorplus-200-chiang-mai-ha-noi/009.jpg
-    alt: frame 9
+    alt: ""
     caption: Wat Rong Khun
     location:
       name: Chiang Rai Province
@@ -67,7 +67,7 @@ photos:
         lat: 14.8971921
         lng: 100.83273
   - src: ../../assets/photos/2025-07-kodak-colorplus-200-chiang-mai-ha-noi/010.jpg
-    alt: frame 10
+    alt: ""
     caption: Baan Dam museum grounds.
     location:
       name: Chiang Rai Province
@@ -78,7 +78,7 @@ photos:
         lat: 14.8971921
         lng: 100.83273
   - src: ../../assets/photos/2025-07-kodak-colorplus-200-chiang-mai-ha-noi/011.jpg
-    alt: frame 11
+    alt: ""
     caption: Baan Dam museum grounds.
     location:
       name: Chiang Rai Province
@@ -89,7 +89,7 @@ photos:
         lat: 14.8971921
         lng: 100.83273
   - src: ../../assets/photos/2025-07-kodak-colorplus-200-chiang-mai-ha-noi/012.jpg
-    alt: frame 12
+    alt: ""
     caption: Baan Dam museum grounds.
     location:
       name: Chiang Rai Province
@@ -100,7 +100,7 @@ photos:
         lat: 14.8971921
         lng: 100.83273
   - src: ../../assets/photos/2025-07-kodak-colorplus-200-chiang-mai-ha-noi/013.jpg
-    alt: frame 13
+    alt: ""
     caption: Mekong River.
     location:
       name: Chiang Rai Province
@@ -111,7 +111,7 @@ photos:
         lat: 14.8971921
         lng: 100.83273
   - src: ../../assets/photos/2025-07-kodak-colorplus-200-chiang-mai-ha-noi/014.jpg
-    alt: frame 14
+    alt: ""
     caption: Mekong River, looking at Laos.
     location:
       name: Chiang Rai Province
@@ -122,7 +122,7 @@ photos:
         lat: 14.8971921
         lng: 100.83273
   - src: ../../assets/photos/2025-07-kodak-colorplus-200-chiang-mai-ha-noi/015.jpg
-    alt: frame 15
+    alt: ""
     caption: Van Pak Len, Laos.
     location:
       name: Chiang Rai Province
@@ -133,13 +133,13 @@ photos:
         lat: 14.8971921
         lng: 100.83273
   - src: ../../assets/photos/2025-07-kodak-colorplus-200-chiang-mai-ha-noi/016.jpg
-    alt: frame 16
+    alt: ""
   - src: ../../assets/photos/2025-07-kodak-colorplus-200-chiang-mai-ha-noi/017.jpg
-    alt: frame 17
+    alt: ""
   - src: ../../assets/photos/2025-07-kodak-colorplus-200-chiang-mai-ha-noi/018.jpg
-    alt: frame 18
+    alt: ""
   - src: ../../assets/photos/2025-07-kodak-colorplus-200-chiang-mai-ha-noi/019.jpg
-    alt: frame 19
+    alt: ""
     location:
       name: Hà Nội
       lat: 21.0283334
@@ -149,7 +149,7 @@ photos:
         lat: 15.9266657
         lng: 107.9650855
   - src: ../../assets/photos/2025-07-kodak-colorplus-200-chiang-mai-ha-noi/020.jpg
-    alt: frame 20
+    alt: ""
     caption: Train street.
     location:
       name: Hà Nội
@@ -160,7 +160,7 @@ photos:
         lat: 15.9266657
         lng: 107.9650855
   - src: ../../assets/photos/2025-07-kodak-colorplus-200-chiang-mai-ha-noi/021.jpg
-    alt: frame 21
+    alt: ""
     caption: Train street.
     location:
       name: Hà Nội
@@ -171,7 +171,7 @@ photos:
         lat: 15.9266657
         lng: 107.9650855
   - src: ../../assets/photos/2025-07-kodak-colorplus-200-chiang-mai-ha-noi/022.jpg
-    alt: frame 22
+    alt: ""
     location:
       name: Hà Nội
       lat: 21.0283334
@@ -181,7 +181,7 @@ photos:
         lat: 15.9266657
         lng: 107.9650855
   - src: ../../assets/photos/2025-07-kodak-colorplus-200-chiang-mai-ha-noi/023.jpg
-    alt: frame 23
+    alt: ""
     location:
       name: Hà Nội
       lat: 21.0283334
@@ -191,7 +191,7 @@ photos:
         lat: 15.9266657
         lng: 107.9650855
   - src: ../../assets/photos/2025-07-kodak-colorplus-200-chiang-mai-ha-noi/024.jpg
-    alt: frame 24
+    alt: ""
     location:
       name: Hà Nội
       lat: 21.0283334
@@ -201,7 +201,7 @@ photos:
         lat: 15.9266657
         lng: 107.9650855
   - src: ../../assets/photos/2025-07-kodak-colorplus-200-chiang-mai-ha-noi/025.jpg
-    alt: frame 25
+    alt: ""
     caption: Uncle Ho's tomb.
     location:
       name: Hà Nội
@@ -212,7 +212,7 @@ photos:
         lat: 15.9266657
         lng: 107.9650855
   - src: ../../assets/photos/2025-07-kodak-colorplus-200-chiang-mai-ha-noi/026.jpg
-    alt: frame 26
+    alt: ""
     location:
       name: Hà Nội
       lat: 21.0283334
@@ -222,7 +222,7 @@ photos:
         lat: 15.9266657
         lng: 107.9650855
   - src: ../../assets/photos/2025-07-kodak-colorplus-200-chiang-mai-ha-noi/027.jpg
-    alt: frame 27
+    alt: ""
     caption: oh hi doggy
     location:
       name: Hà Nội

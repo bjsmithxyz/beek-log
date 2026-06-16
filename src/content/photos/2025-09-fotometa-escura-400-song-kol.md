@@ -12,7 +12,7 @@ location:
     lng: 74.724091
 photos:
   - src: ../../assets/photos/2025-09-fotometa-escura-400-song-kol/001.jpg
-    alt: frame 1
+    alt: ""
     caption: Bishkek
     location:
       name: Bishkek City
@@ -23,53 +23,53 @@ photos:
         lat: 41.5089324
         lng: 74.724091
   - src: ../../assets/photos/2025-09-fotometa-escura-400-song-kol/002.jpg
-    alt: frame 2
+    alt: ""
     caption: On the way to Song-Köl
   - src: ../../assets/photos/2025-09-fotometa-escura-400-song-kol/003.jpg
-    alt: frame 3
+    alt: ""
   - src: ../../assets/photos/2025-09-fotometa-escura-400-song-kol/004.jpg
-    alt: frame 4
+    alt: ""
     caption: Domes by Song-Köl lake.
   - src: ../../assets/photos/2025-09-fotometa-escura-400-song-kol/005.jpg
-    alt: frame 5
+    alt: ""
     caption: Wild horses.
   - src: ../../assets/photos/2025-09-fotometa-escura-400-song-kol/006.jpg
-    alt: frame 6
+    alt: ""
     caption: Wild horses.
   - src: ../../assets/photos/2025-09-fotometa-escura-400-song-kol/007.jpg
-    alt: frame 7
+    alt: ""
   - src: ../../assets/photos/2025-09-fotometa-escura-400-song-kol/008.jpg
-    alt: frame 8
+    alt: ""
     caption: A horse as seen from inside our sleeping yurt.
   - src: ../../assets/photos/2025-09-fotometa-escura-400-song-kol/009.jpg
-    alt: frame 9
+    alt: ""
   - src: ../../assets/photos/2025-09-fotometa-escura-400-song-kol/010.jpg
-    alt: frame 10
+    alt: ""
     caption: One of our guides, who also owned all of the horses which apparently
       made him a rich man.
   - src: ../../assets/photos/2025-09-fotometa-escura-400-song-kol/011.jpg
-    alt: frame 11
+    alt: ""
   - src: ../../assets/photos/2025-09-fotometa-escura-400-song-kol/012.jpg
-    alt: frame 12
+    alt: ""
   - src: ../../assets/photos/2025-09-fotometa-escura-400-song-kol/013.jpg
-    alt: frame 13
+    alt: ""
   - src: ../../assets/photos/2025-09-fotometa-escura-400-song-kol/014.jpg
-    alt: frame 14
+    alt: ""
   - src: ../../assets/photos/2025-09-fotometa-escura-400-song-kol/015.jpg
-    alt: frame 15
+    alt: ""
   - src: ../../assets/photos/2025-09-fotometa-escura-400-song-kol/016.jpg
-    alt: frame 16
+    alt: ""
   - src: ../../assets/photos/2025-09-fotometa-escura-400-song-kol/017.jpg
-    alt: frame 17
+    alt: ""
     caption: Puppies <3
   - src: ../../assets/photos/2025-09-fotometa-escura-400-song-kol/018.jpg
-    alt: frame 18
+    alt: ""
     caption: Yurt.
   - src: ../../assets/photos/2025-09-fotometa-escura-400-song-kol/019.jpg
-    alt: frame 19
+    alt: ""
     caption: Yurts.
   - src: ../../assets/photos/2025-09-fotometa-escura-400-song-kol/020.jpg
-    alt: frame 20
+    alt: ""
     caption: Yurts.
 ---
 
