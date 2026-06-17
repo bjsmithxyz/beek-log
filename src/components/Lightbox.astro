@@ -87,7 +87,7 @@
       // cached/same-source images may not fire onload — clear immediately
       if (lightboxImg.complete && lightboxImg.naturalWidth) lightbox.classList.remove('is-loading');
       lightboxImg.alt = item.alt;
-      lightboxCaption.textContent = item.dataset.caption ?? item.alt.split(' - ')[0];
+      lightboxCaption.textContent = item.dataset.caption || item.alt.split(' - ')[0] || '';
       lightboxMeta.textContent = item.dataset.meta ?? '';
     };
 
@@ -258,6 +258,10 @@
   }
 
   .lightbox-content #lightbox-meta:empty {
+    display: none;
+  }
+
+  .lightbox-content #lightbox-caption:empty {
     display: none;
   }
 
