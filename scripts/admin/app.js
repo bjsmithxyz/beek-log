@@ -119,8 +119,13 @@ function render() {
   });
 }
 
+// Bumped on every open and on close; a slow fetch checks it before painting so
+// a late response for a frame you've since navigated away from can't overwrite
+// the one now showing.
+let previewSeq = 0;
 async function openPreview(f) {
   const overlay = $('preview'), img = $('preview-img'), msg = $('preview-msg');
+  const seq = ++previewSeq;
   overlay.hidden = false;
   if (f.preview) { img.src = f.preview; msg.hidden = true; return; }
   img.removeAttribute('src');
@@ -131,13 +136,15 @@ async function openPreview(f) {
   try {
     const { src } = await api('/api/preview', { path });
     f.preview = src;       // cache so reopening is instant
+    if (seq !== previewSeq) return; // superseded by a newer open or a close
     img.src = src;
     msg.hidden = true;
   } catch (e) {
+    if (seq !== previewSeq) return;
     msg.textContent = 'preview failed: ' + e.message;
   }
 }
-function closePreview() { $('preview').hidden = true; }
+function closePreview() { previewSeq++; $('preview').hidden = true; }
 $('preview').onclick = closePreview;
 document.addEventListener('keydown', (e) => {
   if (e.key === 'Escape' && !$('preview').hidden) closePreview();
