@@ -104,6 +104,7 @@ function render() {
     el.querySelector('.cap').oninput = (e) => { f.caption = e.target.value; };
     el.querySelector('.del').onclick = () => { frames.splice(i, 1); render(); };
     el.querySelector('.setloc').onclick = () => setFrameLocation(i);
+    el.querySelector('img').onclick = () => openPreview(f);
     el.addEventListener('dragstart', (e) => e.dataTransfer.setData('text/plain', i));
     el.addEventListener('dragover', (e) => { e.preventDefault(); el.classList.add('dragover'); });
     el.addEventListener('dragleave', () => el.classList.remove('dragover'));
@@ -117,6 +118,30 @@ function render() {
     grid.appendChild(el);
   });
 }
+
+async function openPreview(f) {
+  const overlay = $('preview'), img = $('preview-img'), msg = $('preview-msg');
+  overlay.hidden = false;
+  if (f.preview) { img.src = f.preview; msg.hidden = true; return; }
+  img.removeAttribute('src');
+  msg.hidden = false;
+  msg.textContent = 'loading…';
+  const path = f.srcPath || f.path;
+  if (!path) { msg.textContent = 'no source file for this frame'; return; }
+  try {
+    const { src } = await api('/api/preview', { path });
+    f.preview = src;       // cache so reopening is instant
+    img.src = src;
+    msg.hidden = true;
+  } catch (e) {
+    msg.textContent = 'preview failed: ' + e.message;
+  }
+}
+function closePreview() { $('preview').hidden = true; }
+$('preview').onclick = closePreview;
+document.addEventListener('keydown', (e) => {
+  if (e.key === 'Escape' && !$('preview').hidden) closePreview();
+});
 
 async function setFrameLocation(i) {
   const loc = await openLocationPicker({
@@ -224,7 +249,7 @@ $('roll-picker').onchange = async (e) => {
   $('draft').checked = roll.meta.draft;
   $('body').value = roll.body;
   frames = roll.frames.map((f) => ({
-    existing: f.existing, thumb: f.thumb, alt: f.alt, caption: f.caption,
+    existing: f.existing, path: f.path, thumb: f.thumb, alt: f.alt, caption: f.caption,
     location: f.location, explicit: !!f.location,
   }));
   render();

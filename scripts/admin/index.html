@@ -68,6 +68,13 @@
     .gh-badge.unauthed, .gh-badge.error { color: #ff6b6b; border-color: #ff6b6b; }
     .gh-badge.gh-missing { color: var(--color-accent-secondary); border-color: var(--color-accent-secondary); }
     .gh-badge.checking { color: var(--color-text-muted); }
+    .preview-overlay { position: fixed; inset: 0; z-index: 1100;
+      background: rgba(0,0,0,.85); display: flex; align-items: center;
+      justify-content: center; padding: 2rem; cursor: zoom-out; }
+    .preview-overlay[hidden] { display: none; }
+    .preview-overlay img { max-width: 95vw; max-height: 95vh;
+      object-fit: contain; border: 1px solid var(--color-border); }
+    #preview-msg { position: absolute; }
   </style>
 </head>
 <body>
@@ -154,6 +161,11 @@
         <button id="pk-ok" class="primary" type="button" style="flex:0 0 auto;">use location</button>
       </div>
     </div>
+  </div>
+
+  <div id="preview" class="preview-overlay" hidden>
+    <img id="preview-img" alt="" />
+    <div id="preview-msg" class="muted">loading…</div>
   </div>
 
   <script src="/app.js" type="module"></script>
