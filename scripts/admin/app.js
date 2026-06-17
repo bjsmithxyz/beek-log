@@ -57,6 +57,7 @@ refreshAuthBadge();
 
 (async () => {
   ({ stocks } = await api('/api/config'));
+  stocks.sort((a, b) => a.name.localeCompare(b.name));
   $('stock').innerHTML = stocks.map((s) => `<option value="${s.slug}">${s.name}</option>`).join('');
   const rolls = await api('/api/rolls');
   $('roll-picker').innerHTML = '<option value="">— new roll —</option>' +
