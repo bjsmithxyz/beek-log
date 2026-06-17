@@ -90,3 +90,36 @@ test('buildRollMarkdown round-trips a nested region on roll + photo', () => {
   assert.deepEqual(data.location.region, { name: 'Vietnam', lat: 14.06, lng: 108.28 });
   assert.deepEqual(data.photos[1].location.region, { name: 'Vietnam', lat: 14.06, lng: 108.28 });
 });
+
+import { rollInputErrors } from './lib.mjs';
+
+const validStocks = { 'kodak-portra-400': {} };
+const okBody = {
+  slug: '2026-06-kodak-portra-400-lisbon',
+  stock: 'kodak-portra-400',
+  date: '2026-06-02',
+  location: { name: 'Lisbon', lat: 38.72, lng: -9.13 },
+  frames: [{ alt: '' }, { alt: 'tram 28' }],
+};
+
+test('rollInputErrors: a blank alt is allowed', () => {
+  assert.deepEqual(rollInputErrors(okBody, validStocks), []);
+});
+
+test('rollInputErrors: still catches an unknown stock', () => {
+  const errs = rollInputErrors({ ...okBody, stock: 'nope' }, validStocks);
+  assert.ok(errs.some((e) => e.includes('unknown stock')));
+});
+
+test('rollInputErrors: still requires a roll location', () => {
+  const errs = rollInputErrors({ ...okBody, location: null }, validStocks);
+  assert.ok(errs.some((e) => e.includes('roll location')));
+});
+
+test('rollInputErrors: still flags a bad per-frame location', () => {
+  const errs = rollInputErrors(
+    { ...okBody, frames: [{ alt: '', location: { name: '', lat: 1, lng: 2 } }] },
+    validStocks,
+  );
+  assert.ok(errs.some((e) => e.includes('frame 1 location invalid')));
+});

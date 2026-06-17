@@ -7,7 +7,7 @@ import { fileURLToPath } from 'node:url';
 import { basename, dirname, join } from 'node:path';
 import { filmStocks } from '../../src/data/film-stocks.ts';
 import sharp from 'sharp';
-import { parseFolderName, parseRollMarkdown } from './lib.mjs';
+import { parseFolderName, parseRollMarkdown, rollInputErrors } from './lib.mjs';
 import { writeRollFiles, gitPublish, checkGitHubAuth } from './publish.mjs';
 
 const __dirname = dirname(fileURLToPath(import.meta.url));
@@ -194,24 +194,7 @@ route('POST', /^\/api\/publish$/, async (req, res) => {
   const body = await readBody(req);
   const { slug, sourceSlug, title, stock, date, location, draft, frames, commit, bodyText = '' } = body;
 
-  const errors = [];
-  if (!/^[a-z0-9-]+$/.test(slug || '')) errors.push('slug must match [a-z0-9-]');
-  if (sourceSlug && !/^[a-z0-9-]+$/.test(sourceSlug)) errors.push('sourceSlug must match [a-z0-9-]');
-  if (!(stock in filmStocks)) errors.push(`unknown stock: ${stock}`);
-  if (!/^\d{4}-\d{2}-\d{2}$/.test(date || '')) errors.push('date must be YYYY-MM-DD');
-  if (!location || !location.name || !Number.isFinite(location.lat) || !Number.isFinite(location.lng)) {
-    errors.push('roll location needs name + numeric lat/lng');
-  }
-  const badRegion = (l) => l && l.region && (!l.region.name || !Number.isFinite(l.region.lat) || !Number.isFinite(l.region.lng));
-  if (badRegion(location)) errors.push('roll region invalid');
-  if (!Array.isArray(frames) || frames.length === 0) errors.push('at least one frame required');
-  (frames || []).forEach((f, i) => {
-    if (!f.alt || !f.alt.trim()) errors.push(`frame ${i + 1} needs alt text`);
-    if (f.location && (!f.location.name || !Number.isFinite(f.location.lat) || !Number.isFinite(f.location.lng))) {
-      errors.push(`frame ${i + 1} location invalid`);
-    }
-    if (badRegion(f.location)) errors.push(`frame ${i + 1} region invalid`);
-  });
+  const errors = rollInputErrors(body, filmStocks);
   if (errors.length) return send(res, 400, { error: errors.join('; ') });
 
   // Overwrite guard: a write may only land on its own roll. Writing a slug that

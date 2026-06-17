@@ -85,3 +85,26 @@ export function parseRollMarkdown(text) {
   if (!m) throw new Error('no frontmatter found');
   return { data: parseYaml(m[1]), body: (m[2] || '').trim() };
 }
+
+// Field validation for a publish request. Pure: takes the request body and the
+// stock map, returns error strings. Alt text is intentionally NOT required.
+export function rollInputErrors({ slug, sourceSlug, stock, date, location, frames }, filmStocks = {}) {
+  const errors = [];
+  if (!/^[a-z0-9-]+$/.test(slug || '')) errors.push('slug must match [a-z0-9-]');
+  if (sourceSlug && !/^[a-z0-9-]+$/.test(sourceSlug)) errors.push('sourceSlug must match [a-z0-9-]');
+  if (!(stock in filmStocks)) errors.push(`unknown stock: ${stock}`);
+  if (!/^\d{4}-\d{2}-\d{2}$/.test(date || '')) errors.push('date must be YYYY-MM-DD');
+  if (!location || !location.name || !Number.isFinite(location.lat) || !Number.isFinite(location.lng)) {
+    errors.push('roll location needs name + numeric lat/lng');
+  }
+  const badRegion = (l) => l && l.region && (!l.region.name || !Number.isFinite(l.region.lat) || !Number.isFinite(l.region.lng));
+  if (badRegion(location)) errors.push('roll region invalid');
+  if (!Array.isArray(frames) || frames.length === 0) errors.push('at least one frame required');
+  (frames || []).forEach((f, i) => {
+    if (f.location && (!f.location.name || !Number.isFinite(f.location.lat) || !Number.isFinite(f.location.lng))) {
+      errors.push(`frame ${i + 1} location invalid`);
+    }
+    if (badRegion(f.location)) errors.push(`frame ${i + 1} region invalid`);
+  });
+  return errors;
+}
