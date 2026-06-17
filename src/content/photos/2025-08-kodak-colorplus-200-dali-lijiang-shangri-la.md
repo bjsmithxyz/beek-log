@@ -48,7 +48,7 @@ photos:
         lat: 34.5412252
         lng: 108.9237067
   - src: ../../assets/photos/2025-08-kodak-colorplus-200-dali-lijiang-shangri-la/006.jpg
-    alt: "-"
+    alt: ""
     location:
       name: Xiaozhongdian
       lat: 27.6530308
@@ -88,7 +88,7 @@ photos:
         lat: 34.5412252
         lng: 108.9237067
   - src: ../../assets/photos/2025-08-kodak-colorplus-200-dali-lijiang-shangri-la/010.jpg
-    alt: "-"
+    alt: ""
     location:
       name: Xiaozhongdian
       lat: 27.6530308
@@ -112,23 +112,23 @@ photos:
         lat: 34.5412252
         lng: 108.9237067
   - src: ../../assets/photos/2025-08-kodak-colorplus-200-dali-lijiang-shangri-la/013.jpg
-    alt: "-"
+    alt: ""
   - src: ../../assets/photos/2025-08-kodak-colorplus-200-dali-lijiang-shangri-la/014.jpg
-    alt: "-"
+    alt: ""
   - src: ../../assets/photos/2025-08-kodak-colorplus-200-dali-lijiang-shangri-la/015.jpg
     alt: Goat
   - src: ../../assets/photos/2025-08-kodak-colorplus-200-dali-lijiang-shangri-la/016.jpg
-    alt: "-"
+    alt: ""
   - src: ../../assets/photos/2025-08-kodak-colorplus-200-dali-lijiang-shangri-la/017.jpg
-    alt: "-"
+    alt: ""
   - src: ../../assets/photos/2025-08-kodak-colorplus-200-dali-lijiang-shangri-la/018.jpg
-    alt: "-"
+    alt: ""
   - src: ../../assets/photos/2025-08-kodak-colorplus-200-dali-lijiang-shangri-la/019.jpg
-    alt: "-"
+    alt: ""
   - src: ../../assets/photos/2025-08-kodak-colorplus-200-dali-lijiang-shangri-la/020.jpg
     alt: 中国
   - src: ../../assets/photos/2025-08-kodak-colorplus-200-dali-lijiang-shangri-la/021.jpg
-    alt: "-"
+    alt: ""
   - src: ../../assets/photos/2025-08-kodak-colorplus-200-dali-lijiang-shangri-la/022.jpg
     alt: Bridges
     caption: Impressive Chinese infrastructure in the middle of nowhere.
@@ -136,15 +136,15 @@ photos:
     alt: 奶奶
     caption: Lovely old lady who sold me a Red Bull and a salted cucumber.
   - src: ../../assets/photos/2025-08-kodak-colorplus-200-dali-lijiang-shangri-la/024.jpg
-    alt: "-"
+    alt: ""
   - src: ../../assets/photos/2025-08-kodak-colorplus-200-dali-lijiang-shangri-la/025.jpg
-    alt: "-"
+    alt: ""
   - src: ../../assets/photos/2025-08-kodak-colorplus-200-dali-lijiang-shangri-la/026.jpg
-    alt: "-"
+    alt: ""
   - src: ../../assets/photos/2025-08-kodak-colorplus-200-dali-lijiang-shangri-la/027.jpg
-    alt: "-"
+    alt: ""
   - src: ../../assets/photos/2025-08-kodak-colorplus-200-dali-lijiang-shangri-la/028.jpg
-    alt: "-"
+    alt: ""
     location:
       name: Lijiang City
       lat: 26.8595868
@@ -154,7 +154,7 @@ photos:
         lat: 34.5412252
         lng: 108.9237067
   - src: ../../assets/photos/2025-08-kodak-colorplus-200-dali-lijiang-shangri-la/029.jpg
-    alt: "-"
+    alt: ""
     location:
       name: Lijiang City
       lat: 26.8595868
@@ -164,7 +164,7 @@ photos:
         lat: 34.5412252
         lng: 108.9237067
   - src: ../../assets/photos/2025-08-kodak-colorplus-200-dali-lijiang-shangri-la/030.jpg
-    alt: "-"
+    alt: ""
     location:
       name: Lijiang City
       lat: 26.8595868
@@ -174,7 +174,7 @@ photos:
         lat: 34.5412252
         lng: 108.9237067
   - src: ../../assets/photos/2025-08-kodak-colorplus-200-dali-lijiang-shangri-la/031.jpg
-    alt: "-"
+    alt: ""
     location:
       name: Lijiang City
       lat: 26.8595868
@@ -184,7 +184,7 @@ photos:
         lat: 34.5412252
         lng: 108.9237067
   - src: ../../assets/photos/2025-08-kodak-colorplus-200-dali-lijiang-shangri-la/032.jpg
-    alt: "-"
+    alt: ""
     location:
       name: Lijiang City
       lat: 26.8595868
@@ -194,7 +194,7 @@ photos:
         lat: 34.5412252
         lng: 108.9237067
   - src: ../../assets/photos/2025-08-kodak-colorplus-200-dali-lijiang-shangri-la/033.jpg
-    alt: "-"
+    alt: ""
     location:
       name: Lijiang City
       lat: 26.8595868
@@ -204,7 +204,7 @@ photos:
         lat: 34.5412252
         lng: 108.9237067
   - src: ../../assets/photos/2025-08-kodak-colorplus-200-dali-lijiang-shangri-la/034.jpg
-    alt: "-"
+    alt: ""
     location:
       name: Lijiang City
       lat: 26.8595868
@@ -214,7 +214,7 @@ photos:
         lat: 34.5412252
         lng: 108.9237067
   - src: ../../assets/photos/2025-08-kodak-colorplus-200-dali-lijiang-shangri-la/035.jpg
-    alt: "-"
+    alt: ""
     location:
       name: Lijiang City
       lat: 26.8595868
