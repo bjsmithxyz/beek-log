@@ -108,3 +108,12 @@ export function rollInputErrors({ slug, sourceSlug, stock, date, location, frame
   });
   return errors;
 }
+
+// Guards the dev-only /api/preview endpoint: only render existing image files.
+// `exists` is injected so this stays pure (lib.mjs does no I/O).
+export function validatePreviewPath(path, { imageRe, exists }) {
+  if (!path || typeof path !== 'string') return 'path required';
+  if (!imageRe.test(path)) return 'not an image file';
+  if (!exists(path)) return 'file not found';
+  return null;
+}

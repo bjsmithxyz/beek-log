@@ -123,3 +123,23 @@ test('rollInputErrors: still flags a bad per-frame location', () => {
   );
   assert.ok(errs.some((e) => e.includes('frame 1 location invalid')));
 });
+
+import { validatePreviewPath } from './lib.mjs';
+
+const imageRe = /\.(jpe?g|png|tiff?|webp)$/i;
+
+test('validatePreviewPath: accepts an existing image', () => {
+  assert.equal(validatePreviewPath('/x/001.jpg', { imageRe, exists: () => true }), null);
+});
+
+test('validatePreviewPath: rejects a non-image extension', () => {
+  assert.equal(validatePreviewPath('/x/notes.txt', { imageRe, exists: () => true }), 'not an image file');
+});
+
+test('validatePreviewPath: rejects a missing file', () => {
+  assert.equal(validatePreviewPath('/x/001.jpg', { imageRe, exists: () => false }), 'file not found');
+});
+
+test('validatePreviewPath: rejects an empty path', () => {
+  assert.equal(validatePreviewPath('', { imageRe, exists: () => true }), 'path required');
+});

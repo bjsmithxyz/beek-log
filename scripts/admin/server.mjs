@@ -7,7 +7,7 @@ import { fileURLToPath } from 'node:url';
 import { basename, dirname, join } from 'node:path';
 import { filmStocks } from '../../src/data/film-stocks.ts';
 import sharp from 'sharp';
-import { parseFolderName, parseRollMarkdown, rollInputErrors } from './lib.mjs';
+import { parseFolderName, parseRollMarkdown, rollInputErrors, validatePreviewPath } from './lib.mjs';
 import { writeRollFiles, gitPublish, checkGitHubAuth } from './publish.mjs';
 
 const __dirname = dirname(fileURLToPath(import.meta.url));
@@ -61,6 +61,15 @@ async function thumb(path) {
   return `data:image/jpeg;base64,${buf.toString('base64')}`;
 }
 
+async function preview(path) {
+  const buf = await sharp(path)
+    .rotate()
+    .resize({ width: 1024, fit: 'inside', withoutEnlargement: true })
+    .jpeg({ quality: 70 })
+    .toBuffer();
+  return `data:image/jpeg;base64,${buf.toString('base64')}`;
+}
+
 route('POST', /^\/api\/scan$/, async (req, res) => {
   const { folder } = await readBody(req);
   if (!folder) return send(res, 400, { error: 'folder required' });
@@ -79,6 +88,13 @@ route('POST', /^\/api\/scan$/, async (req, res) => {
   }
   const parsed = parseFolderName(basename(folder), filmStocks);
   send(res, 200, { parsed, frames });
+});
+
+route('POST', /^\/api\/preview$/, async (req, res) => {
+  const { path } = await readBody(req);
+  const err = validatePreviewPath(path, { imageRe: IMAGE_RE, exists: existsSync });
+  if (err) return send(res, 400, { error: err });
+  send(res, 200, { src: await preview(path) });
 });
 
 const countryCache = new Map(); // country name → { name, lat, lng } | undefined
@@ -168,6 +184,7 @@ route('GET', /^\/api\/roll\/([a-z0-9-]+)$/, async (req, res) => {
     const filePath = join(PHOTOS_DIR, slug, `${String(i + 1).padStart(3, '0')}.jpg`);
     frames.push({
       existing: i + 1,
+      path: filePath,
       thumb: await thumb(filePath),
       alt: p.alt,
       caption: p.caption ?? '',
