@@ -80,8 +80,7 @@ photos:
         lat: 15.9266657
         lng: 107.9650855
   - src: ../../assets/photos/2025-07-kodak-colorplus-200-ha-noi/011.jpg
-    alt: ""
-    caption: Động Hoàng Hổ.
+    alt: Động Hoàng Hổ.
     location:
       name: Hoa Lư Ward
       lat: 20.2421142
@@ -91,8 +90,8 @@ photos:
         lat: 15.9266657
         lng: 107.9650855
   - src: ../../assets/photos/2025-07-kodak-colorplus-200-ha-noi/012.jpg
-    alt: ""
-    caption: Động Hoàng Hổ.
+    alt: Động Hoàng Hổ.
+    caption: Reflection of the mountain in the lotus fields.
     location:
       name: Hoa Lư Ward
       lat: 20.2421142
@@ -102,8 +101,7 @@ photos:
         lat: 15.9266657
         lng: 107.9650855
   - src: ../../assets/photos/2025-07-kodak-colorplus-200-ha-noi/013.jpg
-    alt: ""
-    caption: Động Hoàng Hổ.
+    alt: Động Hoàng Hổ.
     location:
       name: Hoa Lư Ward
       lat: 20.2421142
@@ -113,8 +111,7 @@ photos:
         lat: 15.9266657
         lng: 107.9650855
   - src: ../../assets/photos/2025-07-kodak-colorplus-200-ha-noi/014.jpg
-    alt: ""
-    caption: Động Hoàng Hổ.
+    alt: Động Hoàng Hổ.
     location:
       name: Hoa Lư Ward
       lat: 20.2421142
@@ -124,8 +121,7 @@ photos:
         lat: 15.9266657
         lng: 107.9650855
   - src: ../../assets/photos/2025-07-kodak-colorplus-200-ha-noi/015.jpg
-    alt: ""
-    caption: Động Hoàng Hổ.
+    alt: Động Hoàng Hổ.
     location:
       name: Hoa Lư Ward
       lat: 20.2421142
@@ -135,8 +131,7 @@ photos:
         lat: 15.9266657
         lng: 107.9650855
   - src: ../../assets/photos/2025-07-kodak-colorplus-200-ha-noi/016.jpg
-    alt: ""
-    caption: Động Hoàng Hổ.
+    alt: Động Hoàng Hổ.
     location:
       name: Hoa Lư Ward
       lat: 20.2421142
@@ -146,8 +141,7 @@ photos:
         lat: 15.9266657
         lng: 107.9650855
   - src: ../../assets/photos/2025-07-kodak-colorplus-200-ha-noi/017.jpg
-    alt: ""
-    caption: Động Hoàng Hổ.
+    alt: Động Hoàng Hổ.
     location:
       name: Hoa Lư Ward
       lat: 20.2421142
@@ -157,8 +151,7 @@ photos:
         lat: 15.9266657
         lng: 107.9650855
   - src: ../../assets/photos/2025-07-kodak-colorplus-200-ha-noi/018.jpg
-    alt: ""
-    caption: Động Hoàng Hổ.
+    alt: Động Hoàng Hổ.
     location:
       name: Hoa Lư Ward
       lat: 20.2421142
@@ -168,8 +161,7 @@ photos:
         lat: 15.9266657
         lng: 107.9650855
   - src: ../../assets/photos/2025-07-kodak-colorplus-200-ha-noi/019.jpg
-    alt: ""
-    caption: Chùa Bái Đính.
+    alt: Chùa Bái Đính.
     location:
       name: Hoa Lư Ward
       lat: 20.2421142
@@ -179,8 +171,7 @@ photos:
         lat: 15.9266657
         lng: 107.9650855
   - src: ../../assets/photos/2025-07-kodak-colorplus-200-ha-noi/020.jpg
-    alt: ""
-    caption: Chùa Bái Đính.
+    alt: Chùa Bái Đính.
     location:
       name: Hoa Lư Ward
       lat: 20.2421142
@@ -200,16 +191,17 @@ photos:
         lat: 15.9266657
         lng: 107.9650855
   - src: ../../assets/photos/2025-07-kodak-colorplus-200-ha-noi/022.jpg
-    alt: ""
+    alt: Train.
+    caption: From the inside of an absolutely incredible phở.
   - src: ../../assets/photos/2025-07-kodak-colorplus-200-ha-noi/023.jpg
     alt: ""
   - src: ../../assets/photos/2025-07-kodak-colorplus-200-ha-noi/024.jpg
-    alt: ""
+    alt: Hostel window.
   - src: ../../assets/photos/2025-07-kodak-colorplus-200-ha-noi/025.jpg
-    alt: ""
-    caption: Chợ Đồng Xuân.
+    alt: Chợ Đồng Xuân.
   - src: ../../assets/photos/2025-07-kodak-colorplus-200-ha-noi/026.jpg
-    alt: ""
+    alt: Tired.
+    caption: Same brother.
   - src: ../../assets/photos/2025-07-kodak-colorplus-200-ha-noi/027.jpg
     alt: ""
   - src: ../../assets/photos/2025-07-kodak-colorplus-200-ha-noi/028.jpg
