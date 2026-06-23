@@ -12,11 +12,13 @@ location:
     lng: 108.9237067
 photos:
   - src: ../../assets/photos/2025-08-kodak-colorplus-200-dali-lijiang-shangri-la/001.jpg
-    alt: 中国
+    alt: 中国.
   - src: ../../assets/photos/2025-08-kodak-colorplus-200-dali-lijiang-shangri-la/002.jpg
-    alt: Yours truly
+    alt: Yours truly.
+    caption: Taken after walking uphill for several kilometers in the sun after
+      taking a wrong turn.
   - src: ../../assets/photos/2025-08-kodak-colorplus-200-dali-lijiang-shangri-la/003.jpg
-    alt: Gold
+    alt: Gold.
     caption: Average Chinese gentleman.
     location:
       name: Shangri-La
@@ -27,7 +29,7 @@ photos:
         lat: 34.5412252
         lng: 108.9237067
   - src: ../../assets/photos/2025-08-kodak-colorplus-200-dali-lijiang-shangri-la/004.jpg
-    alt: 香格里拉
+    alt: 香格里拉.
     location:
       name: Shangri-La
       lat: 27.8363076
@@ -37,7 +39,7 @@ photos:
         lat: 34.5412252
         lng: 108.9237067
   - src: ../../assets/photos/2025-08-kodak-colorplus-200-dali-lijiang-shangri-la/005.jpg
-    alt: Guide
+    alt: Guide.
     caption: From the Abuji Tso hike.
     location:
       name: Xiaozhongdian
@@ -48,7 +50,8 @@ photos:
         lat: 34.5412252
         lng: 108.9237067
   - src: ../../assets/photos/2025-08-kodak-colorplus-200-dali-lijiang-shangri-la/006.jpg
-    alt: ""
+    alt: Abuji Tso.
+    caption: Highest point of the hike, 4365m above sea level.
     location:
       name: Xiaozhongdian
       lat: 27.6530308
@@ -98,11 +101,14 @@ photos:
         lat: 34.5412252
         lng: 108.9237067
   - src: ../../assets/photos/2025-08-kodak-colorplus-200-dali-lijiang-shangri-la/011.jpg
-    alt: Goats
+    alt: Goats.
+    caption: In Tiger Leaping Gorge.
   - src: ../../assets/photos/2025-08-kodak-colorplus-200-dali-lijiang-shangri-la/012.jpg
-    alt: Rain
+    alt: Rain.
     caption: Part of the way back from the hike it started raining, then hailing,
-      then raining again.
+      then we found ourselves in a full-blown thunderstorm. Lightning strikes
+      and their thunder were under a second apart which I think means they're
+      extremely closeby!
     location:
       name: Xiaozhongdian
       lat: 27.6530308
@@ -116,7 +122,8 @@ photos:
   - src: ../../assets/photos/2025-08-kodak-colorplus-200-dali-lijiang-shangri-la/014.jpg
     alt: ""
   - src: ../../assets/photos/2025-08-kodak-colorplus-200-dali-lijiang-shangri-la/015.jpg
-    alt: Goat
+    alt: Never look a goat in the eye.
+    caption: It's unnatural.
   - src: ../../assets/photos/2025-08-kodak-colorplus-200-dali-lijiang-shangri-la/016.jpg
     alt: ""
   - src: ../../assets/photos/2025-08-kodak-colorplus-200-dali-lijiang-shangri-la/017.jpg
@@ -126,14 +133,16 @@ photos:
   - src: ../../assets/photos/2025-08-kodak-colorplus-200-dali-lijiang-shangri-la/019.jpg
     alt: ""
   - src: ../../assets/photos/2025-08-kodak-colorplus-200-dali-lijiang-shangri-la/020.jpg
-    alt: 中国
+    alt: 中国.
   - src: ../../assets/photos/2025-08-kodak-colorplus-200-dali-lijiang-shangri-la/021.jpg
-    alt: ""
+    alt: Jade Dragon Snow Mountain.
+    caption: 5596m above sea level, sitting above Tiger Leaping Gorge, behind me to
+      the west is Haba Snow Mountain, reaching 5396m.
   - src: ../../assets/photos/2025-08-kodak-colorplus-200-dali-lijiang-shangri-la/022.jpg
-    alt: Bridges
+    alt: Bridges.
     caption: Impressive Chinese infrastructure in the middle of nowhere.
   - src: ../../assets/photos/2025-08-kodak-colorplus-200-dali-lijiang-shangri-la/023.jpg
-    alt: 奶奶
+    alt: 奶奶.
     caption: Lovely old lady who sold me a Red Bull and a salted cucumber.
   - src: ../../assets/photos/2025-08-kodak-colorplus-200-dali-lijiang-shangri-la/024.jpg
     alt: ""
@@ -154,7 +163,7 @@ photos:
         lat: 34.5412252
         lng: 108.9237067
   - src: ../../assets/photos/2025-08-kodak-colorplus-200-dali-lijiang-shangri-la/029.jpg
-    alt: ""
+    alt: Dusk.
     location:
       name: Lijiang City
       lat: 26.8595868
