@@ -58,7 +58,8 @@ photos:
         lat: 15.9266657
         lng: 107.9650855
   - src: ../../assets/photos/2025-07-kodak-ultramax-400-ha-giang-sapa-kunming/006.jpg
-    alt: ""
+    alt: Propaganda.
+    caption: No one does this kind of poster like Vietnam.
     location:
       name: Ha Giang province
       lat: 22.7336097
@@ -88,7 +89,8 @@ photos:
         lat: 15.9266657
         lng: 107.9650855
   - src: ../../assets/photos/2025-07-kodak-ultramax-400-ha-giang-sapa-kunming/009.jpg
-    alt: ""
+    alt: Football.
+    caption: Played by some local kids underneath this incomplete building.
     location:
       name: Ha Giang province
       lat: 22.7336097
@@ -98,7 +100,7 @@ photos:
         lat: 15.9266657
         lng: 107.9650855
   - src: ../../assets/photos/2025-07-kodak-ultramax-400-ha-giang-sapa-kunming/010.jpg
-    alt: ""
+    alt: Sa Pa.
     location:
       name: Lào Cai Province
       lat: 22.3153883
@@ -128,7 +130,7 @@ photos:
         lat: 15.9266657
         lng: 107.9650855
   - src: ../../assets/photos/2025-07-kodak-ultramax-400-ha-giang-sapa-kunming/013.jpg
-    alt: ""
+    alt: Bamboo forest.
     location:
       name: Lào Cai Province
       lat: 22.3153883
@@ -138,7 +140,7 @@ photos:
         lat: 15.9266657
         lng: 107.9650855
   - src: ../../assets/photos/2025-07-kodak-ultramax-400-ha-giang-sapa-kunming/014.jpg
-    alt: ""
+    alt: Bamboo forest.
     location:
       name: Lào Cai Province
       lat: 22.3153883
@@ -158,7 +160,8 @@ photos:
         lat: 15.9266657
         lng: 107.9650855
   - src: ../../assets/photos/2025-07-kodak-ultramax-400-ha-giang-sapa-kunming/016.jpg
-    alt: ""
+    alt: Farmers.
+    caption: In their rice paddys.
     location:
       name: Lào Cai Province
       lat: 22.3153883
@@ -168,7 +171,8 @@ photos:
         lat: 15.9266657
         lng: 107.9650855
   - src: ../../assets/photos/2025-07-kodak-ultramax-400-ha-giang-sapa-kunming/017.jpg
-    alt: ""
+    alt: Hike.
+    caption: Half way to Sa Pa.
     location:
       name: Lào Cai Province
       lat: 22.3153883
@@ -208,7 +212,8 @@ photos:
         lat: 15.9266657
         lng: 107.9650855
   - src: ../../assets/photos/2025-07-kodak-ultramax-400-ha-giang-sapa-kunming/021.jpg
-    alt: ""
+    alt: Ta Van to Sa Pa.
+    caption: North Vietnam might be the most beautiful place on the planet.
     location:
       name: Lào Cai Province
       lat: 22.3153883
@@ -218,7 +223,8 @@ photos:
         lat: 15.9266657
         lng: 107.9650855
   - src: ../../assets/photos/2025-07-kodak-ultramax-400-ha-giang-sapa-kunming/022.jpg
-    alt: ""
+    alt: Border.
+    caption: Between Vietnam and China.
     location:
       name: Lao Cai Ward
       lat: 22.4877525
@@ -238,7 +244,8 @@ photos:
         lat: 34.5412252
         lng: 108.9237067
   - src: ../../assets/photos/2025-07-kodak-ultramax-400-ha-giang-sapa-kunming/024.jpg
-    alt: ""
+    alt: Quiet.
+    caption: All electric cars make for a strangly quiet highway.
     location:
       name: Kunming
       lat: 25.0399353
