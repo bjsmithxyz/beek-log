@@ -34,6 +34,7 @@ photos:
         lng: 100.83273
   - src: ../../assets/photos/2025-06-kodak-colorplus-200-chiang-mai/003.jpg
     alt: ""
+    caption: Resorts.
     location:
       name: Ko Samui
       lat: 9.5013945
@@ -126,6 +127,7 @@ photos:
     alt: ""
   - src: ../../assets/photos/2025-06-kodak-colorplus-200-chiang-mai/028.jpg
     alt: ""
+    caption: Rice paddy fields.
   - src: ../../assets/photos/2025-06-kodak-colorplus-200-chiang-mai/029.jpg
     alt: ""
     caption: Water oxen.
