@@ -1,7 +1,7 @@
 // Dev-only local admin server. Binds 127.0.0.1 — never deployed (not part of
 // the Astro build). Start with: npm run admin
 import { createServer } from 'node:http';
-import { readFile, readdir } from 'node:fs/promises';
+import { readFile, writeFile, readdir } from 'node:fs/promises';
 import { existsSync } from 'node:fs';
 import { fileURLToPath } from 'node:url';
 import { basename, dirname, join } from 'node:path';
@@ -26,6 +26,19 @@ async function readBody(req) {
   return chunks.length ? JSON.parse(Buffer.concat(chunks).toString('utf8')) : {};
 }
 
+// Persistent publish history. Plain text, one event per line, capped at the last
+// LOG_MAX lines so the file can never grow without bound. Survives server
+// restarts; gitignored (local dev tool, not deployed).
+const LOG_FILE = join(__dirname, '.admin.log');
+const LOG_MAX = 500;
+const readLog = async () =>
+  existsSync(LOG_FILE) ? (await readFile(LOG_FILE, 'utf8')).split('\n').filter(Boolean) : [];
+async function record(...lines) {
+  const ts = new Date().toISOString();
+  const all = [...(await readLog()), ...lines.map((l) => `[${ts}] ${l}`)];
+  await writeFile(LOG_FILE, all.slice(-LOG_MAX).join('\n') + '\n');
+}
+
 const routes = [];
 const route = (method, pattern, handler) => routes.push({ method, pattern, handler });
 
@@ -44,6 +57,10 @@ route('GET', /^\/favicon\.svg$/, async (req, res) => {
 route('GET', /^\/api\/config$/, async (req, res) => {
   const stocks = Object.entries(filmStocks).map(([slug, v]) => ({ slug, name: v.name, type: v.type }));
   send(res, 200, { stocks });
+});
+
+route('GET', /^\/api\/logs$/, async (req, res) => {
+  send(res, 200, { lines: await readLog() });
 });
 
 route('GET', /^\/api\/auth$/, async (req, res) => {
@@ -212,7 +229,10 @@ route('POST', /^\/api\/publish$/, async (req, res) => {
   const { slug, sourceSlug, title, stock, date, location, draft, frames, commit, bodyText = '' } = body;
 
   const errors = rollInputErrors(body, filmStocks);
-  if (errors.length) return send(res, 400, { error: errors.join('; ') });
+  if (errors.length) {
+    await record(`publish error: ${errors.join('; ')}`);
+    return send(res, 400, { error: errors.join('; ') });
+  }
 
   // Overwrite guard: a write may only land on its own roll. Writing a slug that
   // already belongs to a different roll (a fresh create, or an edit renamed onto
@@ -220,6 +240,7 @@ route('POST', /^\/api\/publish$/, async (req, res) => {
   const isEdit = body.mode === 'edit';
   const targetExists = existsSync(join(CONTENT_DIR, `${slug}.md`));
   if (targetExists && !(isEdit && sourceSlug === slug)) {
+    await record(`publish error: roll "${slug}" already exists`);
     return send(res, 409, { error: `roll "${slug}" already exists — choose a different slug, or edit that roll directly` });
   }
 
@@ -229,6 +250,7 @@ route('POST', /^\/api\/publish$/, async (req, res) => {
   if (commit) {
     const auth = await checkGitHubAuth();
     if (!auth.ok) {
+      await record(`publish error: GitHub ${auth.detail}`);
       return send(res, 401, { error: `GitHub ${auth.detail}`, authFailed: true });
     }
   }
@@ -255,6 +277,7 @@ route('POST', /^\/api\/publish$/, async (req, res) => {
     log.push(...gitLog);
     committed = true;
   }
+  await record(`publish ok: ${slug}${committed ? ' (committed)' : ''}`, ...log);
   send(res, 200, { ok: true, committed, log });
 });
 

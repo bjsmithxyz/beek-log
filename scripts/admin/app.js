@@ -53,6 +53,13 @@ async function refreshAuthBadge() {
   }
 }
 $('gh-badge').onclick = refreshAuthBadge;
+
+$('logs').onclick = async () => {
+  const { lines } = await api('/api/logs');
+  clearLog();
+  if (lines.length) lines.forEach(log);
+  else log('(no logs yet)');
+};
 refreshAuthBadge();
 
 (async () => {
