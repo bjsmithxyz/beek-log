@@ -46,7 +46,7 @@ export interface OgCardOptions {
   accent?: string; // eyebrow colour
 }
 
-export function ogCardSvg({ eyebrow, title, subtitle = '', accent = '#33ff66' }: OgCardOptions): string {
+function ogCardSvg({ eyebrow, title, subtitle = '', accent = '#33ff66' }: OgCardOptions): string {
   const grid: string[] = [];
   for (let x = 24; x < W; x += 24)
     grid.push(`<line x1="${x}" y1="0" x2="${x}" y2="${H}" stroke="#333333" stroke-width="1" opacity="0.15"/>`);
