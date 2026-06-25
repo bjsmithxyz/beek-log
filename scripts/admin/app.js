@@ -239,6 +239,7 @@ function resetForm() {
   mode = 'create';
   editSlug = null;
   frames = [];
+  $('roll-picker').value = '';
   $('folder').value = '';
   $('title').value = '';
   $('stock').selectedIndex = 0;
@@ -299,6 +300,7 @@ async function doPublish(commit) {
     const res = await api('/api/publish', p);
     res.log.forEach(log);
     logOk(res.committed ? '✓ committed + pushed — Netlify will deploy shortly' : '✓ written (not committed)');
+    if (res.committed) resetForm(); // committed roll is done — clear form so the next roll starts clean
   } catch (e) {
     logErr('✗ publish error: ' + e.message);
   } finally {
