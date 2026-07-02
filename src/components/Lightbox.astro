@@ -72,10 +72,14 @@
     }
 
     let currentIndex = 0;
+    // pending src-clear from hide(); cancelled on render so a quick reopen
+    // doesn't get its freshly-set image blanked
+    let clearSrcTimer: ReturnType<typeof setTimeout> | undefined;
     const ids = Array.from(galleryItems).map((el, i) => el.dataset.lightboxId || `img-${i}`);
     const isActive = () => lightbox.classList.contains('active');
 
     const render = (index: number) => {
+      clearTimeout(clearSrcTimer);
       currentIndex = index;
       const item = galleryItems[currentIndex];
       if (!item) return;
@@ -102,7 +106,7 @@
       lightbox.classList.remove('active');
       lightbox.setAttribute('aria-hidden', 'true');
       document.body.style.overflow = '';
-      setTimeout(() => {
+      clearSrcTimer = setTimeout(() => {
         lightboxImg.src = '';
       }, 300);
     };

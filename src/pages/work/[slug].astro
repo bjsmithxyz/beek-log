@@ -55,7 +55,7 @@ const jsonLd = {
   <article class="work-detail">
     <div class="container container-narrow">
       <!-- Back link -->
-      <a href="/work" class="back-link">
+      <a href="/work/" class="back-link">
         ← work/
       </a>
       
@@ -141,13 +141,13 @@ const jsonLd = {
       {(newer || older) && (
         <nav class="project-nav" aria-label="More work">
           {newer ? (
-            <a href={`/work/${newer.slug}`} class="project-nav-link prev">
+            <a href={`/work/${newer.slug}/`} class="project-nav-link prev">
               <span class="project-nav-dir">← newer</span>
               <span class="project-nav-title">{newer.title}</span>
             </a>
           ) : <span />}
           {older ? (
-            <a href={`/work/${older.slug}`} class="project-nav-link next">
+            <a href={`/work/${older.slug}/`} class="project-nav-link next">
               <span class="project-nav-dir">older →</span>
               <span class="project-nav-title">{older.title}</span>
             </a>

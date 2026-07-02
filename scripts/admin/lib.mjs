@@ -109,6 +109,25 @@ export function rollInputErrors({ slug, sourceSlug, stock, date, location, frame
   return errors;
 }
 
+// Cross-origin guard for the localhost admin server. Browsers always send
+// Host, and send Origin on cross-site requests: a DNS-rebinding attack arrives
+// with a foreign Host, a CSRF POST from a malicious page with a foreign Origin
+// (its side effects would land even though the response is unreadable). Both
+// are refused. Same-origin fetches and non-browser clients (no Origin,
+// loopback Host) pass. Returns an error string, or null when allowed.
+export function crossOriginError({ host, origin }, allowedHosts) {
+  if (!host || !allowedHosts.includes(host)) return `forbidden Host: ${host}`;
+  if (origin == null) return null;
+  let originHost;
+  try {
+    originHost = new URL(origin).host;
+  } catch {
+    originHost = null;
+  }
+  if (originHost === null || !allowedHosts.includes(originHost)) return `forbidden Origin: ${origin}`;
+  return null;
+}
+
 // Guards the dev-only /api/preview endpoint: only render existing image files.
 // `exists` is injected so this stays pure (lib.mjs does no I/O).
 export function validatePreviewPath(path, { imageRe, exists }) {

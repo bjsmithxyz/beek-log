@@ -7,13 +7,14 @@ import { fileURLToPath } from 'node:url';
 import { basename, dirname, join } from 'node:path';
 import { filmStocks } from '../../src/data/film-stocks.ts';
 import sharp from 'sharp';
-import { parseFolderName, parseRollMarkdown, rollInputErrors, validatePreviewPath } from './lib.mjs';
+import { crossOriginError, parseFolderName, parseRollMarkdown, rollInputErrors, validatePreviewPath } from './lib.mjs';
 import { writeRollFiles, gitPublish, checkGitHubAuth } from './publish.mjs';
 
 const __dirname = dirname(fileURLToPath(import.meta.url));
 const repoRoot = process.cwd();
 const PORT = 4322;
 const HOST = '127.0.0.1';
+const ALLOWED_HOSTS = [`${HOST}:${PORT}`, `localhost:${PORT}`];
 
 function send(res, status, body, type = 'application/json') {
   res.writeHead(status, { 'Content-Type': type });
@@ -98,11 +99,14 @@ route('POST', /^\/api\/scan$/, async (req, res) => {
   }
   if (names.length === 0) return send(res, 400, { error: 'no images found in folder' });
 
-  const frames = [];
-  for (const name of names) {
-    const srcPath = join(folder, name);
-    frames.push({ srcPath, thumb: await thumb(srcPath) });
-  }
+  // sharp schedules work on its own thread pool, so thumbnail all frames
+  // concurrently rather than one at a time
+  const frames = await Promise.all(
+    names.map(async (name) => {
+      const srcPath = join(folder, name);
+      return { srcPath, thumb: await thumb(srcPath) };
+    })
+  );
   const parsed = parseFolderName(basename(folder), filmStocks);
   send(res, 200, { parsed, frames });
 });
@@ -195,19 +199,19 @@ route('GET', /^\/api\/roll\/([a-z0-9-]+)$/, async (req, res) => {
     return send(res, 404, { error: `no roll ${slug}` });
   }
   const { data, body } = parseRollMarkdown(text);
-  const frames = [];
-  for (let i = 0; i < data.photos.length; i++) {
-    const p = data.photos[i];
-    const filePath = join(PHOTOS_DIR, slug, `${String(i + 1).padStart(3, '0')}.jpg`);
-    frames.push({
-      existing: i + 1,
-      path: filePath,
-      thumb: await thumb(filePath),
-      alt: p.alt,
-      caption: p.caption ?? '',
-      location: p.location ?? null,
-    });
-  }
+  const frames = await Promise.all(
+    data.photos.map(async (p, i) => {
+      const filePath = join(PHOTOS_DIR, slug, `${String(i + 1).padStart(3, '0')}.jpg`);
+      return {
+        existing: i + 1,
+        path: filePath,
+        thumb: await thumb(filePath),
+        alt: p.alt,
+        caption: p.caption ?? '',
+        location: p.location ?? null,
+      };
+    })
+  );
   send(res, 200, {
     slug,
     meta: { title: data.title, stock: data.stock, date: String(data.date).slice(0, 10), location: data.location, draft: !!data.draft },
@@ -283,6 +287,11 @@ route('POST', /^\/api\/publish$/, async (req, res) => {
 
 const server = createServer(async (req, res) => {
   try {
+    // Loopback binding alone doesn't stop the browser being used as a proxy:
+    // refuse DNS-rebinding (foreign Host) and cross-site requests (foreign
+    // Origin) before touching any route.
+    const denied = crossOriginError({ host: req.headers.host, origin: req.headers.origin }, ALLOWED_HOSTS);
+    if (denied) return send(res, 403, { error: denied });
     const url = new URL(req.url, `http://${HOST}:${PORT}`);
     const match = routes.find((r) => r.method === req.method && r.pattern.test(url.pathname));
     if (!match) return send(res, 404, { error: 'not found' });

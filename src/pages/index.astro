@@ -21,7 +21,7 @@ const recentRolls = (await getPhotoRolls()).sort(byDateDesc).slice(0, 5);
         <section class="recent" aria-labelledby="rolls-heading">
           <div class="dir-header">
             <h2 id="rolls-heading" class="dir-path">rolls/</h2>
-            <a href="/photos" class="dir-link">view all →</a>
+            <a href="/photos/" class="dir-link">view all →</a>
           </div>
           <div class="dir-list">
             {recentRolls.map(roll => (
@@ -35,7 +35,7 @@ const recentRolls = (await getPhotoRolls()).sort(byDateDesc).slice(0, 5);
         <section class="recent" aria-labelledby="recent-heading">
           <div class="dir-header">
             <h2 id="recent-heading" class="dir-path">recent/</h2>
-            <a href="/work" class="dir-link">view all →</a>
+            <a href="/work/" class="dir-link">view all →</a>
           </div>
           <div class="dir-list">
             {recentWork.map(work => (

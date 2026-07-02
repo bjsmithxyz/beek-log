@@ -26,6 +26,28 @@ const cellW = COLS / GRID_COLS;
 const cellH = ROWS / GRID_ROWS;
 const dotR = +(cellW * 0.4).toFixed(2);
 
+// The land mask is ~18k dots; one <circle> each made the page megabytes of
+// HTML and a very heavy DOM. Instead, each row's consecutive land cells become
+// one horizontal segment in a single <path>, and a dash pattern (near-zero
+// dash, one-cell gap, round linecap) renders a dot at every cell centre —
+// including single-cell runs, drawn as zero-length segments.
+const DASH = 0.01;
+const dashArray = `${DASH} ${+(cellW - DASH).toFixed(4)}`;
+const dotPath = grid
+  .map((row, gy) => {
+    const y = +((gy + 0.5) * cellH).toFixed(1);
+    let d = '';
+    for (let gx = 0; gx < row.length; gx += 1) {
+      if (row[gx] !== '1') continue;
+      let end = gx;
+      while (end + 1 < row.length && row[end + 1] === '1') end += 1;
+      d += `M${+((gx + 0.5) * cellW).toFixed(1)} ${y}H${+((end + 0.5) * cellW).toFixed(1)}`;
+      gx = end;
+    }
+    return d;
+  })
+  .join('');
+
 const project = (lat: number, lng: number) => ({
   x: +(((lng + 180) / 360) * COLS).toFixed(1),
   y: +(((90 - lat) / 180) * ROWS).toFixed(1),
@@ -68,18 +90,8 @@ const tooltipWidth =
   role="img"
   aria-label={`Map of shoot locations: ${pins.map((p) => p.label).join(', ')}`}
 >
-  {grid.flatMap((row, gy) =>
-    [...row].map((c, gx) =>
-      c === '1' ? (
-        <circle
-          cx={+((gx + 0.5) * cellW).toFixed(1)}
-          cy={+((gy + 0.5) * cellH).toFixed(1)}
-          r={dotR}
-          class="dot"
-        />
-      ) : null
-    )
-  )}
+  <path class="dots" d={dotPath} stroke-width={dotR * 2} stroke-dasharray={dashArray} />
+
   {pins.map((p) => {
     const { x, y } = project(p.lat, p.lng);
     const title = titleFor(p);
@@ -198,8 +210,10 @@ const tooltipWidth =
     padding: var(--space-2);
   }
 
-  .dot {
-    fill: var(--color-border-strong);
+  .dots {
+    fill: none;
+    stroke: var(--color-border-strong);
+    stroke-linecap: round;
   }
 
   .pin {

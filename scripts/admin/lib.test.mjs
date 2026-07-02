@@ -124,6 +124,33 @@ test('rollInputErrors: still flags a bad per-frame location', () => {
   assert.ok(errs.some((e) => e.includes('frame 1 location invalid')));
 });
 
+import { crossOriginError } from './lib.mjs';
+
+const allowed = ['127.0.0.1:4322', 'localhost:4322'];
+
+test('crossOriginError: same-host request without Origin passes (curl, same-origin GET)', () => {
+  assert.equal(crossOriginError({ host: '127.0.0.1:4322', origin: undefined }, allowed), null);
+  assert.equal(crossOriginError({ host: 'localhost:4322', origin: undefined }, allowed), null);
+});
+
+test('crossOriginError: same-origin fetch with matching Origin passes', () => {
+  assert.equal(crossOriginError({ host: '127.0.0.1:4322', origin: 'http://127.0.0.1:4322' }, allowed), null);
+  assert.equal(crossOriginError({ host: 'localhost:4322', origin: 'http://localhost:4322' }, allowed), null);
+});
+
+test('crossOriginError: foreign Host is refused (DNS rebinding)', () => {
+  assert.ok(crossOriginError({ host: 'evil.example:4322', origin: undefined }, allowed));
+  assert.ok(crossOriginError({ host: undefined, origin: undefined }, allowed));
+});
+
+test('crossOriginError: foreign Origin is refused (CSRF)', () => {
+  assert.ok(crossOriginError({ host: '127.0.0.1:4322', origin: 'https://evil.example' }, allowed));
+});
+
+test('crossOriginError: opaque/malformed Origin is refused', () => {
+  assert.ok(crossOriginError({ host: '127.0.0.1:4322', origin: 'null' }, allowed));
+});
+
 import { validatePreviewPath } from './lib.mjs';
 
 const imageRe = /\.(jpe?g|png|tiff?|webp)$/i;

@@ -6,6 +6,10 @@ interface Props {
 }
 
 const { schema } = Astro.props;
+
+// JSON.stringify leaves `<` intact, so a value containing `</script>` would
+// terminate the block early; the < escape is equivalent JSON and inert in HTML.
+const json = JSON.stringify(schema).replace(/</g, '\\u003c');
 ---
 
-<script type="application/ld+json" is:inline set:html={JSON.stringify(schema)} />
+<script type="application/ld+json" is:inline set:html={json} />

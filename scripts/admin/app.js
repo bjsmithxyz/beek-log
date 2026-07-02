@@ -1,6 +1,9 @@
 import { knownLocations, fillForward } from '/loc-utils.mjs';
 
 const $ = (id) => document.getElementById(id);
+// HTML-escape for innerHTML templates. Geocoder results and roll-file fields
+// are not ours to trust in a page that can push to the live site.
+const esc = (s) => String(s).replace(/[&<>"]/g, (c) => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;' }[c]));
 const api = async (path, body) => {
   const opts = body ? { method: 'POST', headers: { 'content-type': 'application/json' }, body: JSON.stringify(body) } : {};
   const r = await fetch(path, opts);
@@ -65,7 +68,7 @@ refreshAuthBadge();
 (async () => {
   ({ stocks } = await api('/api/config'));
   stocks.sort((a, b) => a.name.localeCompare(b.name));
-  $('stock').innerHTML = stocks.map((s) => `<option value="${s.slug}">${s.name}</option>`).join('');
+  $('stock').innerHTML = stocks.map((s) => `<option value="${esc(s.slug)}">${esc(s.name)}</option>`).join('');
   const rolls = await api('/api/rolls');
   $('roll-picker').innerHTML = '<option value="">— new roll —</option>' +
     rolls.map((r) => `<option value="${r.slug}">${r.slug}${r.draft ? ' (draft)' : ''}</option>`).join('');
@@ -102,9 +105,9 @@ function render() {
     el.innerHTML = `
       <div class="n">#${String(i + 1).padStart(3, '0')} <input type="checkbox" class="sel" style="width:auto;"></div>
       <img src="${f.thumb}" alt="">
-      <input class="alt" placeholder="alt" value="${(f.alt || '').replace(/"/g, '&quot;')}">
-      <input class="cap" placeholder="caption (optional)" value="${(f.caption || '').replace(/"/g, '&quot;')}">
-      <div class="loc">📍 ${frameLocName(f)}</div>
+      <input class="alt" placeholder="alt" value="${esc(f.alt || '')}">
+      <input class="cap" placeholder="caption (optional)" value="${esc(f.caption || '')}">
+      <div class="loc">📍 ${esc(frameLocName(f))}</div>
       <button class="setloc">set location</button>
       <button class="del">remove</button>`;
     el.querySelector('.alt').oninput = (e) => { f.alt = e.target.value; };
@@ -343,7 +346,7 @@ function fillPickerFields(loc) {
 
 function renderChips(known) {
   $('pk-chips').innerHTML = known
-    .map((l, i) => `<button type="button" class="chip" data-i="${i}">${l.name}${l.region ? ` · ${l.region.name}` : ''}</button>`)
+    .map((l, i) => `<button type="button" class="chip" data-i="${i}">${esc(l.name)}${l.region ? ` · ${esc(l.region.name)}` : ''}</button>`)
     .join('');
   [...$('pk-chips').children].forEach((btn, i) => { btn.onclick = () => fillPickerFields(known[i]); });
 }
@@ -357,7 +360,7 @@ async function pkSearch() {
     if (!results.length) { $('pk-msg').textContent = 'no results — drag the pin or type coords'; $('pk-results').innerHTML = ''; return; }
     $('pk-msg').textContent = '';
     $('pk-results').innerHTML = results
-      .map((r, i) => `<li data-i="${i}">${r.name}${r.region ? ` · ${r.region.name}` : ''} <span class="muted">(${r.lat.toFixed(2)}, ${r.lng.toFixed(2)})</span></li>`)
+      .map((r, i) => `<li data-i="${i}">${esc(r.name)}${r.region ? ` · ${esc(r.region.name)}` : ''} <span class="muted">(${r.lat.toFixed(2)}, ${r.lng.toFixed(2)})</span></li>`)
       .join('');
     [...$('pk-results').children].forEach((li, i) => {
       li.onclick = () => { fillPickerFields(results[i]); $('pk-results').innerHTML = ''; };
