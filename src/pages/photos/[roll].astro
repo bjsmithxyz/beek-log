@@ -5,6 +5,7 @@ import Lightbox from '../../components/Lightbox.astro';
 import { render, type CollectionEntry } from 'astro:content';
 import { getFilmStock } from '../../data/film-stocks';
 import { getPhotoRolls } from '../../lib/collections';
+import { formatLongDate, formatFilmEdgeDate } from '../../lib/dates';
 
 export async function getStaticPaths() {
   const rolls = await getPhotoRolls();
@@ -25,11 +26,8 @@ const { Content } = await render(entry);
 const { title, stock, date, location, photos } = entry.data;
 const film = getFilmStock(stock);
 
-const formattedDate = date.toLocaleDateString('en-US', {
-  year: 'numeric',
-  month: 'long',
-});
-const shortDate = date.toLocaleDateString('en-US', { year: 'numeric', month: 'short' }).toUpperCase();
+const formattedDate = formatLongDate(date);
+const shortDate = formatFilmEdgeDate(date);
 
 const photosWithLoc = photos.map((p) => ({ ...p, locName: p.location?.name ?? location.name }));
 
@@ -106,30 +104,6 @@ const jsonLd = {
     padding: var(--space-8) 0 var(--space-16);
   }
 
-  .back-link {
-    display: inline-block;
-    color: var(--color-text-muted);
-    font-size: var(--font-size-sm);
-    margin-bottom: var(--space-6);
-    transition: color var(--transition-fast);
-  }
-
-  .back-link:hover {
-    color: var(--color-accent-primary);
-  }
-
-  .file-path {
-    font-size: var(--font-size-sm);
-    color: var(--color-text-muted);
-    margin-bottom: var(--space-3);
-  }
-
-  .article-header {
-    margin-bottom: var(--space-6);
-    padding-bottom: var(--space-6);
-    border-bottom: 1px solid var(--color-border);
-  }
-
   .stock-tag {
     display: inline-block;
     font-size: var(--font-size-sm);
@@ -140,12 +114,6 @@ const jsonLd = {
 
   .stock-tag[data-type='bw'] {
     color: var(--color-text-secondary);
-  }
-
-  .title {
-    font-size: var(--font-size-3xl);
-    font-weight: var(--font-weight-bold);
-    margin-bottom: var(--space-3);
   }
 
   .meta {
@@ -163,21 +131,6 @@ const jsonLd = {
 
   .content {
     margin-bottom: var(--space-8);
-  }
-
-  .prose {
-    color: var(--color-text-secondary);
-    line-height: var(--line-height-relaxed);
-  }
-
-  .prose :global(p) {
-    margin-bottom: var(--space-4);
-  }
-
-  .prose :global(a) {
-    color: var(--color-accent-primary);
-    text-decoration: underline;
-    text-underline-offset: 2px;
   }
 
   .contact-sheet h2 {

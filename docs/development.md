@@ -26,7 +26,6 @@ title: "Project Name"
 description: "Brief description of the work."
 date: 2024-02-01
 category: "dev" # or "art", "photography"
-featured: true
 cover: "../../assets/images/cover.png"
 tags: ["Astro", "TypeScript"]
 liveUrl: "https://example.com"

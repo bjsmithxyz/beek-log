@@ -10,7 +10,6 @@ const workCollection = defineCollection({
     date: z.coerce.date(),
     category: z.enum(['dev', 'art', 'photography']),
     tags: z.array(z.string()).default([]),
-    featured: z.boolean().default(false),
     draft: z.boolean().default(false),
     // For projects
     liveUrl: z.string().url().optional(),

@@ -1,15 +1,12 @@
 ---
-const currentYear = new Date().getFullYear();
+import { socialLinks, tagline } from '../data/site';
 
-const socialLinks = [
-  { href: 'https://github.com/bjsmithxyz/', label: 'github' },
-  { href: 'https://www.instagram.com/bjsmith.xyz/', label: 'instagram' },
-];
+const currentYear = new Date().getFullYear();
 ---
 
 <footer class="footer">
   <div class="footer-inner container">
-    <p class="footer-tagline">// be excellent to each other.</p>
+    <p class="footer-tagline">{tagline}</p>
     
     <div class="social-links">
       {socialLinks.map(link => (

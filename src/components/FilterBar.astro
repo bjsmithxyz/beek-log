@@ -1,0 +1,55 @@
+---
+interface Props {
+  options: string[];
+  /** CSS selector for filterable rows (e.g. `.work-row[data-category]`) */
+  rowSelector: string;
+  /** Row attribute to match against `data-filter` (e.g. `data-category`) */
+  filterAttr: string;
+}
+
+const { options, rowSelector, filterAttr } = Astro.props;
+---
+
+{options.length > 0 && (
+  <div
+    class="filters"
+    data-dir-filters
+    data-row-selector={rowSelector}
+    data-filter-attr={filterAttr}
+  >
+    <button type="button" class="filter-btn active" data-filter="all">[all]</button>
+    {options.map((opt) => (
+      <button type="button" class="filter-btn" data-filter={opt}>[{opt}]</button>
+    ))}
+  </div>
+)}
+
+<script>
+  function setupDirFilters() {
+    document.querySelectorAll<HTMLElement>('[data-dir-filters]').forEach((el) => {
+      const rowSelector = el.dataset.rowSelector;
+      const filterAttr = el.dataset.filterAttr;
+      if (!rowSelector || !filterAttr) return;
+
+      const filterBtns = el.querySelectorAll('.filter-btn');
+      const rows = document.querySelectorAll(rowSelector);
+
+      filterBtns.forEach((btn) => {
+        btn.addEventListener('click', () => {
+          filterBtns.forEach((b) => b.classList.remove('active'));
+          btn.classList.add('active');
+
+          const filter = btn.getAttribute('data-filter');
+          rows.forEach((row) => {
+            const value = row.getAttribute(filterAttr);
+            const isMatch = filter === 'all' || value === filter;
+            (row as HTMLElement).style.display = isMatch ? 'grid' : 'none';
+          });
+        });
+      });
+    });
+  }
+
+  // Re-bind after ClientRouter navigations (module-load alone is not enough).
+  document.addEventListener('astro:page-load', setupDirFilters);
+</script>

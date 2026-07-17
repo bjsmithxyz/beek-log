@@ -7,7 +7,6 @@ tags:
   - javascript
   - static-site
   - web-app
-featured: true
 liveUrl: "https://bjsmithxyz.github.io/planguage/"
 repoUrl: "https://github.com/bjsmithxyz/planguage"
 ---

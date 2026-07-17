@@ -1,4 +1,5 @@
 import { knownLocations, fillForward } from '/loc-utils.mjs';
+import { slugify, deriveSlug } from '/slug.mjs';
 
 const $ = (id) => document.getElementById(id);
 // HTML-escape for innerHTML templates. Geocoder results and roll-file fields
@@ -205,33 +206,15 @@ $('scan').onclick = async () => {
   } catch (e) { logErr('scan error: ' + e.message); }
 };
 
-// Cyrillic → Latin so non-Latin place/stock names produce valid slugs
-// (the server requires slugs to match ^[a-z0-9-]+$).
-const CYRILLIC = {
-  а: 'a', б: 'b', в: 'v', г: 'g', д: 'd', е: 'e', ё: 'yo', ж: 'zh', з: 'z',
-  и: 'i', й: 'y', к: 'k', л: 'l', м: 'm', н: 'n', о: 'o', п: 'p', р: 'r',
-  с: 's', т: 't', у: 'u', ф: 'f', х: 'kh', ц: 'ts', ч: 'ch', ш: 'sh',
-  щ: 'shch', ъ: '', ы: 'y', ь: '', э: 'e', ю: 'yu', я: 'ya', і: 'i', ї: 'yi',
-  є: 'ye', ґ: 'g', ў: 'w',
-};
-function slugify(s) {
-  return String(s)
-    .toLowerCase()
-    .replace(/[Ѐ-ӿ]/g, (c) => CYRILLIC[c] ?? '')
-    .normalize('NFKD').replace(/[̀-ͯ]/g, '')
-    .replace(/[^a-z0-9]+/g, '-')
-    .replace(/^-+|-+$/g, '');
-}
-
+// Slug helpers live in lib.mjs (Cyrillic-aware) so create + edit stay in sync.
 function refreshSlug() {
   if (mode === 'edit') return;
   const date = $('date').value, stock = $('stock').value;
   // prefer the roll primary, else the first frame that has a location, so the
   // slug carries a place even when only per-frame locations were set
   const primary = rollLoc() || (frames.find((f) => f.location) || {}).location;
-  const place = (primary && primary.name ? primary.name : '').split(',')[0];
-  const ym = date.slice(0, 7);
-  $('slug').value = [ym, stock, slugify(place)].filter(Boolean).join('-');
+  const place = (primary && primary.name ? primary.name : '');
+  $('slug').value = deriveSlug({ date, stockSlug: stock, placeName: place });
 }
 $('date').onchange = refreshSlug;
 $('stock').onchange = refreshSlug;

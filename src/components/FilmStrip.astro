@@ -3,6 +3,7 @@
 // ~6 frames. The film base stays near-black in both themes (it's an object,
 // not UI); sprocket holes show the page background, as if punched through.
 import { Image, getImage } from 'astro:assets';
+import { MAX_EDGE } from '../data/images';
 
 interface Photo {
   src: ImageMetadata;
@@ -25,7 +26,7 @@ const { photos, stockName, stockType, startFrame = 1, shortDate } = Astro.props;
 const edgeColor = stockType === 'bw' ? 'var(--color-text-secondary)' : 'var(--color-accent-secondary)';
 
 const fullImages = await Promise.all(
-  photos.map((p) => getImage({ src: p.src, width: 2048 }))
+  photos.map((p) => getImage({ src: p.src, width: MAX_EDGE }))
 );
 ---
 

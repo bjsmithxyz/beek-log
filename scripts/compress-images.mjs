@@ -7,9 +7,9 @@
 import sharp from 'sharp';
 import { readdir, stat, rename, unlink } from 'node:fs/promises';
 import { join } from 'node:path';
+import { MAX_EDGE } from '../src/data/images.ts';
 
 const dir = process.argv[2] ?? 'src/assets/images';
-const MAX_EDGE = 2048;
 
 let before = 0;
 let after = 0;

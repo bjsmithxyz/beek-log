@@ -8,6 +8,13 @@ import Header from '../components/Header.astro';
 import Footer from '../components/Footer.astro';
 import JsonLd from '../components/JsonLd.astro';
 import { ClientRouter } from 'astro:transitions';
+import {
+  siteName,
+  personName,
+  siteDescription,
+  sameAs,
+  themeColors,
+} from '../data/site';
 
 interface Props {
   title?: string;
@@ -17,28 +24,31 @@ interface Props {
 }
 
 const {
-  title = 'bjsmith.xyz',
-  description = 'Portfolio of beek - tech guy & creative',
+  title = siteName,
+  description = siteDescription,
   image = '/og-image.png',
   jsonLd,
 } = Astro.props;
 
 const canonicalURL = new URL(Astro.url.pathname, Astro.site);
-const fullTitle = title === 'bjsmith.xyz' ? title : `${title} | bjsmith.xyz`;
+const fullTitle = title === siteName ? title : `${title} | ${siteName}`;
 
 // Base structured data on every page; pages may add CreativeWork/ImageGallery.
 const siteUrl = Astro.site?.href;
 const baseGraph = [
-  { '@type': 'WebSite', name: 'bjsmith.xyz', url: siteUrl },
+  { '@type': 'WebSite', name: siteName, url: siteUrl },
   {
     '@type': 'Person',
-    name: 'beek',
+    name: personName,
     url: siteUrl,
-    sameAs: ['https://github.com/bjsmithxyz/', 'https://www.instagram.com/bjsmith.xyz/'],
+    sameAs: [...sameAs],
   },
 ];
 const pageGraph = jsonLd ? (Array.isArray(jsonLd) ? jsonLd : [jsonLd]) : [];
 const structuredData = { '@context': 'https://schema.org', '@graph': [...baseGraph, ...pageGraph] };
+
+const themeLight = themeColors.light;
+const themeDark = themeColors.dark;
 ---
 
 <!DOCTYPE html>
@@ -47,7 +57,7 @@ const structuredData = { '@context': 'https://schema.org', '@graph': [...baseGra
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <meta name="generator" content={Astro.generator} />
-  <meta name="theme-color" content="#0c0c0c" />
+  <meta name="theme-color" content={themeDark} />
 
   <title>{fullTitle}</title>
   <meta name="description" content={description} />
@@ -66,17 +76,17 @@ const structuredData = { '@context': 'https://schema.org', '@graph': [...baseGra
   
   <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
   <link rel="manifest" href="/site.webmanifest" />
-  <link rel="alternate" type="application/rss+xml" title="bjsmith.xyz" href="/rss.xml" />
+  <link rel="alternate" type="application/rss+xml" title={siteName} href="/rss.xml" />
   <link rel="sitemap" href="/sitemap-index.xml" />
 
   <JsonLd schema={structuredData} />
 
   <ClientRouter />
 
-  <script is:inline>
+  <script is:inline define:vars={{ themeLight, themeDark }}>
     const theme = localStorage.getItem('theme') || (matchMedia('(prefers-color-scheme: light)').matches ? 'light' : 'dark');
     document.documentElement.setAttribute('data-theme', theme);
-    document.querySelector('meta[name="theme-color"]')?.setAttribute('content', theme === 'light' ? '#f4f4f0' : '#0c0c0c');
+    document.querySelector('meta[name="theme-color"]')?.setAttribute('content', theme === 'light' ? themeLight : themeDark);
   </script>
 </head>
 <body>

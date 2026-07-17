@@ -4,6 +4,7 @@ import Lightbox from '../../components/Lightbox.astro';
 import { Image } from 'astro:assets';
 import { render, type CollectionEntry } from 'astro:content';
 import { getWorkEntries, byDateDesc } from '../../lib/collections';
+import { formatLongDate } from '../../lib/dates';
 
 export async function getStaticPaths() {
   const sorted = (await getWorkEntries()).sort(byDateDesc);
@@ -28,16 +29,8 @@ const { entry, newer, older } = Astro.props;
 const { Content } = await render(entry);
 const { title, description, date, category, tags, liveUrl, repoUrl, cover, images } = entry.data;
 
-const formattedDate = date.toLocaleDateString('en-US', {
-  year: 'numeric',
-  month: 'long',
-});
-
-const categoryColors = {
-  dev: 'var(--color-accent-tertiary)',
-  art: 'var(--color-accent-secondary)',
-  photography: 'var(--color-accent-primary)',
-};
+const formattedDate = formatLongDate(date);
+const categoryClass = `tag-${category}`;
 
 const ogImage = `/og/work/${entry.id}.png`;
 const jsonLd = {
@@ -54,17 +47,13 @@ const jsonLd = {
 <BaseLayout title={title} description={description} image={ogImage} jsonLd={jsonLd}>
   <article class="work-detail">
     <div class="container container-narrow">
-      <!-- Back link -->
       <a href="/work/" class="back-link">
         ← work/
       </a>
       
-      <!-- Header -->
       <header class="article-header">
         <p class="file-path">work/{entry.id}.md</p>
-        <span class="category" style={`--category-color: ${categoryColors[category]}`}>
-          [{category}]
-        </span>
+        <span class={`category ${categoryClass}`}>[{category}]</span>
         <h1 class="title">{title}</h1>
         <p class="description">{description}</p>
         
@@ -95,7 +84,6 @@ const jsonLd = {
         )}
       </header>
       
-      <!-- Cover Image -->
       {cover && (
         <div class="cover-image">
           <Image
@@ -110,18 +98,16 @@ const jsonLd = {
         </div>
       )}
       
-      <!-- Content -->
       <div class="content prose">
         <Content />
       </div>
       
-      <!-- Gallery -->
       {images && images.length > 0 && (
         <div class="gallery">
           <h2>gallery/</h2>
           <div class="gallery-grid">
             {images.map((img, i) => (
-              <figure class="gallery-item" style={`animation-delay: ${0.4 + i * 0.1}s`}>
+              <figure class="gallery-item">
                 <Image 
                   src={img.src} 
                   alt={img.alt}
@@ -165,41 +151,10 @@ const jsonLd = {
     padding: var(--space-8) 0 var(--space-16);
   }
   
-  .back-link {
-    display: inline-block;
-    color: var(--color-text-muted);
-    font-size: var(--font-size-sm);
-    margin-bottom: var(--space-6);
-    transition: color var(--transition-fast);
-  }
-  
-  .back-link:hover {
-    color: var(--color-accent-primary);
-  }
-
-  .file-path {
-    font-size: var(--font-size-sm);
-    color: var(--color-text-muted);
-    margin-bottom: var(--space-3);
-  }
-  
-  .article-header {
-    margin-bottom: var(--space-6);
-    padding-bottom: var(--space-6);
-    border-bottom: 1px solid var(--color-border);
-  }
-  
   .category {
     display: inline-block;
     font-size: var(--font-size-sm);
     font-weight: var(--font-weight-medium);
-    color: var(--category-color);
-    margin-bottom: var(--space-3);
-  }
-  
-  .title {
-    font-size: var(--font-size-3xl);
-    font-weight: var(--font-weight-bold);
     margin-bottom: var(--space-3);
   }
   
@@ -287,59 +242,6 @@ const jsonLd = {
   
   .content {
     margin-bottom: var(--space-8);
-  }
-  
-  .prose {
-    color: var(--color-text-secondary);
-    line-height: var(--line-height-relaxed);
-  }
-  
-  .prose :global(h2) {
-    font-size: var(--font-size-xl);
-    color: var(--color-text-primary);
-    margin-top: var(--space-8);
-    margin-bottom: var(--space-3);
-  }
-  
-  .prose :global(h3) {
-    font-size: var(--font-size-lg);
-    color: var(--color-text-primary);
-    margin-top: var(--space-6);
-    margin-bottom: var(--space-2);
-  }
-  
-  .prose :global(p) {
-    margin-bottom: var(--space-4);
-  }
-  
-  .prose :global(ul),
-  .prose :global(ol) {
-    margin-bottom: var(--space-4);
-    padding-left: var(--space-6);
-  }
-  
-  .prose :global(li) {
-    margin-bottom: var(--space-2);
-  }
-  
-  .prose :global(strong) {
-    color: var(--color-text-primary);
-    font-weight: var(--font-weight-medium);
-  }
-  
-  .prose :global(a) {
-    color: var(--color-accent-primary);
-    text-decoration: underline;
-    text-underline-offset: 2px;
-  }
-  
-  .prose :global(a:hover) {
-    color: var(--color-text-primary);
-  }
-  
-  .prose :global(img) {
-    border: 1px solid var(--color-border);
-    margin: var(--space-6) 0;
   }
   
   .gallery {

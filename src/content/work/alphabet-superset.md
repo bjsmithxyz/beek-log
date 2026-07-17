@@ -6,7 +6,6 @@ category: "art"
 tags:
   - illustration
   - challenge
-featured: true
 images:
   - src: "../../assets/images/a_cute.png"
     alt: "I want to believe"

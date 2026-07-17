@@ -1,0 +1,15 @@
+---
+interface Props {
+  prompt: string;
+  title: string;
+  description?: string;
+}
+
+const { prompt, title, description } = Astro.props;
+---
+
+<header class="page-header">
+  <p class="prompt">{prompt}</p>
+  <h1 class="page-title">{title}</h1>
+  {description && <p class="page-description">{description}</p>}
+</header>

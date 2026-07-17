@@ -6,9 +6,9 @@ import { join } from 'node:path';
 import { execFile } from 'node:child_process';
 import { promisify } from 'node:util';
 import { buildRollMarkdown } from './lib.mjs';
+import { MAX_EDGE } from '../../src/data/images.ts';
 
 const exec = promisify(execFile);
-const MAX_EDGE = 2048;
 
 // frames: [{ srcPath? , existing?: number, alt, caption?, location? }]
 // New frames (srcPath) are sharp-processed; existing frames (number) are copied

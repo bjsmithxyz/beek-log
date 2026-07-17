@@ -9,7 +9,6 @@ tags:
   - fusejs
   - github-pages
   - web-app
-featured: true
 liveUrl: "https://bjsmithxyz.github.io/phrasing/"
 repoUrl: "https://github.com/bjsmithxyz/phrasing"
 ---
