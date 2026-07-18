@@ -1,5 +1,8 @@
 // Pure helpers for the roll-import admin. No I/O, no Astro imports.
 import { parse as parseYaml, stringify as stringifyYaml } from 'yaml';
+import { slugify, deriveSlug } from './slug.mjs';
+
+export { slugify, deriveSlug };
 
 // Folder convention: "YYYY-MM-DD - <film-stock-slug>-<ISO>"
 // e.g. "2026-06-02 - kodak-portra-400-PT"
@@ -28,21 +31,6 @@ export function parseFolderName(name, filmStocks = {}) {
     result.stockSlug = rest;
   }
   return result;
-}
-
-export function slugify(s) {
-  return String(s)
-    .normalize('NFKD')
-    .replace(/[̀-ͯ]/g, '')
-    .toLowerCase()
-    .replace(/[^a-z0-9]+/g, '-')
-    .replace(/^-+|-+$/g, '');
-}
-
-export function deriveSlug({ date, stockSlug, placeName }) {
-  const ym = (date || '').slice(0, 7); // YYYY-MM
-  const place = slugify((placeName || '').split(',')[0] || '');
-  return [ym, stockSlug, place].filter(Boolean).join('-');
 }
 
 function locationFM(loc) {

@@ -1,5 +1,7 @@
 ---
 import BaseLayout from '../layouts/BaseLayout.astro';
+import PageHeader from '../components/PageHeader.astro';
+import { socialLinks, tagline, personName } from '../data/site';
 ---
 
 <BaseLayout 
@@ -8,24 +10,25 @@ import BaseLayout from '../layouts/BaseLayout.astro';
 >
   <section class="about-page">
     <div class="container container-narrow">
-      <header class="page-header">
-        <p class="prompt">~/beek/about</p>
-        <h1 class="page-title">about.md</h1>
-      </header>
+      <PageHeader prompt="~/beek/about" title="about.md" />
       
       <div class="about-content">
         <div class="bio-block">
           <p>
-            My name is <span class="highlight">beek</span>. I'm a creative and tech guy based in Australia. I enjoy messing around with technical projects and creating art, sometimes the two intersect.
+            My name is <span class="highlight">{personName}</span>. I'm a creative and tech guy based in Australia. I enjoy messing around with technical projects and creating art, sometimes the two intersect.
           </p>
           <p>
             Links:
-            <a href="https://github.com/bjsmithxyz/" target="_blank" rel="noopener noreferrer">github</a>,
-            <a href="https://www.instagram.com/bjsmith.xyz/" target="_blank" rel="noopener noreferrer">instagram</a>
+            {socialLinks.map((link, i) => (
+              <span>
+                {i > 0 ? ', ' : ''}
+                <a href={link.href} target="_blank" rel="noopener noreferrer">{link.label}</a>
+              </span>
+            ))}
           </p>
         </div>
         <div class="tagline">
-          <p>// be excellent to each other.</p>
+          <p>{tagline}</p>
         </div>
       </div>
     </div>
@@ -37,19 +40,8 @@ import BaseLayout from '../layouts/BaseLayout.astro';
     padding: var(--space-10) 0 var(--space-16);
   }
 
-  .prompt {
-    font-size: var(--font-size-sm);
-    color: var(--color-text-muted);
-    margin-bottom: var(--space-2);
-  }
-  
-  .page-header {
+  .about-page :global(.page-header) {
     margin-bottom: var(--space-8);
-  }
-  
-  .page-title {
-    font-size: var(--font-size-4xl);
-    font-weight: var(--font-weight-bold);
   }
   
   .about-content {

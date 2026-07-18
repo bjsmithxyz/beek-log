@@ -1,0 +1,15 @@
+---
+interface Props {
+  columns: string[];
+  /** CSS grid-template-columns value */
+  cols: string;
+}
+
+const { columns, cols } = Astro.props;
+---
+
+<div class="list-header" style={`--list-cols: ${cols}`} aria-hidden="true">
+  {columns.map((col) => (
+    <span>{col}</span>
+  ))}
+</div>

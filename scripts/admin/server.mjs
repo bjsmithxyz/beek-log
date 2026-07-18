@@ -224,6 +224,10 @@ route('GET', /^\/app\.js$/, async (req, res) => {
   send(res, 200, await readFile(join(__dirname, 'app.js')), 'text/javascript');
 });
 
+route('GET', /^\/slug\.mjs$/, async (req, res) => {
+  send(res, 200, await readFile(join(__dirname, 'slug.mjs')), 'text/javascript');
+});
+
 route('GET', /^\/loc-utils\.mjs$/, async (req, res) => {
   send(res, 200, await readFile(join(__dirname, 'loc-utils.mjs')), 'text/javascript');
 });

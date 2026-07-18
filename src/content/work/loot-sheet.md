@@ -7,7 +7,6 @@ tags:
   - react
   - vite
   - web-app
-featured: true
 cover: "../../assets/images/loot_sheet.png"
 liveUrl: "https://bjsmithxyz.github.io/loot-sheet/"
 repoUrl: "https://github.com/bjsmithxyz/loot-sheet"

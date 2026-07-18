@@ -8,7 +8,6 @@ tags:
   - mandarin
   - digital-art
   - web-app
-featured: true
 liveUrl: "https://bjsmithxyz.github.io/Echoes/"
 repoUrl: "https://github.com/bjsmithxyz/Echoes"
 ---

@@ -49,7 +49,7 @@ Content Layer `glob()` loader; entries are keyed by `id` (the filename slug) and
 rendered with `render(entry)` from `astro:content`.
 
 **`work`** — dev / art / photography entries. Fields: `title`, `description`,
-`date`, `category` (`dev` | `art` | `photography`), `tags`, `featured`,
+`date`, `category` (`dev` | `art` | `photography`), `tags`,
 `draft`, optional `liveUrl` / `repoUrl`, optional `cover` image, optional
 `images` gallery.
 

@@ -76,12 +76,14 @@ const navItems = [
 </header>
 
 <script>
+  import { themeColors } from '../data/site';
+
   // Reflect the active theme into the document + mobile browser chrome.
   function applyTheme(theme: string) {
     document.documentElement.setAttribute('data-theme', theme);
     document
       .querySelector('meta[name="theme-color"]')
-      ?.setAttribute('content', theme === 'light' ? '#f4f4f0' : '#0c0c0c');
+      ?.setAttribute('content', theme === 'light' ? themeColors.light : themeColors.dark);
   }
 
   function closeMobileMenu(focusToggle = false) {

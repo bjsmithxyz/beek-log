@@ -2,6 +2,7 @@
 import type { CollectionEntry } from 'astro:content';
 import { getFilmStock } from '../data/film-stocks';
 import { effectiveLocations } from '../data/locations';
+import { formatListDate } from '../lib/dates';
 
 interface Props {
   roll: CollectionEntry<'photos'>;
@@ -13,17 +14,13 @@ const film = getFilmStock(stock);
 const locCount = effectiveLocations(roll).length;
 const locLabel = locCount > 1 ? `${location.name} +${locCount - 1}` : location.name;
 
-const formattedDate = date.toLocaleDateString('en-CA', {
-  year: 'numeric',
-  month: '2-digit',
-  day: '2-digit',
-});
+const formattedDate = formatListDate(date);
 const year = date.getFullYear().toString();
 ---
 
 <a
   href={`/photos/${roll.id}/`}
-  class="roll-row"
+  class="dir-row roll-row"
   id={`roll-${roll.id}`}
   data-year={year}
   data-slug={roll.id}
@@ -37,32 +34,8 @@ const year = date.getFullYear().toString();
 
 <style>
   .roll-row {
-    display: grid;
-    grid-template-columns: 12rem 6.5rem 1fr 11rem 1.5rem;
-    gap: var(--space-4);
-    align-items: baseline;
-    padding: var(--space-3) var(--space-4);
-    border: 1px solid var(--color-border);
-    margin-top: -1px;
-    background: var(--color-bg-secondary);
-    color: var(--color-text-primary);
-    text-decoration: none;
-    font-size: var(--font-size-sm);
-    transition: background var(--transition-fast);
+    --dir-cols: 12rem 6.5rem 1fr 11rem 1.5rem;
     scroll-margin-top: var(--space-16);
-  }
-
-  .roll-row:first-child {
-    margin-top: 0;
-  }
-
-  .roll-row:hover {
-    background: var(--color-bg-tertiary);
-    color: var(--color-text-primary);
-  }
-
-  .roll-row:hover .row-arrow {
-    color: var(--color-accent-primary);
   }
 
   /* map pin jump target */
@@ -89,11 +62,6 @@ const year = date.getFullYear().toString();
     color: var(--color-text-secondary);
   }
 
-  .row-date {
-    color: var(--color-text-muted);
-    font-variant-numeric: tabular-nums;
-  }
-
   .row-title {
     color: var(--color-text-primary);
     font-weight: var(--font-weight-medium);
@@ -107,12 +75,6 @@ const year = date.getFullYear().toString();
     overflow: hidden;
     text-overflow: ellipsis;
     white-space: nowrap;
-  }
-
-  .row-arrow {
-    color: var(--color-text-muted);
-    text-align: right;
-    transition: color var(--transition-fast);
   }
 
   @media (max-width: 768px) {
