@@ -22,6 +22,14 @@ The site is hosted on **Netlify**. Any push to `main` triggers a build
 Hashed build assets under `/_assets/*` are served `immutable` with a one-year
 `max-age`. HTML keeps Netlify's default revalidation.
 
+## Monitoring
+
+Netlify Observability provides the Free plan's rolling 24-hour request view and
+requires no site code. The Lighthouse build plugin reports mobile scores for
+the homepage and one image-heavy photo roll after each deploy. It is
+reporting-only: scores do not block releases. Keep the audit set small because
+each route adds build time and consumes build credits.
+
 ## Gotchas
 
 - **Do not add a `/* -> /404.html` redirect** to `netlify.toml`. Netlify serves
