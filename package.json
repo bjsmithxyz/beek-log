@@ -15,11 +15,11 @@
   },
   "dependencies": {
     "@astrojs/netlify": "^7.0.13",
-    "@astrojs/rss": "^4.0.18",
+    "@astrojs/rss": "^4.0.19",
     "@astrojs/sitemap": "^3.7.3",
-    "@fontsource/ibm-plex-mono": "^5.2.7",
-    "astro": "^6.4.6",
-    "sharp": "^0.35.1"
+    "@fontsource/ibm-plex-mono": "^5.3.0",
+    "astro": "^6.4.8",
+    "sharp": "^0.35.3"
   },
   "devDependencies": {
     "yaml": "^2.9.0"
