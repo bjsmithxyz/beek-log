@@ -2,7 +2,7 @@
 
 ## Stack
 
-- **[Astro 6](https://astro.build)** — static-first site generator. Every page
+- **[Astro 7](https://astro.build)** — static-first site generator. Every page
   is prerendered to HTML at build time.
 - **[@astrojs/netlify](https://docs.astro.build/en/guides/integrations-guide/netlify/)**
   adapter — routes `astro:assets` images through the Netlify Image CDN in

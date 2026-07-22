@@ -33,13 +33,12 @@ Hashed build assets under `/_assets/*` are served `immutable` with a one-year
 
 ## Upgrades
 
-`astro` (6) and `@astrojs/netlify` (7) are on their current majors. The 5 → 6
-migration moved content collections to the Content Layer (`glob()` loaders in
-`src/content.config.ts`, `entry.id` instead of `entry.slug`, `render(entry)`
-instead of `entry.render()`) and renamed `<ViewTransitions />` to
-`<ClientRouter />`. Astro 6 requires Node ≥ 22.12.
+`astro` (7) and `@astrojs/netlify` (8) are on their current majors. The site
+retains the Netlify adapter so Astro's `<Image />` component uses Netlify Image
+CDN transformations in production. Astro 7 requires Node ≥ 22.12; this project
+requires Node ≥ 22.18 for its test suite.
 
-`npm audit` reports high-severity advisories against `esbuild` pulled in
-transitively by `vite` and the Netlify dev tooling. These affect the local dev
-server only (esbuild's dev server CORS behaviour); there is no non-breaking
-upstream fix yet, so they are left as-is rather than forced.
+`npm audit` reports advisories in transitive dependencies of the current Netlify
+adapter and its local development tooling. npm's suggested remediation is an
+incompatible downgrade of the adapter, so do not use `npm audit fix --force`;
+upgrade when Netlify publishes compatible patched dependencies.

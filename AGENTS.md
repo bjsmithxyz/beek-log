@@ -2,7 +2,7 @@
 
 ## Cursor Cloud specific instructions
 
-This repo is a single Astro 6 static site (`bjsmith.xyz`), package manager is **npm**
+This repo is a single Astro 7 static site (`bjsmith.xyz`), package manager is **npm**
 (`package-lock.json`). There is no database or backend service — all content is
 file-based Markdown under `src/content/`. Standard commands live in `package.json`
 and `docs/development.md`; don't duplicate them here.
@@ -10,8 +10,8 @@ and `docs/development.md`; don't duplicate them here.
 ### Node version (important gotcha)
 - Tests require **Node >= 22.18** because `src/data/locations.test.mjs` imports a
   `.ts` file (`./locations.ts`) directly, relying on Node's native type stripping
-  (enabled by default only in 22.18+). `package.json` engines says `>=22.12.0`, but
-  the older `/exec-daemon/node` (22.14) on this VM makes `npm test` fail with
+  (enabled by default only in 22.18+). `package.json` engines says `>=22.18.0`; the
+  older `/exec-daemon/node` (22.14) on this VM makes `npm test` fail with
   `ERR_UNKNOWN_FILE_EXTENSION`.
 - The environment has nvm with a default Node 22 (>=22.18) installed. Fresh shells
   source `~/.bashrc`, which re-prepends nvm's default Node ahead of `/exec-daemon`,
