@@ -39,7 +39,10 @@ A GitHub-auth badge sits in the bottom-right corner. It checks `gh` on load
 (click it to re-check) and the **write + commit + push** button stays disabled
 unless `gh` holds a valid github.com token — run `gh auth login` if it shows red.
 The server enforces the same check before committing, so a failed push can't
-leave an unpushed commit behind. **Write roll** is never blocked.
+leave an unpushed commit behind. Commit+push also runs `git pull --rebase
+--autostash` first so a remote that moved ahead (another clone, a merged PR)
+is integrated before the new roll commit is created. **Write roll** is never
+blocked.
 
 ## Edit a roll
 

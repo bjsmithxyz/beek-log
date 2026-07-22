@@ -107,14 +107,39 @@ export async function checkGitHubAuth({
   }
 }
 
-export async function gitPublish({ repoRoot, paths, message }) {
+// Stages paths, commits, and pushes. Pulls with rebase first so a remote that
+// moved ahead (e.g. another machine or a merged PR) doesn't reject the push and
+// leave an orphan local commit. `run` is injectable for tests and must mirror
+// node execFile semantics for `git` (resolve with {stdout,stderr}, reject on
+// non-zero exit). Working-tree changes from writeRollFiles are stashed across
+// the pull via --autostash.
+export async function gitPublish({
+  repoRoot,
+  paths,
+  message,
+  run: runOverride,
+} = {}) {
   const log = [];
   const run = async (args) => {
-    const { stdout, stderr } = await exec('git', args, { cwd: repoRoot });
+    const result = runOverride
+      ? await runOverride(args)
+      : await exec('git', args, { cwd: repoRoot });
+    const stdout = (result && result.stdout) || '';
+    const stderr = (result && result.stderr) || '';
     log.push(`$ git ${args.join(' ')}`.trim());
-    if (stdout.trim()) log.push(stdout.trim());
-    if (stderr.trim()) log.push(stderr.trim());
+    if (String(stdout).trim()) log.push(String(stdout).trim());
+    if (String(stderr).trim()) log.push(String(stderr).trim());
+    return result;
   };
+
+  try {
+    await run(['pull', '--rebase', '--autostash']);
+  } catch (err) {
+    const detail = [err.stderr, err.stdout, err.message].filter(Boolean).join('\n');
+    throw new Error(
+      `git pull --rebase failed before commit — fix local/remote divergence, then retry.\n${detail}`,
+    );
+  }
   await run(['add', ...paths]);
   await run(['commit', '-m', message]);
   await run(['push']);

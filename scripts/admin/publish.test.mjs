@@ -4,7 +4,7 @@ import { mkdtemp, mkdir, readdir, readFile, writeFile, rm } from 'node:fs/promis
 import { tmpdir } from 'node:os';
 import { join } from 'node:path';
 import sharp from 'sharp';
-import { writeRollFiles, checkGitHubAuth } from './publish.mjs';
+import { writeRollFiles, checkGitHubAuth, gitPublish } from './publish.mjs';
 import { parseRollMarkdown } from './lib.mjs';
 
 async function makeImage(path, color) {
@@ -135,4 +135,49 @@ test('checkGitHubAuth: other failure → error', async () => {
   assert.equal(r.ok, false);
   assert.equal(r.state, 'error');
   assert.match(r.detail, /weird/);
+});
+
+// gitPublish pulls (rebase + autostash) before add/commit/push so a remote that
+// moved ahead does not reject the push and leave an orphan local commit.
+test('gitPublish: pulls with rebase before add/commit/push', async () => {
+  const calls = [];
+  const log = await gitPublish({
+    repoRoot: '/tmp/unused',
+    paths: ['src/content/photos/x.md', 'src/assets/photos/x'],
+    message: 'Add X roll (Kodak Portra 400)',
+    run: async (args) => {
+      calls.push(args);
+      return { stdout: '', stderr: '' };
+    },
+  });
+
+  assert.deepEqual(calls, [
+    ['pull', '--rebase', '--autostash'],
+    ['add', 'src/content/photos/x.md', 'src/assets/photos/x'],
+    ['commit', '-m', 'Add X roll (Kodak Portra 400)'],
+    ['push'],
+  ]);
+  assert.match(log[0], /git pull --rebase --autostash/);
+});
+
+test('gitPublish: pull failure aborts before commit', async () => {
+  const calls = [];
+  await assert.rejects(
+    () => gitPublish({
+      repoRoot: '/tmp/unused',
+      paths: ['a.md'],
+      message: 'msg',
+      run: async (args) => {
+        calls.push(args);
+        if (args[0] === 'pull') {
+          const e = new Error('Command failed: git pull');
+          e.stderr = 'fatal: Need to specify how to reconcile divergent branches.';
+          throw e;
+        }
+        return { stdout: '', stderr: '' };
+      },
+    }),
+    /git pull --rebase failed before commit/,
+  );
+  assert.deepEqual(calls, [['pull', '--rebase', '--autostash']]);
 });
