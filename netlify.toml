@@ -3,7 +3,7 @@
   publish = "dist"
 
 [build.environment]
-  # Astro 6 requires Node >= 22.12
+  # Astro 7 requires Node >= 22.12; tests require Node >= 22.18
   NODE_VERSION = "22"
 
 # Redirects and headers
