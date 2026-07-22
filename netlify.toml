@@ -29,5 +29,16 @@
 [images]
   remote_images = []
 
+# Report Lighthouse scores after deploy without blocking releases. Keep the
+# audit set small to limit build-credit usage on the Free plan.
+[[plugins]]
+  package = "@netlify/plugin-lighthouse"
+
+  [[plugins.inputs.audits]]
+    path = "/"
+
+  [[plugins.inputs.audits]]
+    path = "/photos/2025-09-kodak-colorplus-200-taipei-hong-kong/"
+
 # 404 handling: Netlify serves /404.html for unmatched routes automatically;
 # an explicit /* redirect breaks dev-server route emulation, so don't add one.
