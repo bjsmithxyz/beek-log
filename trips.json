@@ -76,7 +76,7 @@
       "lon": 103.8438,
       "arrive": "2025-07-23",
       "depart": "2025-07-26",
-      "note": "Crossed border at Lao Cai into China"
+      "note": "Crossed border at Lao Cai into China."
     },
     {
       "name": "Kunming",
@@ -113,7 +113,7 @@
       "lon": 100.081,
       "arrive": "2025-08-03",
       "depart": "2025-08-05",
-      "note": "Hiked the trail, overnight at Tea Horse Guesthouse"
+      "note": "Hiked the trail, overnight at Tea Horse Guesthouse."
     },
     {
       "name": "Shangri-La",
@@ -186,7 +186,7 @@
       "lon": 74.5698,
       "arrive": "2025-08-30",
       "depart": "2025-09-15",
-      "note": "Bishkek & the mountains"
+      "note": "Bishkek & the mountains."
     },
     {
       "name": "Kazakhstan",
@@ -196,7 +196,7 @@
       "lon": 76.8512,
       "arrive": "2025-09-15",
       "depart": "2025-09-26",
-      "note": "Almaty"
+      "note": "Almaty."
     },
     {
       "name": "Uzbekistan",
@@ -206,7 +206,7 @@
       "lon": 66.9597,
       "arrive": "2025-09-26",
       "depart": "2025-10-01",
-      "note": "Samarkand & Tashkent"
+      "note": "Samarkand & Tashkent."
     },
     {
       "name": "Tajikistan",
@@ -724,7 +724,7 @@
       "lon": 2.3522,
       "arrive": "2026-07-23",
       "depart": "2026-07-25",
-      "note": "Landed today · bus or train to the Netherlands"
+      "note": "Bus to the Netherlands"
     },
     {
       "name": "Amsterdam",
@@ -734,15 +734,14 @@
       "lon": 4.9041,
       "arrive": "2026-07-25",
       "depart": "2026-08-05",
-      "note": "Annie joins for ~1-2 weeks, Western Europe kickoff",
       "tentative": true
     },
     {
-      "name": "Berlin",
+      "name": "Hamburg",
       "country": "Germany",
       "cc": "DE",
-      "lat": 52.52,
-      "lon": 13.405,
+      "lat": 53.5507,
+      "lon": 9.993,
       "arrive": "2026-08-05",
       "depart": "2026-08-15",
       "tentative": true
@@ -849,7 +848,6 @@
       "lon": 15.8,
       "arrive": "2026-09-19",
       "depart": "2026-09-21",
-      "note": "Off the beaten path stop",
       "tentative": true
     },
     {
@@ -966,7 +964,7 @@
       "name": "Adana",
       "country": "Turkey",
       "cc": "TR",
-      "lat": 37.0,
+      "lat": 37,
       "lon": 35.3213,
       "arrive": "2026-11-13",
       "depart": "2026-11-16",
