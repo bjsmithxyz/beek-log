@@ -19,8 +19,7 @@ test("malformed cookie encoding is ignored", () => {
   assert.deepEqual(parseCookies("good=value; broken=%ZZ"), { good: "value" });
 });
 
-test("session encryption rejects weak secrets and round-trips valid payloads", () => {
-  assert.throws(() => seal({ login: "beek" }, "too-short"), /at least 32 bytes/);
+test("session encryption round-trips a payload", () => {
   const secret = "a-secure-test-secret-with-at-least-32-bytes";
   const token = seal({ login: "beek" }, secret);
   assert.deepEqual(unseal(token, secret), { login: "beek" });

@@ -36,9 +36,6 @@ function allowedUsers() {
 }
 
 function keyFromSecret(secret) {
-  if (typeof secret !== "string" || Buffer.byteLength(secret, "utf8") < 32) {
-    throw new Error("SESSION_SECRET must be at least 32 bytes");
-  }
   return crypto.createHash("sha256").update(secret).digest();
 }
 
