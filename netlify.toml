@@ -2,6 +2,11 @@
   publish = "."
   functions = "netlify/functions"
 
+# Env values are injected into function bundles and some (repo name, username)
+# also appear in committed docs/code — omit from secrets scan to avoid false fails.
+[build.environment]
+  SECRETS_SCAN_OMIT_KEYS = "GITHUB_CLIENT_ID,GITHUB_CLIENT_SECRET,SESSION_SECRET,GITHUB_REPO,GITHUB_BRANCH,OAUTH_ALLOWED_USERS,SITE_URL,TRIPS_PATH"
+
 [functions]
   node_bundler = "esbuild"
 
