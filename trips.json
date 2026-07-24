@@ -293,14 +293,41 @@
       "note": "Overnight"
     },
     {
-      "name": "Andong → Busan",
+      "name": "Andong",
+      "country": "South Korea",
+      "cc": "KR",
+      "lat": 36.5684,
+      "lon": 128.7294,
+      "arrive": "2025-11-07",
+      "depart": "2025-11-10"
+    },
+    {
+      "name": "Daegu",
+      "country": "South Korea",
+      "cc": "KR",
+      "lat": 35.8714,
+      "lon": 128.6014,
+      "arrive": "2025-11-10",
+      "depart": "2025-11-13"
+    },
+    {
+      "name": "Gyeongju",
+      "country": "South Korea",
+      "cc": "KR",
+      "lat": 35.8562,
+      "lon": 129.2247,
+      "arrive": "2025-11-13",
+      "depart": "2025-11-16"
+    },
+    {
+      "name": "Busan",
       "country": "South Korea",
       "cc": "KR",
       "lat": 35.1796,
       "lon": 129.0756,
-      "arrive": "2025-11-07",
+      "arrive": "2025-11-16",
       "depart": "2025-11-20",
-      "note": "Andong · Daegu · Gyeongju · Busan (Haeundae); ferry to Japan"
+      "note": "Haeundae; ferry to Japan"
     },
     {
       "name": "Fukuoka",

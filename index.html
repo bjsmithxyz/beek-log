@@ -25,18 +25,34 @@
     --r:4px;
     --font:'Source Sans 3', 'Source Sans Pro', sans-serif;
     --display:'Fraunces', 'Iowan Old Style', 'Palatino Linotype', Palatino, serif;
+    --paper-1:#dfe5d8; --paper-2:#ddd6c8; --paper-3:#ebece6; --paper-4:#e0e3db;
+    --noise-opacity:.035;
+  }
+  html[data-theme="dusk"]{
+    --bg:#232821; --bg2:#2c322a; --panel:#343b32; --panel2:#e8e6df14;
+    --line:#4a5248; --line2:#5c6558;
+    --txt:#e8e6df; --muted:#a3a99c; --faint:#7e8678;
+    --accent:#9bb5a2; --accent2:#7f9a86; --ink:#f0eee6;
+    --hot:#d4846e; --warm:#c4924a; --cool:#6a9aab; --cold:#7a8eb0;
+    --good:#6fbf91; --bad:#e07070;
+    --past:#9bb5a2; --future:#d08968;
+    --shadow:0 1px 0 rgba(0,0,0,.2), 0 16px 36px -20px rgba(0,0,0,.55);
+    --paper-1:#2a3228; --paper-2:#3a3228; --paper-3:#1c211a; --paper-4:#262c24;
+    --noise-opacity:.05;
   }
   *{box-sizing:border-box}
   html,body{margin:0;padding:0}
   body{
     background:
-      radial-gradient(ellipse 900px 420px at 12% -8%, #dfe5d8 0%, transparent 55%),
-      radial-gradient(ellipse 700px 380px at 92% 8%, #ddd6c8 0%, transparent 50%),
-      linear-gradient(180deg, #ebece6 0%, var(--bg) 40%, #e0e3db 100%);
+      radial-gradient(ellipse 900px 420px at 12% -8%, var(--paper-1) 0%, transparent 55%),
+      radial-gradient(ellipse 700px 380px at 92% 8%, var(--paper-2) 0%, transparent 50%),
+      linear-gradient(180deg, var(--paper-3) 0%, var(--bg) 40%, var(--paper-4) 100%);
     color:var(--txt); font-family:var(--font); -webkit-font-smoothing:antialiased; line-height:1.5;
+    color-scheme:light;
   }
+  html[data-theme="dusk"] body{color-scheme:dark}
   body:before{
-    content:''; position:fixed; inset:0; pointer-events:none; z-index:0; opacity:.035;
+    content:''; position:fixed; inset:0; pointer-events:none; z-index:0; opacity:var(--noise-opacity);
     background-image:url("data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.85' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");
   }
   .wrap{position:relative;z-index:1;max-width:1200px;margin:0 auto;padding:0 20px}
@@ -49,11 +65,15 @@
   header.hero{padding:52px 0 8px;position:relative;animation:rise .65s ease both}
   h1{font-family:var(--display);font-size:clamp(38px,6.2vw,64px);line-height:1.02;margin:0 0 10px;font-weight:700;letter-spacing:-.03em;color:var(--ink)}
   h1 .grad{color:var(--future);font-style:italic;font-weight:560}
-  .sub{color:var(--muted);font-size:17px;max-width:38ch;margin:0;line-height:1.45}
+  .sub{color:var(--muted);font-size:17px;margin:0;line-height:1.45;white-space:nowrap;max-width:none}
   .nowline{margin-top:18px;display:inline-flex;align-items:center;gap:10px;background:var(--panel);border:1px solid var(--line);border-left:3px solid var(--good);padding:8px 14px 8px 12px;border-radius:var(--r);font-size:14px;color:var(--muted);animation:rise .7s .08s ease both}
   .pulse{width:8px;height:8px;border-radius:50%;background:var(--good);animation:softpulse 2.4s ease-in-out infinite}
   .editbtn{position:absolute;top:52px;right:0;background:transparent;border:1px solid var(--line2);color:var(--muted);border-radius:var(--r);padding:8px 14px;font-size:13px;cursor:pointer;font-family:inherit;display:inline-flex;gap:8px;align-items:center;transition:.15s}
   .editbtn:hover{color:var(--txt);border-color:var(--txt);background:var(--panel)}
+  .hero-actions{position:absolute;top:52px;right:0;display:flex;gap:8px;align-items:center}
+  .hero-actions .editbtn{position:static}
+  .themebtn{background:transparent;border:1px solid var(--line2);color:var(--muted);border-radius:var(--r);padding:8px 12px;font-size:13px;cursor:pointer;font-family:inherit;transition:.15s}
+  .themebtn:hover{color:var(--txt);border-color:var(--txt);background:var(--panel)}
 
   .stats{display:grid;grid-template-columns:repeat(6,1fr);gap:0;margin:28px 0 4px;border-top:1px solid var(--line);border-bottom:1px solid var(--line);animation:rise .7s .12s ease both}
   .stat{background:transparent;border:none;border-right:1px solid var(--line);border-radius:0;padding:16px 14px 14px;position:relative;overflow:visible}
@@ -71,7 +91,7 @@
   .sec-head p{margin:0;color:var(--faint);font-size:13px;max-width:48ch}
 
   #map{height:540px;border-radius:var(--r);border:1px solid var(--line2);box-shadow:var(--shadow);z-index:0;animation:rise .75s .18s ease both}
-  .leaflet-container{background:#d9ddd4;font-family:var(--font)}
+  .leaflet-container{background:var(--bg);font-family:var(--font)}
   .leaflet-popup-content-wrapper{background:var(--panel);color:var(--txt);border:1px solid var(--line);border-radius:var(--r);box-shadow:var(--shadow)}
   .leaflet-popup-tip{background:var(--panel);border:1px solid var(--line)}
   .leaflet-popup-content{margin:12px 14px;font-size:13px}
@@ -131,6 +151,7 @@
   footer{border-top:1px solid var(--line);margin-top:50px;padding:26px 0 60px;color:var(--faint);font-size:13px}
   footer b{color:var(--muted)}
   .banner{background:#f3e8d4;border:1px solid var(--warm);color:#5c4018;border-radius:var(--r);padding:10px 14px;font-size:13px;margin:18px 0 0}
+  html[data-theme="dusk"] .banner{background:#3a3220;border-color:var(--warm);color:#f0d9a8}
 
   /* ---------------- EDITOR ---------------- */
   .ovl{position:fixed;inset:0;background:#1c2118a8;backdrop-filter:blur(3px);z-index:1000;display:none;overflow:auto;padding:24px}
@@ -149,6 +170,7 @@
   input,select{background:var(--panel);border:1px solid var(--line2);color:var(--txt);border-radius:var(--r);padding:8px 10px;font-family:inherit;font-size:13px;outline:none}
   input:focus,select:focus{border-color:var(--accent)}
   input[type=date]{color-scheme:light}
+  html[data-theme="dusk"] input[type=date]{color-scheme:dark}
   .btn{background:var(--accent);color:#f4f5f0;border:none;border-radius:var(--r);padding:9px 15px;font-weight:700;font-size:13px;cursor:pointer;font-family:inherit}
   .btn:hover{filter:brightness(1.06)}
   .btn.ghost{background:var(--panel);color:var(--txt);border:1px solid var(--line2);font-weight:600}
@@ -168,6 +190,7 @@
   .erow.iscur{border-left-color:var(--good)}
   .erow.ispast{border-left-color:var(--past)}
   .erow input{width:100%;padding:6px 7px;font-size:12px;box-sizing:border-box}
+  .erow input[type=checkbox]{width:auto;padding:0;margin:0;flex-shrink:0}
   .erow .idx{color:var(--faint);font-size:11px;text-align:center}
   .erow .acts{display:flex;gap:3px}
   .icobtn{background:var(--bg2);border:1px solid var(--line2);color:var(--muted);border-radius:var(--r);width:26px;height:28px;cursor:pointer;font-size:13px;padding:0}
@@ -177,6 +200,7 @@
   .colhead{font-size:10px;text-transform:uppercase;letter-spacing:.05em;color:var(--faint);padding-top:0;padding-bottom:4px}
   .colhead > span{min-width:0}
   .tentwrap{display:flex;align-items:center;gap:5px;font-size:11px;color:var(--muted);margin-top:2px}
+  .tentwrap label{display:inline-flex;align-items:center;gap:6px;cursor:pointer;margin:0;line-height:1.2}
 
   .mfoot{position:sticky;bottom:0;background:var(--bg2);border-top:1px solid var(--line);padding:14px 22px;display:flex;gap:10px;align-items:center;flex-wrap:wrap}
   .mfoot .msg{font-size:13px;margin-left:auto}
@@ -188,14 +212,20 @@
     .stats{grid-template-columns:repeat(2,1fr)}
     .stat:nth-child(2n){border-right:none}
     .stat:nth-child(n+3){border-top:1px solid var(--line)}
+    .sub{font-size:15px}
     #map{height:420px}
     .tl:before{left:76px}
     .tlrow{grid-template-columns:76px 1fr}
     .tlrow .when{padding-right:16px}
     .tlmore{margin-left:96px}
-    .editbtn{position:static;display:inline-flex;margin-top:14px}
+    .editbtn{position:static;display:inline-flex;margin-top:0}
+    .hero-actions{position:static;margin-top:14px;flex-wrap:wrap}
     .erow,.colhead{grid-template-columns:24px minmax(0,1fr) minmax(0,1fr) minmax(0,.95fr) minmax(0,.95fr) 113px}
     .erow .full,.erow .tentwrap{grid-column:2 / -1}
+  }
+  @media(max-width:420px){
+    .sub{font-size:13px}
+    h1{font-size:clamp(32px,11vw,48px)}
   }
 </style>
 </head>
@@ -205,7 +235,10 @@
     <h1 id="title">Long Way <span class="grad">Round</span></h1>
     <p class="sub" id="subtitle"></p>
     <div class="nowline"><span class="pulse"></span> <span id="nowline">Loading the journey…</span></div>
-    <button class="editbtn" id="openEditor">✎ Edit trip</button>
+    <div class="hero-actions">
+      <button class="themebtn" id="themeToggle" type="button" title="Toggle light / dusk theme">Dusk</button>
+      <button class="editbtn" id="openEditor">✎ Edit trip</button>
+    </div>
     <div class="banner" id="localBanner" style="display:none"></div>
   </header>
 
@@ -262,20 +295,11 @@
       <div class="auth">
         <h3>GitHub access</h3>
         <div class="authrow">
-          <input type="password" id="pat" placeholder="Fine-grained personal access token (contents: read &amp; write)" autocomplete="off" />
-          <button class="btn ghost" id="saveTok">Save token</button>
-          <button class="btn ghost" id="clearTok">Clear</button>
-          <span class="authstate no" id="authState">No token saved</span>
+          <button class="btn" id="ghLogin" type="button">Sign in with GitHub</button>
+          <button class="btn ghost" id="ghLogout" type="button" style="display:none">Sign out</button>
+          <span class="authstate no" id="authState">Checking sign-in…</span>
         </div>
-        <div class="cfg">
-          <label>Owner<input id="ghOwner" size="12"></label>
-          <label>Repo<input id="ghRepo" size="16"></label>
-          <label>Branch<input id="ghBranch" size="8"></label>
-          <label>Path<input id="ghPath" size="10"></label>
-        </div>
-        <div class="hint">Token is kept in <b>sessionStorage</b> for this tab only (cleared when the tab closes) and sent straight to api.github.com. Create one at
-          <a href="https://github.com/settings/tokens?type=beta" target="_blank" rel="noopener">github.com/settings/tokens</a> →
-          fine-grained → repo access: <b>the-long-way-round</b> → permissions: <b>Contents: Read and write</b>.</div>
+        <div class="hint">Sign in with GitHub to save changes (no personal access token). Works on the Netlify-hosted site. You can still <b>Download trips.json</b> and commit manually anytime.</div>
       </div>
 
       <div class="edtabs">
@@ -309,7 +333,6 @@
 /* ============================================================
    CONFIG + local-file fallback data (used when trips.json can't be fetched)
    ============================================================ */
-const GH_DEFAULT = { owner:"bjsmithxyz", repo:"the-long-way-round", branch:"main", path:"trips.json" };
 const FALLBACK = {
   "meta": {
     "title": "Long Way Round",
@@ -605,14 +628,41 @@ const FALLBACK = {
       "note": "Overnight"
     },
     {
-      "name": "Andong → Busan",
+      "name": "Andong",
+      "country": "South Korea",
+      "cc": "KR",
+      "lat": 36.5684,
+      "lon": 128.7294,
+      "arrive": "2025-11-07",
+      "depart": "2025-11-10"
+    },
+    {
+      "name": "Daegu",
+      "country": "South Korea",
+      "cc": "KR",
+      "lat": 35.8714,
+      "lon": 128.6014,
+      "arrive": "2025-11-10",
+      "depart": "2025-11-13"
+    },
+    {
+      "name": "Gyeongju",
+      "country": "South Korea",
+      "cc": "KR",
+      "lat": 35.8562,
+      "lon": 129.2247,
+      "arrive": "2025-11-13",
+      "depart": "2025-11-16"
+    },
+    {
+      "name": "Busan",
       "country": "South Korea",
       "cc": "KR",
       "lat": 35.1796,
       "lon": 129.0756,
-      "arrive": "2025-11-07",
+      "arrive": "2025-11-16",
       "depart": "2025-11-20",
-      "note": "Andong · Daegu · Gyeongju · Busan (Haeundae); ferry to Japan"
+      "note": "Haeundae; ferry to Japan"
     },
     {
       "name": "Fukuoka",
@@ -1193,9 +1243,28 @@ function renderStats(){
   $('daylbl').textContent=daysGone;
 }
 
+function themeName(){ return document.documentElement.getAttribute('data-theme')==='dusk'?'dusk':'day'; }
+function applyTheme(name){
+  if(name==='dusk') document.documentElement.setAttribute('data-theme','dusk');
+  else document.documentElement.removeAttribute('data-theme');
+  try{ sessionStorage.setItem('tlwr_theme', themeName()); }catch(e){}
+  const btn=$('themeToggle');
+  if(btn) btn.textContent = themeName()==='dusk' ? 'Day' : 'Dusk';
+}
+function initTheme(){
+  let pref='day';
+  try{ pref=sessionStorage.getItem('tlwr_theme')||'day'; }catch(e){}
+  applyTheme(pref);
+}
+function themeColors(){
+  if(themeName()==='dusk') return {past:'#9bb5a2', future:'#d08968', good:'#6fbf91', tile:'dark_all'};
+  return {past:'#3a5344', future:'#9a4a2e', good:'#2f6b4f', tile:'rastertiles/voyager'};
+}
+
 function markerFor(s){
   const isCur=s.status==="current", isFut=s.status==="future";
-  const color=isCur?'#2f6b4f':isFut?'#9a4a2e':'#3a5344';
+  const c=themeColors();
+  const color=isCur?c.good:isFut?c.future:c.past;
   const m=L.circleMarker([s.lat,s.lon],{radius:isCur?7:isFut?5:4,color,weight:isFut?2:1.5,fillColor:color,fillOpacity:isFut?0.18:0.92});
   const q=s.note?`<div class="popq">${esc(s.note)}</div>`:'';
   const tag=isCur?' · <span style="color:var(--good)">here now</span>':isFut?(s.tentative?' · <span style="color:var(--warm)">tentative</span>':' · <span style="color:var(--future)">planned</span>'):'';
@@ -1204,14 +1273,15 @@ function markerFor(s){
 }
 function renderMap(){
   if(map){ map.remove(); map=null; }
+  const c=themeColors();
   map=L.map('map',{worldCopyJump:true,scrollWheelZoom:false,zoomControl:true}).setView([25,40],2);
-  L.tileLayer('https://{s}.basemaps.cartocdn.com/rastertiles/voyager/{z}/{x}/{y}{r}.png',{attribution:'© OpenStreetMap contributors © CARTO',subdomains:'abcd',maxZoom:19}).addTo(map);
+  L.tileLayer(`https://{s}.basemaps.cartocdn.com/${c.tile}/{z}/{x}/{y}{r}.png`,{attribution:'© OpenStreetMap contributors © CARTO',subdomains:'abcd',maxZoom:19}).addTo(map);
   const pastLL=TRIP.filter(s=>s.status!=="future").map(s=>[s.lat,s.lon]);
   const statuses=TRIP.map(s=>s.status);
   const lastVisited=statuses.lastIndexOf("current")>=0?statuses.lastIndexOf("current"):statuses.lastIndexOf("past");
   const futLL=TRIP.filter((s,i)=>s.status==="future"||i===lastVisited).map(s=>[s.lat,s.lon]);
-  const pastLine=L.polyline(pastLL,{color:'#3a5344',weight:2.5,opacity:.88,smoothFactor:1});
-  const futLine=L.polyline(futLL,{color:'#9a4a2e',weight:2.25,opacity:.9,dashArray:'2 7',lineCap:'round'});
+  const pastLine=L.polyline(pastLL,{color:c.past,weight:2.5,opacity:.88,smoothFactor:1});
+  const futLine=L.polyline(futLL,{color:c.future,weight:2.25,opacity:.9,dashArray:'2 7',lineCap:'round'});
   pastLayer=L.layerGroup([pastLine]).addTo(map);
   futLayer=L.layerGroup([futLine]).addTo(map);
   markPast=L.layerGroup().addTo(map); markFut=L.layerGroup().addTo(map);
@@ -1323,28 +1393,46 @@ function renderAll(){
 /* ============================================================
    EDITOR
    ============================================================ */
-const LS_TOK='tlwr_gh_pat', LS_CFG='tlwr_gh_cfg';
-function ghCfg(){ try{return {...GH_DEFAULT, ...(JSON.parse(localStorage.getItem(LS_CFG)||'{}'))};}catch(e){return {...GH_DEFAULT};} }
-function saveCfg(){ localStorage.setItem(LS_CFG, JSON.stringify({owner:$('ghOwner').value.trim(),repo:$('ghRepo').value.trim(),branch:$('ghBranch').value.trim()||'main',path:$('ghPath').value.trim()||'trips.json'})); }
-function getTok(){
-  // sessionStorage only — migrate any legacy localStorage token once, then wipe it
-  let t=sessionStorage.getItem(LS_TOK)||'';
-  const legacy=localStorage.getItem(LS_TOK);
-  if(legacy){
-    if(!t){ t=legacy; sessionStorage.setItem(LS_TOK,t); }
-    localStorage.removeItem(LS_TOK);
+let AUTH_LOGIN = null;
+
+async function refreshAuth(){
+  const el=$('authState'), loginBtn=$('ghLogin'), logoutBtn=$('ghLogout');
+  try{
+    const r=await fetch('/.netlify/functions/auth-me',{credentials:'same-origin',cache:'no-store'});
+    const j=await r.json().catch(()=>({}));
+    if(r.ok && j.login){
+      AUTH_LOGIN=j.login;
+      el.textContent='Signed in as '+j.login;
+      el.className='authstate ok';
+      loginBtn.style.display='none';
+      logoutBtn.style.display='';
+      return true;
+    }
+  }catch(e){}
+  AUTH_LOGIN=null;
+  el.textContent='Not signed in';
+  el.className='authstate no';
+  loginBtn.style.display='';
+  logoutBtn.style.display='none';
+  return false;
+}
+
+function consumeAuthQuery(){
+  const u=new URL(location.href);
+  const auth=u.searchParams.get('auth');
+  if(!auth) return;
+  const reason=u.searchParams.get('reason')||'';
+  u.searchParams.delete('auth');
+  u.searchParams.delete('reason');
+  history.replaceState({},'',u.pathname+u.search+u.hash);
+  if(auth==='ok'){
+    openEditor();
+    edMsg('Signed in with GitHub.','ok');
+  }else{
+    const map={not_allowed:'That GitHub account is not allowed to edit this trip.',bad_state:'Sign-in expired — try again.',token_exchange:'GitHub token exchange failed.',missing_code:'Sign-in was cancelled.',user:'Could not read GitHub user.',server:'Sign-in failed on the server.'};
+    openEditor();
+    edMsg('✕ '+(map[reason]||'Sign-in failed.'),'err');
   }
-  return t;
-}
-function setTok(v){
-  if(v) sessionStorage.setItem(LS_TOK,v);
-  else sessionStorage.removeItem(LS_TOK);
-  localStorage.removeItem(LS_TOK);
-}
-function setAuthState(){
-  const t=getTok(), el=$('authState');
-  if(t){ el.textContent='Token saved for this tab'; el.className='authstate ok'; }
-  else { el.textContent='No token saved'; el.className='authstate no'; }
 }
 
 let edFilter='all';
@@ -1368,7 +1456,7 @@ function edRows(){
         <button class="icobtn del" title="Delete" data-act="del">✕</button>
       </div>
       <div class="full"><input class="f-note" value="${esc(s.note||'')}" placeholder="Note (optional)"></div>
-      <div class="tentwrap"><label><input type="checkbox" class="f-tent" ${s.tentative?'checked':''}> tentative / placeholder plan</label></div>
+      <div class="tentwrap"><label><input type="checkbox" class="f-tent" ${s.tentative?'checked':''}> tentative</label></div>
     </div>`;
   }).join('') || `<div class="skel">No stops in this view.</div>`;
   // bind field edits
@@ -1448,44 +1536,46 @@ function syncTabs(){ $('tabAll').classList.toggle('on',edFilter==='all'); $('tab
 
 function openEditor(){
   EDIT=JSON.parse(JSON.stringify(DATA));
-  const c=ghCfg(); $('ghOwner').value=c.owner; $('ghRepo').value=c.repo; $('ghBranch').value=c.branch; $('ghPath').value=c.path;
-  $('pat').value=''; setAuthState(); edFilter='all'; syncTabs(); edRows(); edMsg('');
+  edFilter='all'; syncTabs(); edRows(); edMsg('');
+  refreshAuth();
   $('ovl').classList.add('open');
 }
 function closeEditor(){ $('ovl').classList.remove('open'); }
 
-// base64 for UTF-8
-const b64 = str => btoa(unescape(encodeURIComponent(str)));
-function tripJson(){ return JSON.stringify({meta:EDIT.meta, stops:EDIT.stops.map(s=>{const o={name:s.name,country:s.country,cc:s.cc,lat:s.lat,lon:s.lon,arrive:s.arrive,depart:s.depart};if(s.note)o.note=s.note;if(s.tentative)o.tentative=true;return o;})}, null, 2); }
+function tripPayload(){
+  return {
+    meta:EDIT.meta,
+    stops:EDIT.stops.map(s=>{
+      const o={name:s.name,country:s.country,cc:s.cc,lat:s.lat,lon:s.lon,arrive:s.arrive,depart:s.depart};
+      if(s.note)o.note=s.note;
+      if(s.tentative)o.tentative=true;
+      return o;
+    })
+  };
+}
+function tripJson(){ return JSON.stringify(tripPayload(), null, 2); }
 
 async function saveToGitHub(){
-  const tok=getTok();
-  if(!tok){ edMsg('Save a GitHub token first.','err'); return; }
-  saveCfg(); const c=ghCfg();
-  const api=`https://api.github.com/repos/${c.owner}/${c.repo}/contents/${c.path}`;
-  const H={'Authorization':'Bearer '+tok,'Accept':'application/vnd.github+json','X-GitHub-Api-Version':'2022-11-28'};
+  if(!AUTH_LOGIN){
+    edMsg('Sign in with GitHub first.','err');
+    return;
+  }
   $('saveGh').disabled=true; edMsg('Saving to GitHub…','busy');
   try{
-    // get current sha (if file exists)
-    let sha=undefined;
-    const g=await fetch(`${api}?ref=${encodeURIComponent(c.branch)}`,{headers:H});
-    if(g.status===200){ sha=(await g.json()).sha; }
-    else if(g.status===404){ /* new file */ }
-    else if(g.status===401){ throw new Error('Token rejected (401). Check the token is valid and not expired.'); }
-    else if(g.status===403){ throw new Error('Forbidden (403). Token needs Contents: Read and write on this repo.'); }
-    else if(g.status===404){ /*handled*/ }
-    const put=await fetch(api,{method:'PUT',headers:H,body:JSON.stringify({
-      message:`Update trip via editor (${new Date().toISOString().slice(0,16).replace('T',' ')})`,
-      content:b64(tripJson()), sha, branch:c.branch })});
-    if(put.status===200||put.status===201){
-      DATA=JSON.parse(JSON.stringify(EDIT)); renderAll();
-      edMsg('✓ Committed to '+c.owner+'/'+c.repo+'. GitHub Pages redeploys in ~1 min.','ok');
-    }else{
-      const e=await put.json().catch(()=>({}));
-      if(put.status===404) throw new Error('Repo or branch not found (404). Check owner/repo/branch and that the token can see this repo.');
-      if(put.status===409) throw new Error('Conflict (409) — the file changed on GitHub. Reopen the editor and try again.');
-      throw new Error((e&&e.message)||('PUT failed '+put.status));
+    const r=await fetch('/.netlify/functions/save-trips',{
+      method:'POST',
+      credentials:'same-origin',
+      headers:{'Content-Type':'application/json'},
+      body:JSON.stringify(tripPayload())
+    });
+    const j=await r.json().catch(()=>({}));
+    if(!r.ok || !j.ok){
+      if(r.status===401) throw new Error('Not signed in — use Sign in with GitHub.');
+      if(r.status===403) throw new Error('This GitHub account is not allowed to save.');
+      throw new Error(j.error || ('Save failed ('+r.status+')'));
     }
+    DATA=JSON.parse(JSON.stringify(EDIT)); renderAll();
+    edMsg('✓ Saved. Netlify will redeploy in about a minute.','ok');
   }catch(err){ edMsg('✕ '+err.message,'err'); }
   finally{ $('saveGh').disabled=false; }
 }
@@ -1500,8 +1590,8 @@ function downloadJson(){
 $('openEditor').onclick=openEditor;
 $('closeEditor').onclick=closeEditor;
 $('ovl').addEventListener('click',e=>{ if(e.target===$('ovl')) closeEditor(); });
-$('saveTok').onclick=()=>{ const v=$('pat').value.trim(); if(v){ setTok(v); $('pat').value=''; setAuthState(); edMsg('Token saved for this tab (clears when you close it).','ok'); } };
-$('clearTok').onclick=()=>{ setTok(''); setAuthState(); edMsg('Token cleared.',''); };
+$('ghLogin').onclick=()=>{ location.href='/.netlify/functions/auth-login'; };
+$('ghLogout').onclick=()=>{ location.href='/.netlify/functions/auth-logout'; };
 $('addStop').onclick=newStop;
 $('saveGh').onclick=saveToGitHub;
 $('applyLocal').onclick=()=>{ DATA=JSON.parse(JSON.stringify(EDIT)); renderAll(); edMsg('Previewing your edits on the map (not yet saved).','ok'); };
@@ -1511,6 +1601,10 @@ $('tabAll').onclick=()=>{edFilter='all';syncTabs();edRows();};
 $('tabPast').onclick=()=>{edFilter='past';syncTabs();edRows();};
 $('tabFut').onclick=()=>{edFilter='fut';syncTabs();edRows();};
 document.addEventListener('keydown',e=>{ if(e.key==='Escape' && $('ovl').classList.contains('open')) closeEditor(); });
+$('themeToggle').onclick=()=>{
+  applyTheme(themeName()==='dusk'?'day':'dusk');
+  if(TRIP) renderMap();
+};
 
 /* ============================================================
    BOOT
@@ -1524,7 +1618,13 @@ async function loadData(){
   $('localBanner').innerHTML='Showing bundled data (couldn’t fetch <b>trips.json</b> — normal when opening the file directly). Once deployed to GitHub Pages it loads live from trips.json, and the editor saves there.';
   return JSON.parse(JSON.stringify(FALLBACK));
 }
-(async()=>{ DATA=await loadData(); renderAll(); })();
+(async()=>{
+  initTheme();
+  DATA=await loadData();
+  renderAll();
+  await refreshAuth();
+  consumeAuthQuery();
+})();
 </script>
 </body>
 </html>
