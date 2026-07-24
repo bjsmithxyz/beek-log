@@ -60,7 +60,7 @@ Site → **Site configuration → Environment variables** (then trigger a redepl
 | `OAUTH_ALLOWED_USERS` | `bjsmithxyz` |
 | `GITHUB_REPO` | `bjsmithxyz/the-long-way-round` |
 | `GITHUB_BRANCH` | `main` |
-| `GITHUB_PATH` | `trips.json` |
+| `TRIPS_PATH` | `trips.json` (optional; this is the default) |
 | `SITE_URL` | `https://travel.bjsmith.xyz` |
 
 ### 5. Use the editor

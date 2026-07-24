@@ -24,7 +24,7 @@ function repoParts() {
     owner,
     repo,
     branch: env("GITHUB_BRANCH", "main"),
-    path: env("GITHUB_PATH", "trips.json"),
+    path: env("TRIPS_PATH", "trips.json"),
   };
 }
 
