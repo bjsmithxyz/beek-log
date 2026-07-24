@@ -3,7 +3,9 @@
 <head>
 <meta charset="UTF-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-<title>The Long Way Round — Brendan's Trip Tracker</title>
+<title>Long Way Round — Brendan's Trip Tracker</title>
+<link rel="icon" href="favicon.ico" sizes="any" />
+<link rel="icon" href="favicon.svg" type="image/svg+xml" />
 <link rel="preconnect" href="https://basemaps.cartocdn.com" />
 <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css"
       integrity="sha256-p4NxAoJBhIIN+hmNHrzRCf9tD/miZyoHS5obTRR9BMY=" crossorigin="" />
@@ -148,19 +150,21 @@
   .edtab.on{color:var(--txt);border-color:var(--accent);box-shadow:inset 0 0 0 1px var(--accent)}
 
   .rowlist{display:flex;flex-direction:column;gap:8px}
-  .erow{display:grid;grid-template-columns:22px 1.4fr .9fr 52px .9fr .9fr 1.1fr 1.1fr auto;gap:6px;align-items:center;background:var(--panel);border:1px solid var(--line);border-radius:10px;padding:8px}
-  .erow.isfut{border-left:3px solid var(--future)}
-  .erow.iscur{border-left:3px solid var(--good)}
-  .erow.ispast{border-left:3px solid var(--past)}
-  .erow input{width:100%;padding:6px 7px;font-size:12px}
+  .erow,.colhead{display:grid;grid-template-columns:28px minmax(0,1.6fr) minmax(0,1.2fr) minmax(0,1fr) minmax(0,1fr) 113px;gap:6px;align-items:center;border:1px solid transparent;border-left-width:3px;padding:8px;box-sizing:border-box}
+  .erow{background:var(--panel);border-color:var(--line);border-left-color:transparent;border-radius:10px;padding:8px}
+  .erow.isfut{border-left-color:var(--future)}
+  .erow.iscur{border-left-color:var(--good)}
+  .erow.ispast{border-left-color:var(--past)}
+  .erow input{width:100%;padding:6px 7px;font-size:12px;box-sizing:border-box}
   .erow .idx{color:var(--faint);font-size:11px;text-align:center}
   .erow .acts{display:flex;gap:3px}
   .icobtn{background:#0c1420;border:1px solid var(--line2);color:var(--muted);border-radius:6px;width:26px;height:28px;cursor:pointer;font-size:13px;padding:0}
   .icobtn:hover{color:var(--txt);border-color:var(--accent)}
   .icobtn.del:hover{color:var(--bad);border-color:var(--bad)}
-  .erow .full{grid-column:2/8}
-  .colhead{display:grid;grid-template-columns:22px 1.4fr .9fr 52px .9fr .9fr 1.1fr 1.1fr auto;gap:6px;font-size:10px;text-transform:uppercase;letter-spacing:.05em;color:var(--faint);padding:0 8px 4px}
-  .tentwrap{display:flex;align-items:center;gap:5px;font-size:11px;color:var(--muted);margin-top:6px}
+  .erow .full,.erow .tentwrap{grid-column:2 / -1}
+  .colhead{font-size:10px;text-transform:uppercase;letter-spacing:.05em;color:var(--faint);padding-top:0;padding-bottom:4px}
+  .colhead > span{min-width:0}
+  .tentwrap{display:flex;align-items:center;gap:5px;font-size:11px;color:var(--muted);margin-top:2px}
 
   .mfoot{position:sticky;bottom:0;background:var(--bg2);border-top:1px solid var(--line);padding:14px 22px;display:flex;gap:10px;align-items:center;flex-wrap:wrap}
   .mfoot .msg{font-size:13px;margin-left:auto}
@@ -176,9 +180,8 @@
     .tlrow .when{padding-right:16px}
     .tlmore{margin-left:96px}
     .editbtn{position:static;display:inline-flex;margin-top:14px}
-    .erow,.colhead{grid-template-columns:20px 1fr 1fr auto}
-    .erow .hidesm,.colhead .hidesm{display:none}
-    .erow .full{grid-column:2/4}
+    .erow,.colhead{grid-template-columns:24px minmax(0,1fr) minmax(0,1fr) minmax(0,.95fr) minmax(0,.95fr) 113px}
+    .erow .full,.erow .tentwrap{grid-column:2 / -1}
   }
 </style>
 </head>
@@ -186,7 +189,7 @@
 <div class="wrap">
   <header class="hero">
     <div class="eyebrow" id="eyebrow">Round-the-world · 2025 → 2026</div>
-    <h1 id="title">The Long Way <span class="grad">Round</span></h1>
+    <h1 id="title">Long Way <span class="grad">Round</span></h1>
     <p class="sub" id="subtitle"></p>
     <div class="nowline"><span class="pulse"></span> <span id="nowline">Loading the journey…</span></div>
     <button class="editbtn" id="openEditor">✎ Edit trip</button>
@@ -257,7 +260,7 @@
           <label>Branch<input id="ghBranch" size="8"></label>
           <label>Path<input id="ghPath" size="10"></label>
         </div>
-        <div class="hint">Token is stored only in this browser (localStorage) and sent straight to api.github.com. Create one at
+        <div class="hint">Token is kept in <b>sessionStorage</b> for this tab only (cleared when the tab closes) and sent straight to api.github.com. Create one at
           <a href="https://github.com/settings/tokens?type=beta" target="_blank" rel="noopener">github.com/settings/tokens</a> →
           fine-grained → repo access: <b>the-long-way-round</b> → permissions: <b>Contents: Read and write</b>.</div>
       </div>
@@ -268,11 +271,11 @@
         <button class="edtab" id="tabFut">Planned</button>
       </div>
 
-      <div class="hint" style="margin:-2px 0 10px">✦ Type a <b>place</b> (and country to disambiguate) and the country code, latitude &amp; longitude fill in automatically. Hit <b>⌖</b> to re-locate, or edit any field by hand.</div>
+      <div class="hint" style="margin:-2px 0 10px">✦ Type a <b>place</b> (and country to disambiguate) — coordinates &amp; country code fill in automatically. Hit <b>⌖</b> to re-locate.</div>
 
       <div class="colhead">
-        <span></span><span>Place</span><span>Country</span><span>CC</span>
-        <span class="hidesm">Lat</span><span class="hidesm">Lon</span><span>Arrive</span><span>Depart</span><span></span>
+        <span></span><span>Place</span><span>Country</span>
+        <span>Arrive</span><span>Depart</span><span></span>
       </div>
       <div class="rowlist" id="rowlist"></div>
       <button class="btn ghost" id="addStop" style="margin-top:12px">+ Add stop</button>
@@ -296,7 +299,7 @@
 const GH_DEFAULT = { owner:"bjsmithxyz", repo:"the-long-way-round", branch:"main", path:"trips.json" };
 const FALLBACK = {
   "meta": {
-    "title": "The Long Way Round",
+    "title": "Long Way Round",
     "subtitle": "A live map of where I have been and where I am headed next — with running trip stats and seasonal weather to help plan the road ahead.",
     "eyebrow": "Round-the-world · 2025 → 2026"
   },
@@ -1115,6 +1118,8 @@ const fmtDate = d => parse(d).toLocaleDateString('en-US',{month:'short',day:'num
 const fmtDateY = d => parse(d).toLocaleDateString('en-US',{month:'short',day:'numeric',year:'numeric'});
 const flag = cc => (cc||"").toUpperCase().replace(/[^A-Z]/g,'').replace(/./g,c=>String.fromCodePoint(127397+c.charCodeAt(0)));
 const esc = s => (s||"").replace(/[&<>"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));
+const ISO_DATE = /^\d{4}-\d{2}-\d{2}$/;
+const safeDate = v => ISO_DATE.test(v||'') ? v : '';
 
 function statusOf(s){
   const a=parse(s.arrive), d=parse(s.depart);
@@ -1132,7 +1137,7 @@ function haversine(a,b){
   return 2*R*Math.asin(Math.sqrt(h));
 }
 const distFromPrev = idx => idx<=0 ? 0 : haversine(TRIP[idx-1],TRIP[idx]);
-const continentOf = cc => ({TH:'Asia',VN:'Asia',CN:'Asia',HK:'Asia',TW:'Asia',KG:'Asia',KZ:'Asia',UZ:'Asia',TJ:'Asia',KR:'Asia',JP:'Asia',US:'N. America',MX:'N. America',GT:'N. America',CA:'N. America',CO:'S. America',PE:'S. America',BO:'S. America',CL:'S. America',AR:'S. America',BR:'S. America',FR:'Europe',NL:'Europe',DE:'Europe',CZ:'Europe',AT:'Europe',HU:'Europe',SI:'Europe',HR:'Europe',IT:'Europe',ES:'Europe',PT:'Europe',GB:'Europe',GR:'Europe'}[cc]||'—');
+const continentOf = cc => ({TH:'Asia',VN:'Asia',CN:'Asia',HK:'Asia',TW:'Asia',KG:'Asia',KZ:'Asia',UZ:'Asia',TJ:'Asia',KR:'Asia',JP:'Asia',TR:'Asia',SY:'Asia',IQ:'Asia',GE:'Asia',AM:'Asia',US:'N. America',MX:'N. America',GT:'N. America',CA:'N. America',CO:'S. America',PE:'S. America',BO:'S. America',CL:'S. America',AR:'S. America',BR:'S. America',FR:'Europe',NL:'Europe',DE:'Europe',DK:'Europe',SE:'Europe',FI:'Europe',EE:'Europe',LV:'Europe',LT:'Europe',PL:'Europe',CZ:'Europe',SK:'Europe',AT:'Europe',HU:'Europe',BA:'Europe',MK:'Europe',BG:'Europe',SI:'Europe',HR:'Europe',IT:'Europe',ES:'Europe',PT:'Europe',GB:'Europe',GR:'Europe'}[cc]||'—');
 
 /* ============================================================
    RENDER
@@ -1311,10 +1316,24 @@ function renderAll(){
 const LS_TOK='tlwr_gh_pat', LS_CFG='tlwr_gh_cfg';
 function ghCfg(){ try{return {...GH_DEFAULT, ...(JSON.parse(localStorage.getItem(LS_CFG)||'{}'))};}catch(e){return {...GH_DEFAULT};} }
 function saveCfg(){ localStorage.setItem(LS_CFG, JSON.stringify({owner:$('ghOwner').value.trim(),repo:$('ghRepo').value.trim(),branch:$('ghBranch').value.trim()||'main',path:$('ghPath').value.trim()||'trips.json'})); }
-function getTok(){ return localStorage.getItem(LS_TOK)||''; }
+function getTok(){
+  // sessionStorage only — migrate any legacy localStorage token once, then wipe it
+  let t=sessionStorage.getItem(LS_TOK)||'';
+  const legacy=localStorage.getItem(LS_TOK);
+  if(legacy){
+    if(!t){ t=legacy; sessionStorage.setItem(LS_TOK,t); }
+    localStorage.removeItem(LS_TOK);
+  }
+  return t;
+}
+function setTok(v){
+  if(v) sessionStorage.setItem(LS_TOK,v);
+  else sessionStorage.removeItem(LS_TOK);
+  localStorage.removeItem(LS_TOK);
+}
 function setAuthState(){
   const t=getTok(), el=$('authState');
-  if(t){ el.textContent='Token saved in this browser'; el.className='authstate ok'; }
+  if(t){ el.textContent='Token saved for this tab'; el.className='authstate ok'; }
   else { el.textContent='No token saved'; el.className='authstate no'; }
 }
 
@@ -1330,11 +1349,8 @@ function edRows(){
       <div class="idx">${i+1}</div>
       <input class="f-name" value="${esc(s.name)}" placeholder="City">
       <input class="f-country" value="${esc(s.country)}" placeholder="Country">
-      <input class="f-cc" value="${esc(s.cc)}" placeholder="CC" maxlength="2" style="text-transform:uppercase">
-      <input class="f-lat hidesm" value="${s.lat}" placeholder="lat" inputmode="decimal">
-      <input class="f-lon hidesm" value="${s.lon}" placeholder="lon" inputmode="decimal">
-      <input class="f-arrive" type="date" value="${s.arrive}">
-      <input class="f-depart" type="date" value="${s.depart}">
+      <input class="f-arrive" type="date" value="${safeDate(s.arrive)}">
+      <input class="f-depart" type="date" value="${safeDate(s.depart)}">
       <div class="acts">
         <button class="icobtn" title="Look up coordinates" data-act="geo">⌖</button>
         <button class="icobtn" title="Move up" data-act="up">↑</button>
@@ -1348,15 +1364,20 @@ function edRows(){
   // bind field edits
   list.querySelectorAll('.erow').forEach(row=>{
     const i=+row.dataset.i, s=EDIT.stops[i];
-    const bind=(sel,key,num)=>{const el=row.querySelector(sel); if(el) el.onchange=()=>{ s[key]= num? parseFloat(el.value) : el.value; };};
+    const bindDate=(sel,key)=>{
+      const el=row.querySelector(sel); if(!el) return;
+      el.onchange=()=>{
+        const v=safeDate(el.value);
+        if(v){ s[key]=v; el.value=v; }
+        else { el.value=safeDate(s[key]); }
+      };
+    };
     // Name / country auto-locate: fill CC, lat, lon from the place (country disambiguates).
     const nameEl=row.querySelector('.f-name');
     nameEl.onchange=async()=>{ s.name=nameEl.value; await geocodeRow(i,row); };
     const cnEl=row.querySelector('.f-country');
     cnEl.onchange=async()=>{ s.country=cnEl.value; await geocodeRow(i,row); };
-    row.querySelector('.f-cc').onchange=e=>{s.cc=e.target.value.toUpperCase().slice(0,2); s._ccManual=true;};
-    bind('.f-lat','lat',true); bind('.f-lon','lon',true);
-    bind('.f-arrive','arrive'); bind('.f-depart','depart');
+    bindDate('.f-arrive','arrive'); bindDate('.f-depart','depart');
     const note=row.querySelector('.f-note'); note.onchange=()=>{const v=note.value.trim(); if(v)s.note=v; else delete s.note;};
     const tent=row.querySelector('.f-tent'); tent.onchange=()=>{ if(tent.checked)s.tentative=true; else delete s.tentative; };
     row.querySelectorAll('[data-act]').forEach(b=>b.onclick=()=>rowAction(b.dataset.act,i));
@@ -1385,7 +1406,7 @@ async function geocodeRow(i,row,opts={}){
     const r=await fetch(`https://geocoding-api.open-meteo.com/v1/search?name=${encodeURIComponent(name)}&count=10&language=en&format=json`);
     const j=await r.json();
     const results=j.results||[];
-    if(!results.length){ edMsg('No match for “'+name+'” — set lat/lon by hand.','err'); return; }
+    if(!results.length){ edMsg('No match for “'+name+'” — try a clearer place name or add a country.','err'); return; }
     const want=(s.country||'').trim().toLowerCase();
     let hit=results[0];
     if(want){
@@ -1394,12 +1415,10 @@ async function geocodeRow(i,row,opts={}){
     }
     s.lat=+hit.latitude.toFixed(4);
     s.lon=+hit.longitude.toFixed(4);
-    if(hit.country_code && (!s._ccManual || opts.force)){ s.cc=hit.country_code.toUpperCase(); s._ccManual=false; }
+    if(hit.country_code) s.cc=hit.country_code.toUpperCase();
     if(!s.country && hit.country) s.country=hit.country;
     if(row){
-      const set=(sel,v)=>{const el=row.querySelector(sel); if(el) el.value=v;};
-      set('.f-lat',s.lat); set('.f-lon',s.lon); set('.f-cc',s.cc);
-      const cEl=row.querySelector('.f-country'); if(cEl && !cEl.value) cEl.value=s.country;
+      const cEl=row.querySelector('.f-country'); if(cEl && !cEl.value && s.country) cEl.value=s.country;
     }
     const where=[hit.name, hit.admin1, hit.country].filter(Boolean).join(', ');
     edMsg('✓ '+where+'  ·  '+s.lat+', '+s.lon,'ok');
@@ -1471,8 +1490,8 @@ function downloadJson(){
 $('openEditor').onclick=openEditor;
 $('closeEditor').onclick=closeEditor;
 $('ovl').addEventListener('click',e=>{ if(e.target===$('ovl')) closeEditor(); });
-$('saveTok').onclick=()=>{ const v=$('pat').value.trim(); if(v){ localStorage.setItem(LS_TOK,v); $('pat').value=''; setAuthState(); edMsg('Token saved locally.','ok'); } };
-$('clearTok').onclick=()=>{ localStorage.removeItem(LS_TOK); setAuthState(); edMsg('Token cleared.',''); };
+$('saveTok').onclick=()=>{ const v=$('pat').value.trim(); if(v){ setTok(v); $('pat').value=''; setAuthState(); edMsg('Token saved for this tab (clears when you close it).','ok'); } };
+$('clearTok').onclick=()=>{ setTok(''); setAuthState(); edMsg('Token cleared.',''); };
 $('addStop').onclick=newStop;
 $('saveGh').onclick=saveToGitHub;
 $('applyLocal').onclick=()=>{ DATA=JSON.parse(JSON.stringify(EDIT)); renderAll(); edMsg('Previewing your edits on the map (not yet saved).','ok'); };
