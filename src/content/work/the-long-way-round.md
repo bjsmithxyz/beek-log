@@ -10,7 +10,7 @@ tags:
   - web-app
   - static-site
 liveUrl: "https://travel.bjsmith.xyz"
-repoUrl: "https://github.com/bjsmithxyz/the-long-way-round"
+repoUrl: "https://github.com/bjsmithxyz/long-way-round"
 ---
 
 Long Way Round is an interactive record of my journey, it plots every stop on a map, tracks the route and running trip statistics, and lays the full itinerary out as a timeline.
