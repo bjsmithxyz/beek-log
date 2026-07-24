@@ -1,11 +1,21 @@
-const { readSession, repoParts, json, allowedUsers } = require("./_shared");
+const { readSession, repoParts, json, allowedUsers, isSameOrigin } = require("./_shared");
+const { validateTrip } = require("../../trip-validation");
+
+const MAX_BODY_BYTES = 256 * 1024;
 
 exports.handler = async (event) => {
   if (event.httpMethod === "OPTIONS") {
     return { statusCode: 204, body: "" };
   }
-  if (event.httpMethod !== "POST" && event.httpMethod !== "PUT") {
-    return json(405, { ok: false, error: "Method not allowed" });
+  if (event.httpMethod !== "POST") {
+    return json(405, { ok: false, error: "Method not allowed" }, { Allow: "POST" });
+  }
+  if (!isSameOrigin(event)) {
+    return json(403, { ok: false, error: "Cross-origin requests are not allowed" });
+  }
+  const contentType = event.headers["content-type"] || event.headers["Content-Type"] || "";
+  if (!contentType.toLowerCase().startsWith("application/json")) {
+    return json(415, { ok: false, error: "Content-Type must be application/json" });
   }
 
   const session = readSession(event);
@@ -14,14 +24,20 @@ exports.handler = async (event) => {
     return json(403, { ok: false, error: "Not allowed to save" });
   }
 
+  const rawBody = event.body || "";
+  if (Buffer.byteLength(rawBody, "utf8") > MAX_BODY_BYTES) {
+    return json(413, { ok: false, error: "Trip data is too large" });
+  }
+
   let body;
   try {
-    body = JSON.parse(event.body || "{}");
+    body = JSON.parse(rawBody || "{}");
   } catch {
     return json(400, { ok: false, error: "Invalid JSON body" });
   }
-  if (!body || !Array.isArray(body.stops) || !body.meta) {
-    return json(400, { ok: false, error: "Body must be trips.json shape with meta + stops" });
+  const errors = validateTrip(body);
+  if (errors.length) {
+    return json(400, { ok: false, error: errors[0], errors });
   }
 
   const { owner, repo, branch, path } = repoParts();

@@ -1,7 +1,10 @@
 const crypto = require("crypto");
-const { env, siteUrl, setCookie, STATE_COOKIE, redirect } = require("./_shared");
+const { env, siteUrl, setCookie, STATE_COOKIE, redirect, json } = require("./_shared");
 
-exports.handler = async () => {
+exports.handler = async (event) => {
+  if (event.httpMethod !== "GET") {
+    return json(405, { ok: false, error: "Method not allowed" }, { Allow: "GET" });
+  }
   try {
     const clientId = env("GITHUB_CLIENT_ID");
     const state = crypto.randomBytes(16).toString("hex");

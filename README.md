@@ -4,8 +4,9 @@
 
 An interactive map of my travels, running trip stats, and a planning panel with **live seasonal weather + daylight** for each upcoming stop. Edit in the browser after **Sign in with GitHub** (no personal access token).
 
-- `index.html` — the whole app (map, stats, timeline, editor). No build step, no framework.
+- `index.html` — the page structure; `styles.css` and `app.js` contain the presentation and browser logic. No build step or framework.
 - `trips.json` — the data. Every stop lives here; the site loads it and the editor writes to it.
+- `trip-validation.js` — shared browser/server validation for trip edits.
 - `netlify/functions/` — GitHub OAuth + authenticated save of `trips.json`.
 
 ## Data model (`trips.json`)
@@ -28,7 +29,7 @@ Past / current / upcoming is derived automatically from today's date. Route line
 
 ### 1. Import the repo
 1. Log in at [app.netlify.com](https://app.netlify.com) with GitHub.
-2. **Add new site → Import an existing project** → pick `bjsmithxyz/the-long-way-round`.
+2. **Add new site → Import an existing project** → pick `bjsmithxyz/long-way-round`.
 3. Build settings: leave **build command empty**, publish directory `.` (site root). Deploy.
 4. Note your default URL: `https://<name>.netlify.app`.
 
@@ -58,7 +59,7 @@ Site → **Site configuration → Environment variables** (then trigger a redepl
 | `GITHUB_CLIENT_SECRET` | from the OAuth app |
 | `SESSION_SECRET` | long random string (e.g. `openssl rand -hex 32`) |
 | `OAUTH_ALLOWED_USERS` | `bjsmithxyz` |
-| `GITHUB_REPO` | `bjsmithxyz/the-long-way-round` |
+| `GITHUB_REPO` | `bjsmithxyz/long-way-round` |
 | `GITHUB_BRANCH` | `main` |
 | `TRIPS_PATH` | `trips.json` (optional; this is the default) |
 | `SITE_URL` | `https://travel.bjsmith.xyz` |
@@ -69,11 +70,27 @@ Site → **Site configuration → Environment variables** (then trigger a redepl
 
 **Download trips.json** still works without signing in (manual commit).
 
-### Local functions (optional)
+### Local development
+
+Serve the directory over HTTP so the browser can load `trips.json`:
+
+```bash
+python3 -m http.server 8000
+```
+
+For local Netlify functions and OAuth instead, run:
+
 ```bash
 npx netlify dev
 ```
+
 Add a second OAuth callback `http://localhost:8888/.netlify/functions/auth-callback` on the OAuth app (or a separate OAuth app for local), and set `SITE_URL=http://localhost:8888` in a local `.env`.
+
+Run the data-validation tests with:
+
+```bash
+node --test
+```
 
 ---
 

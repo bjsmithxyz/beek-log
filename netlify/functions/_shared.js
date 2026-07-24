@@ -18,7 +18,7 @@ function siteUrl() {
 }
 
 function repoParts() {
-  const full = env("GITHUB_REPO", "bjsmithxyz/the-long-way-round");
+  const full = env("GITHUB_REPO", "bjsmithxyz/long-way-round");
   const [owner, repo] = full.split("/");
   return {
     owner,
@@ -36,6 +36,9 @@ function allowedUsers() {
 }
 
 function keyFromSecret(secret) {
+  if (typeof secret !== "string" || Buffer.byteLength(secret, "utf8") < 32) {
+    throw new Error("SESSION_SECRET must be at least 32 bytes");
+  }
   return crypto.createHash("sha256").update(secret).digest();
 }
 
@@ -69,7 +72,11 @@ function parseCookies(header) {
     if (i < 0) continue;
     const k = part.slice(0, i).trim();
     const v = part.slice(i + 1).trim();
-    out[k] = decodeURIComponent(v);
+    try {
+      out[k] = decodeURIComponent(v);
+    } catch {
+      // Ignore malformed cookie values rather than failing the whole request.
+    }
   }
   return out;
 }
@@ -87,6 +94,17 @@ function setCookie(name, value, maxAge) {
 
 function clearCookie(name) {
   return `${name}=; Path=/; HttpOnly; SameSite=Lax; Max-Age=0`;
+}
+
+function isSameOrigin(event) {
+  const headers = event.headers || {};
+  const origin = headers.origin || headers.Origin;
+  if (!origin) return false;
+  try {
+    return new URL(origin).origin === new URL(siteUrl()).origin;
+  } catch {
+    return false;
+  }
 }
 
 function readSession(event) {
@@ -146,6 +164,7 @@ module.exports = {
   parseCookies,
   setCookie,
   clearCookie,
+  isSameOrigin,
   readSession,
   sessionCookie,
   json,
