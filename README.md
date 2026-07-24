@@ -1,6 +1,6 @@
 # Long Way Round
 
-**Live:** [travel.bjsmith.xyz](https://travel.bjsmith.xyz) (Netlify) · [GitHub Pages mirror](https://bjsmithxyz.github.io/the-long-way-round/)
+**Live:** [travel.bjsmith.xyz](https://travel.bjsmith.xyz)
 
 An interactive map of my travels, running trip stats, and a planning panel with **live seasonal weather + daylight** for each upcoming stop. Edit in the browser after **Sign in with GitHub** (no personal access token).
 
