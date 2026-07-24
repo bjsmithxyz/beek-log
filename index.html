@@ -34,7 +34,6 @@
   .wrap{max-width:1200px;margin:0 auto;padding:0 20px}
 
   header.hero{padding:46px 0 10px;position:relative}
-  .eyebrow{letter-spacing:.28em;text-transform:uppercase;font-size:12px;color:var(--accent);font-weight:600;margin-bottom:10px}
   h1{font-size:clamp(30px,5vw,52px);line-height:1.02;margin:0 0 8px;font-weight:800;letter-spacing:-.02em}
   h1 .grad{background:linear-gradient(100deg,var(--accent),var(--accent2));-webkit-background-clip:text;background-clip:text;color:transparent}
   .sub{color:var(--muted);font-size:16px;max-width:640px}
@@ -188,7 +187,6 @@
 <body>
 <div class="wrap">
   <header class="hero">
-    <div class="eyebrow" id="eyebrow">Round-the-world · 2025 → 2026</div>
     <h1 id="title">Long Way <span class="grad">Round</span></h1>
     <p class="sub" id="subtitle"></p>
     <div class="nowline"><span class="pulse"></span> <span id="nowline">Loading the journey…</span></div>
@@ -300,8 +298,7 @@ const GH_DEFAULT = { owner:"bjsmithxyz", repo:"the-long-way-round", branch:"main
 const FALLBACK = {
   "meta": {
     "title": "Long Way Round",
-    "subtitle": "A live map of where I have been and where I am headed next — with running trip stats and seasonal weather to help plan the road ahead.",
-    "eyebrow": "Round-the-world · 2025 → 2026"
+    "subtitle": "A map of where I've been and where I'm going next."
   },
   "stops": [
     {
@@ -1144,7 +1141,6 @@ const continentOf = cc => ({TH:'Asia',VN:'Asia',CN:'Asia',HK:'Asia',TW:'Asia',KG
    ============================================================ */
 function renderHeader(){
   const m=DATA.meta||{};
-  if(m.eyebrow) $('eyebrow').textContent=m.eyebrow;
   if(m.subtitle) $('subtitle').textContent=m.subtitle;
 }
 function renderStats(){

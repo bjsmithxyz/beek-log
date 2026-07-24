@@ -8,7 +8,7 @@ An interactive map of my tavels, running trip stats, and a planning panel with *
 ## Data model (`trips.json`)
 ```json
 {
-  "meta": { "title": "...", "subtitle": "...", "eyebrow": "..." },
+  "meta": { "title": "...", "subtitle": "..." },
   "stops": [
     { "name":"Amsterdam", "country":"Netherlands", "cc":"NL",
       "lat":52.3676, "lon":4.9041,
