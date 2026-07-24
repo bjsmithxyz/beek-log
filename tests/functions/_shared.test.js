@@ -1,6 +1,6 @@
 const test = require("node:test");
 const assert = require("node:assert/strict");
-const { isSameOrigin, parseCookies, seal, unseal } = require("./_shared");
+const { isSameOrigin, parseCookies, seal, unseal } = require("../../netlify/functions/_shared");
 
 test("same-origin checks use the configured site origin", () => {
   const previous = process.env.SITE_URL;

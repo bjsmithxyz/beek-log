@@ -1,6 +1,6 @@
 const test = require("node:test");
 const assert = require("node:assert/strict");
-const { handler } = require("./save-trips");
+const { handler } = require("../../netlify/functions/save-trips");
 
 test("save endpoint only accepts POST", async () => {
   const response = await handler({ httpMethod: "GET", headers: {} });
