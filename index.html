@@ -88,7 +88,7 @@
   section{margin:42px 0}
   .sec-head{display:flex;align-items:baseline;justify-content:space-between;margin-bottom:14px;gap:12px;flex-wrap:wrap}
   .sec-head h2{font-family:var(--display);font-size:26px;margin:0;font-weight:700;letter-spacing:-.02em}
-  .sec-head p{margin:0;color:var(--faint);font-size:13px;max-width:48ch}
+  .sec-head p{margin:0;color:var(--faint);font-size:13px}
 
   #map{height:540px;border-radius:var(--r);border:1px solid var(--line2);box-shadow:var(--shadow);z-index:0;animation:rise .75s .18s ease both}
   .leaflet-container{background:var(--bg);font-family:var(--font)}
@@ -184,7 +184,7 @@
   .edtab.on{color:var(--txt);border-color:var(--txt);background:var(--panel)}
 
   .rowlist{display:flex;flex-direction:column;gap:8px}
-  .erow,.colhead{display:grid;grid-template-columns:28px minmax(0,1.6fr) minmax(0,1.2fr) minmax(0,1fr) minmax(0,1fr) 113px;gap:6px;align-items:center;border:1px solid transparent;border-left-width:3px;padding:8px;box-sizing:border-box}
+  .erow,.colhead{display:grid;grid-template-columns:28px minmax(0,1.6fr) minmax(0,1.2fr) minmax(0,1fr) minmax(0,1fr) 142px;gap:6px;align-items:center;border:1px solid transparent;border-left-width:3px;padding:8px;box-sizing:border-box}
   .erow{background:var(--panel);border-color:var(--line);border-left-color:transparent;border-radius:var(--r);padding:8px}
   .erow.isfut{border-left-color:var(--future)}
   .erow.iscur{border-left-color:var(--good)}
@@ -220,7 +220,7 @@
     .tlmore{margin-left:96px}
     .editbtn{position:static;display:inline-flex;margin-top:0}
     .hero-actions{position:static;margin-top:14px;flex-wrap:wrap}
-    .erow,.colhead{grid-template-columns:24px minmax(0,1fr) minmax(0,1fr) minmax(0,.95fr) minmax(0,.95fr) 113px}
+    .erow,.colhead{grid-template-columns:24px minmax(0,1fr) minmax(0,1fr) minmax(0,.95fr) minmax(0,.95fr) 142px}
     .erow .full,.erow .tentwrap{grid-column:2 / -1}
   }
   @media(max-width:420px){
@@ -1451,6 +1451,7 @@ function edRows(){
       <input class="f-depart" type="date" value="${safeDate(s.depart)}">
       <div class="acts">
         <button class="icobtn" title="Look up coordinates" data-act="geo">⌖</button>
+        <button class="icobtn" title="Insert stop below" data-act="ins">+</button>
         <button class="icobtn" title="Move up" data-act="up">↑</button>
         <button class="icobtn" title="Move down" data-act="down">↓</button>
         <button class="icobtn del" title="Delete" data-act="del">✕</button>
@@ -1485,6 +1486,7 @@ async function rowAction(act,i){
   if(act==='del'){ if(confirm('Delete '+EDIT.stops[i].name+'?')){ EDIT.stops.splice(i,1); edRows(); } return; }
   if(act==='up' && i>0){ [EDIT.stops[i-1],EDIT.stops[i]]=[EDIT.stops[i],EDIT.stops[i-1]]; edRows(); return; }
   if(act==='down' && i<EDIT.stops.length-1){ [EDIT.stops[i+1],EDIT.stops[i]]=[EDIT.stops[i],EDIT.stops[i+1]]; edRows(); return; }
+  if(act==='ins'){ insertStopAfter(i); return; }
   if(act==='geo'){
     const row=$('rowlist').querySelector('.erow[data-i="'+i+'"]');
     await geocodeRow(i,row,{force:true});
@@ -1522,12 +1524,35 @@ async function geocodeRow(i,row,opts={}){
     edMsg('✓ '+where+'  ·  '+s.lat+', '+s.lon,'ok');
   }catch(e){ edMsg('Location lookup failed — check your connection.','err'); }
 }
+function blankStop(arrive,depart){
+  return {name:"",country:"",cc:"",lat:0,lon:0,arrive,depart,tentative:true};
+}
+function insertStopAfter(i){
+  const cur=EDIT.stops[i];
+  const next=EDIT.stops[i+1];
+  const iso=x=>x.toISOString().slice(0,10);
+  const a=cur?.depart?parse(cur.depart):(cur?.arrive?parse(cur.arrive):TODAY);
+  let d;
+  if(next?.arrive){
+    const end=parse(next.arrive);
+    const gapDays=Math.floor((end-a)/DAY);
+    d=gapDays>=2 ? new Date(a.getTime()+Math.floor(gapDays/2)*DAY) : new Date(a.getTime()+DAY);
+  }else{
+    d=new Date(a.getTime()+2*DAY);
+  }
+  EDIT.stops.splice(i+1,0,blankStop(iso(a),iso(d)));
+  edFilter='all'; syncTabs(); edRows();
+  const row=$('rowlist').querySelector('.erow[data-i="'+(i+1)+'"]');
+  row?.scrollIntoView({behavior:'smooth',block:'center'});
+  row?.querySelector('.f-name')?.focus();
+  edMsg('Inserted a stop below #'+(i+1)+'. Fill place/country to locate it.','ok');
+}
 function newStop(){
   const last=EDIT.stops[EDIT.stops.length-1];
   const base=last?parse(last.depart):TODAY;
   const a=new Date(base.getTime()); const d=new Date(base.getTime()+3*DAY);
   const iso=x=>x.toISOString().slice(0,10);
-  EDIT.stops.push({name:"",country:"",cc:"",lat:0,lon:0,arrive:iso(a),depart:iso(d),tentative:true});
+  EDIT.stops.push(blankStop(iso(a),iso(d)));
   edFilter='all'; syncTabs(); edRows();
   $('rowlist').lastElementChild?.scrollIntoView({behavior:'smooth',block:'center'});
 }
@@ -1575,7 +1600,7 @@ async function saveToGitHub(){
       throw new Error(j.error || ('Save failed ('+r.status+')'));
     }
     DATA=JSON.parse(JSON.stringify(EDIT)); renderAll();
-    edMsg('✓ Saved. Netlify will redeploy in about a minute.','ok');
+    edMsg('✓ Saved. Redeploy will be complete in about a minute.','ok');
   }catch(err){ edMsg('✕ '+err.message,'err'); }
   finally{ $('saveGh').disabled=false; }
 }
