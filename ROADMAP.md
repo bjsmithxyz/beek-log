@@ -15,7 +15,7 @@ The implementation brief remains the detailed source of acceptance criteria:
 | 0 — repository foundation | Complete | Travel history imported; npm workspaces and pure `shared/` modules established |
 | 1 — public travel route | Complete | Static `/travel/` live; legacy subdomain redirects with path/query preservation |
 | 2 — admin shell and authentication | Complete | SSR admin live with GitHub App OAuth, owner allow-list, sealed sessions and public header link |
-| 3 — travel publishing | Next | Generic branch/PR publisher and responsive travel editor |
+| 3 — travel publishing | In progress — live acceptance | Publisher and responsive editor are deployed; real preview/merge and phone checks remain |
 | 4 — roll publishing | Planned | Desktop uploader/editor using the generic publisher |
 | 5 — retirement and operations | Planned | Remove localhost publisher only after a real hosted roll succeeds |
 | 6 — image-storage migration spec | Planned, specification only | Design future object-storage migration; do not implement it here |
@@ -58,62 +58,62 @@ merge workflow with small, known-good JSON before the image pipeline is added.
 
 ### 3.1 Generic publishing boundary
 
-- [ ] Define a declarative operation schema supporting atomic creates, updates
+- [x] Define a declarative operation schema supporting atomic creates, updates
   and deletions in one request.
-- [ ] Reject unknown fields, duplicate paths, malformed base SHAs, invalid UTF-8
+- [x] Reject unknown fields, duplicate paths, malformed base SHAs, invalid UTF-8
   text payloads and oversized requests.
-- [ ] Allow only explicitly configured repository namespaces. Never accept an
+- [x] Allow only explicitly configured repository namespaces. Never accept an
   arbitrary client-supplied path.
-- [ ] For updates/deletes, require the expected blob SHA and fail closed on a
+- [x] For updates/deletes, require the expected blob SHA and fail closed on a
   stale editor; for creates, require non-existence unless overwrite is an
   explicit server-approved operation.
-- [ ] Preserve request-guard order on every mutation endpoint: method → JSON
+- [x] Preserve request-guard order on every mutation endpoint: method → JSON
   content type → same origin → session/allow-list → schema → path policy →
   GitHub side effects.
-- [ ] Build one Git tree and one commit for the complete operation set so a
+- [x] Build one Git tree and one commit for the complete operation set so a
   partial failure cannot alter `main`.
-- [ ] Create a unique publishing branch from the current `main` SHA. Never
+- [x] Create a unique publishing branch from the current `main` SHA. Never
   update `refs/heads/main`.
-- [ ] Open a pull request attributed to the authenticated owner.
-- [ ] Poll GitHub/Netlify checks and surface the working Deploy Preview URL,
-  pending state and safe failure details in the admin.
-- [ ] Implement merge as a separate authenticated, same-origin action after the
+- [x] Open a pull request attributed to the authenticated owner.
+- [x] Poll the deterministic Netlify preview URL and surface its ready, pending
+  or timed-out/failed state in the admin without broadening GitHub App permissions.
+- [x] Implement merge as a separate authenticated, same-origin action after the
   owner reviews the preview.
-- [ ] Implement abandon as PR close plus best-effort branch deletion.
-- [ ] Make retries idempotent or return an explicit conflict without creating
-  duplicate PRs.
-- [ ] Never log access tokens, refresh tokens, cookies, secrets, complete image
+- [x] Implement abandon as PR close plus best-effort branch deletion.
+- [x] Resume a retry with the same request ID or return an explicit conflict
+  without creating duplicate PRs.
+- [x] Never log access tokens, refresh tokens, cookies, secrets, complete image
   payloads or authorization headers.
 
 ### 3.2 Publisher tests
 
-- [ ] Unit-test tree construction, path normalization, duplicate detection,
+- [x] Unit-test tree construction, path normalization, duplicate detection,
   overwrite guards and create/update/delete combinations.
-- [ ] Mock the GitHub API and verify that validation failures cause zero remote
+- [x] Mock the GitHub API and verify that validation failures cause zero remote
   writes.
 - [ ] Verify stale SHAs, branch collisions, partial blob failures, failed PR
   creation, preview failure, merge conflict and abandon behavior.
-- [ ] Verify no code path writes directly to `main`.
-- [ ] Test authentication, content type, method and origin failures for every
+- [x] Verify no code path writes directly to `main`.
+- [x] Test authentication, content type, method and origin failures for every
   mutation endpoint.
-- [ ] Test that API errors are sanitized before reaching the browser.
+- [x] Test that API errors are sanitized before reaching the browser.
 
 ### 3.3 Travel editor
 
-- [ ] Replace the Phase 2 placeholder at admin `/travel/` with the ported trip
+- [x] Replace the Phase 2 placeholder at admin `/travel/` with the ported trip
   editor.
-- [ ] Load `src/data/trips.json` only after server-side authentication.
-- [ ] Reuse `shared/trip-validation.mjs`; validate in the browser for feedback
+- [x] Load `src/data/trips.json` only after server-side authentication.
+- [x] Reuse `shared/trip-validation.mjs`; validate in the browser for feedback
   and again on the server before publishing.
-- [ ] Support add, edit, reorder and delete stop operations without changing the
+- [x] Support add, edit, reorder and delete stop operations without changing the
   committed JSON shape.
-- [ ] Preserve ISO date semantics, coordinate precision and deterministic JSON
+- [x] Preserve ISO date semantics, coordinate precision and deterministic JSON
   formatting.
-- [ ] Make all controls keyboard accessible and usable on a phone-sized
-  viewport.
-- [ ] Show a review summary before publishing.
-- [ ] Publish only `src/data/trips.json` through the generic publisher.
-- [ ] Display branch, PR, Deploy Preview, check status, merge and abandon
+- [x] Implement keyboard-operable controls and responsive phone-sized layouts;
+  live device verification remains in the phase gate.
+- [x] Show a review summary before publishing.
+- [x] Publish only `src/data/trips.json` through the generic publisher.
+- [x] Display branch, PR, Deploy Preview, check status, merge and abandon
   controls in the editor.
 - [ ] Complete one real travel change through preview and merge, then verify the
   public static build reflects it.

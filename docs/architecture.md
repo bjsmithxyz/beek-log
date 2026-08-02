@@ -54,6 +54,22 @@ host-only to `admin.bjsmith.xyz` and never sent to the public origin.
 `shared/` is an npm workspace package containing pure film, slug, Markdown,
 location and trip rules. It has no Astro or Node I/O dependencies.
 
+## Admin publication model
+
+Authenticated admin reads and mutations pass through Netlify Functions; GitHub
+tokens never reach browser JavaScript. The generic publisher in
+`admin/src/server/publisher.mjs` accepts a server-policy-checked set of create,
+update and delete operations, verifies expected blob SHAs against `main`, and
+builds one Git tree and commit on a unique `admin/<resource>/<request-id>`
+branch. It then opens a marked pull request. It never updates `main` directly.
+
+The browser polls the deterministic public Netlify Deploy Preview URL. Merge is
+a separate authenticated action that revalidates the PR marker, repository,
+base branch, head SHA, mergeability and preview availability. Abandon closes the
+PR and removes its branch. Phase 3's travel editor is the first caller and is
+restricted to `src/data/trips.json`; Phase 4 will extend server path policy for
+film-roll operations rather than accept arbitrary client paths.
+
 ## Content collections
 
 Defined in `src/content.config.ts` with Zod schemas. Both collections use the

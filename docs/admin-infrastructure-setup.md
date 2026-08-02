@@ -6,8 +6,9 @@ unified admin project. **Production setup and live verification completed on
 procedure; current resource identifiers and operations are recorded in
 [`admin-operations.md`](admin-operations.md).
 
-It creates no new server: Netlify hosts Astro SSR and four functions, while a
-narrowly installed GitHub App provides user-to-server OAuth.
+It creates no new server: Netlify hosts Astro SSR plus authentication and
+publishing Functions, while a narrowly installed GitHub App provides
+user-to-server OAuth.
 
 Do not put a client secret, session secret, OAuth token, cookie value or private
 key in this repository, a GitHub issue, chat, screenshot or deploy log.

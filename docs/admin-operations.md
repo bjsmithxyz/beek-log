@@ -67,6 +67,30 @@ outside admin Deploy Preview before reviewing its code for environment access.
 
 Source: `admin/src/server/auth.mjs`. Tests: `admin/test/auth*.test.mjs`.
 
+## Publishing endpoints
+
+The Phase 3 travel publisher is deployed. All repository data endpoints require
+a valid owner session; mutations additionally require POST JSON and a matching
+admin Origin before parsing their strict schemas.
+
+| Function | Purpose |
+| --- | --- |
+| `travel-data` | Load and validate `src/data/trips.json` plus its current blob SHA |
+| `publish-start` | Validate travel data, build one branch commit and open a PR |
+| `publish-status` | Revalidate the marked PR and check its public Deploy Preview URL |
+| `publish-merge` | Revalidate head/preview/mergeability and merge the reviewed PR |
+| `publish-abandon` | Close the PR and best-effort delete its admin branch |
+
+The browser never chooses an arbitrary repository path. Travel publishing is
+server-mapped to `src/data/trips.json`; stale SHA checks prevent overwriting a
+newer main-branch edit. A client-generated UUID makes network retries resumable
+without duplicate PR creation. The full operation engine already supports
+atomic create/update/delete sets for the Phase 4 caller.
+
+Source: `admin/src/server/publisher.mjs`, `request-guards.mjs`, and
+`travel-publish.mjs`. Tests: `admin/test/publisher.test.mjs`,
+`publish-functions.test.mjs`, and `travel-*.test.mjs`.
+
 ## Security headers
 
 `admin/netlify.toml` protects static assets. Netlify's static custom-header

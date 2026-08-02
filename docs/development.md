@@ -37,7 +37,9 @@ in [photography.md](photography.md).
 
 The public travel itinerary lives in `src/data/trips.json`. Its shared validator
 runs under `npm test` and the public build fails if the committed data is
-malformed.
+malformed. Production edits use the authenticated admin `/travel/` page and are
+published through a branch, pull request and Deploy Preview; do not restore a
+direct-to-main save endpoint.
 
 ## Commands
 
@@ -65,8 +67,11 @@ files. Coverage focuses on the pure logic behind the roll admin and the map:
   processing, and the temp-dir rebuild used when reordering/adding/removing
   frames.
 - `src/data/locations.test.mjs` — `effectiveLocations` de-duplication.
-- `admin/test/` — redirect validation, session sealing/refresh, OAuth login and
-  logout request guards.
+- `admin/test/` — redirect validation, session sealing/refresh, request-guard
+  order, generic Git tree/PR publishing, travel schema/state logic, and a JSDOM
+  browser-editor regression.
 
-The Astro pages and the admin's browser UI are verified by building and by
-running the admin locally; they are not unit-tested.
+Astro pages are also verified by building both workspaces. `astro dev` renders
+the admin SSR shell but does not emulate the production custom Netlify
+Functions; use mocked unit tests for publisher development and the authenticated
+production gate for a real branch/preview/merge check.
