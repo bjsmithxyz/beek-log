@@ -32,6 +32,6 @@
   "devDependencies": {
     "@netlify/plugin-lighthouse": "^6.0.4",
     "@types/leaflet": "^1.9.22",
-    "puppeteer": "^24.8.2"
+    "jsdom": "^30.0.1"
   }
 }
