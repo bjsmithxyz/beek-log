@@ -194,5 +194,24 @@ of a second GitHub account. Independent unauthenticated checks confirmed:
 - disallow-all admin robots policy
 - travel path/query-preserving 301 and final `/travel/` HTTP 200
 
-The implementation tests at this gate were 71/71 passing, and both public and
-admin Astro builds passed.
+The implementation tests at the Phase 2 gate were 71/71 passing, and both
+public and admin Astro builds passed.
+
+## Phase 3 live publication evidence
+
+PR [#8](https://github.com/bjsmithxyz/beek-log/pull/8) was created by the
+hosted travel editor on 2026-08-02 from branch
+`admin/travel/3d1a13c6-7222-4bc0-beeb-58b268e80011`. The marked PR produced a
+working public Deploy Preview, was merged separately from the admin, and the
+publishing branch was deleted. Independent checks confirmed:
+
+- the PR body carries the `beek-admin:publication:v1` marker
+- the PR was authored by `bjsmithxyz`, based on `main`, and merged as commit
+  `46e85bc01ea2c0576ad534eff1db8e23d75533ba`
+- `https://deploy-preview-8--beek-log.netlify.app/` returns HTTP 200
+- the production travel bundle contains the merged itinerary change
+- the repository branch list contains only `main` after merge
+
+This proves the production branch → PR → preview → merge path. Phone-sized
+editor operation and a live abandon-without-production-change exercise remain
+the final Phase 3 gate items in `ROADMAP.md`.

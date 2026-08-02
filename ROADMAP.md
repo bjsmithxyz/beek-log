@@ -115,15 +115,15 @@ merge workflow with small, known-good JSON before the image pipeline is added.
 - [x] Publish only `src/data/trips.json` through the generic publisher.
 - [x] Display branch, PR, Deploy Preview, check status, merge and abandon
   controls in the editor.
-- [ ] Complete one real travel change through preview and merge, then verify the
-  public static build reflects it.
+- [x] Complete one real travel change through preview and merge, then verify the
+  public static build reflects it (PR #8, merged 2026-08-02).
 
 ### Phase 3 gate
 
 - [ ] `npm test` and `npm run build` pass for the public site.
 - [ ] Admin tests and build pass.
-- [ ] Real publishing creates a branch and PR, not a direct `main` commit.
-- [ ] A working public Deploy Preview is reviewed before merge.
+- [x] Real publishing creates a branch and PR, not a direct `main` commit.
+- [x] A working public Deploy Preview is reviewed before merge (PR #8).
 - [ ] Failed/abandoned publishing leaves production unchanged.
 - [ ] Phone and desktop travel-editor checks pass.
 
