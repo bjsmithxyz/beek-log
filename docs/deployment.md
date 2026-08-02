@@ -12,6 +12,10 @@ the workspace lockfile rebuild both.
 
 ## Admin deployment
 
+The production admin is `https://admin.bjsmith.xyz` with Netlify hostname
+`beekadmin.netlify.app`. Netlify uses the repository root as its base and
+`admin` as its package directory.
+
 The admin is SSR and requires the variables in `admin/.env.example`, configured
 on the admin Netlify site only. It uses a GitHub App installed solely on
 `bjsmithxyz/beek-log`; user-to-server tokens are sealed into a 24-hour host-only

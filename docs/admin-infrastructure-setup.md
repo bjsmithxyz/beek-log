@@ -1,8 +1,13 @@
 # Admin infrastructure setup
 
-This is the owner-operated setup gate between Phase 2 and Phase 3 of the unified
-admin project. It creates no new server: Netlify hosts Astro SSR and four
-functions, while a narrowly installed GitHub App provides user-to-server OAuth.
+This was the owner-operated setup gate between Phase 2 and Phase 3 of the
+unified admin project. **Production setup and live verification completed on
+2026-08-02.** The checklist is retained as the disaster-recovery/recreation
+procedure; current resource identifiers and operations are recorded in
+[`admin-operations.md`](admin-operations.md).
+
+It creates no new server: Netlify hosts Astro SSR and four functions, while a
+narrowly installed GitHub App provides user-to-server OAuth.
 
 Do not put a client secret, session secret, OAuth token, cookie value or private
 key in this repository, a GitHub issue, chat, screenshot or deploy log.
@@ -344,10 +349,9 @@ Share only:
 - any failing HTTP status, safe error label or deploy-log line that contains no
   secret
 
-After live verification, the implementation agent will add the public admin
-link, update the root `ROADMAP.md`, record the verified infrastructure state in
-project documentation, and begin Phase 3. The hosted admin must not progress to
-Phase 3 before every evidence item above passes.
+The production gate passed on 2026-08-02. The public admin link, verified
+infrastructure record and root `ROADMAP.md` were added afterward. Remaining
+work must follow the phase gates in that roadmap.
 
 ## Rollback
 

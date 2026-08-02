@@ -30,6 +30,12 @@ const navItems = [
         ))}
       </ul>
     </nav>
+
+    <a
+      class="admin-link"
+      href="https://admin.bjsmith.xyz/"
+      aria-label="Open publishing admin"
+    >admin↗</a>
     
     <button 
       class="theme-toggle" 
@@ -71,6 +77,11 @@ const navItems = [
             </a>
           </li>
         ))}
+        <li>
+          <a class="mobile-nav-link" href="https://admin.bjsmith.xyz/">
+            &gt; admin↗
+          </a>
+        </li>
       </ul>
     </nav>
   </div>
@@ -233,6 +244,25 @@ const navItems = [
   .nav-link.active {
     color: var(--color-accent-primary);
     border-color: var(--color-accent-primary);
+  }
+
+  .admin-link {
+    display: none;
+    color: var(--color-text-muted);
+    font-size: var(--font-size-xs);
+    padding: var(--space-2);
+    border: 1px solid transparent;
+  }
+
+  .admin-link:hover {
+    color: var(--color-accent-primary);
+    border-color: var(--color-border);
+  }
+
+  @media (min-width: 768px) {
+    .admin-link {
+      display: block;
+    }
   }
   
   .theme-toggle {
