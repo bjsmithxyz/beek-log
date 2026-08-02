@@ -8,7 +8,6 @@
 
 [build.environment]
   NODE_VERSION = "22"
-  SECRETS_SCAN_OMIT_KEYS = "GITHUB_CLIENT_ID,GITHUB_CLIENT_SECRET,SESSION_SECRET,GITHUB_REPOSITORY_ID,OAUTH_ALLOWED_USERS,ADMIN_SITE_URL"
 
 [functions]
   directory = "admin/netlify/functions"

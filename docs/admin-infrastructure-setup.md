@@ -207,21 +207,27 @@ Evidence:
    | `SESSION_SECRET` | output of `openssl rand -hex 32` |
 
 4. Mark `GITHUB_CLIENT_SECRET` and `SESSION_SECRET` as secret/sensitive values
-   if the UI offers that option.
-5. Scope the variables to **Functions/runtime** and the **Production** deploy
-   context. They are not required while building and should not be exposed to
-   arbitrary Deploy Preview code.
-6. Re-check spelling, capitalization and the lack of a trailing slash on
+   if the UI and plan offer that option.
+5. If the Netlify plan offers variable scopes and contextual values, choose
+   **Functions** scope and **Production** context. On the Netlify Free plan
+   these controls may be unavailable; keep the default site-variable settings
+   instead. The values will then exist in trusted deploys as well as production.
+6. Because this is a public repository, open **Project configuration →
+   Environment variables → Site policies** and keep **Require approval** for
+   untrusted deploys. Never choose **Deploy without restrictions**. Review code
+   before approving an outside contributor's admin Deploy Preview.
+7. Re-check spelling, capitalization and the lack of a trailing slash on
    `ADMIN_SITE_URL`.
-7. Open **Deploys → Trigger deploy → Deploy site** (or retry the latest deploy)
+8. Open **Deploys → Trigger deploy → Deploy site** (or retry the latest deploy)
    so the production functions receive the new environment.
-8. Confirm the deploy succeeds. Never print an environment variable in the
+9. Confirm the deploy succeeds. Never print an environment variable in the
    deploy log while troubleshooting.
 
 Evidence:
 
 - [ ] All six variables exist on the admin site
-- [ ] The two secrets are hidden and production-scoped
+- [ ] Secrets use the narrowest controls available on the current plan
+- [ ] Untrusted deploy policy is **Require approval**
 - [ ] Production was redeployed after adding them
 
 ## 7. Move `travel.bjsmith.xyz` to the public site
