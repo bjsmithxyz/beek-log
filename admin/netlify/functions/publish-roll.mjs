@@ -23,11 +23,10 @@ async function publishRoll(request) {
   }
 }
 
-export default publishRoll;
+export { publishRoll };
 
-// Netlify has intermittently classified this larger bundle as a v1 Function in
-// production even though it uses the v2 default-Request form. Keep an explicit
-// v1 adapter so either runtime classification reaches the same guarded handler.
+// Netlify classifies this bundle as a v1 Function in production. Export only
+// the explicit legacy handler entrypoint so the build and runtime agree.
 export async function handler(event) {
   const url = event.rawUrl || new URL(event.path || '/.netlify/functions/publish-roll', 'https://admin.bjsmith.xyz').href;
   const method = event.httpMethod || 'GET';

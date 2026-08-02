@@ -5,7 +5,7 @@ import publishMerge from '../netlify/functions/publish-merge.mjs';
 import publishAbandon from '../netlify/functions/publish-abandon.mjs';
 import publishStatus from '../netlify/functions/publish-status.mjs';
 import travelData from '../netlify/functions/travel-data.mjs';
-import publishRoll, { handler as legacyPublishRoll } from '../netlify/functions/publish-roll.mjs';
+import { publishRoll, handler as legacyPublishRoll } from '../netlify/functions/publish-roll.mjs';
 import rollsData from '../netlify/functions/rolls-data.mjs';
 import rollData from '../netlify/functions/roll-data.mjs';
 import geocode from '../netlify/functions/geocode.mjs';
