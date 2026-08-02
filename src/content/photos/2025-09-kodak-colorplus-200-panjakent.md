@@ -1,7 +1,7 @@
 ---
 title: Tajikistan / Panjakent
 stock: kodak-colorplus-200
-date: 2025-09-09
+date: 2025-09-11
 location:
   name: Panjakent
   lat: 39.4961693
