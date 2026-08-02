@@ -29,5 +29,5 @@ Detailed, technical docs live in [docs/](docs/README.md):
 ## Deployment
 
 The public and admin Netlify sites watch the same repository with independent
-base directories and build-ignore rules. See
+package/configuration paths and build-ignore rules. See
 [docs/deployment.md](docs/deployment.md).

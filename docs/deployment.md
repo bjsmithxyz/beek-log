@@ -3,7 +3,8 @@
 Two **Netlify** sites watch this repository:
 
 - public: repo root, configured by `netlify.toml`
-- admin: `admin/` base directory, configured by `admin/netlify.toml`
+- admin: repository-root base plus `admin/` package directory, configured by
+  `admin/netlify.toml` (the root base is required for npm workspace resolution)
 
 Build-ignore rules keep public content commits from rebuilding the admin and
 admin-only commits from rebuilding the public site. Changes under `shared/` or
