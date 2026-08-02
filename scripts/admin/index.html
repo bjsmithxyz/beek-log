@@ -34,6 +34,15 @@
     .draft-toggle:has(input:checked) { border-color: var(--color-accent-primary); color: var(--color-accent-primary); }
     .row { display: flex; gap: .5rem; }
     .row > * { flex: 1; }
+    .folder-dropzone { border: 1px dashed transparent; padding: .35rem; margin: -.35rem;
+      transition: border-color .16s ease, background-color .16s ease, box-shadow .16s ease, transform .1s ease; }
+    .folder-dropzone:hover, .folder-dropzone.dragover { border-color: var(--color-accent-primary);
+      background: color-mix(in srgb, var(--color-accent-primary) 7%, transparent);
+      box-shadow: 0 0 0 2px color-mix(in srgb, var(--color-accent-primary) 12%, transparent); }
+    .folder-dropzone:active { transform: scale(.995); }
+    .folder-controls { display: flex; gap: .5rem; }
+    .folder-controls input { flex: 1 1 auto; min-width: 0; }
+    .folder-controls button { flex: 0 0 auto; }
     .frames { display: flex; flex-wrap: wrap; gap: .5rem; }
     .frame {
       width: 150px; border: 1px solid var(--color-border); background: var(--color-bg-secondary);
@@ -91,12 +100,14 @@
         <label>edit existing roll</label>
         <select id="roll-picker"><option value="">— new roll —</option></select>
       </div>
-      <div>
-        <label>source folder (new frames)</label>
-        <input id="folder" placeholder="/home/beek/scans/2026-06-02 - kodak-portra-400-PT" />
-      </div>
-      <div style="flex:0 0 auto; align-self:end;">
-        <button id="scan">scan / add frames</button>
+      <div id="folder-dropzone" class="folder-dropzone">
+        <label>source folder (new frames) · drop a folder here</label>
+        <div class="folder-controls">
+          <input id="folder" placeholder="/home/beek/scans/2026-06-02 - kodak-portra-400-PT" />
+          <button id="browse" type="button">browse</button>
+          <button id="scan" type="button">scan</button>
+        </div>
+        <input id="folder-picker" type="file" webkitdirectory multiple hidden />
       </div>
     </div>
   </fieldset>

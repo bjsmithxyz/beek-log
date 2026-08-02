@@ -1,10 +1,12 @@
 // Dev-only local admin server. Binds 127.0.0.1 — never deployed (not part of
 // the Astro build). Start with: npm run admin
 import { createServer } from 'node:http';
-import { readFile, writeFile, readdir } from 'node:fs/promises';
+import { readFile, writeFile, readdir, mkdtemp } from 'node:fs/promises';
 import { existsSync } from 'node:fs';
 import { fileURLToPath } from 'node:url';
 import { basename, dirname, join } from 'node:path';
+import { randomUUID } from 'node:crypto';
+import { tmpdir } from 'node:os';
 import { filmStocks } from '../../src/data/film-stocks.ts';
 import sharp from 'sharp';
 import { crossOriginError, parseFolderName, parseRollMarkdown, rollInputErrors, validatePreviewPath } from './lib.mjs';
@@ -21,10 +23,15 @@ function send(res, status, body, type = 'application/json') {
   res.end(typeof body === 'string' || Buffer.isBuffer(body) ? body : JSON.stringify(body));
 }
 
-async function readBody(req) {
+async function readRawBody(req) {
   const chunks = [];
   for await (const c of req) chunks.push(c);
-  return chunks.length ? JSON.parse(Buffer.concat(chunks).toString('utf8')) : {};
+  return Buffer.concat(chunks);
+}
+
+async function readBody(req) {
+  const body = await readRawBody(req);
+  return body.length ? JSON.parse(body.toString('utf8')) : {};
 }
 
 // Persistent publish history. Plain text, one event per line, capped at the last
@@ -69,6 +76,29 @@ route('GET', /^\/api\/auth$/, async (req, res) => {
 });
 
 const IMAGE_RE = /\.(jpe?g|png|tiff?|webp)$/i;
+const stages = new Map(); // short-lived browser-selected folders, stored under the OS temp dir
+
+route('POST', /^\/api\/stage$/, async (req, res) => {
+  const { folderName } = await readBody(req);
+  const id = randomUUID();
+  const path = await mkdtemp(join(tmpdir(), 'beek-roll-admin-'));
+  const safeFolderName = basename(String(folderName || 'new-frames'));
+  stages.set(id, { path, folderName: safeFolderName });
+  send(res, 200, { id, folderName: safeFolderName });
+});
+
+route('POST', /^\/api\/stage-file$/, async (req, res) => {
+  const stage = stages.get(req.headers['x-stage-id']);
+  if (!stage) return send(res, 400, { error: 'invalid or expired staged folder' });
+  let name;
+  try { name = decodeURIComponent(req.headers['x-file-name'] || ''); }
+  catch { return send(res, 400, { error: 'invalid file name' }); }
+  if (!name || basename(name) !== name || !IMAGE_RE.test(name)) {
+    return send(res, 400, { error: `unsupported file: ${name || '(unnamed)'}` });
+  }
+  await writeFile(join(stage.path, name), await readRawBody(req));
+  send(res, 200, { ok: true });
+});
 
 async function thumb(path) {
   const buf = await sharp(path)
@@ -89,7 +119,10 @@ async function preview(path) {
 }
 
 route('POST', /^\/api\/scan$/, async (req, res) => {
-  const { folder } = await readBody(req);
+  const { folder: requestedFolder, stageId, folderName } = await readBody(req);
+  const stage = stageId ? stages.get(stageId) : null;
+  if (stageId && !stage) return send(res, 400, { error: 'invalid or expired staged folder' });
+  const folder = stage ? stage.path : requestedFolder;
   if (!folder) return send(res, 400, { error: 'folder required' });
   let names;
   try {
@@ -107,7 +140,7 @@ route('POST', /^\/api\/scan$/, async (req, res) => {
       return { srcPath, thumb: await thumb(srcPath) };
     })
   );
-  const parsed = parseFolderName(basename(folder), filmStocks);
+  const parsed = parseFolderName(folderName || (stage && stage.folderName) || basename(folder), filmStocks);
   send(res, 200, { parsed, frames });
 });
 

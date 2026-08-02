@@ -17,6 +17,7 @@ let frames = [];      // { srcPath?|existing, thumb, alt, caption, location|null
 let mode = 'create';  // 'create' | 'edit'
 let editSlug = null;  // original slug when editing (existing frames copy from it)
 let stocks = [];
+let stagedSource = null; // { id, folderName } for browser-picked/dropped folders
 
 function logLine(msg, cls) {
   const line = document.createElement('div');
@@ -189,10 +190,100 @@ $('bulk-loc').onclick = async () => {
   render();
 };
 
+const IMAGE_RE = /\.(jpe?g|png|tiff?|webp)$/i;
+const folderInput = $('folder');
+const folderPicker = $('folder-picker');
+const folderDropzone = $('folder-dropzone');
+
+folderInput.addEventListener('input', () => { stagedSource = null; });
+$('browse').onclick = () => folderPicker.click();
+
+async function droppedFiles(dataTransfer) {
+  const entries = [...dataTransfer.items]
+    .map((item) => item.webkitGetAsEntry?.())
+    .filter(Boolean);
+  if (entries.length) {
+    const readEntry = async (entry) => {
+      if (entry.isFile) {
+        return new Promise((resolve, reject) => entry.file((file) => resolve([file]), reject));
+      }
+      if (!entry.isDirectory) return [];
+      const reader = entry.createReader();
+      const children = [];
+      // Chromium may return directory entries in batches, so keep reading until empty.
+      while (true) {
+        const batch = await new Promise((resolve, reject) => reader.readEntries(resolve, reject));
+        if (!batch.length) break;
+        children.push(...batch);
+      }
+      return (await Promise.all(children.map(readEntry))).flat();
+    };
+    return {
+      files: (await Promise.all(entries.map(readEntry))).flat().filter((f) => IMAGE_RE.test(f.name)),
+      folderName: entries.find((entry) => entry.isDirectory)?.name || '',
+    };
+  }
+  const files = [...dataTransfer.files].filter((f) => IMAGE_RE.test(f.name));
+  const firstPath = files[0] && files[0].webkitRelativePath;
+  return { files, folderName: firstPath ? firstPath.split('/')[0] : '' };
+}
+
+async function stageFolder(files, folderName) {
+  const images = [...files].filter((f) => IMAGE_RE.test(f.name));
+  if (!images.length) throw new Error('no images found in folder');
+  clearLog();
+  log(`loading ${images.length} frames from ${folderName || 'dropped folder'}…`);
+  const stage = await api('/api/stage', { folderName: folderName || 'new-frames' });
+  for (let i = 0; i < images.length; i++) {
+    const file = images[i];
+    const r = await fetch('/api/stage-file', {
+      method: 'POST',
+      headers: { 'x-stage-id': stage.id, 'x-file-name': encodeURIComponent(file.name) },
+      body: file,
+    });
+    const data = await r.json();
+    if (!r.ok) throw new Error(data.error || r.statusText);
+    log(`loaded ${i + 1}/${images.length}: ${file.name}`);
+  }
+  stagedSource = { id: stage.id, folderName: stage.folderName };
+  folderInput.value = stage.folderName;
+  log('ready to scan');
+}
+
+folderPicker.onchange = async () => {
+  const files = [...folderPicker.files];
+  const relative = files[0] && files[0].webkitRelativePath;
+  const folderName = relative ? relative.split('/')[0] : '';
+  try { await stageFolder(files, folderName); }
+  catch (e) { logErr('browse error: ' + e.message); }
+  finally { folderPicker.value = ''; }
+};
+
+for (const eventName of ['dragenter', 'dragover']) {
+  folderDropzone.addEventListener(eventName, (e) => {
+    e.preventDefault();
+    if ([...e.dataTransfer.types].includes('Files')) folderDropzone.classList.add('dragover');
+  });
+}
+folderDropzone.addEventListener('dragleave', (e) => {
+  if (!folderDropzone.contains(e.relatedTarget)) folderDropzone.classList.remove('dragover');
+});
+folderDropzone.addEventListener('drop', async (e) => {
+  e.preventDefault();
+  folderDropzone.classList.remove('dragover');
+  try {
+    const { files, folderName } = await droppedFiles(e.dataTransfer);
+    await stageFolder(files, folderName);
+  } catch (err) { logErr('drop error: ' + err.message); }
+});
+
 $('scan').onclick = async () => {
   clearLog();
   try {
-    const { parsed, frames: scanned } = await api('/api/scan', { folder: $('folder').value.trim() });
+    const request = stagedSource
+      ? { stageId: stagedSource.id, folderName: stagedSource.folderName }
+      : { folder: folderInput.value.trim() };
+    const { parsed, frames: scanned } = await api('/api/scan', request);
     scanned.forEach((f) => frames.push({
       srcPath: f.srcPath, thumb: f.thumb,
       alt: '',
@@ -227,6 +318,7 @@ function resetForm() {
   frames = [];
   $('roll-picker').value = '';
   $('folder').value = '';
+  stagedSource = null;
   $('title').value = '';
   $('stock').selectedIndex = 0;
   $('date').value = new Date().toISOString().slice(0, 10);
