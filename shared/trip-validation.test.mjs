@@ -1,6 +1,6 @@
 import { test } from 'node:test';
 import assert from 'node:assert/strict';
-import currentTrip from '../travel-legacy/trips.json' with { type: 'json' };
+import currentTrip from '../src/data/trips.json' with { type: 'json' };
 import { assertValidTrip, validateTrip } from './trip-validation.mjs';
 
 function validTrip() {

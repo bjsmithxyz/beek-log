@@ -1,0 +1,439 @@
+---
+import BaseLayout from '../../layouts/BaseLayout.astro';
+import tripData from '../../data/trips.json';
+import { assertValidTrip } from '@beek/shared/trip-validation';
+
+assertValidTrip(tripData);
+
+const jsonLd = {
+  '@type': 'CreativeWork',
+  name: tripData.meta.title,
+  description: tripData.meta.subtitle,
+  url: new URL('/travel/', Astro.site).href,
+};
+---
+
+<BaseLayout
+  title="travel"
+  description="An interactive map, timeline, and weather planner for a long journey around the world"
+  jsonLd={jsonLd}
+>
+  <div class="travel-page" data-travel-page>
+    <div class="container">
+      <header class="travel-header">
+        <p class="prompt">~/beek/travel</p>
+        <h1>{tripData.meta.title}</h1>
+        <p class="travel-subtitle">{tripData.meta.subtitle}</p>
+        <p class="travel-nowline"><span class="travel-pulse" aria-hidden="true"></span><span id="travel-now">loading journey…</span></p>
+      </header>
+
+      <div class="travel-main">
+        <section aria-labelledby="travel-stats-heading">
+          <h2 id="travel-stats-heading" class="travel-section-label">stats/</h2>
+          <div class="travel-stats" id="travel-stats" aria-label="Trip statistics"></div>
+          <div class="travel-facts" id="travel-facts"></div>
+        </section>
+
+        <section aria-labelledby="travel-map-heading">
+          <div class="travel-section-head">
+            <div>
+              <h2 id="travel-map-heading">route/</h2>
+              <p>Every stop in order. Solid is travelled; dashed is planned.</p>
+            </div>
+            <div class="travel-toggles" aria-label="Map layers">
+              <button id="toggle-travelled" type="button" aria-pressed="true">travelled</button>
+              <button id="toggle-planned" type="button" aria-pressed="true">planned</button>
+            </div>
+          </div>
+          <div id="travel-map" class="travel-map" role="region" aria-label="Interactive map of the journey" tabindex="0"></div>
+          <div class="travel-map-legend" aria-label="Map legend">
+            <span><i class="legend-dot travelled"></i>been there</span>
+            <span><i class="legend-dot current"></i>here now</span>
+            <span><i class="legend-dot planned"></i>planned</span>
+          </div>
+          <div id="travel-map-stops" class="travel-map-stops" aria-label="Show a stop on the map"></div>
+        </section>
+
+        <section aria-labelledby="travel-planning-heading">
+          <div class="travel-section-head">
+            <div>
+              <h2 id="travel-planning-heading">road-ahead/</h2>
+              <p>Seasonal weather and daylight from Open-Meteo, plus distance and packing cues.</p>
+            </div>
+          </div>
+          <div class="travel-legs" id="travel-legs"></div>
+        </section>
+
+        <section aria-labelledby="travel-timeline-heading">
+          <div class="travel-section-head">
+            <div>
+              <h2 id="travel-timeline-heading">timeline/</h2>
+              <p>The whole journey, in route order.</p>
+            </div>
+          </div>
+          <div class="travel-timeline" id="travel-timeline"></div>
+          <button class="travel-more" id="travel-more" type="button" aria-expanded="false">show full journey ↓</button>
+        </section>
+      </div>
+
+      <footer class="travel-footer">
+        <p>Trip started <b id="travel-start"></b> · day <b id="travel-day"></b> on the road.</p>
+        <p>Weather via <a href="https://open-meteo.com" target="_blank" rel="noopener">Open-Meteo</a> · map tiles © <a href="https://carto.com" target="_blank" rel="noopener">CARTO</a> / OpenStreetMap contributors.</p>
+      </footer>
+    </div>
+  </div>
+</BaseLayout>
+
+<script>
+  import '../../scripts/travel-client.js';
+</script>
+
+<style is:global>
+  .travel-page {
+    padding: var(--space-10) 0 var(--space-16);
+  }
+
+  .travel-header {
+    padding-bottom: var(--space-6);
+    border-bottom: 1px solid var(--color-border);
+  }
+
+  .travel-header h1 {
+    font-size: var(--font-size-4xl);
+    font-weight: var(--font-weight-bold);
+    margin-bottom: var(--space-2);
+  }
+
+  .travel-subtitle {
+    max-width: 46rem;
+    font-size: var(--font-size-sm);
+    margin-bottom: var(--space-4);
+  }
+
+  .travel-nowline {
+    display: inline-flex;
+    align-items: center;
+    gap: var(--space-2);
+    margin: 0;
+    padding: var(--space-2) var(--space-3);
+    color: var(--color-text-secondary);
+    background: var(--color-bg-secondary);
+    border: 1px solid var(--color-border);
+    border-left: 3px solid var(--color-accent-primary);
+    font-size: var(--font-size-sm);
+  }
+
+  .travel-nowline b { color: var(--color-text-primary); }
+
+  .travel-pulse {
+    width: 7px;
+    height: 7px;
+    flex: none;
+    background: var(--color-accent-primary);
+    animation: travel-blink 1.8s steps(2, start) infinite;
+  }
+
+  @keyframes travel-blink { 50% { opacity: 0.35; } }
+
+  .travel-main > section { margin-top: var(--space-10); }
+
+  .travel-section-label,
+  .travel-section-head h2 {
+    margin: 0;
+    font-size: var(--font-size-base);
+    color: var(--color-text-muted);
+    font-weight: var(--font-weight-medium);
+  }
+
+  .travel-section-head {
+    display: flex;
+    align-items: end;
+    justify-content: space-between;
+    gap: var(--space-4);
+    margin-bottom: var(--space-4);
+  }
+
+  .travel-section-head p {
+    margin: var(--space-1) 0 0;
+    font-size: var(--font-size-xs);
+    color: var(--color-text-muted);
+  }
+
+  .travel-stats {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    margin-top: var(--space-3);
+    border-top: 1px solid var(--color-border);
+    border-left: 1px solid var(--color-border);
+  }
+
+  .travel-stat {
+    min-width: 0;
+    padding: var(--space-4);
+    background: var(--color-bg-secondary);
+    border-right: 1px solid var(--color-border);
+    border-bottom: 1px solid var(--color-border);
+  }
+
+  .travel-stat strong {
+    display: block;
+    overflow: hidden;
+    font-size: var(--font-size-2xl);
+    color: var(--color-text-primary);
+    line-height: 1;
+    font-variant-numeric: tabular-nums;
+  }
+
+  .travel-stat span {
+    display: block;
+    margin-top: var(--space-2);
+    color: var(--color-text-muted);
+    font-size: var(--font-size-xs);
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+  }
+
+  .travel-facts {
+    display: flex;
+    flex-wrap: wrap;
+    gap: var(--space-2) var(--space-4);
+    margin-top: var(--space-3);
+    color: var(--color-text-muted);
+    font-size: var(--font-size-xs);
+  }
+
+  .travel-facts span { border-bottom: 1px dotted var(--color-border-strong); }
+  .travel-facts b { color: var(--color-text-secondary); }
+
+  .travel-toggles { display: flex; gap: var(--space-2); }
+
+  .travel-toggles button,
+  .travel-more,
+  .map-stop {
+    padding: var(--space-2) var(--space-3);
+    color: var(--color-text-muted);
+    background: var(--color-bg-secondary);
+    border: 1px solid var(--color-border);
+    font: inherit;
+    font-size: var(--font-size-xs);
+    cursor: pointer;
+  }
+
+  .travel-toggles button:hover,
+  .travel-toggles button.active,
+  .travel-more:hover,
+  .map-stop:hover {
+    color: var(--color-accent-primary);
+    border-color: var(--color-accent-primary);
+  }
+
+  .travel-toggles button.active { box-shadow: var(--shadow-hard-accent); }
+
+  .travel-map {
+    height: min(62vh, 540px);
+    min-height: 360px;
+    border: 1px solid var(--color-border-strong);
+    background: var(--color-bg-secondary);
+    box-shadow: var(--shadow-hard);
+    z-index: 0;
+  }
+
+  .travel-map .leaflet-control-attribution,
+  .travel-map .leaflet-control-zoom a,
+  .travel-map .leaflet-popup-content-wrapper,
+  .travel-map .leaflet-popup-tip {
+    color: var(--color-text-secondary);
+    background: var(--color-bg-secondary);
+  }
+
+  .travel-map .leaflet-control-zoom a {
+    border-color: var(--color-border);
+    border-radius: 0;
+  }
+
+  .travel-map .leaflet-popup-content-wrapper {
+    border: 1px solid var(--color-border-strong);
+    border-radius: 0;
+    box-shadow: var(--shadow-hard);
+    font: var(--font-size-xs) var(--font-family);
+  }
+
+  .travel-map .leaflet-popup-content b { color: var(--color-text-primary); }
+  .travel-map .popup-current { color: var(--color-accent-tertiary); }
+  .travel-map .popup-future { color: var(--color-accent-secondary); }
+  .travel-map .popup-muted { color: var(--color-text-muted); }
+  .travel-popup-note { margin-top: var(--space-1); color: var(--color-text-muted); font-style: italic; }
+
+  .travel-map-legend {
+    display: flex;
+    flex-wrap: wrap;
+    gap: var(--space-4);
+    margin-top: var(--space-3);
+    color: var(--color-text-muted);
+    font-size: var(--font-size-xs);
+  }
+
+  .travel-map-legend span { display: inline-flex; align-items: center; gap: var(--space-2); }
+  .legend-dot { width: 8px; height: 8px; background: var(--color-accent-primary); }
+  .legend-dot.current { background: var(--color-accent-tertiary); }
+  .legend-dot.planned { background: var(--color-accent-secondary); }
+
+  .travel-map-stops {
+    display: flex;
+    gap: var(--space-2);
+    margin-top: var(--space-3);
+    padding-bottom: var(--space-2);
+    overflow-x: auto;
+  }
+
+  .map-stop { flex: none; }
+  .map-stop.current { color: var(--color-accent-tertiary); border-color: var(--color-accent-tertiary); }
+  .map-stop.future { color: var(--color-accent-secondary); }
+
+  .travel-legs {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: var(--space-4);
+  }
+
+  .travel-leg {
+    position: relative;
+    background: var(--color-bg-secondary);
+    border: 1px solid var(--color-border);
+  }
+
+  .travel-leg.next {
+    border-color: var(--color-accent-secondary);
+    box-shadow: var(--shadow-hard);
+  }
+
+  .leg-focus {
+    display: flex;
+    width: 100%;
+    flex-direction: column;
+    align-items: start;
+    gap: var(--space-1);
+    padding: var(--space-4);
+    color: var(--color-text-muted);
+    background: transparent;
+    border: 0;
+    font: inherit;
+    font-size: var(--font-size-xs);
+    text-align: left;
+    cursor: pointer;
+  }
+
+  .leg-focus:hover { background: var(--color-bg-tertiary); }
+  .leg-focus strong { padding-right: 6rem; color: var(--color-text-primary); font-size: var(--font-size-base); }
+
+  .leg-badge {
+    position: absolute;
+    top: var(--space-3);
+    right: var(--space-3);
+    padding: var(--space-1) var(--space-2);
+    color: var(--color-accent-secondary);
+    border: 1px solid currentColor;
+    text-transform: uppercase;
+    letter-spacing: 0.08em;
+  }
+
+  .weather {
+    min-height: 5rem;
+    padding: var(--space-3) var(--space-4) var(--space-4);
+    color: var(--color-text-muted);
+    border-top: 1px solid var(--color-border);
+    font-size: var(--font-size-xs);
+  }
+
+  .weather-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: var(--space-2);
+  }
+
+  .weather-grid span {
+    padding: var(--space-2);
+    background: var(--color-bg-tertiary);
+    border: 1px solid var(--color-border);
+  }
+
+  .weather-grid b { display: block; color: var(--color-text-primary); }
+  .packing-cue { margin: var(--space-3) 0 0; font-size: var(--font-size-xs); }
+
+  .travel-timeline {
+    position: relative;
+    border-top: 1px solid var(--color-border);
+  }
+
+  .timeline-year {
+    padding: var(--space-3) 0 var(--space-2);
+    color: var(--color-accent-primary);
+    font-size: var(--font-size-xs);
+    letter-spacing: 0.12em;
+  }
+
+  .timeline-row {
+    display: grid;
+    grid-template-columns: 8rem 1fr;
+    border-top: 1px solid var(--color-border);
+  }
+
+  .timeline-year + .timeline-row { border-top: 0; }
+
+  .timeline-row time,
+  .timeline-row > div {
+    padding: var(--space-3);
+    background: var(--color-bg-secondary);
+  }
+
+  .timeline-row time {
+    color: var(--color-text-muted);
+    border-right: 3px solid var(--color-accent-primary);
+    font-size: var(--font-size-xs);
+    text-align: right;
+  }
+
+  .timeline-row.current time { border-color: var(--color-accent-tertiary); }
+  .timeline-row.future time { border-color: var(--color-accent-secondary); }
+  .timeline-row time small { display: block; color: var(--color-text-muted); }
+  .timeline-row strong { color: var(--color-text-primary); }
+  .timeline-row > div > span { margin-left: var(--space-2); color: var(--color-text-muted); font-size: var(--font-size-xs); }
+  .timeline-row p { margin: var(--space-1) 0 0; color: var(--color-text-muted); font-size: var(--font-size-xs); font-style: italic; }
+
+  .travel-more { margin: var(--space-4) 0 0 8rem; }
+
+  .travel-footer {
+    margin-top: var(--space-10);
+    padding-top: var(--space-5);
+    color: var(--color-text-muted);
+    border-top: 1px solid var(--color-border);
+    font-size: var(--font-size-xs);
+  }
+
+  .travel-footer p { margin-bottom: var(--space-2); font-size: inherit; }
+  .travel-footer b { color: var(--color-text-secondary); }
+  .travel-empty { padding: var(--space-6); border: 1px solid var(--color-border); }
+
+  @media (max-width: 700px) {
+    .travel-stats { grid-template-columns: repeat(2, 1fr); }
+    .travel-section-head { align-items: start; flex-direction: column; }
+    .travel-legs { grid-template-columns: 1fr; }
+    .travel-map { height: 430px; min-height: 320px; }
+    .timeline-row { grid-template-columns: 6rem 1fr; }
+    .travel-more { margin-left: 6rem; }
+  }
+
+  @media (max-width: 420px) {
+    .travel-stat { padding: var(--space-3); }
+    .travel-stat strong { font-size: var(--font-size-xl); }
+    .travel-map { height: 380px; }
+    .timeline-row { grid-template-columns: 5rem 1fr; }
+    .timeline-row time, .timeline-row > div { padding: var(--space-2); }
+    .timeline-row > div > span { display: block; margin-left: 0; }
+    .travel-more { margin-left: 5rem; }
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    .travel-pulse { animation: none; }
+  }
+</style>

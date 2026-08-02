@@ -12,22 +12,26 @@
   },
   "scripts": {
     "dev": "astro dev",
-    "build": "astro build",
+    "build": "astro build && node scripts/verify-travel-build.mjs",
     "preview": "astro preview",
     "astro": "astro",
     "admin": "node --disable-warning=ExperimentalWarning scripts/admin/server.mjs",
-    "test": "node --test"
+    "test": "node --test",
+    "test:travel-clock": "node scripts/verify-travel-clock.mjs"
   },
   "dependencies": {
     "@astrojs/netlify": "^8.1.2",
-    "@beek/shared": "*",
     "@astrojs/rss": "^4.0.19",
     "@astrojs/sitemap": "^3.7.3",
+    "@beek/shared": "*",
     "@fontsource/ibm-plex-mono": "^5.3.0",
     "astro": "^7.1.3",
+    "leaflet": "^1.9.4",
     "sharp": "^0.35.3"
   },
   "devDependencies": {
-    "@netlify/plugin-lighthouse": "^6.0.4"
+    "@netlify/plugin-lighthouse": "^6.0.4",
+    "@types/leaflet": "^1.9.22",
+    "puppeteer": "^24.8.2"
   }
 }
