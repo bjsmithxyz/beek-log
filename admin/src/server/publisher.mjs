@@ -60,11 +60,16 @@ export function validateOperations(operations, policy) {
     if (!['create', 'update', 'delete'].includes(action)) {
       throw new PublishError(`${label} has an invalid action.`);
     }
-    const expected = action === 'create'
-      ? ['action', 'path', 'content']
-      : action === 'update'
-        ? ['action', 'path', 'content', 'expectedSha']
-        : ['action', 'path', 'expectedSha'];
+    const usesContent = Object.hasOwn(operation, 'content');
+    const usesBlob = Object.hasOwn(operation, 'blobSha');
+    if (action !== 'delete' && usesContent === usesBlob) {
+      throw new PublishError(`${label} must provide exactly one text content or blob SHA.`);
+    }
+    const expected = action === 'delete'
+      ? ['action', 'path', 'expectedSha']
+      : action === 'create'
+        ? ['action', 'path', usesBlob ? 'blobSha' : 'content']
+        : ['action', 'path', 'expectedSha', usesBlob ? 'blobSha' : 'content'];
     exactKeys(operation, expected, label);
 
     const path = operation.path;
@@ -78,7 +83,10 @@ export function validateOperations(operations, policy) {
     if (action !== 'create' && !SHA.test(operation.expectedSha)) {
       throw new PublishError(`${label} needs a valid expected blob SHA.`);
     }
-    if (action !== 'delete') {
+    if (action !== 'delete' && usesBlob) {
+      if (!SHA.test(operation.blobSha || '')) throw new PublishError(`${label} needs a valid blob SHA.`);
+    }
+    if (action !== 'delete' && usesContent) {
       if (!validUtf8(operation.content)) throw new PublishError(`${label} content must be valid UTF-8 text.`);
       const bytes = Buffer.byteLength(operation.content, 'utf8');
       if (bytes > policy.maxFileBytes) throw new PublishError(`${label} content is too large.`);
@@ -167,9 +175,10 @@ async function existingPublication(client, branch, requestId) {
   throw new PublishError('That publication request already exists.', { status: 409, code: 'request_conflict' });
 }
 
-function verifyCurrentTree(operations, tree) {
+function verifyCurrentTree(operations, tree, policy) {
   if (tree.truncated) throw new PublishError('Repository tree is too large to verify safely.', { status: 409, code: 'tree_truncated' });
   const blobs = new Map(tree.tree.filter((entry) => entry.type === 'blob').map((entry) => [entry.path, entry.sha]));
+  if (policy.verifyCurrent) policy.verifyCurrent(blobs);
   for (const operation of operations) {
     const current = blobs.get(operation.path);
     if (operation.action === 'create' && current) {
@@ -199,7 +208,7 @@ export async function createPublication(rawInput, {
   const baseTreeSha = baseCommit.tree?.sha;
   if (!SHA.test(baseTreeSha || '')) throw new GitHubError(502);
   const currentTree = await client.request(`/git/trees/${baseTreeSha}?recursive=1`);
-  verifyCurrentTree(input.operations, currentTree);
+  verifyCurrentTree(input.operations, currentTree, policy);
 
   const entries = [];
   for (const operation of input.operations) {
@@ -207,11 +216,15 @@ export async function createPublication(rawInput, {
       entries.push({ path: operation.path, mode: '100644', type: 'blob', sha: null });
       continue;
     }
-    const blob = await client.request('/git/blobs', {
-      method: 'POST', body: { content: operation.content, encoding: 'utf-8' },
-    });
-    if (!SHA.test(blob.sha || '')) throw new GitHubError(502);
-    entries.push({ path: operation.path, mode: '100644', type: 'blob', sha: blob.sha });
+    let blobSha = operation.blobSha;
+    if (!blobSha) {
+      const blob = await client.request('/git/blobs', {
+        method: 'POST', body: { content: operation.content, encoding: 'utf-8' },
+      });
+      if (!SHA.test(blob.sha || '')) throw new GitHubError(502);
+      blobSha = blob.sha;
+    }
+    entries.push({ path: operation.path, mode: '100644', type: 'blob', sha: blobSha });
   }
 
   const newTree = await client.request('/git/trees', {

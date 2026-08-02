@@ -50,6 +50,30 @@ export async function requireJsonMutation(request, { maxBytes = DEFAULT_MAX_BODY
   return { session, setCookie, body };
 }
 
+export async function requireBinaryMutation(request, { maxBytes = 5 * 1024 * 1024 } = {}) {
+  if (request.method !== 'POST') {
+    return result(json(405, { ok: false, error: 'Method not allowed' }, { Allow: 'POST' }));
+  }
+  const contentType = (request.headers.get('content-type') || '').toLowerCase();
+  if (contentType !== 'image/jpeg' && contentType !== 'application/octet-stream') {
+    return result(json(415, { ok: false, error: 'Content-Type must be image/jpeg' }));
+  }
+  if (!isSameOrigin(request)) {
+    return result(json(403, { ok: false, error: 'Cross-origin request refused' }));
+  }
+  const { session, setCookie } = await readSession(request);
+  if (!session) return result(json(401, { ok: false, error: 'Not signed in' }), setCookie);
+  const declaredLength = Number(request.headers.get('content-length'));
+  if (Number.isFinite(declaredLength) && declaredLength > maxBytes) {
+    return result(json(413, { ok: false, error: 'Image is too large' }), setCookie);
+  }
+  const bytes = new Uint8Array(await request.arrayBuffer());
+  if (bytes.byteLength === 0 || bytes.byteLength > maxBytes) {
+    return result(json(bytes.byteLength ? 413 : 400, { ok: false, error: bytes.byteLength ? 'Image is too large' : 'Image is empty' }), setCookie);
+  }
+  return { session, setCookie, bytes };
+}
+
 export function mutationResponse(response, context) {
   return withSessionCookie(response, context?.setCookie);
 }

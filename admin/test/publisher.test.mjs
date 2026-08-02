@@ -123,6 +123,20 @@ test('retrying an existing request resumes its marked pull request without write
   assert.equal(calls.every((call) => call.method === 'GET'), true);
 });
 
+test('pre-uploaded blob operations reuse their SHA without another blob upload', async () => {
+  const fake = successfulPublisherFetch();
+  const input = {
+    ...travelInput,
+    operations: [{
+      action: 'update', path: 'src/data/trips.json', expectedSha: C, blobSha: D,
+    }],
+  };
+  await createPublication(input, { token: 'token', policy: TRAVEL_POLICY, fetchImpl: fake.fetchImpl });
+  assert.equal(fake.calls.some((call) => call.path.endsWith('/git/blobs')), false);
+  const treeCall = fake.calls.find((call) => call.path.endsWith('/git/trees') && call.method === 'POST');
+  assert.equal(treeCall.body.tree[0].sha, D);
+});
+
 test('stale expected SHA fails before any GitHub write', async () => {
   const fake = successfulPublisherFetch({
     treeEntries: [{ path: 'src/data/trips.json', type: 'blob', sha: D }],

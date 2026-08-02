@@ -5,6 +5,10 @@ import publishMerge from '../netlify/functions/publish-merge.mjs';
 import publishAbandon from '../netlify/functions/publish-abandon.mjs';
 import publishStatus from '../netlify/functions/publish-status.mjs';
 import travelData from '../netlify/functions/travel-data.mjs';
+import publishRoll from '../netlify/functions/publish-roll.mjs';
+import rollsData from '../netlify/functions/rolls-data.mjs';
+import rollData from '../netlify/functions/roll-data.mjs';
+import geocode from '../netlify/functions/geocode.mjs';
 import { createSession, sessionCookie } from '../src/server/auth.mjs';
 
 process.env.SESSION_SECRET = 'test-secret-that-is-longer-than-thirty-two-characters';
@@ -32,6 +36,10 @@ test('all publishing data/control functions refuse signed-out requests', async (
   assert.equal((await publishAbandon(post('publish-abandon', {}, false))).status, 401);
   assert.equal((await publishStatus(new Request('https://admin.bjsmith.xyz/.netlify/functions/publish-status?number=1'))).status, 401);
   assert.equal((await travelData(new Request('https://admin.bjsmith.xyz/.netlify/functions/travel-data'))).status, 401);
+  assert.equal((await publishRoll(post('publish-roll', {}, false))).status, 401);
+  assert.equal((await rollsData(new Request('https://admin.bjsmith.xyz/.netlify/functions/rolls-data'))).status, 401);
+  assert.equal((await rollData(new Request('https://admin.bjsmith.xyz/.netlify/functions/roll-data?slug=test'))).status, 401);
+  assert.equal((await geocode(post('geocode', { kind: 'place', query: 'London' }, false))).status, 401);
 });
 
 test('schema failures occur before any GitHub request', async () => {
@@ -50,6 +58,7 @@ test('schema failures occur before any GitHub request', async () => {
     assert.equal(start.status, 400);
     assert.equal((await publishMerge(post('publish-merge', { number: 1, headSha: 'bad' }))).status, 400);
     assert.equal((await publishAbandon(post('publish-abandon', { number: 1, headSha: 'bad' }))).status, 400);
+    assert.equal((await publishRoll(post('publish-roll', { mode: 'create', requestId: 'bad', roll: {} }))).status, 400);
     assert.equal(fetches, 0);
   } finally {
     globalThis.fetch = originalFetch;
