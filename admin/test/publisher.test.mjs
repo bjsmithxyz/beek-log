@@ -47,8 +47,7 @@ function successfulPublisherFetch({ treeEntries, pullOverrides = {}, pullStatus 
     calls.push({ url, path, method, body: options.body ? JSON.parse(options.body) : null });
     if (path.includes('/git/ref/heads/admin/') && method === 'GET') return response(404);
     if (path.includes('/git/refs/heads/admin/') && method === 'DELETE') return response(204);
-    if (path.endsWith('/git/ref/heads/main')) return response(200, { object: { sha: A } });
-    if (path.endsWith(`/git/commits/${A}`)) return response(200, { tree: { sha: B } });
+    if (path.endsWith('/commits/main')) return response(200, { sha: A, commit: { tree: { sha: B } } });
     if (path.endsWith(`/git/trees/${B}?recursive=1`)) return response(200, {
       truncated: false,
       tree: treeEntries || [{ path: 'src/data/trips.json', type: 'blob', sha: C }],
@@ -98,7 +97,7 @@ test('generic publisher builds one commit and PR without updating main', async (
   assert.equal(publication.previewUrl, 'https://deploy-preview-42--beek-log.netlify.app');
   const sideEffects = fake.calls.filter((call) => call.method !== 'GET');
   assert.deepEqual(sideEffects.map((call) => `${call.method} ${new URL(call.url).pathname.split('/beek-log')[1]}`), [
-    'POST /git/blobs', 'POST /git/trees', 'POST /git/commits', 'POST /git/refs', 'POST /pulls',
+    'POST /git/trees', 'POST /git/commits', 'POST /git/refs', 'POST /pulls',
   ]);
   assert.equal(sideEffects.some((call) => call.path.includes('/refs/heads/main')), false);
   const ref = sideEffects.find((call) => call.path.endsWith('/git/refs'));
@@ -148,7 +147,7 @@ test('stale expected SHA fails before any GitHub write', async () => {
   assert.equal(fake.calls.some((call) => call.method !== 'GET'), false);
 });
 
-test('blob failure leaves no branch or PR and therefore cannot change main', async () => {
+test('tree failure leaves no branch or PR and therefore cannot change main', async () => {
   const policy = { maxOperations: 2, maxFileBytes: 100, maxTotalBytes: 200, allows: () => true };
   const input = {
     ...travelInput,
@@ -157,7 +156,6 @@ test('blob failure leaves no branch or PR and therefore cannot change main', asy
       { action: 'create', path: 'b.txt', content: 'two' },
     ],
   };
-  let blobCalls = 0;
   const calls = [];
   const fetchImpl = async (url, options = {}) => {
     const parsed = new URL(url);
@@ -165,15 +163,11 @@ test('blob failure leaves no branch or PR and therefore cannot change main', asy
     const method = options.method || 'GET';
     calls.push({ path, method });
     if (path.includes('/git/ref/heads/admin/') && method === 'GET') return response(404);
-    if (path.endsWith('/git/ref/heads/main')) return response(200, { object: { sha: A } });
-    if (path.endsWith(`/git/commits/${A}`)) return response(200, { tree: { sha: B } });
+    if (path.endsWith('/commits/main')) return response(200, { sha: A, commit: { tree: { sha: B } } });
     if (path.endsWith(`/git/trees/${B}?recursive=1`)) return response(200, {
       truncated: false, tree: [{ path: 'a.txt', type: 'blob', sha: C }],
     });
-    if (path.endsWith('/git/blobs') && method === 'POST') {
-      blobCalls += 1;
-      return blobCalls === 1 ? response(201, { sha: D }) : response(500, { message: 'failed' });
-    }
+    if (path.endsWith('/git/trees') && method === 'POST') return response(500, { message: 'failed' });
     throw new Error(`Unexpected ${method} ${path}`);
   };
   await assert.rejects(createPublication(input, { token: 'token', policy, fetchImpl }));

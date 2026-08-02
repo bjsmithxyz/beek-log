@@ -201,12 +201,13 @@ export async function createPublication(rawInput, {
   const existing = await existingPublication(client, branch, input.requestId);
   if (existing) return { ...existing, resumed: true };
 
-  const baseRef = await client.request(`/git/ref/heads/${BASE_BRANCH}`);
-  const baseSha = baseRef.object?.sha;
-  if (!SHA.test(baseSha || '')) throw new GitHubError(502);
-  const baseCommit = await client.request(`/git/commits/${baseSha}`);
-  const baseTreeSha = baseCommit.tree?.sha;
-  if (!SHA.test(baseTreeSha || '')) throw new GitHubError(502);
+  // The repository commit endpoint includes both the commit and tree SHAs.
+  // Using it avoids a separate ref + Git-commit round trip, which matters on
+  // latency-limited serverless publication requests.
+  const baseCommit = await client.request(`/commits/${BASE_BRANCH}`);
+  const baseSha = baseCommit.sha;
+  const baseTreeSha = baseCommit.commit?.tree?.sha;
+  if (!SHA.test(baseSha || '') || !SHA.test(baseTreeSha || '')) throw new GitHubError(502);
   const currentTree = await client.request(`/git/trees/${baseTreeSha}?recursive=1`);
   verifyCurrentTree(input.operations, currentTree, policy);
 
@@ -216,15 +217,13 @@ export async function createPublication(rawInput, {
       entries.push({ path: operation.path, mode: '100644', type: 'blob', sha: null });
       continue;
     }
-    let blobSha = operation.blobSha;
-    if (!blobSha) {
-      const blob = await client.request('/git/blobs', {
-        method: 'POST', body: { content: operation.content, encoding: 'utf-8' },
-      });
-      if (!SHA.test(blob.sha || '')) throw new GitHubError(502);
-      blobSha = blob.sha;
+    if (operation.blobSha) {
+      entries.push({ path: operation.path, mode: '100644', type: 'blob', sha: operation.blobSha });
+    } else {
+      // GitHub's create-tree API creates textual blobs from `content` in the
+      // same request. Binary image blobs still arrive through storeBytes.
+      entries.push({ path: operation.path, mode: '100644', type: 'blob', content: operation.content });
     }
-    entries.push({ path: operation.path, mode: '100644', type: 'blob', sha: blobSha });
   }
 
   const newTree = await client.request('/git/trees', {
