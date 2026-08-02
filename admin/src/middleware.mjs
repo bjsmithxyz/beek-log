@@ -1,10 +1,11 @@
 import { defineMiddleware } from 'astro:middleware';
 import { readSession, validateNext } from './server/auth.mjs';
+import { applyAdminSecurityHeaders } from './server/headers.mjs';
 
 function redirect(location, setCookie) {
-  const headers = new Headers({ Location: location, 'Cache-Control': 'no-store' });
+  const headers = new Headers({ Location: location });
   if (setCookie) headers.append('Set-Cookie', setCookie);
-  return new Response(null, { status: 302, headers });
+  return applyAdminSecurityHeaders(new Response(null, { status: 302, headers }));
 }
 
 export const onRequest = defineMiddleware(async (context, next) => {
@@ -24,7 +25,6 @@ export const onRequest = defineMiddleware(async (context, next) => {
   }
 
   const response = await next();
-  response.headers.set('Cache-Control', 'no-store');
   if (setCookie) response.headers.append('Set-Cookie', setCookie);
-  return response;
+  return applyAdminSecurityHeaders(response);
 });

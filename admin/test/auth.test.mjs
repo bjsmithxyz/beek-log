@@ -37,8 +37,9 @@ test('next validator permits one same-origin path slash and rejects open redirec
 test('AES-256-GCM session sealing round-trips and detects tampering', () => {
   const value = seal({ login: 'bjsmithxyz', token: 'secret-token' });
   assert.deepEqual(unseal(value), { login: 'bjsmithxyz', token: 'secret-token' });
-  const replacement = value.endsWith('a') ? 'b' : 'a';
-  assert.throws(() => unseal(value.slice(0, -1) + replacement));
+  const tampered = Buffer.from(value, 'base64url');
+  tampered[28] ^= 1;
+  assert.throws(() => unseal(tampered.toString('base64url')));
 });
 
 test('allow-list configuration contains exactly one login', () => {

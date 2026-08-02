@@ -1,4 +1,5 @@
 import crypto from 'node:crypto';
+import { applyAdminSecurityHeaders } from './headers.mjs';
 
 export const SESSION_COOKIE = '__Host-beek_session';
 export const STATE_COOKIE = '__Host-beek_oauth_state';
@@ -187,24 +188,22 @@ export function githubHeaders(token) {
 }
 
 export function json(status, body, extraHeaders = {}) {
-  return new Response(JSON.stringify(body), {
+  return applyAdminSecurityHeaders(new Response(JSON.stringify(body), {
     status,
     headers: {
       'Content-Type': 'application/json; charset=utf-8',
-      'Cache-Control': 'no-store',
-      'X-Robots-Tag': 'noindex, nofollow',
       ...extraHeaders,
     },
-  });
+  }));
 }
 
 export function redirect(location, cookies = []) {
-  const headers = new Headers({ Location: location, 'Cache-Control': 'no-store' });
+  const headers = new Headers({ Location: location });
   for (const value of cookies) if (value) headers.append('Set-Cookie', value);
-  return new Response(null, { status: 302, headers });
+  return applyAdminSecurityHeaders(new Response(null, { status: 302, headers }));
 }
 
 export function withSessionCookie(response, value) {
   if (value) response.headers.append('Set-Cookie', value);
-  return response;
+  return applyAdminSecurityHeaders(response);
 }
