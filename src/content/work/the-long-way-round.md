@@ -9,8 +9,8 @@ tags:
   - mapping
   - web-app
   - static-site
-liveUrl: "https://travel.bjsmith.xyz"
-repoUrl: "https://github.com/bjsmithxyz/long-way-round"
+liveUrl: "https://bjsmith.xyz/travel/"
+repoUrl: "https://github.com/bjsmithxyz/beek-log/tree/main/src/pages/travel"
 ---
 
 Long Way Round is an interactive record of my journey, it plots every stop on a map, tracks the route and running trip statistics, and lays the full itinerary out as a timeline.
@@ -19,8 +19,8 @@ Long Way Round is an interactive record of my journey, it plots every stop on a 
 
 Upcoming stops include seasonal weather and daylight estimates from Open-Meteo, alongside a packing cue and the pace of each leg. Past, current, and upcoming stops are derived automatically from the itinerary dates.
 
-## Editing the route
+## Under the hood
 
-The trip can be edited directly in the browser. After signing in with GitHub, stops can be added, reordered, or updated and saved back to `trips.json`; Netlify then redeploys the site. The editor can also download the data for a manual commit.
+The public map is read-only. Its itinerary lives in `src/data/trips.json`, with all date-derived state computed in the browser so the current stop and day count stay accurate between deploys.
 
-The app is built with vanilla HTML, CSS, and JavaScript, with Leaflet and OpenStreetMap for the map. There is no framework or build step.
+The app is built with Astro and a small client-side JavaScript module, with bundled Leaflet and CARTO / OpenStreetMap tiles for the map.

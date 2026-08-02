@@ -6,6 +6,14 @@
   # Astro 7 requires Node >= 22.12; tests require Node >= 22.18
   NODE_VERSION = "22"
 
+# Preserve the retired travel subdomain while moving the public app under the
+# main site's /travel path. The explicit full URL keeps the path prefix intact.
+[[redirects]]
+  from = "https://travel.bjsmith.xyz/*"
+  to = "https://bjsmith.xyz/travel/:splat"
+  status = 301
+  force = true
+
 # Redirects and headers
 [[headers]]
   for = "/*"
@@ -18,6 +26,18 @@
     # 'unsafe-inline' is required for Astro's inline theme/view-transition
     # scripts and inlined styles; acceptable on a fully static site.
     Content-Security-Policy = "default-src 'self'; script-src 'self' 'unsafe-inline'; style-src 'self' 'unsafe-inline'; img-src 'self' data:; font-src 'self'; connect-src 'self'; object-src 'none'; base-uri 'self'; form-action 'self'; frame-ancestors 'none'; upgrade-insecure-requests"
+
+# Travel alone needs external map tiles and live weather. Repeat the complete
+# policy so the site-wide rule stays unchanged for every other route.
+[[headers]]
+  for = "/travel"
+  [headers.values]
+    Content-Security-Policy = "default-src 'self'; script-src 'self' 'unsafe-inline'; style-src 'self' 'unsafe-inline'; img-src 'self' data: https://*.basemaps.cartocdn.com; font-src 'self'; connect-src 'self' https://archive-api.open-meteo.com; object-src 'none'; base-uri 'self'; form-action 'self'; frame-ancestors 'none'; upgrade-insecure-requests"
+
+[[headers]]
+  for = "/travel/*"
+  [headers.values]
+    Content-Security-Policy = "default-src 'self'; script-src 'self' 'unsafe-inline'; style-src 'self' 'unsafe-inline'; img-src 'self' data: https://*.basemaps.cartocdn.com; font-src 'self'; connect-src 'self' https://archive-api.open-meteo.com; object-src 'none'; base-uri 'self'; form-action 'self'; frame-ancestors 'none'; upgrade-insecure-requests"
 
 # Hashed build assets are immutable
 [[headers]]
@@ -39,6 +59,9 @@
 
   [[plugins.inputs.audits]]
     path = "/photos/2025-09-kodak-colorplus-200-taipei-hong-kong/"
+
+  [[plugins.inputs.audits]]
+    path = "/travel/"
 
 # 404 handling: Netlify serves /404.html for unmatched routes automatically;
 # an explicit /* redirect breaks dev-server route emulation, so don't add one.

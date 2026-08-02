@@ -17,6 +17,14 @@ The site is hosted on **Netlify**. Any push to `main` triggers a build
 - **Permissions-Policy** — camera/microphone/geolocation/browsing-topics denied.
 - **X-Frame-Options**, **X-Content-Type-Options**, **Referrer-Policy**.
 
+The `/travel` route repeats the full policy in a route-specific header rule and
+widens only `img-src` for CARTO tiles and `connect-src` for Open-Meteo. The
+site-wide policy remains unchanged.
+
+`travel.bjsmith.xyz/*` has an explicit host-specific 301 to
+`bjsmith.xyz/travel/:splat`; the full destination is intentional so Netlify
+does not drop the `/travel` prefix.
+
 ## Caching
 
 Hashed build assets under `/_assets/*` are served `immutable` with a one-year
@@ -27,8 +35,7 @@ Hashed build assets under `/_assets/*` are served `immutable` with a one-year
 Netlify Observability provides the Free plan's rolling 24-hour request view and
 requires no site code. The Lighthouse build plugin reports mobile scores for
 the homepage and one image-heavy photo roll after each deploy. It is
-reporting-only: scores do not block releases. Keep the audit set small because
-each route adds build time and consumes build credits.
+reporting-only: scores do not block releases. Audits cover the homepage, an image-heavy roll, and `/travel/`.
 
 ## Gotchas
 

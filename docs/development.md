@@ -35,6 +35,10 @@ liveUrl: "https://example.com"
 Film rolls are **not** authored by hand — use the roll-import admin documented
 in [photography.md](photography.md).
 
+The public travel itinerary lives in `src/data/trips.json`. Its shared validator
+runs under `npm test` and the public build fails if the committed data is
+malformed.
+
 ## Commands
 
 | Command | Action |

@@ -35,9 +35,9 @@ light toggle. Tokens live in `src/styles/global.css`.
 │   ├── content/
 │   │   ├── work/    # One markdown file per project/art entry
 │   │   └── photos/  # One markdown file per film roll
-│   ├── data/        # world-dots.json, locations.ts, site.ts
+│   ├── data/        # trips.json, world-dots.json, locations.ts, site.ts
 │   ├── layouts/     # BaseLayout.astro
-│   ├── pages/       # Routes: index, work, photos, about, rss.xml, 404
+│   ├── pages/       # Routes: index, work, photos, travel, about, rss.xml, 404
 │   └── styles/      # global.css (design tokens)
 ├── astro.config.mjs # Netlify adapter + sitemap
 ├── netlify.toml     # Headers, caching, build settings
@@ -65,8 +65,18 @@ Each `location` is `{ name, lat, lng }` with an optional `region` (the primary,
 e.g. a country) of the same shape — the place is the secondary. `region` is
 optional and backward compatible.
 
-Entries with `draft: true` render in the dev server but are excluded from
-production builds, RSS, and the sitemap.
+Photo entries with `draft: true` render in the dev server and Netlify Deploy
+Previews, but are excluded from production builds, RSS, and the production
+sitemap.
+
+## Travel
+
+`/travel/` is a read-only Astro page backed by `src/data/trips.json`. The shared
+trip validator runs in tests and during the build. Date-derived values — day
+count and past/current/upcoming status — are deliberately computed by the
+browser on every load, so they cannot freeze at the last deployment date.
+Leaflet is bundled from npm; only this route's CSP permits CARTO tile images and
+Open-Meteo weather requests.
 
 ## The photos map
 
