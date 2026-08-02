@@ -3,7 +3,7 @@ import { createPublication, publicationErrorResponse } from '../../src/server/pu
 import { mutationResponse, requireJsonMutation } from '../../src/server/request-guards.mjs';
 import { rollPublication } from '../../src/server/roll-publish.mjs';
 
-export default async function publishRoll(request) {
+async function publishRoll(request) {
   const context = await requireJsonMutation(request, { maxBytes: 512 * 1024 });
   if (context.response) return context.response;
   try {
@@ -21,4 +21,27 @@ export default async function publishRoll(request) {
     const failure = publicationErrorResponse(error);
     return mutationResponse(json(failure.status, failure.body), context);
   }
+}
+
+export default publishRoll;
+
+// Netlify has intermittently classified this larger bundle as a v1 Function in
+// production even though it uses the v2 default-Request form. Keep an explicit
+// v1 adapter so either runtime classification reaches the same guarded handler.
+export async function handler(event) {
+  const url = event.rawUrl || new URL(event.path || '/.netlify/functions/publish-roll', 'https://admin.bjsmith.xyz').href;
+  const method = event.httpMethod || 'GET';
+  const request = new Request(url, {
+    method,
+    headers: event.headers || {},
+    ...(['GET', 'HEAD'].includes(method) ? {} : {
+      body: event.isBase64Encoded ? Buffer.from(event.body || '', 'base64') : (event.body || ''),
+    }),
+  });
+  const response = await publishRoll(request);
+  return {
+    statusCode: response.status,
+    headers: Object.fromEntries(response.headers.entries()),
+    body: await response.text(),
+  };
 }

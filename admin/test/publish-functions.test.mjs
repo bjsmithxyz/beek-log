@@ -5,7 +5,7 @@ import publishMerge from '../netlify/functions/publish-merge.mjs';
 import publishAbandon from '../netlify/functions/publish-abandon.mjs';
 import publishStatus from '../netlify/functions/publish-status.mjs';
 import travelData from '../netlify/functions/travel-data.mjs';
-import publishRoll from '../netlify/functions/publish-roll.mjs';
+import publishRoll, { handler as legacyPublishRoll } from '../netlify/functions/publish-roll.mjs';
 import rollsData from '../netlify/functions/rolls-data.mjs';
 import rollData from '../netlify/functions/roll-data.mjs';
 import geocode from '../netlify/functions/geocode.mjs';
@@ -40,6 +40,16 @@ test('all publishing data/control functions refuse signed-out requests', async (
   assert.equal((await rollsData(new Request('https://admin.bjsmith.xyz/.netlify/functions/rolls-data'))).status, 401);
   assert.equal((await rollData(new Request('https://admin.bjsmith.xyz/.netlify/functions/roll-data?slug=test'))).status, 401);
   assert.equal((await geocode(post('geocode', { kind: 'place', query: 'London' }, false))).status, 401);
+});
+
+test('roll publisher supports Netlify v1 runtime classification', async () => {
+  const response = await legacyPublishRoll({
+    rawUrl: 'https://admin.bjsmith.xyz/.netlify/functions/publish-roll',
+    httpMethod: 'GET',
+    headers: { host: 'admin.bjsmith.xyz' },
+  });
+  assert.equal(response.statusCode, 405);
+  assert.match(response.body, /Method not allowed/);
 });
 
 test('schema failures occur before any GitHub request', async () => {
