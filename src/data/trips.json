@@ -5,16 +5,6 @@
   },
   "stops": [
     {
-      "name": "Bangkok",
-      "country": "Thailand",
-      "cc": "TH",
-      "lat": 13.7563,
-      "lon": 100.5018,
-      "arrive": "2025-06-20",
-      "depart": "2025-06-23",
-      "note": "First stop, 3 days in Bangkok."
-    },
-    {
       "name": "Koh Samui",
       "country": "Thailand",
       "cc": "TH",
@@ -22,6 +12,17 @@
       "lon": 100.0136,
       "arrive": "2025-06-23",
       "depart": "2025-06-27"
+    },
+    {
+      "name": "Bangkok",
+      "country": "Thailand",
+      "cc": "TH",
+      "lat": 13.7563,
+      "lon": 100.5018,
+      "arrive": "2025-06-20",
+      "depart": "2025-06-23",
+      "note": "First stop, 3 days in Bangkok.",
+      "tentative": false
     },
     {
       "name": "Chiang Mai",
