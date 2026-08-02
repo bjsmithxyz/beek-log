@@ -212,6 +212,13 @@ publishing branch was deleted. Independent checks confirmed:
 - the production travel bundle contains the merged itinerary change
 - the repository branch list contains only `main` after merge
 
-This proves the production branch → PR → preview → merge path. Phone-sized
-editor operation and a live abandon-without-production-change exercise remain
-the final Phase 3 gate items in `ROADMAP.md`.
+PR [#9](https://github.com/bjsmithxyz/beek-log/pull/9) then proved the abandon
+path. It was created from
+`admin/travel/8122e84b-7541-4d98-b952-e72e0be46e52`, produced an HTTP 200
+Deploy Preview, and was closed without merging. Independent checks confirmed
+that the branch was deleted, only `main` remained, and its disposable marker
+never appeared in the production itinerary.
+
+Together these checks prove the production branch → PR → preview → merge and
+abandon paths. Phase 3 closed with 95 full-suite tests, 35 admin tests, both
+builds passing, and phone/desktop editor checks accepted.

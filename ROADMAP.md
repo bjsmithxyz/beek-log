@@ -15,8 +15,8 @@ The implementation brief remains the detailed source of acceptance criteria:
 | 0 — repository foundation | Complete | Travel history imported; npm workspaces and pure `shared/` modules established |
 | 1 — public travel route | Complete | Static `/travel/` live; legacy subdomain redirects with path/query preservation |
 | 2 — admin shell and authentication | Complete | SSR admin live with GitHub App OAuth, owner allow-list, sealed sessions and public header link |
-| 3 — travel publishing | In progress — live acceptance | Publisher and responsive editor are deployed; real preview/merge and phone checks remain |
-| 4 — roll publishing | Planned | Desktop uploader/editor using the generic publisher |
+| 3 — travel publishing | Complete | PR #8 merged through preview; PR #9 abandoned without changing production |
+| 4 — roll publishing | In progress | Desktop uploader/editor using the generic publisher |
 | 5 — retirement and operations | Planned | Remove localhost publisher only after a real hosted roll succeeds |
 | 6 — image-storage migration spec | Planned, specification only | Design future object-storage migration; do not implement it here |
 
@@ -91,7 +91,7 @@ merge workflow with small, known-good JSON before the image pipeline is added.
   overwrite guards and create/update/delete combinations.
 - [x] Mock the GitHub API and verify that validation failures cause zero remote
   writes.
-- [ ] Verify stale SHAs, branch collisions, partial blob failures, failed PR
+- [x] Verify stale SHAs, branch collisions, partial blob failures, failed PR
   creation, preview failure, merge conflict and abandon behavior.
 - [x] Verify no code path writes directly to `main`.
 - [x] Test authentication, content type, method and origin failures for every
@@ -120,12 +120,12 @@ merge workflow with small, known-good JSON before the image pipeline is added.
 
 ### Phase 3 gate
 
-- [ ] `npm test` and `npm run build` pass for the public site.
-- [ ] Admin tests and build pass.
+- [x] `npm test` and `npm run build` pass for the public site.
+- [x] Admin tests and build pass.
 - [x] Real publishing creates a branch and PR, not a direct `main` commit.
 - [x] A working public Deploy Preview is reviewed before merge (PR #8).
-- [ ] Failed/abandoned publishing leaves production unchanged.
-- [ ] Phone and desktop travel-editor checks pass.
+- [x] Failed/abandoned publishing leaves production unchanged (PR #9).
+- [x] Phone and desktop travel-editor checks pass.
 
 Do not begin Phase 4 until this gate is recorded as complete.
 

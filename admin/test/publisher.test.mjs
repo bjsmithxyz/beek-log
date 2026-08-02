@@ -134,6 +134,39 @@ test('stale expected SHA fails before any GitHub write', async () => {
   assert.equal(fake.calls.some((call) => call.method !== 'GET'), false);
 });
 
+test('blob failure leaves no branch or PR and therefore cannot change main', async () => {
+  const policy = { maxOperations: 2, maxFileBytes: 100, maxTotalBytes: 200, allows: () => true };
+  const input = {
+    ...travelInput,
+    operations: [
+      { action: 'update', path: 'a.txt', expectedSha: C, content: 'one' },
+      { action: 'create', path: 'b.txt', content: 'two' },
+    ],
+  };
+  let blobCalls = 0;
+  const calls = [];
+  const fetchImpl = async (url, options = {}) => {
+    const parsed = new URL(url);
+    const path = `${parsed.pathname}${parsed.search}`;
+    const method = options.method || 'GET';
+    calls.push({ path, method });
+    if (path.includes('/git/ref/heads/admin/') && method === 'GET') return response(404);
+    if (path.endsWith('/git/ref/heads/main')) return response(200, { object: { sha: A } });
+    if (path.endsWith(`/git/commits/${A}`)) return response(200, { tree: { sha: B } });
+    if (path.endsWith(`/git/trees/${B}?recursive=1`)) return response(200, {
+      truncated: false, tree: [{ path: 'a.txt', type: 'blob', sha: C }],
+    });
+    if (path.endsWith('/git/blobs') && method === 'POST') {
+      blobCalls += 1;
+      return blobCalls === 1 ? response(201, { sha: D }) : response(500, { message: 'failed' });
+    }
+    throw new Error(`Unexpected ${method} ${path}`);
+  };
+  await assert.rejects(createPublication(input, { token: 'token', policy, fetchImpl }));
+  assert.equal(calls.some((call) => call.path.endsWith('/git/refs') && call.method === 'POST'), false);
+  assert.equal(calls.some((call) => call.path.endsWith('/pulls') && call.method === 'POST'), false);
+});
+
 test('failed PR creation removes its publishing branch and leaves main untouched', async () => {
   const fake = successfulPublisherFetch({ pullStatus: 500 });
   await assert.rejects(
@@ -196,6 +229,16 @@ test('status surfaces a Deploy Preview only after it responds', async () => {
   const status = await publicationStatus(42, { token: 'token', fetchImpl });
   assert.equal(status.preview, 'ready');
   assert.equal(calls.at(-1).method, 'HEAD');
+});
+
+test('status keeps a missing Deploy Preview pending without exposing a remote error', async () => {
+  const fetchImpl = async (url) => {
+    if (url.startsWith('https://api.github.com/')) return response(200, pull());
+    return new Response(null, { status: 404 });
+  };
+  const status = await publicationStatus(42, { token: 'token', fetchImpl });
+  assert.equal(status.preview, 'pending');
+  assert.equal(status.state, 'open');
 });
 
 test('merge requires the exact head and a ready preview, then uses the PR merge API', async () => {
