@@ -11,7 +11,8 @@
       "lat": 13.7563,
       "lon": 100.5018,
       "arrive": "2025-06-20",
-      "depart": "2025-06-23"
+      "depart": "2025-06-23",
+      "note": "First stop, 3 days in Bangkok."
     },
     {
       "name": "Koh Samui",
