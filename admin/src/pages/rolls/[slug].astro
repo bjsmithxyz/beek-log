@@ -1,12 +1,13 @@
 ---
 import AdminLayout from '../../layouts/AdminLayout.astro';
+import RollEditor from '../../components/RollEditor.astro';
 const { slug } = Astro.params;
+if (!/^[a-z0-9-]+$/.test(slug || '')) return Astro.redirect('/rolls/');
 ---
 <AdminLayout title="edit roll">
   <a class="back-link" href="/rolls/">← rolls/</a>
-  <section class="notice-panel">
-    <p class="prompt">~/beek/admin/rolls/{slug}</p>
-    <h1>editor pending</h1>
-    <p>Existing-roll loading and editing arrive in Phase 4.</p>
-  </section>
+  <RollEditor mode="edit" slug={slug} />
 </AdminLayout>
+<script>
+  import '../../scripts/roll-editor.js';
+</script>

@@ -3,10 +3,44 @@ import AdminLayout from '../../layouts/AdminLayout.astro';
 ---
 <AdminLayout title="rolls">
   <a class="back-link" href="/">← dashboard/</a>
-  <header class="page-head">
-    <p class="prompt">~/beek/admin/rolls</p>
-    <h1>film-rolls/</h1>
-    <p>The hosted uploader arrives in Phase 4. The localhost roll admin remains the publishing path until then.</p>
+  <header class="page-head rolls-head">
+    <div>
+      <p class="prompt">~/beek/admin/rolls</p>
+      <h1>film-rolls/</h1>
+      <p>Encode scans locally, then publish through a reviewed pull request.</p>
+    </div>
+    <a class="admin-button" id="new-roll-link" href="/rolls/new/">new roll →</a>
   </header>
-  <a class="admin-button" href="/rolls/new/">new roll →</a>
+
+  <section class="notice-panel unsupported" id="uploader-unsupported" hidden>
+    <h2>desktop uploader unavailable</h2>
+    <p>This browser is missing: <span id="missing-capabilities"></span>.</p>
+    <p>Use a current desktop Chromium browser for film rolls. The <a href="/travel/">travel editor remains available →</a></p>
+  </section>
+
+  <p id="roll-list-status" class="list-status" role="status">Loading committed rolls…</p>
+  <ul class="roll-list" id="roll-list"></ul>
 </AdminLayout>
+
+<script>
+  import '../../scripts/rolls-list.js';
+</script>
+
+<style>
+  .rolls-head { display: flex; align-items: end; justify-content: space-between; gap: 1rem; }
+  .rolls-head p { margin: 0; }
+  .unsupported { margin-bottom: 1.5rem; border-color: var(--amber); }
+  .unsupported h2 { margin-bottom: .5rem; color: var(--amber); }
+  .list-status { color: var(--text-muted); font-size: .75rem; }
+  .roll-list { list-style: none; border-top: 1px solid var(--border); }
+  .roll-list li { border-bottom: 1px solid var(--border); }
+  .roll-list a { display: block; padding: .7rem .5rem; color: var(--text-soft); font-size: .8rem; }
+  .roll-list a::before { content: 'src/content/photos/'; color: var(--text-muted); }
+  .roll-list a::after { content: '.md'; color: var(--text-muted); }
+  .roll-list a:hover { color: var(--accent); background: var(--panel); }
+  @media (max-width: 600px) {
+    .rolls-head { align-items: stretch; flex-direction: column; }
+    .rolls-head .admin-button { text-align: center; }
+    .roll-list a::before { content: ''; }
+  }
+</style>

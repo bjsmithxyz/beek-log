@@ -1,0 +1,208 @@
+---
+interface Props {
+  mode: 'create' | 'edit';
+  slug?: string;
+}
+const { mode, slug = '' } = Astro.props;
+---
+<section id="roll-editor-root" data-mode={mode} data-slug={slug}>
+  <section class="notice-panel unsupported" id="uploader-unsupported" hidden>
+    <h1>desktop uploader unavailable</h1>
+    <p>This browser cannot run the local image pipeline. Missing: <span id="missing-capabilities"></span>.</p>
+    <p>Use a current desktop Chromium browser, or continue with the <a href="/travel/">travel editor →</a></p>
+  </section>
+
+  <div id="uploader-supported" hidden>
+    <header class="page-head roll-head">
+      <div>
+        <p class="prompt">~/beek/admin/rolls/{mode === 'create' ? 'new' : slug}</p>
+        <h1>{mode === 'create' ? 'new-roll/' : 'edit-roll/'}</h1>
+        <p id="roll-status" role="status">Preparing the desktop uploader…</p>
+      </div>
+      <div class="head-actions">
+        {mode === 'edit' && <button class="danger-button" id="delete-roll" type="button" disabled>delete roll</button>}
+        <button class="admin-button" id="review-roll" type="button" disabled>review changes →</button>
+      </div>
+    </header>
+
+    <section class="error-panel" id="roll-errors" role="alert" hidden>
+      <h2>fix these fields</h2>
+      <ul id="roll-error-list"></ul>
+    </section>
+
+    <fieldset id="roll-form" disabled>
+      <legend class="sr-only">Film roll editor</legend>
+
+      <section class="editor-panel">
+        <div class="section-heading">
+          <div><span class="section-path">source/images</span><h2>scans</h2></div>
+          <button class="small-button" id="pick-folder" type="button">choose folder</button>
+        </div>
+        <p class="hint">Folder convention: <code>YYYY-MM-DD - film-stock-slug-ISO</code>. Images are encoded locally; originals never leave the browser.</p>
+        <div class="progress-track" aria-hidden="true"><span id="encode-progress"></span></div>
+        <p class="progress-label" id="encode-label"></p>
+      </section>
+
+      <section class="editor-panel">
+        <div class="section-heading">
+          <div><span class="section-path">frontmatter</span><h2>roll metadata</h2></div>
+          <label class="draft-toggle"><input id="roll-draft" type="checkbox"> draft</label>
+        </div>
+        <div class="metadata-grid">
+          <label class="wide"><span>title</span><input id="roll-title" maxlength="160" required></label>
+          <label><span>film stock</span><select id="roll-stock" required></select></label>
+          <label><span>date</span><input id="roll-date" type="date" required></label>
+          <label><span>detected ISO</span><input id="roll-iso" readonly placeholder="—"></label>
+          <label class="wide"><span>slug</span><input id="roll-slug" pattern="[a-z0-9-]+" required></label>
+          <div class="wide location-row">
+            <div><span class="field-label">primary location</span><p id="roll-location-display">(none set)</p></div>
+            <button class="small-button" id="set-roll-location" type="button">set location</button>
+          </div>
+          <label class="wide"><span>roll notes (Markdown)</span><textarea id="roll-body" maxlength="20000" rows="4"></textarea></label>
+        </div>
+      </section>
+
+      <section class="editor-panel frames-panel">
+        <div class="section-heading frames-heading">
+          <div><span class="section-path">photos[]</span><h2>frames <span id="frame-count">(0)</span></h2></div>
+          <div class="frame-tools">
+            <button class="small-button" id="select-all-frames" type="button">select all</button>
+            <button class="small-button" id="bulk-frame-location" type="button">set selected location</button>
+          </div>
+        </div>
+        <p class="hint">Drag frames or use arrow buttons to reorder. Setting one frame location fills forward until the next explicit location.</p>
+        <div class="frame-grid" id="frame-grid"></div>
+      </section>
+    </fieldset>
+
+    <section class="review-panel" id="roll-review" hidden tabindex="-1">
+      <span class="section-path">publication/review</span>
+      <h2>review roll publication</h2>
+      <p id="roll-review-summary"></p>
+      <p>New scans are stored as unreferenced GitHub blobs first. One later commit atomically applies every image, Markdown, rename, or deletion on a review branch.</p>
+      <div class="actions">
+        <button class="admin-button secondary" id="cancel-roll-review" type="button">keep editing</button>
+        <button class="admin-button" id="publish-roll" type="button">upload + create pull request →</button>
+      </div>
+    </section>
+
+    <section class="publication-panel" id="roll-publication" hidden>
+      <span class="section-path">publication/status</span>
+      <h2>roll publication</h2>
+      <p id="roll-publication-status" role="status"></p>
+      <div class="progress-track" aria-hidden="true"><span id="upload-progress"></span></div>
+      <dl class="publication-links">
+        <div><dt>pull request</dt><dd><a id="roll-pr" target="_blank" rel="noopener">waiting…</a></dd></div>
+        <div><dt>deploy preview</dt><dd><a id="roll-preview" target="_blank" rel="noopener">waiting for Netlify…</a></dd></div>
+      </dl>
+      <div class="actions">
+        <button class="admin-button secondary" id="refresh-roll-publication" type="button">refresh status</button>
+        <button class="danger-button" id="abandon-roll-publication" type="button">abandon</button>
+        <button class="admin-button" id="merge-roll-publication" type="button" disabled>merge to main →</button>
+      </div>
+    </section>
+  </div>
+</section>
+
+<dialog id="location-dialog" class="admin-dialog">
+  <div class="dialog-head"><div><span class="section-path">location/picker</span><h2>set location</h2></div><button id="close-location" type="button" aria-label="Close">×</button></div>
+  <div class="search-row"><input id="location-search" placeholder="search place…"><button class="small-button" id="search-location" type="button">search</button></div>
+  <p id="location-message" class="hint" role="status"></p>
+  <ul id="location-results" class="location-results"></ul>
+  <div id="location-chips" class="location-chips"></div>
+  <div id="location-map" class="location-map"></div>
+  <div class="location-fields">
+    <label class="wide"><span>place</span><input id="location-name" maxlength="160"></label>
+    <label><span>latitude</span><input id="location-lat" type="number" min="-90" max="90" step="any"></label>
+    <label><span>longitude</span><input id="location-lng" type="number" min="-180" max="180" step="any"></label>
+    <label class="wide"><span>region / country</span><input id="location-region" maxlength="160"></label>
+  </div>
+  <div class="actions dialog-actions"><button class="admin-button" id="use-location" type="button">use location</button></div>
+</dialog>
+
+<dialog id="image-preview" class="image-dialog">
+  <button id="close-image-preview" type="button" aria-label="Close preview">×</button>
+  <img id="preview-image" alt="">
+</dialog>
+
+<style>
+  .sr-only { position: absolute; width: 1px; height: 1px; padding: 0; margin: -1px; overflow: hidden; clip: rect(0,0,0,0); white-space: nowrap; border: 0; }
+  .unsupported { border-color: var(--amber); }
+  .roll-head { display: flex; align-items: end; justify-content: space-between; gap: 1rem; }
+  .roll-head p { margin: 0; }
+  .head-actions, .actions, .frame-tools, .search-row { display: flex; flex-wrap: wrap; gap: .6rem; }
+  .danger-button, .small-button { padding: .45rem .65rem; border: 1px solid var(--border-strong); background: var(--panel-strong); color: var(--text-soft); }
+  .danger-button { color: #ff8e8e; border-color: #994444; }
+  .danger-button:hover { color: var(--bg); border-color: #ff6b6b; background: #ff6b6b; }
+  .small-button:hover { color: var(--accent); border-color: var(--accent); }
+  button:disabled { cursor: not-allowed; opacity: .45; box-shadow: none; }
+  fieldset { min-width: 0; border: 0; }
+  fieldset:disabled { opacity: .65; }
+  .editor-panel, .review-panel, .publication-panel { margin-bottom: 1rem; padding: 1rem; border: 1px solid var(--border); background: var(--panel); box-shadow: var(--shadow); }
+  .section-heading { display: flex; align-items: center; justify-content: space-between; gap: 1rem; margin-bottom: .8rem; }
+  .section-heading h2 { font-size: 1rem; }
+  .section-path { color: var(--text-muted); font-size: .67rem; }
+  .hint, .progress-label { margin: .3rem 0 .7rem; color: var(--text-muted); font-size: .7rem; }
+  code { color: var(--text-soft); }
+  label { display: grid; gap: .3rem; min-width: 0; color: var(--text-muted); font-size: .68rem; }
+  input, select, textarea { width: 100%; min-width: 0; padding: .52rem .6rem; border: 1px solid var(--border); border-radius: 0; background: var(--bg); color: var(--text); font: inherit; }
+  input:focus, select:focus, textarea:focus { border-color: var(--accent); }
+  input[type='checkbox'] { width: 1rem; height: 1rem; accent-color: var(--accent); }
+  textarea { resize: vertical; }
+  .draft-toggle { display: flex; grid-auto-flow: column; align-items: center; gap: .45rem; }
+  .metadata-grid { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: .7rem; }
+  .metadata-grid .wide { grid-column: span 2; }
+  .location-row { display: flex; align-items: end; justify-content: space-between; gap: .75rem; padding: .6rem; border: 1px solid var(--border); }
+  .field-label { color: var(--text-muted); font-size: .68rem; }
+  .location-row p { margin: .2rem 0 0; color: var(--text-soft); font-size: .78rem; }
+  .frames-heading { align-items: end; }
+  .frame-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(190px, 1fr)); gap: .75rem; }
+  :global(.roll-frame) { min-width: 0; padding: .55rem; border: 1px solid var(--border); background: var(--bg); }
+  :global(.roll-frame.dragover) { border-color: var(--accent); box-shadow: 2px 2px 0 var(--accent); }
+  :global(.frame-head) { display: flex; justify-content: space-between; gap: .4rem; align-items: center; margin-bottom: .4rem; }
+  :global(.frame-number) { color: var(--amber); font-size: .7rem; }
+  :global(.frame-actions) { display: flex; gap: .2rem; }
+  :global(.frame-actions button) { width: 1.7rem; height: 1.7rem; padding: 0; border: 1px solid var(--border); background: var(--panel); color: var(--text-muted); }
+  :global(.frame-actions button:hover) { color: var(--accent); border-color: var(--accent); }
+  :global(.frame-image) { width: 100%; aspect-ratio: 3 / 2; display: block; object-fit: cover; border: 0; background: var(--panel); cursor: zoom-in; }
+  :global(.frame-fields) { display: grid; gap: .35rem; margin-top: .45rem; }
+  :global(.frame-fields input) { font-size: .68rem; padding: .35rem; }
+  :global(.frame-location) { overflow: hidden; color: var(--text-muted); font-size: .65rem; text-overflow: ellipsis; white-space: nowrap; }
+  :global(.frame-select) { display: flex; align-items: center; gap: .3rem; }
+  .error-panel { margin-bottom: 1rem; padding: 1rem; border: 1px solid #ff6b6b; background: var(--panel); color: #ff9d9d; }
+  .error-panel h2 { margin-bottom: .4rem; color: #ff6b6b; }
+  .error-panel ul { padding-left: 1.2rem; font-size: .75rem; }
+  .review-panel { border-color: var(--amber); box-shadow: 3px 3px 0 var(--amber); }
+  .publication-panel { border-color: var(--blue); box-shadow: 3px 3px 0 var(--blue); }
+  .review-panel h2, .publication-panel h2 { margin: .35rem 0 .7rem; }
+  .publication-links { margin: 1rem 0; border-top: 1px solid var(--border); }
+  .publication-links div { display: grid; grid-template-columns: 9rem 1fr; gap: .6rem; padding: .6rem 0; border-bottom: 1px solid var(--border); }
+  .publication-links dt { color: var(--text-muted); font-size: .68rem; }
+  .publication-links dd { min-width: 0; overflow-wrap: anywhere; font-size: .75rem; }
+  .progress-track { height: 4px; overflow: hidden; background: var(--border); }
+  .progress-track span { display: block; width: 0; height: 100%; background: var(--accent); transition: width .15s linear; }
+  .admin-dialog { width: min(620px, calc(100vw - 2rem)); max-height: calc(100vh - 2rem); padding: 1rem; overflow: auto; border: 1px solid var(--border-strong); background: var(--bg); color: var(--text); box-shadow: 5px 5px 0 var(--accent); }
+  .admin-dialog::backdrop, .image-dialog::backdrop { background: rgba(0,0,0,.82); }
+  .dialog-head { display: flex; justify-content: space-between; align-items: start; margin-bottom: .7rem; }
+  .dialog-head button, .image-dialog button { border: 1px solid var(--border); background: var(--panel); color: var(--text); width: 2rem; height: 2rem; }
+  .search-row input { flex: 1; }
+  .location-results { list-style: none; margin: .4rem 0; }
+  .location-results button { width: 100%; padding: .45rem; text-align: left; border: 1px solid var(--border); background: var(--panel); color: var(--text-soft); }
+  .location-results button:hover { color: var(--accent); border-color: var(--accent); }
+  .location-chips { display: flex; flex-wrap: wrap; gap: .3rem; margin: .4rem 0; }
+  .location-chips button { padding: .25rem .4rem; border: 1px solid var(--border); background: var(--panel); color: var(--text-muted); font-size: .65rem; }
+  .location-map { height: 270px; margin: .6rem 0; border: 1px solid var(--border); }
+  .location-fields { display: grid; grid-template-columns: 1fr 1fr; gap: .6rem; }
+  .location-fields .wide { grid-column: span 2; }
+  .dialog-actions { justify-content: flex-end; margin-top: .7rem; }
+  .image-dialog { width: min(1100px, calc(100vw - 2rem)); height: min(90vh, 850px); padding: .5rem; border: 1px solid var(--border-strong); background: #050505; }
+  .image-dialog button { position: absolute; top: .7rem; right: .7rem; z-index: 2; }
+  .image-dialog img { width: 100%; height: 100%; object-fit: contain; }
+
+  @media (max-width: 760px) {
+    .roll-head { align-items: stretch; flex-direction: column; }
+    .head-actions > * { flex: 1; }
+    .metadata-grid { grid-template-columns: 1fr 1fr; }
+    .metadata-grid .wide { grid-column: span 2; }
+  }
+</style>
