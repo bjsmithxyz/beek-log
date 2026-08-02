@@ -2,30 +2,38 @@
 
 ## Cursor Cloud specific instructions
 
-This repo is a single Astro 7 static site (`bjsmith.xyz`), package manager is **npm**
-(`package-lock.json`). There is no database or backend service — all content is
-file-based Markdown under `src/content/`. Standard commands live in `package.json`
-and `docs/development.md`; don't duplicate them here.
+This repo is an npm-workspace monorepo with two Astro 7 sites and one pure
+shared package:
 
-### Node version (important gotcha)
-- Tests require **Node >= 22.18** because `src/data/locations.test.mjs` imports a
-  `.ts` file (`./locations.ts`) directly, relying on Node's native type stripping
-  (enabled by default only in 22.18+). `package.json` engines says `>=22.18.0`; the
-  older `/exec-daemon/node` (22.14) on this VM makes `npm test` fail with
-  `ERR_UNKNOWN_FILE_EXTENSION`.
-- The environment has nvm with a default Node 22 (>=22.18) installed. Fresh shells
-  source `~/.bashrc`, which re-prepends nvm's default Node ahead of `/exec-daemon`,
-  so `node`/`npm`/`npm test` resolve to the correct version automatically. If a
-  long-lived shell still shows the old version, run `nvm use default` (or open a new
-  shell) before running tests.
+- repo root → static public site (`bjsmith.xyz`)
+- `admin/` → SSR admin site (`admin.bjsmith.xyz`)
+- `shared/` → authoring rules imported by both
+
+Content remains file-based under `src/content/` and `src/data/`; there is no
+database. The legacy localhost roll tool remains under `scripts/admin/` until
+the hosted uploader publishes a real roll end to end.
+
+### Node version
+
+- Tests require **Node >= 22.18** because Node imports shared `.ts` files
+  directly using native type stripping. `package.json` engines is authoritative.
 
 ### Running / testing
-- `npm run dev` serves the site at `http://localhost:4321` (Astro). Draft entries
-  (`draft: true`) render in dev only.
-- `npm test` runs `node --test` over `*.test.mjs` (pure logic, no server needed).
-- `npm run build` does a Netlify-adapter production build to `./dist/`.
-- There is **no lint script**; `astro check` is not configured (no `@astrojs/check`
-  dependency), so treat `npm test` + `npm run build` as the verification gate.
-- `npm run admin` (dev-only roll-import CMS at `127.0.0.1:4322`) is optional and only
-  needed for the photography authoring workflow; its commit/push step needs `gh` and
-  geocoding hits `nominatim.openstreetmap.org`.
+
+Public site:
+
+- `npm run dev` → `http://localhost:4321`
+- `npm test`
+- `npm run build` → `./dist/`
+- `npm run test:travel-clock` after a build verifies browser-derived travel dates
+
+Admin workspace:
+
+- `npm run dev --workspace @beek/admin`
+- `npm test --workspace @beek/admin`
+- `npm run build --workspace @beek/admin` → `./admin/dist/`
+
+The admin needs the variables listed in `admin/.env.example` for live OAuth.
+Neither site has lint or `astro check`; tests plus builds are the verification
+gate. The local `npm run admin` workflow still needs `gh`, Sharp and filesystem
+access until Phase 5 retirement.

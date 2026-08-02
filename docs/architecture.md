@@ -2,8 +2,8 @@
 
 ## Stack
 
-- **[Astro 7](https://astro.build)** — static-first site generator. Every page
-  is prerendered to HTML at build time.
+- **[Astro 7](https://astro.build)** — the public site's pages are prerendered;
+  the isolated admin workspace uses Astro SSR.
 - **[@astrojs/netlify](https://docs.astro.build/en/guides/integrations-guide/netlify/)**
   adapter — routes `astro:assets` images through the Netlify Image CDN in
   production (see [images-and-assets.md](images-and-assets.md)).
@@ -25,7 +25,7 @@ light toggle. Tokens live in `src/styles/global.css`.
 ├── public/          # Static assets (favicons, robots.txt, og-image)
 ├── scripts/         # Maintenance + the roll-import admin (see photography.md)
 ├── shared/          # Pure authoring rules used by public + admin tooling
-├── admin/           # Workspace reserved for the hosted admin site
+├── admin/           # Astro SSR admin + Netlify Functions
 ├── docs/            # This documentation
 ├── src/
 │   ├── assets/
@@ -41,8 +41,18 @@ light toggle. Tokens live in `src/styles/global.css`.
 │   └── styles/      # global.css (design tokens)
 ├── astro.config.mjs # Netlify adapter + sitemap
 ├── netlify.toml     # Headers, caching, build settings
-└── package.json
+└── package.json     # npm workspace root
 ```
+
+## Site boundary
+
+The public site remains prerendered, secret-free and unaware of sessions. The
+admin is a separate Netlify site built from `admin/`; its middleware protects
+all tool routes and its functions own GitHub App OAuth. Session cookies are
+host-only to `admin.bjsmith.xyz` and never sent to the public origin.
+
+`shared/` is an npm workspace package containing pure film, slug, Markdown,
+location and trip rules. It has no Astro or Node I/O dependencies.
 
 ## Content collections
 

@@ -47,8 +47,11 @@ malformed.
 | `npm run build` | Build the production site to `./dist/` |
 | `npm run preview` | Preview the production build locally |
 | `npm run astro ...` | Run Astro CLI commands |
-| `npm run admin` | Roll-import admin at `127.0.0.1:4322` (create/edit rolls) |
-| `npm test` | Run the unit test suite |
+| `npm run admin` | Legacy localhost roll admin at `127.0.0.1:4322` |
+| `npm test` | Run the full workspace-aware unit suite |
+| `npm run dev --workspace @beek/admin` | Admin SSR dev server |
+| `npm test --workspace @beek/admin` | Admin-focused tests |
+| `npm run build --workspace @beek/admin` | Build the admin site to `admin/dist/` |
 | `node scripts/compress-images.mjs [dir]` | Compress source images in place |
 
 ## Tests
@@ -62,6 +65,8 @@ files. Coverage focuses on the pure logic behind the roll admin and the map:
   processing, and the temp-dir rebuild used when reordering/adding/removing
   frames.
 - `src/data/locations.test.mjs` — `effectiveLocations` de-duplication.
+- `admin/test/` — redirect validation, session sealing/refresh, OAuth login and
+  logout request guards.
 
 The Astro pages and the admin's browser UI are verified by building and by
 running the admin locally; they are not unit-tested.

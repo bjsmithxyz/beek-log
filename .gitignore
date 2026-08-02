@@ -3,3 +3,6 @@ dist
 .astro
 .netlify
 scripts/admin/.admin.log
+.env
+.env.*
+!.env.example

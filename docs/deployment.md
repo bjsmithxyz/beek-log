@@ -1,8 +1,26 @@
 # Deployment
 
-The site is hosted on **Netlify**. Any push to `main` triggers a build
-(`npm run build`) and deploy. Configuration lives in `netlify.toml` and
-`astro.config.mjs`.
+Two **Netlify** sites watch this repository:
+
+- public: repo root, configured by `netlify.toml`
+- admin: `admin/` base directory, configured by `admin/netlify.toml`
+
+Build-ignore rules keep public content commits from rebuilding the admin and
+admin-only commits from rebuilding the public site. Changes under `shared/` or
+the workspace lockfile rebuild both.
+
+## Admin deployment
+
+The admin is SSR and requires the variables in `admin/.env.example`, configured
+on the admin Netlify site only. It uses a GitHub App installed solely on
+`bjsmithxyz/beek-log`; user-to-server tokens are sealed into a 24-hour host-only
+cookie and refreshed before their eight-hour expiry. The admin configuration
+sets `noindex`, a disallow-all `robots.txt`, `no-store`, frame denial and a CSP
+with no inline or external scripts.
+
+Because the public HSTS policy includes subdomains, `admin.bjsmith.xyz` must
+have a valid Netlify certificate before its DNS record or public header link is
+activated.
 
 ## Security headers
 
