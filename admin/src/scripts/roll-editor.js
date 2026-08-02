@@ -298,22 +298,21 @@ function filesFromDirectoryInput() {
     input.hidden = true;
     document.body.append(input);
     let settled = false;
-    const finish = () => {
+    const finish = (cancelled = false) => {
       if (settled) return;
       settled = true;
       const selected = [...input.files];
       const relativePath = selected[0]?.webkitRelativePath || '';
       input.remove();
-      resolve({
+      resolve(cancelled ? null : {
         name: relativePath.split('/')[0] || 'scans',
         files: selected
           .filter((file) => /\.(jpe?g|png|webp)$/i.test(file.name))
           .sort((a, b) => a.name.localeCompare(b.name, undefined, { numeric: true })),
       });
     };
-    input.addEventListener('change', finish, { once: true });
-    input.addEventListener('cancel', finish, { once: true });
-    window.addEventListener('focus', () => setTimeout(finish, 300), { once: true });
+    input.addEventListener('change', () => finish(false), { once: true });
+    input.addEventListener('cancel', () => finish(true), { once: true });
     input.click();
   });
 }
@@ -327,6 +326,7 @@ async function pickFolder() {
     } else {
       folder = await filesFromDirectoryInput();
     }
+    if (!folder) return;
     const { files } = folder;
     if (!files.length) throw new Error('No browser-decodable JPEG, PNG, or WebP images found.');
     const parsed = parseFolderName(folder.name, filmStocks);
