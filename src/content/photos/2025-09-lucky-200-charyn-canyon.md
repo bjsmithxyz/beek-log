@@ -1,7 +1,7 @@
 ---
 title: Charyn Canyon
 stock: lucky-200
-date: 2025-09-10
+date: 2025-09-08
 location:
   name: Almaty Region
   lat: 43.3249952
