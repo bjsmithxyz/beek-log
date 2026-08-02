@@ -1,5 +1,5 @@
 import rss from '@astrojs/rss';
-import { getFilmStock } from '../data/film-stocks';
+import { getFilmStock } from '@beek/shared/film-stocks';
 import { getWorkEntries, getPhotoRolls } from '../lib/collections';
 
 export async function GET(context) {

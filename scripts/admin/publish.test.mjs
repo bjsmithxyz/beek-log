@@ -5,7 +5,7 @@ import { tmpdir } from 'node:os';
 import { join } from 'node:path';
 import sharp from 'sharp';
 import { writeRollFiles, checkGitHubAuth, gitPublish } from './publish.mjs';
-import { parseRollMarkdown } from './lib.mjs';
+import { parseRollMarkdown } from '@beek/shared/roll-markdown';
 
 async function makeImage(path, color) {
   await sharp({ create: { width: 100, height: 100, channels: 3, background: color } })

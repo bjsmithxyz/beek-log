@@ -7,7 +7,7 @@ import { fileURLToPath } from 'node:url';
 import { basename, dirname, join } from 'node:path';
 import { randomUUID } from 'node:crypto';
 import { tmpdir } from 'node:os';
-import { filmStocks } from '../../src/data/film-stocks.ts';
+import { filmStocks } from '@beek/shared/film-stocks';
 import sharp from 'sharp';
 import { crossOriginError, parseFolderName, parseRollMarkdown, rollInputErrors, validatePreviewPath } from './lib.mjs';
 import { writeRollFiles, gitPublish, checkGitHubAuth } from './publish.mjs';
@@ -258,11 +258,11 @@ route('GET', /^\/app\.js$/, async (req, res) => {
 });
 
 route('GET', /^\/slug\.mjs$/, async (req, res) => {
-  send(res, 200, await readFile(join(__dirname, 'slug.mjs')), 'text/javascript');
+  send(res, 200, await readFile(join(repoRoot, 'shared/slug.mjs')), 'text/javascript');
 });
 
 route('GET', /^\/loc-utils\.mjs$/, async (req, res) => {
-  send(res, 200, await readFile(join(__dirname, 'loc-utils.mjs')), 'text/javascript');
+  send(res, 200, await readFile(join(repoRoot, 'shared/loc-utils.mjs')), 'text/javascript');
 });
 
 route('POST', /^\/api\/publish$/, async (req, res) => {

@@ -1,6 +1,6 @@
 import { defineCollection, z } from 'astro:content';
 import { glob } from 'astro/loaders';
-import { filmStocks } from './data/film-stocks';
+import { filmStocks } from '@beek/shared/film-stocks';
 
 const workCollection = defineCollection({
   loader: glob({ pattern: '**/*.md', base: './src/content/work' }),
@@ -41,7 +41,7 @@ const photosCollection = defineCollection({
   schema: ({ image }) => z.object({
     title: z.string(),
     stock: z.string().refine((s): s is keyof typeof filmStocks => s in filmStocks, {
-      message: 'unknown film stock slug — add it to src/data/film-stocks.ts',
+      message: 'unknown film stock slug — add it to shared/film-stocks.ts',
     }),
     date: z.coerce.date(),
     location: locationSchema,

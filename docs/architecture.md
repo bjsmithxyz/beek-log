@@ -24,6 +24,8 @@ light toggle. Tokens live in `src/styles/global.css`.
 /
 ├── public/          # Static assets (favicons, robots.txt, og-image)
 ├── scripts/         # Maintenance + the roll-import admin (see photography.md)
+├── shared/          # Pure authoring rules used by public + admin tooling
+├── admin/           # Workspace reserved for the hosted admin site
 ├── docs/            # This documentation
 ├── src/
 │   ├── assets/
@@ -33,7 +35,7 @@ light toggle. Tokens live in `src/styles/global.css`.
 │   ├── content/
 │   │   ├── work/    # One markdown file per project/art entry
 │   │   └── photos/  # One markdown file per film roll
-│   ├── data/        # film-stocks.ts, world-dots.json, locations.ts
+│   ├── data/        # world-dots.json, locations.ts, site.ts
 │   ├── layouts/     # BaseLayout.astro
 │   ├── pages/       # Routes: index, work, photos, about, rss.xml, 404
 │   └── styles/      # global.css (design tokens)
@@ -54,7 +56,7 @@ rendered with `render(entry)` from `astro:content`.
 `images` gallery.
 
 **`photos`** — one entry per developed film roll. Fields: `title`, `stock`
-(a slug validated against `src/data/film-stocks.ts`), `date`, roll-level
+(a slug validated against `shared/film-stocks.ts`), `date`, roll-level
 `location` (`{ name, lat, lng }`), `draft`, and `photos[]` where each frame has
 `src`, `alt`, optional `caption`, and an optional per-photo `location` override.
 See [photography.md](photography.md).

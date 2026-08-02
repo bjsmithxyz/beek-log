@@ -297,7 +297,7 @@ $('scan').onclick = async () => {
   } catch (e) { logErr('scan error: ' + e.message); }
 };
 
-// Slug helpers live in lib.mjs (Cyrillic-aware) so create + edit stay in sync.
+// Shared slug helpers are Cyrillic-aware, so create + edit stay in sync.
 function refreshSlug() {
   if (mode === 'edit') return;
   const date = $('date').value, stock = $('stock').value;

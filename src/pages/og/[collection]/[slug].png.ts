@@ -1,5 +1,5 @@
 import type { APIRoute, GetStaticPaths } from 'astro';
-import { getFilmStock } from '../../../data/film-stocks';
+import { getFilmStock } from '@beek/shared/film-stocks';
 import { getWorkEntries, getPhotoRolls } from '../../../lib/collections';
 import { ogCardPng, type OgCardOptions } from '../../../lib/og-card';
 

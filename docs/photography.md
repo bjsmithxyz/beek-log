@@ -53,7 +53,7 @@ reordering never corrupts the set.
 
 ## Film stocks
 
-Stocks live in `src/data/film-stocks.ts`, keyed by slug. Each has a display
+Stocks live in `shared/film-stocks.ts`, keyed by slug. Each has a display
 `name` (kept verbatim, including non-Latin names) and a `type` — `color` or
 `bw` — which sets the contact-sheet edge-marking colour (orange for colour
 negative, grey for B&W rebate). Add a new stock here before importing a roll

@@ -52,10 +52,11 @@ in [photography.md](photography.md).
 `npm test` runs Node's built-in test runner (`node --test`) over the `*.test.mjs`
 files. Coverage focuses on the pure logic behind the roll admin and the map:
 
-- `scripts/admin/lib.test.mjs` — folder-name parsing, slug derivation, and the
-  roll-markdown build/parse round-trip.
-- `scripts/admin/publish.test.mjs` — frame processing and the temp-dir rebuild
-  used when reordering/adding/removing frames.
+- `shared/*.test.mjs` — folder-name parsing, slug derivation, roll-Markdown
+  round-trips, location helpers, constants, and trip validation.
+- `scripts/admin/lib.test.mjs` / `publish.test.mjs` — localhost guards, frame
+  processing, and the temp-dir rebuild used when reordering/adding/removing
+  frames.
 - `src/data/locations.test.mjs` — `effectiveLocations` de-duplication.
 
 The Astro pages and the admin's browser UI are verified by building and by

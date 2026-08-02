@@ -7,7 +7,7 @@
 import sharp from 'sharp';
 import { readdir, stat, rename, unlink } from 'node:fs/promises';
 import { join } from 'node:path';
-import { MAX_EDGE } from '../src/data/images.ts';
+import { MAX_EDGE } from '@beek/shared/image-constants';
 
 const dir = process.argv[2] ?? 'src/assets/images';
 

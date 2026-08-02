@@ -3,7 +3,7 @@ import BaseLayout from '../../layouts/BaseLayout.astro';
 import FilmStrip from '../../components/FilmStrip.astro';
 import Lightbox from '../../components/Lightbox.astro';
 import { render, type CollectionEntry } from 'astro:content';
-import { getFilmStock } from '../../data/film-stocks';
+import { getFilmStock } from '@beek/shared/film-stocks';
 import { getPhotoRolls } from '../../lib/collections';
 import { formatLongDate, formatFilmEdgeDate } from '../../lib/dates';
 

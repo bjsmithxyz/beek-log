@@ -5,8 +5,8 @@ import { mkdir, rm, rename, copyFile, writeFile } from 'node:fs/promises';
 import { join } from 'node:path';
 import { execFile } from 'node:child_process';
 import { promisify } from 'node:util';
-import { buildRollMarkdown } from './lib.mjs';
-import { MAX_EDGE } from '../../src/data/images.ts';
+import { buildRollMarkdown } from '@beek/shared/roll-markdown';
+import { MAX_EDGE } from '@beek/shared/image-constants';
 
 const exec = promisify(execFile);
 

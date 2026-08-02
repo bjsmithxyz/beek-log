@@ -1,0 +1,17 @@
+{
+  "name": "@beek/shared",
+  "private": true,
+  "type": "module",
+  "exports": {
+    "./film-stocks": "./film-stocks.ts",
+    "./folder-name": "./folder-name.mjs",
+    "./image-constants": "./image-constants.ts",
+    "./loc-utils": "./loc-utils.mjs",
+    "./roll-markdown": "./roll-markdown.mjs",
+    "./slug": "./slug.mjs",
+    "./trip-validation": "./trip-validation.mjs"
+  },
+  "dependencies": {
+    "yaml": "^2.9.0"
+  }
+}
