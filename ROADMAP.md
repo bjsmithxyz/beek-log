@@ -133,8 +133,8 @@ Do not begin Phase 4 until this gate is recorded as complete.
 
 ### 4.1 Capability gate and image storage boundary
 
-- [x] Detect desktop pointer/viewport, File System Access API, Web Worker,
-  WebAssembly and required image APIs before showing the uploader.
+- [x] Detect desktop pointer/viewport, native File System Access or directory
+  input, Web Worker, WebAssembly and required image APIs before showing the uploader.
 - [x] On unsupported devices, show a clear desktop requirement and a working
   link to the travel editor.
 - [x] Define one replaceable `storeBytes` module that accepts encoded bytes and

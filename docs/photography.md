@@ -8,8 +8,9 @@ number, date, and that frame's location.
 
 The hosted desktop uploader is available at
 `https://admin.bjsmith.xyz/rolls/`. It requires the authenticated owner and a
-current desktop Chromium browser with the File System Access API, Workers,
-WebAssembly, `createImageBitmap`, and `OffscreenCanvas`. Unsupported/mobile
+current desktop browser with a native folder picker (File System Access or a
+directory-input fallback), Workers, WebAssembly, `createImageBitmap`, and
+`OffscreenCanvas`. Unsupported/mobile
 browsers fail closed and link to the travel editor.
 
 ## Hosted roll workflow (Phase 4 beta)

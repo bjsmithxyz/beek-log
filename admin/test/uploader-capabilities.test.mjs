@@ -15,3 +15,13 @@ test('desktop uploader capability gate requires every image-pipeline primitive',
   assert.equal(missing.supported, false);
   assert.deepEqual(missing.missing, ['directoryPicker', 'offscreenCanvas']);
 });
+
+test('directory input is an accepted fallback when File System Access is unavailable', () => {
+  const fallback = {
+    ...complete,
+    showDirectoryPicker: undefined,
+    document: { createElement: () => ({ webkitdirectory: false }) },
+  };
+  assert.equal(uploaderCapabilities(fallback).supported, true);
+  assert.equal(uploaderCapabilities(fallback).checks.directoryPicker, true);
+});

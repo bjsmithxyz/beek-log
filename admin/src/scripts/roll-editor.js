@@ -287,12 +287,49 @@ async function filesFromDirectory(handle) {
   return files.sort((a, b) => a.name.localeCompare(b.name, undefined, { numeric: true }));
 }
 
+function filesFromDirectoryInput() {
+  return new Promise((resolve) => {
+    const input = document.createElement('input');
+    input.type = 'file';
+    input.multiple = true;
+    input.accept = 'image/jpeg,image/png,image/webp';
+    input.setAttribute('webkitdirectory', '');
+    input.setAttribute('directory', '');
+    input.hidden = true;
+    document.body.append(input);
+    let settled = false;
+    const finish = () => {
+      if (settled) return;
+      settled = true;
+      const selected = [...input.files];
+      const relativePath = selected[0]?.webkitRelativePath || '';
+      input.remove();
+      resolve({
+        name: relativePath.split('/')[0] || 'scans',
+        files: selected
+          .filter((file) => /\.(jpe?g|png|webp)$/i.test(file.name))
+          .sort((a, b) => a.name.localeCompare(b.name, undefined, { numeric: true })),
+      });
+    };
+    input.addEventListener('change', finish, { once: true });
+    input.addEventListener('cancel', finish, { once: true });
+    window.addEventListener('focus', () => setTimeout(finish, 300), { once: true });
+    input.click();
+  });
+}
+
 async function pickFolder() {
   try {
-    const handle = await showDirectoryPicker({ mode: 'read' });
-    const files = await filesFromDirectory(handle);
+    let folder;
+    if (typeof window.showDirectoryPicker === 'function') {
+      const handle = await window.showDirectoryPicker({ mode: 'read' });
+      folder = { name: handle.name, files: await filesFromDirectory(handle) };
+    } else {
+      folder = await filesFromDirectoryInput();
+    }
+    const { files } = folder;
     if (!files.length) throw new Error('No browser-decodable JPEG, PNG, or WebP images found.');
-    const parsed = parseFolderName(handle.name, filmStocks);
+    const parsed = parseFolderName(folder.name, filmStocks);
     if (parsed.date) fields.date.value = parsed.date;
     if (parsed.stockSlug) fields.stock.value = parsed.stockSlug;
     fields.iso.value = parsed.iso || '';
