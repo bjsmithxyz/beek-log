@@ -21,7 +21,9 @@ on the admin Netlify site only. It uses a GitHub App installed solely on
 `bjsmithxyz/beek-log`; user-to-server tokens are sealed into a 24-hour host-only
 cookie and refreshed before their eight-hour expiry. The admin configuration
 sets `noindex`, a disallow-all `robots.txt`, `no-store`, frame denial and a CSP
-with no inline or external scripts. Netlify static header rules do not cover SSR
+with self-hosted scripts only. Phase 4 adds `'wasm-unsafe-eval'` solely for the
+admin MozJPEG worker plus image sources for GitHub roll previews and OpenStreetMap
+tiles; the public policy is unchanged. Netlify static header rules do not cover SSR
 or Function responses, so `admin/src/server/headers.mjs` applies the same policy
 at the response source.
 

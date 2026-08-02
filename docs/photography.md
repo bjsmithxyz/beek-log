@@ -6,15 +6,40 @@ markings, frame numbers), with a dot-matrix world map of shoot locations on the
 index. Click any frame for a full-screen lightbox showing the film stock, frame
 number, date, and that frame's location.
 
-Rolls are managed through a **local, dev-only admin app**. It is a standalone
-Node server started with `npm run admin` — it is *not* part of the Astro build,
-so it never deploys and has no production surface area.
+The hosted desktop uploader is available at
+`https://admin.bjsmith.xyz/rolls/`. It requires the authenticated owner and a
+current desktop Chromium browser with the File System Access API, Workers,
+WebAssembly, `createImageBitmap`, and `OffscreenCanvas`. Unsupported/mobile
+browsers fail closed and link to the travel editor.
+
+## Hosted roll workflow (Phase 4 beta)
+
+1. Choose a scan folder named `YYYY-MM-DD - <film-stock-slug>-<ISO>`.
+2. The browser applies orientation, resizes to a 2048px long edge, and encodes
+   quality-80 MozJPEG-family JPEGs in two bounded workers. Originals never leave
+   the device.
+3. Order frames, add optional alt/captions, and use the location search/map/chips
+   for primary and per-frame locations.
+4. Review the operation. New encoded images upload as unreferenced Git blobs;
+   no repository path or production content changes yet.
+5. The server creates one atomic branch commit and pull request. Review the
+   public Deploy Preview, then merge or abandon separately from the admin.
+
+Existing rolls can be loaded from the roll list, reordered, relabelled, extended,
+renamed, or deleted. Existing frame blobs are reused losslessly. Stale SHA and
+complete-inventory checks prevent one editor from overwriting newer content.
+
+The hosted workflow remains beta until a real roll completes the create/edit/
+delete acceptance gate. Until then, retain the standalone local fallback below.
+It runs with `npm run admin` at `http://127.0.0.1:4322` and is never deployed.
+
+## Local fallback workflow
 
 ```sh
-npm run admin   # opens http://127.0.0.1:4322
+npm run admin
 ```
 
-## Create a roll
+### Create a roll
 
 1. Name your scans folder `YYYY-MM-DD - <film-stock-slug>-<ISO>`, e.g.
    `2026-06-02 - kodak-portra-400-PT`. The admin derives the date, film stock,
@@ -44,7 +69,7 @@ leave an unpushed commit behind. Commit+push also runs `git pull --rebase
 is integrated before the new roll commit is created. **Write roll** is never
 blocked.
 
-## Edit a roll
+### Edit a local roll
 
 Pick a roll from the edit dropdown — its frames and metadata load. Reorder,
 relabel, add frames (scan another folder), remove frames, or change locations,

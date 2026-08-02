@@ -66,9 +66,25 @@ branch. It then opens a marked pull request. It never updates `main` directly.
 The browser polls the deterministic public Netlify Deploy Preview URL. Merge is
 a separate authenticated action that revalidates the PR marker, repository,
 base branch, head SHA, mergeability and preview availability. Abandon closes the
-PR and removes its branch. Phase 3's travel editor is the first caller and is
-restricted to `src/data/trips.json`; Phase 4 will extend server path policy for
-film-roll operations rather than accept arbitrary client paths.
+PR and removes its branch. Phase 3's travel editor is restricted to
+`src/data/trips.json`. Phase 4 extends server path policy only to numbered film
+roll assets and Markdown; the browser still cannot choose an arbitrary path.
+
+### Hosted image pipeline
+
+The roll uploader is desktop/capability-gated. Two bounded Web Workers decode
+with browser image APIs, apply orientation, resize to a 2048px long edge and
+encode quality-80 MozJPEG-family output with `@jsquash/jpeg`. Source metadata is
+removed by re-encoding. Thumbnails are separate and object URLs are revoked.
+The admin-only CSP adds `'wasm-unsafe-eval'`; the public CSP is unchanged.
+
+Encoded JPEGs pass through the authenticated, same-origin `blob-upload`
+Function, which accepts no repository path and returns only a Git blob SHA.
+`admin/src/lib/store-bytes.js` is the sole client storage boundary so a future
+object-store migration can replace it. The final create/edit/rename/delete
+request maps those SHAs to server-generated allowed paths, verifies the complete
+current inventory, and commits all image and Markdown changes atomically through
+the generic PR publisher.
 
 ## Content collections
 

@@ -124,7 +124,7 @@ function inventoryVerifier({ mode, source, targetSlug }) {
     }
     const prefix = `${ASSET_PREFIX}${source.slug}/`;
     const actual = [...blobs.entries()]
-      .filter(([path]) => path.startsWith(prefix) && path.endsWith('.jpg'))
+      .filter(([path]) => path.startsWith(prefix))
       .sort(([a], [b]) => a.localeCompare(b));
     if (actual.length !== source.frames.length || actual.some(([path, sha], index) => (
       path !== source.frames[index].path || sha !== source.frames[index].sha

@@ -80,12 +80,18 @@ admin Origin before parsing their strict schemas.
 | `publish-status` | Revalidate the marked PR and check its public Deploy Preview URL |
 | `publish-merge` | Revalidate head/preview/mergeability and merge the reviewed PR |
 | `publish-abandon` | Close the PR and best-effort delete its admin branch |
+| `rolls-data` / `roll-data` | Load guarded roll inventories and Markdown for editing |
+| `blob-upload` | Store one authenticated encoded JPEG as an unreferenced Git blob |
+| `publish-roll` | Map strict create/edit/rename/delete input to allowed roll paths |
+| `geocode` | Throttled same-origin proxy for location and country lookup |
 
 The browser never chooses an arbitrary repository path. Travel publishing is
-server-mapped to `src/data/trips.json`; stale SHA checks prevent overwriting a
-newer main-branch edit. A client-generated UUID makes network retries resumable
-without duplicate PR creation. The full operation engine already supports
-atomic create/update/delete sets for the Phase 4 caller.
+server-mapped to `src/data/trips.json`; roll publishing is server-mapped to one
+Markdown path and sequential `NNN.jpg` paths. Stale SHA and complete-inventory
+checks prevent overwriting a newer edit or leaving old frames behind. A
+client-generated UUID makes network retries resumable without duplicate PR
+creation. Image uploads accept no path and remain unreachable dangling blobs
+until one atomic create/update/delete operation set is committed on a PR branch.
 
 Source: `admin/src/server/publisher.mjs`, `request-guards.mjs`, and
 `travel-publish.mjs`. Tests: `admin/test/publisher.test.mjs`,

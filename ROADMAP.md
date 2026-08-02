@@ -133,45 +133,47 @@ Do not begin Phase 4 until this gate is recorded as complete.
 
 ### 4.1 Capability gate and image storage boundary
 
-- [ ] Detect File System Access API, Web Worker, WebAssembly and required image
-  APIs before showing the uploader.
-- [ ] On unsupported devices, show a clear desktop requirement and a working
+- [x] Detect desktop pointer/viewport, File System Access API, Web Worker,
+  WebAssembly and required image APIs before showing the uploader.
+- [x] On unsupported devices, show a clear desktop requirement and a working
   link to the travel editor.
-- [ ] Define one replaceable `storeBytes` module that accepts encoded bytes and
+- [x] Define one replaceable `storeBytes` module that accepts encoded bytes and
   returns repository references. Do not spread GitHub Blob API calls through UI
   code; Phase 6 must be able to retarget this boundary.
-- [ ] Proxy blob uploads through authenticated Netlify Functions with bounded
-  request sizes, concurrency and safe progress/error responses.
+- [x] Proxy blob uploads through authenticated Netlify Functions with bounded
+  request sizes, two-file concurrency and safe progress/error responses.
 
 ### 4.2 Client-side image pipeline
 
-- [ ] Use a Web Worker and `@jsquash/jpeg` for MozJPEG-family output.
-- [ ] Add only the admin CSP capability required for WebAssembly
+- [x] Use bounded Web Workers and `@jsquash/jpeg` for MozJPEG-family output.
+- [x] Add only the admin CSP capability required for WebAssembly
   (`'wasm-unsafe-eval'`), keeping the public CSP unchanged.
-- [ ] Parse folder defaults using the shared folder-name rules.
-- [ ] Generate thumbnails separately from final 2048px-long-edge output.
-- [ ] Preserve orientation, strip unnecessary metadata and produce deterministic
-  numbered `NNN.jpg` files.
-- [ ] Revoke object URLs and release decoded image memory as work completes.
-- [ ] Bound encoding/upload concurrency so large rolls do not exhaust memory.
-- [ ] Report per-file and overall encode/upload progress plus actionable errors.
+- [x] Parse folder defaults using the shared folder-name rules.
+- [x] Generate thumbnails separately from final 2048px-long-edge output.
+- [x] Preserve decoded orientation, strip source metadata through re-encoding
+  and produce deterministic numbered `NNN.jpg` paths.
+- [x] Revoke object URLs and release decoded image memory as work completes.
+- [x] Bound encoding/upload concurrency to two workers so large rolls do not
+  exhaust memory.
+- [x] Report per-file and overall encode/upload progress plus actionable errors.
 
 ### 4.3 Roll create/edit/delete UI
 
-- [ ] Implement folder picker, drag-to-order and keyboard-accessible ordering.
-- [ ] Support roll date, film stock, ISO, body and optional per-frame alt text.
-- [ ] Port location search → map pin → reusable chips, preserving `region` as
+- [x] Implement folder picker, drag-to-order and keyboard-accessible ordering.
+- [x] Support roll date, film stock, detected ISO, body and optional per-frame
+  alt text.
+- [x] Port location search → map pin → reusable chips, preserving `region` as
   the place's country.
-- [ ] Port per-frame location fill-forward and bulk assignment.
-- [ ] Use shared slug derivation, including Cyrillic transliteration.
-- [ ] Load existing Markdown and frames for edit mode without exposing repo
+- [x] Port per-frame location fill-forward and bulk assignment.
+- [x] Use shared slug derivation, including Cyrillic transliteration.
+- [x] Load existing Markdown and frames for edit mode without exposing repo
   tokens to the browser.
-- [ ] Preserve unchanged existing frames by SHA; upload only changed/new bytes.
-- [ ] Handle slug renames atomically as old-path deletion plus new-path create.
-- [ ] Implement explicit, strongly confirmed roll deletion.
-- [ ] Generate Markdown through `shared/roll-markdown.mjs` with the existing
+- [x] Preserve unchanged existing frames by SHA; upload only new encoded bytes.
+- [x] Handle slug renames atomically as old-path deletion plus new-path create.
+- [x] Implement explicit, exact-slug-confirmed roll deletion.
+- [x] Generate Markdown through `shared/roll-markdown.mjs` with the existing
   frontmatter shape and frame numbering.
-- [ ] Route create, edit, rename and delete through the Phase 3 generic
+- [x] Route create, edit, rename and delete through the Phase 3 generic
   publisher, including preview/merge/abandon controls.
 
 ### 4.4 Roll acceptance
