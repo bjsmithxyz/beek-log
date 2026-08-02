@@ -3,9 +3,153 @@ import AdminLayout from '../../layouts/AdminLayout.astro';
 ---
 <AdminLayout title="travel">
   <a class="back-link" href="/">← dashboard/</a>
-  <section class="notice-panel">
-    <p class="prompt">~/beek/admin/travel</p>
-    <h1>travel-editor/</h1>
-    <p>The responsive itinerary editor and pull-request publishing flow arrive in Phase 3.</p>
+  <header class="page-head travel-head">
+    <div>
+      <p class="prompt">~/beek/admin/travel</p>
+      <h1>travel-editor/</h1>
+      <p>Edit the committed itinerary, then review it through a pull request and public Deploy Preview.</p>
+    </div>
+    <div class="head-actions">
+      <button class="admin-button secondary" id="reload-travel" type="button">reload</button>
+      <button class="admin-button" id="review-travel" type="button" disabled>review changes →</button>
+    </div>
+  </header>
+
+  <p class="editor-status" id="editor-status" role="status">Loading the itinerary from GitHub…</p>
+  <section class="error-panel" id="editor-errors" role="alert" hidden>
+    <h2>fix these fields</h2>
+    <ul id="editor-error-list"></ul>
+  </section>
+
+  <fieldset class="travel-editor" id="travel-editor" disabled>
+    <legend class="sr-only">Travel itinerary</legend>
+    <section class="meta-editor" aria-labelledby="meta-title">
+      <div class="section-heading">
+        <div>
+          <span class="section-path">trips.json/meta</span>
+          <h2 id="meta-title">trip metadata</h2>
+        </div>
+      </div>
+      <div class="meta-grid">
+        <label>
+          <span>title</span>
+          <input id="trip-title" name="title" maxlength="100" required />
+        </label>
+        <label>
+          <span>subtitle</span>
+          <input id="trip-subtitle" name="subtitle" maxlength="240" />
+        </label>
+      </div>
+    </section>
+
+    <section aria-labelledby="stops-title">
+      <div class="section-heading sticky-heading">
+        <div>
+          <span class="section-path">trips.json/stops[]</span>
+          <h2 id="stops-title">stops <span id="stop-count"></span></h2>
+        </div>
+        <button class="small-button" id="add-stop" type="button">+ add stop</button>
+      </div>
+      <div class="stop-list" id="stop-list"></div>
+    </section>
+  </fieldset>
+
+  <section class="review-panel" id="review-panel" aria-labelledby="review-title" hidden tabindex="-1">
+    <span class="section-path">publication/review</span>
+    <h2 id="review-title">review changes</h2>
+    <p id="review-summary"></p>
+    <p>This creates a branch and pull request. Production remains unchanged until you review the public Deploy Preview and choose merge.</p>
+    <div class="review-actions">
+      <button class="admin-button secondary" id="cancel-review" type="button">keep editing</button>
+      <button class="admin-button" id="publish-travel" type="button">create pull request →</button>
+    </div>
+  </section>
+
+  <section class="publication-panel" id="publication-panel" aria-labelledby="publication-title" hidden>
+    <span class="section-path">publication/status</span>
+    <h2 id="publication-title">publication in progress</h2>
+    <p id="publication-status" role="status"></p>
+    <dl class="publication-links">
+      <div><dt>pull request</dt><dd><a id="publication-pr" target="_blank" rel="noopener">waiting…</a></dd></div>
+      <div><dt>deploy preview</dt><dd><a id="publication-preview" target="_blank" rel="noopener">waiting for Netlify…</a></dd></div>
+    </dl>
+    <div class="review-actions">
+      <button class="admin-button secondary" id="refresh-publication" type="button">refresh status</button>
+      <button class="danger-button" id="abandon-publication" type="button">abandon</button>
+      <button class="admin-button" id="merge-publication" type="button" disabled>merge to main →</button>
+    </div>
   </section>
 </AdminLayout>
+
+<script>
+  import '../../scripts/travel-editor.js';
+</script>
+
+<style>
+  .sr-only { position: absolute; width: 1px; height: 1px; padding: 0; margin: -1px; overflow: hidden; clip: rect(0, 0, 0, 0); white-space: nowrap; border: 0; }
+  .travel-head { display: flex; align-items: end; justify-content: space-between; gap: 1rem; }
+  .travel-head p { margin-bottom: 0; }
+  .head-actions, .review-actions { display: flex; flex-wrap: wrap; gap: .75rem; }
+  .editor-status { min-height: 1.6rem; color: var(--text-muted); font-size: .8rem; }
+  .error-panel { margin: 1rem 0; padding: 1rem; border: 1px solid #ff6b6b; background: var(--panel); color: #ff9d9d; }
+  .error-panel h2 { margin-bottom: .5rem; color: #ff6b6b; }
+  .error-panel ul { padding-left: 1.25rem; font-size: .8rem; }
+  .travel-editor { min-width: 0; border: 0; }
+  .travel-editor:disabled { opacity: .6; }
+  .meta-editor, .review-panel, .publication-panel { margin: 1rem 0 2rem; padding: 1rem; border: 1px solid var(--border); background: var(--panel); box-shadow: var(--shadow); }
+  .section-heading { display: flex; align-items: center; justify-content: space-between; gap: 1rem; margin-bottom: 1rem; }
+  .section-heading h2 { color: var(--text); font-size: 1rem; }
+  .section-path { color: var(--text-muted); font-size: .67rem; }
+  .meta-grid { display: grid; grid-template-columns: 1fr 2fr; gap: .75rem; }
+  label { display: grid; gap: .3rem; min-width: 0; color: var(--text-muted); font-size: .68rem; }
+  input, textarea { width: 100%; min-width: 0; padding: .52rem .6rem; border: 1px solid var(--border); border-radius: 0; background: var(--bg); color: var(--text); }
+  input:hover, textarea:hover { border-color: var(--border-strong); }
+  input:focus, textarea:focus { border-color: var(--accent); }
+  textarea { min-height: 4.2rem; resize: vertical; }
+  input[type='checkbox'] { width: 1rem; height: 1rem; accent-color: var(--accent); }
+  .small-button, .danger-button { padding: .4rem .6rem; border: 1px solid var(--border-strong); background: var(--panel-strong); color: var(--text-soft); }
+  .small-button:hover { border-color: var(--accent); color: var(--accent); }
+  .danger-button { color: #ff8e8e; border-color: #994444; }
+  .danger-button:hover { color: var(--bg); background: #ff6b6b; border-color: #ff6b6b; }
+  button:disabled { cursor: not-allowed; opacity: .45; box-shadow: none; }
+  .stop-list { display: grid; gap: .75rem; }
+  :global(.stop-card) { padding: 1rem; border: 1px solid var(--border); background: var(--panel); box-shadow: 2px 2px 0 var(--border); }
+  :global(.stop-card:focus-within) { border-color: var(--border-strong); }
+  :global(.stop-card-head) { display: flex; align-items: center; justify-content: space-between; gap: .75rem; margin-bottom: .75rem; }
+  :global(.stop-number) { color: var(--accent); font-size: .75rem; }
+  :global(.stop-name-preview) { color: var(--text-soft); font-size: .75rem; }
+  :global(.stop-actions) { display: flex; gap: .35rem; }
+  :global(.stop-actions button) { width: 2rem; height: 2rem; border: 1px solid var(--border); background: var(--bg); color: var(--text-muted); }
+  :global(.stop-actions button:hover) { color: var(--accent); border-color: var(--accent); }
+  :global(.stop-actions .remove-stop:hover) { color: #ff6b6b; border-color: #ff6b6b; }
+  :global(.stop-grid) { display: grid; grid-template-columns: 2fr 1.5fr .55fr 1fr 1fr; gap: .6rem; }
+  :global(.stop-grid .dates) { display: grid; grid-template-columns: 1fr 1fr; gap: .6rem; grid-column: span 2; }
+  :global(.stop-grid .note-field) { grid-column: span 2; }
+  :global(.tentative-field) { display: flex; align-items: center; align-self: end; gap: .5rem; min-height: 2.35rem; }
+  .review-panel { border-color: var(--amber); box-shadow: 3px 3px 0 var(--amber); }
+  .review-panel h2, .publication-panel h2 { margin: .35rem 0 .75rem; }
+  .publication-panel { border-color: var(--blue); box-shadow: 3px 3px 0 var(--blue); }
+  .publication-links { margin: 1rem 0; border-top: 1px solid var(--border); }
+  .publication-links div { display: grid; grid-template-columns: 9rem 1fr; gap: 1rem; padding: .65rem 0; border-bottom: 1px solid var(--border); }
+  .publication-links dt { color: var(--text-muted); font-size: .7rem; }
+  .publication-links dd { min-width: 0; overflow-wrap: anywhere; font-size: .8rem; }
+
+  @media (max-width: 800px) {
+    .travel-head { align-items: stretch; flex-direction: column; }
+    .head-actions > * { flex: 1; }
+    .meta-grid { grid-template-columns: 1fr; }
+    :global(.stop-grid) { grid-template-columns: 1fr 1fr; }
+    :global(.stop-grid .name-field), :global(.stop-grid .note-field) { grid-column: 1 / -1; }
+    :global(.stop-grid .dates) { grid-column: 1 / -1; }
+  }
+
+  @media (max-width: 480px) {
+    :global(.stop-card) { padding: .75rem; }
+    :global(.stop-card-head) { align-items: flex-start; }
+    :global(.stop-grid) { grid-template-columns: 1fr; }
+    :global(.stop-grid .name-field), :global(.stop-grid .note-field), :global(.stop-grid .dates) { grid-column: auto; }
+    :global(.stop-grid .dates) { grid-template-columns: 1fr; }
+    .publication-links div { grid-template-columns: 1fr; gap: .2rem; }
+    .review-actions > * { flex: 1 1 auto; }
+  }
+</style>

@@ -18,7 +18,7 @@ test('travel request becomes one canonical guarded update operation', () => {
   assert.equal(result.operations[0].action, 'update');
   assert.equal(result.operations[0].path, 'src/data/trips.json');
   assert.equal(result.operations[0].expectedSha, SHA);
-  assert.equal(result.operations[0].content, `${JSON.stringify(trips, null, 2)}\n`);
+  assert.equal(result.operations[0].content, JSON.stringify(trips, null, 2));
 });
 
 test('travel publication rejects unknown request and stop fields', () => {

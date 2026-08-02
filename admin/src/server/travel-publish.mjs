@@ -25,7 +25,7 @@ export function travelPublication(body) {
     throw new PublishError(error.message.split('\n')[0]);
   }
 
-  const content = `${JSON.stringify(body.trips, null, 2)}\n`;
+  const content = JSON.stringify(body.trips, null, 2);
   return {
     requestId: body.requestId,
     resource: 'travel',

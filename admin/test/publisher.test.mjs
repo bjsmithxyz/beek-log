@@ -38,14 +38,15 @@ const response = (status, body = {}) => new Response(
   { status, headers: { 'Content-Type': 'application/json' } },
 );
 
-function successfulPublisherFetch({ treeEntries, pullOverrides = {} } = {}) {
+function successfulPublisherFetch({ treeEntries, pullOverrides = {}, pullStatus = 201 } = {}) {
   const calls = [];
   const fetchImpl = async (url, options = {}) => {
     const parsed = new URL(url);
     const path = `${parsed.pathname}${parsed.search}`;
     const method = options.method || 'GET';
     calls.push({ url, path, method, body: options.body ? JSON.parse(options.body) : null });
-    if (path.includes('/git/ref/heads/admin/')) return response(404);
+    if (path.includes('/git/ref/heads/admin/') && method === 'GET') return response(404);
+    if (path.includes('/git/refs/heads/admin/') && method === 'DELETE') return response(204);
     if (path.endsWith('/git/ref/heads/main')) return response(200, { object: { sha: A } });
     if (path.endsWith(`/git/commits/${A}`)) return response(200, { tree: { sha: B } });
     if (path.endsWith(`/git/trees/${B}?recursive=1`)) return response(200, {
@@ -56,7 +57,7 @@ function successfulPublisherFetch({ treeEntries, pullOverrides = {} } = {}) {
     if (path.endsWith('/git/trees') && method === 'POST') return response(201, { sha: E });
     if (path.endsWith('/git/commits') && method === 'POST') return response(201, { sha: F });
     if (path.endsWith('/git/refs') && method === 'POST') return response(201, { ref: `refs/heads/admin/travel/${requestId}` });
-    if (path.endsWith('/pulls') && method === 'POST') return response(201, {
+    if (path.endsWith('/pulls') && method === 'POST') return response(pullStatus, {
       number: 42,
       html_url: 'https://github.com/bjsmithxyz/beek-log/pull/42',
       body: '<!-- beek-admin:publication:v1 -->',
@@ -106,6 +107,22 @@ test('generic publisher builds one commit and PR without updating main', async (
   assert.deepEqual(commit.body.parents, [A]);
 });
 
+test('retrying an existing request resumes its marked pull request without writes', async () => {
+  const calls = [];
+  const fetchImpl = async (url, options = {}) => {
+    const path = `${new URL(url).pathname}${new URL(url).search}`;
+    const method = options.method || 'GET';
+    calls.push({ path, method });
+    if (path.includes('/git/ref/heads/admin/')) return response(200, { object: { sha: F } });
+    if (path.includes('/pulls?state=all')) return response(200, [pull()]);
+    throw new Error(`Unexpected ${method} ${path}`);
+  };
+  const result = await createPublication(travelInput, { token: 'token', policy: TRAVEL_POLICY, fetchImpl });
+  assert.equal(result.resumed, true);
+  assert.equal(result.number, 42);
+  assert.equal(calls.every((call) => call.method === 'GET'), true);
+});
+
 test('stale expected SHA fails before any GitHub write', async () => {
   const fake = successfulPublisherFetch({
     treeEntries: [{ path: 'src/data/trips.json', type: 'blob', sha: D }],
@@ -115,6 +132,17 @@ test('stale expected SHA fails before any GitHub write', async () => {
     (error) => error.code === 'stale_content' && error.status === 409,
   );
   assert.equal(fake.calls.some((call) => call.method !== 'GET'), false);
+});
+
+test('failed PR creation removes its publishing branch and leaves main untouched', async () => {
+  const fake = successfulPublisherFetch({ pullStatus: 500 });
+  await assert.rejects(
+    createPublication(travelInput, { token: 'token', policy: TRAVEL_POLICY, fetchImpl: fake.fetchImpl }),
+  );
+  const deletes = fake.calls.filter((call) => call.method === 'DELETE');
+  assert.equal(deletes.length, 1);
+  assert.match(deletes[0].path, /\/git\/refs\/heads\/admin\/travel\//);
+  assert.equal(fake.calls.some((call) => call.path.endsWith('/heads/main') && call.method !== 'GET'), false);
 });
 
 test('tree construction supports create, update and delete atomically', async () => {
@@ -144,9 +172,9 @@ test('tree construction supports create, update and delete atomically', async ()
   assert.equal(fake.calls.filter((call) => call.path.endsWith('/git/commits') && call.method === 'POST').length, 1);
 });
 
-function pull({ state = 'open', mergedAt = null } = {}) {
+function pull({ state = 'open', mergedAt = null, mergeable = true } = {}) {
   return {
-    number: 42, title: 'Update travel itinerary', state, merged_at: mergedAt, mergeable: true,
+    number: 42, title: 'Update travel itinerary', state, merged_at: mergedAt, mergeable,
     html_url: 'https://github.com/bjsmithxyz/beek-log/pull/42',
     body: '<!-- beek-admin:publication:v1 -->',
     base: { ref: 'main' },
@@ -193,6 +221,20 @@ test('merge requires the exact head and a ready preview, then uses the PR merge 
   const mergeCall = calls.find((call) => call.method === 'PUT');
   assert.equal(mergeCall.body.sha, F);
   assert.equal(mergeCall.body.merge_method, 'squash');
+});
+
+test('merge refuses a conflicting pull request before checking the preview', async () => {
+  let previewChecks = 0;
+  const fetchImpl = async (url) => {
+    if (url.startsWith('https://api.github.com/')) return response(200, pull({ mergeable: false }));
+    previewChecks += 1;
+    return new Response(null, { status: 200 });
+  };
+  await assert.rejects(
+    mergePublication(42, F, { token: 'token', fetchImpl }),
+    (error) => error.code === 'not_mergeable',
+  );
+  assert.equal(previewChecks, 0);
 });
 
 test('abandon closes the PR and deletes only its admin branch', async () => {

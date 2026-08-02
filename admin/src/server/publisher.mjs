@@ -163,7 +163,7 @@ async function existingPublication(client, branch, requestId) {
   if (!ref) return null;
   const pulls = await client.request(`/pulls?state=all&head=${encodeURIComponent(`${client.owner}:${branch}`)}`);
   const pull = pulls.find((candidate) => candidate.body?.includes(MARKER));
-  if (pull) return publicationFromPull(pull, branch, requestId);
+  if (pull) return publicationFromPull(validatePublicationPull(pull), branch, requestId);
   throw new PublishError('That publication request already exists.', { status: 409, code: 'request_conflict' });
 }
 
@@ -295,7 +295,7 @@ export async function publicationStatus(numberValue, { token, fetchImpl = fetch 
     previewUrl: url,
     preview: ready ? 'ready' : pull.state === 'open' ? 'pending' : 'unavailable',
     state: pull.merged_at ? 'merged' : pull.state,
-    mergeable: pull.mergeable === true,
+    mergeable: pull.mergeable,
   };
 }
 
@@ -311,6 +311,9 @@ export async function mergePublication(numberValue, headSha, { token, fetchImpl 
   const pull = validatePublicationPull(await client.request(`/pulls/${number}`));
   if (pull.state !== 'open') throw new PublishError('Publication is not open.', { status: 409, code: 'not_open' });
   assertHeadSha(headSha, pull);
+  if (pull.mergeable !== true) {
+    throw new PublishError('Pull request is not currently mergeable.', { status: 409, code: 'not_mergeable' });
+  }
   const url = previewUrl(number);
   if (!await previewReady(url, fetchImpl)) {
     throw new PublishError('Deploy Preview is not ready.', { status: 409, code: 'preview_pending' });

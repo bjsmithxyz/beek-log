@@ -87,6 +87,7 @@ p { color: var(--text-soft); margin-bottom: 1rem; }
 .tool-tile h2 { margin: .7rem 0; color: var(--text); font-size: 1.2rem; }
 .tool-tile p { font-size: .82rem; }
 .tool-state { margin-top: auto; color: var(--amber); font-size: .72rem; }
+.tool-state.live { color: var(--accent); }
 
 .page-head { padding-bottom: 1.5rem; border-bottom: 1px solid var(--border); margin-bottom: 1.5rem; }
 .back-link { display: inline-block; margin-bottom: 1.5rem; color: var(--text-muted); font-size: .8rem; }
