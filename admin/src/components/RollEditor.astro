@@ -79,6 +79,7 @@ const { mode, slug = '' } = Astro.props;
       <span class="section-path">publication/review</span>
       <h2>review roll publication</h2>
       <p id="roll-review-summary"></p>
+      <p class="publication-error" id="roll-publication-error" role="alert" hidden></p>
       <p>New scans are stored as unreferenced GitHub blobs first. One later commit atomically applies every image, Markdown, rename, or deletion on a review branch.</p>
       <div class="actions">
         <button class="admin-button secondary" id="cancel-roll-review" type="button">keep editing</button>
@@ -173,6 +174,7 @@ const { mode, slug = '' } = Astro.props;
   .error-panel h2 { margin-bottom: .4rem; color: #ff6b6b; }
   .error-panel ul { padding-left: 1.2rem; font-size: .75rem; }
   .review-panel { border-color: var(--amber); box-shadow: 3px 3px 0 var(--amber); }
+  .publication-error { padding: .65rem; border: 1px solid #ff6b6b; color: #ff9d9d; }
   .publication-panel { border-color: var(--blue); box-shadow: 3px 3px 0 var(--blue); }
   .review-panel h2, .publication-panel h2 { margin: .35rem 0 .7rem; }
   .publication-links { margin: 1rem 0; border-top: 1px solid var(--border); }

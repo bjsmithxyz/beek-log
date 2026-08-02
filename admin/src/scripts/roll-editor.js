@@ -44,6 +44,7 @@ const frameCount = document.getElementById('frame-count');
 const reviewButton = document.getElementById('review-roll');
 const reviewPanel = document.getElementById('roll-review');
 const reviewSummary = document.getElementById('roll-review-summary');
+const publicationError = document.getElementById('roll-publication-error');
 const errorsPanel = document.getElementById('roll-errors');
 const errorsList = document.getElementById('roll-error-list');
 const publicationPanel = document.getElementById('roll-publication');
@@ -553,6 +554,8 @@ reviewButton.addEventListener('click', () => {
   }
   const newFrames = frames.filter((frame) => !frame.blobSha).length;
   reviewSummary.textContent = `${mode === 'create' ? 'Create' : 'Update'} “${fields.title.value.trim()}” with ${frames.length} frames; ${newFrames} require upload; ${fields.draft.checked ? 'draft' : 'published'}.`;
+  publicationError.hidden = true;
+  publicationError.textContent = '';
   document.getElementById('publish-roll').textContent = 'upload + create pull request →';
   reviewPanel.hidden = false;
   reviewPanel.focus();
@@ -568,16 +571,23 @@ async function uploadNewFrames() {
   let next = 0;
   let complete = 0;
   uploadProgress.style.width = pending.length ? '0%' : '100%';
-  await Promise.all(Array.from({ length: Math.min(2, pending.length) }, async () => {
+  const results = await Promise.allSettled(Array.from({ length: Math.min(2, pending.length) }, async () => {
     while (next < pending.length) {
       const frame = pending[next++];
       publicationStatus.textContent = `Uploading encoded frame ${complete + 1}/${pending.length}: ${frame.sourceName}`;
-      const stored = await storeBytes(frame.encoded);
-      frame.blobSha = stored.sha;
+      try {
+        const stored = await storeBytes(frame.encoded);
+        frame.blobSha = stored.sha;
+      } catch (error) {
+        const size = `${(frame.encoded.byteLength / 1024 / 1024).toFixed(2)} MiB`;
+        throw new Error(`${frame.sourceName} (${size}): ${error.message || 'image upload failed'}`);
+      }
       complete += 1;
       uploadProgress.style.width = `${Math.round(complete / pending.length * 100)}%`;
     }
   }));
+  const failed = results.find((result) => result.status === 'rejected');
+  if (failed) throw failed.reason;
 }
 
 function sourcePayload() {
@@ -591,6 +601,8 @@ function sourcePayload() {
 async function createRollPublication() {
   const button = document.getElementById('publish-roll');
   button.disabled = true;
+  publicationError.hidden = true;
+  publicationError.textContent = '';
   publicationPanel.hidden = false;
   reviewPanel.hidden = true;
   form.disabled = true;
@@ -625,9 +637,15 @@ async function createRollPublication() {
     await refreshPublication();
   } catch (error) {
     if (error.status === 409) pendingRequestId = null;
-    publicationStatus.textContent = error.message || 'Publication failed safely. Main was not changed.';
+    const message = error.message || 'Publication failed safely. Main was not changed.';
+    publicationStatus.textContent = message;
+    publicationError.textContent = `Publication failed safely: ${message}. Main was not changed; retry uploads only unfinished frames.`;
+    publicationError.hidden = false;
+    setStatus(`Publication failed safely: ${message}`);
     publicationPanel.hidden = true;
     reviewPanel.hidden = false;
+    reviewPanel.focus();
+    reviewPanel.scrollIntoView({ block: 'start' });
     button.disabled = false;
     form.disabled = false;
   }
