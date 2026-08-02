@@ -1,0 +1,12 @@
+---
+import AdminLayout from '../../layouts/AdminLayout.astro';
+const { slug } = Astro.params;
+---
+<AdminLayout title="edit roll">
+  <a class="back-link" href="/rolls/">← rolls/</a>
+  <section class="notice-panel">
+    <p class="prompt">~/beek/admin/rolls/{slug}</p>
+    <h1>editor pending</h1>
+    <p>Existing-roll loading and editing arrive in Phase 4.</p>
+  </section>
+</AdminLayout>

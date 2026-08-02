@@ -1,0 +1,45 @@
+---
+import '../styles/global.css';
+
+interface Props {
+  title?: string;
+}
+const { title = 'admin' } = Astro.props;
+const user = Astro.locals.user;
+const pathname = Astro.url.pathname;
+const fullTitle = title === 'admin' ? 'admin.bjsmith.xyz' : `${title} | admin.bjsmith.xyz`;
+---
+
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <meta name="robots" content="noindex, nofollow, noarchive" />
+    <meta name="theme-color" content="#0c0c0c" />
+    <title>{fullTitle}</title>
+    <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
+  </head>
+  <body>
+    <div class="admin-shell">
+      <header class="admin-header">
+        <div class="admin-container admin-header-inner">
+          <a class="admin-logo" href="/"><span>[</span>beek/admin<span>]</span></a>
+          {user && <span class="admin-user">{user.login}</span>}
+          {user && (
+            <nav class="admin-nav" aria-label="Admin navigation">
+              <a href="/" aria-current={pathname === '/' ? 'page' : undefined}>dashboard</a>
+              <a href="/rolls/" aria-current={pathname.startsWith('/rolls') ? 'page' : undefined}>rolls</a>
+              <a href="/travel/" aria-current={pathname.startsWith('/travel') ? 'page' : undefined}>travel</a>
+            </nav>
+          )}
+        </div>
+      </header>
+      <main class="admin-main">
+        <div class="admin-container">
+          <slot />
+        </div>
+      </main>
+    </div>
+  </body>
+</html>
