@@ -139,7 +139,7 @@ trip validator runs in tests and during the build. Date-derived values — day
 count and past/current/upcoming status — are deliberately computed by the
 browser on every load, so they cannot freeze at the last deployment date. Four
 keyboard-operable tabs show only stats, route, road-ahead, or the complete
-latest-first timeline. Leaflet is recreated after the route panel becomes
+chronological timeline. Leaflet is recreated after the route panel becomes
 visible so it always receives real dimensions; only this route's CSP permits
 CARTO tile images and Open-Meteo weather requests. Route stop controls link to
 photo rolls whose effective shoot locations match by normalized place name or

@@ -315,7 +315,7 @@ function setupTravel() {
 
   function renderTimeline() {
     const element = get('travel-timeline');
-    const shown = [...trip].sort((a, b) => b.arrive.localeCompare(a.arrive));
+    const shown = [...trip].sort((a, b) => a.arrive.localeCompare(b.arrive));
     let lastYear = null;
     element.innerHTML = shown.map((stop) => {
       const year = stop.arrive.slice(0, 4);

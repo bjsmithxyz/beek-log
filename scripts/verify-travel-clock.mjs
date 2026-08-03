@@ -75,7 +75,7 @@ assert.ok(document.querySelectorAll('#travel-map-stops .map-stop-photos a').leng
 assert.equal(document.querySelector('#travel-more'), null, 'timeline must not have a collapsed-state control');
 const timelineDates = [...document.querySelectorAll('#travel-timeline time')]
   .map((element) => element.getAttribute('datetime'));
-assert.deepEqual(timelineDates, [...timelineDates].sort().reverse(), 'timeline must be latest first');
+assert.deepEqual(timelineDates, [...timelineDates].sort(), 'timeline must be earliest first');
 for (const name of ['stats', 'timeline', 'route']) {
   document.querySelector(`[data-travel-tab="${name}"]`)?.click();
   await new Promise((resolve) => setTimeout(resolve, name === 'route' ? 50 : 0));
