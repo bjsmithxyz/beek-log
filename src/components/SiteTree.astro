@@ -11,6 +11,12 @@ interface Props {
 }
 
 const { workItems, rollItems } = Astro.props;
+const devWorkItems = workItems.filter((item) => item.meta === 'dev');
+const artWorkItems = workItems.filter((item) => item.meta !== 'dev');
+const rollYear = (item: TreeFile) => item.meta?.slice(0, 4) ?? 'unknown';
+const photoYears = [...new Set(rollItems.map(rollYear))]
+  .sort((a, b) => b.localeCompare(a))
+  .map((year) => ({ year, items: rollItems.filter((item) => rollYear(item) === year) }));
 ---
 
 <nav class="site-tree" aria-label="Site index">
@@ -54,15 +60,54 @@ const { workItems, rollItems } = Astro.props;
                       </a>
                       <span class="tree-meta">all work</span>
                     </li>
-                    {workItems.map((item, index) => (
-                      <li class="tree-row">
-                        <a class="tree-main" href={item.href}>
-                          <span class="tree-prefix" aria-hidden="true">{index === workItems.length - 1 ? '    │   └── ' : '    │   ├── '}</span>
-                          <span>{item.label}</span>
-                        </a>
-                        {item.meta && <span class="tree-meta">{item.meta}</span>}
-                      </li>
-                    ))}
+                    <li class="tree-branch" data-tree-branch>
+                      <div class="tree-row">
+                        <button class="tree-main tree-toggle" type="button" aria-expanded="false" aria-controls="tree-work-dev" data-tree-toggle>
+                          <span class="tree-prefix" aria-hidden="true">    │   ├── </span>
+                          <span>dev/</span>
+                          <span class="tree-state" aria-hidden="true"></span>
+                        </button>
+                        <span class="tree-meta">{devWorkItems.length} entries</span>
+                      </div>
+                      <div class="tree-collapse" id="tree-work-dev" data-tree-collapse data-collapsed="true" inert>
+                        <div class="tree-collapse-inner">
+                          <ul>
+                            {devWorkItems.map((item, index) => (
+                              <li class="tree-row">
+                                <a class="tree-main" href={item.href}>
+                                  <span class="tree-prefix" aria-hidden="true">{index === devWorkItems.length - 1 ? '    │   │   └── ' : '    │   │   ├── '}</span>
+                                  <span>{item.label}</span>
+                                </a>
+                              </li>
+                            ))}
+                          </ul>
+                        </div>
+                      </div>
+                    </li>
+                    <li class="tree-branch" data-tree-branch>
+                      <div class="tree-row">
+                        <button class="tree-main tree-toggle" type="button" aria-expanded="false" aria-controls="tree-work-art" data-tree-toggle>
+                          <span class="tree-prefix" aria-hidden="true">    │   └── </span>
+                          <span>art/</span>
+                          <span class="tree-state" aria-hidden="true"></span>
+                        </button>
+                        <span class="tree-meta">{artWorkItems.length} entries</span>
+                      </div>
+                      <div class="tree-collapse" id="tree-work-art" data-tree-collapse data-collapsed="true" inert>
+                        <div class="tree-collapse-inner">
+                          <ul>
+                            {artWorkItems.map((item, index) => (
+                              <li class="tree-row">
+                                <a class="tree-main" href={item.href}>
+                                  <span class="tree-prefix" aria-hidden="true">{index === artWorkItems.length - 1 ? '    │       └── ' : '    │       ├── '}</span>
+                                  <span>{item.label}</span>
+                                </a>
+                              </li>
+                            ))}
+                          </ul>
+                        </div>
+                      </div>
+                    </li>
                   </ul>
                 </div>
               </div>
@@ -86,15 +131,37 @@ const { workItems, rollItems } = Astro.props;
                       </a>
                       <span class="tree-meta">all rolls</span>
                     </li>
-                    {rollItems.map((item, index) => (
-                      <li class="tree-row">
-                        <a class="tree-main" href={item.href}>
-                          <span class="tree-prefix" aria-hidden="true">{index === rollItems.length - 1 ? '    │   └── ' : '    │   ├── '}</span>
-                          <span>{item.label}</span>
-                        </a>
-                        {item.meta && <span class="tree-meta">{item.meta}</span>}
-                      </li>
-                    ))}
+                    {photoYears.map(({ year, items }, yearIndex) => {
+                      const lastYear = yearIndex === photoYears.length - 1;
+                      const childPrefix = lastYear ? '    │       ' : '    │   │   ';
+                      return (
+                        <li class="tree-branch" data-tree-branch>
+                          <div class="tree-row">
+                            <button class="tree-main tree-toggle" type="button" aria-expanded="false" aria-controls={`tree-photos-${year}`} data-tree-toggle>
+                              <span class="tree-prefix" aria-hidden="true">{lastYear ? '    │   └── ' : '    │   ├── '}</span>
+                              <span>{year}/</span>
+                              <span class="tree-state" aria-hidden="true"></span>
+                            </button>
+                            <span class="tree-meta">{items.length} rolls</span>
+                          </div>
+                          <div class="tree-collapse" id={`tree-photos-${year}`} data-tree-collapse data-collapsed="true" inert>
+                            <div class="tree-collapse-inner">
+                              <ul>
+                                {items.map((item, index) => (
+                                  <li class="tree-row">
+                                    <a class="tree-main" href={item.href}>
+                                      <span class="tree-prefix" aria-hidden="true">{`${childPrefix}${index === items.length - 1 ? '└── ' : '├── '}`}</span>
+                                      <span>{item.label}</span>
+                                    </a>
+                                    {item.meta && <span class="tree-meta">{item.meta}</span>}
+                                  </li>
+                                ))}
+                              </ul>
+                            </div>
+                          </div>
+                        </li>
+                      );
+                    })}
                   </ul>
                 </div>
               </div>

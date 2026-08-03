@@ -32,10 +32,11 @@ isolated from the public rendering boundary.
 The root route is a filesystem-style site index: `~` lists the single protected
 `admin/` destination first, followed by an animated, collapsible `beek/` tree.
 Only branches with children expose disclosure controls; `beek/` starts open,
-while `work/` and `photos/` start collapsed and can expand into their current
-Markdown-backed entries. The tree is the homepage content rather than a preface
-to duplicate recent-content listings. Public section routes share `PageHeader`
-and one page-title size token; detail
+while `work/` and `photos/` start collapsed. Work entries are grouped into
+collapsed `dev/` and `art/` subsections, and photo rolls into dynamically
+generated, newest-first year subsections. The tree is the homepage content
+rather than a preface to duplicate recent-content listings. Public section
+routes share `PageHeader` and one page-title size token; detail
 headings and the isolated admin title token resolve to that same size. Admin
 typography otherwise uses the same xs/sm/base/display scale as the public site
 while retaining its isolated dark-only token names.

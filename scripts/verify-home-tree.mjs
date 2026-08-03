@@ -30,7 +30,12 @@ assert.equal(document.documentElement.getAttribute('data-theme'), 'light');
 assert.equal(themeToggle?.getAttribute('aria-label'), 'Switch to dark mode');
 
 const branches = [...document.querySelectorAll('[data-tree-toggle]')];
-assert.equal(branches.length, 3, 'beek, work, and photos must be collapsible');
+const branchLabels = branches.map((button) => button.querySelector(':scope > span:nth-child(2)')?.textContent?.trim());
+assert.deepEqual(branchLabels.slice(0, 5), ['beek/', 'work/', 'dev/', 'art/', 'photos/']);
+const photoYearLabels = branchLabels.slice(5);
+assert.ok(photoYearLabels.length > 0, 'photos must expose at least one year subsection');
+assert.ok(photoYearLabels.every((label) => /^\d{4}\/$/.test(label || '')));
+assert.deepEqual(photoYearLabels, [...photoYearLabels].sort().reverse(), 'photo years must be newest first');
 for (const button of branches) {
   const panel = document.getElementById(button.getAttribute('aria-controls') || '');
   assert.ok(panel, 'each disclosure must control a tree panel');

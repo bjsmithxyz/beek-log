@@ -103,12 +103,21 @@ assert.deepEqual(
   ['https://admin.bjsmith.xyz/'],
   'admin must appear first as one unexpanded destination',
 );
-assert.deepEqual(
-  [...siteIndex.querySelectorAll('[data-tree-toggle]')]
-    .map((button) => button.textContent?.trim().replace(/^[├└]──\s*/, '')),
-  ['beek/', 'work/', 'photos/'],
-  'only branches with children should expose disclosure controls',
-);
+const treeToggleLabels = [...siteIndex.querySelectorAll('[data-tree-toggle]')]
+  .map((button) => button.querySelector(':scope > span:nth-child(2)')?.textContent?.trim());
+assert.deepEqual(treeToggleLabels.slice(0, 5), ['beek/', 'work/', 'dev/', 'art/', 'photos/']);
+assert.ok(treeToggleLabels.slice(5).every((label) => /^\d{4}\/$/.test(label || '')), 'photo subsections must be years');
+
+const groupedWorkHrefs = ['tree-work-dev', 'tree-work-art']
+  .flatMap((id) => [...siteIndex.querySelectorAll(`#${id} a`)].map((link) => link.getAttribute('href')))
+  .sort();
+const workHrefs = siteIndexHrefs.filter((href) => href?.startsWith('/work/') && href !== '/work/').sort();
+assert.deepEqual(groupedWorkHrefs, workHrefs, 'dev and art subsections must contain every work entry once');
+const groupedRollHrefs = [...siteIndex.querySelectorAll('[id^="tree-photos-"] a')]
+  .map((link) => link.getAttribute('href'))
+  .sort();
+const rollHrefs = siteIndexHrefs.filter((href) => href?.startsWith('/photos/') && href !== '/photos/').sort();
+assert.deepEqual(groupedRollHrefs, rollHrefs, 'year subsections must contain every photo roll once');
 assert.equal(home.querySelector('header nav[aria-label="Main navigation"]'), null);
 
 for (const section of ['work', 'photos']) {
