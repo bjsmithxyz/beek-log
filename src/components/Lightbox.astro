@@ -6,16 +6,16 @@
 //   data-meta    — small metadata line under the caption (film stock, frame, …)
 ---
 
-<div id="lightbox" class="lightbox" aria-hidden="true">
-  <button class="lightbox-close" aria-label="Close lightbox">&times;</button>
+<div id="lightbox" class="lightbox" role="dialog" aria-modal="true" aria-label="Image preview" aria-hidden="true" inert>
+  <button class="lightbox-close" aria-label="Close lightbox" tabindex="-1">&times;</button>
 
-  <button class="lightbox-nav lightbox-prev" aria-label="Previous image">
+  <button class="lightbox-nav lightbox-prev" aria-label="Previous image" tabindex="-1">
     <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
       <polyline points="15 18 9 12 15 6"></polyline>
     </svg>
   </button>
 
-  <button class="lightbox-nav lightbox-next" aria-label="Next image">
+  <button class="lightbox-nav lightbox-next" aria-label="Next image" tabindex="-1">
     <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
       <polyline points="9 18 15 12 9 6"></polyline>
     </svg>
@@ -47,6 +47,18 @@
     if (e.key === 'Escape') lb.requestClose();
     if (e.key === 'ArrowLeft') lb.navigate(-1);
     if (e.key === 'ArrowRight') lb.navigate(1);
+    if (e.key === 'Tab') {
+      const controls = [...document.querySelectorAll<HTMLElement>('#lightbox button')];
+      const first = controls[0];
+      const last = controls.at(-1);
+      if (e.shiftKey && document.activeElement === first) {
+        e.preventDefault();
+        last?.focus();
+      } else if (!e.shiftKey && document.activeElement === last) {
+        e.preventDefault();
+        first?.focus();
+      }
+    }
   }
 
   function onPopstate() {
@@ -72,6 +84,7 @@
     }
 
     let currentIndex = 0;
+    let opener: HTMLElement | null = null;
     // pending src-clear from hide(); cancelled on render so a quick reopen
     // doesn't get its freshly-set image blanked
     let clearSrcTimer: ReturnType<typeof setTimeout> | undefined;
@@ -97,15 +110,21 @@
 
     const show = (index: number) => {
       render(index);
+      lightbox.inert = false;
+      lightbox.querySelectorAll<HTMLElement>('button').forEach((item) => item.removeAttribute('tabindex'));
       lightbox.classList.add('active');
       lightbox.setAttribute('aria-hidden', 'false');
       document.body.style.overflow = 'hidden';
+      (closeBtn as HTMLElement).focus();
     };
 
     const hide = () => {
       lightbox.classList.remove('active');
       lightbox.setAttribute('aria-hidden', 'true');
+      lightbox.inert = true;
+      lightbox.querySelectorAll<HTMLElement>('button').forEach((item) => { item.tabIndex = -1; });
       document.body.style.overflow = '';
+      opener?.focus();
       clearSrcTimer = setTimeout(() => {
         lightboxImg.src = '';
       }, 300);
@@ -113,7 +132,8 @@
 
     // Open via a pushed history entry so the URL carries the frame id and the
     // browser Back button closes the lightbox.
-    const openAt = (index: number) => {
+    const openAt = (index: number, trigger: HTMLElement) => {
+      opener = trigger;
       history.pushState({ lb: true }, '', '#' + ids[index]);
       show(index);
     };
@@ -137,7 +157,15 @@
     };
 
     galleryItems.forEach((item, index) => {
-      item.addEventListener('click', () => openAt(index));
+      item.tabIndex = 0;
+      item.setAttribute('role', 'button');
+      item.setAttribute('aria-haspopup', 'dialog');
+      item.addEventListener('click', () => openAt(index, item));
+      item.addEventListener('keydown', (event) => {
+        if (event.key !== 'Enter' && event.key !== ' ') return;
+        event.preventDefault();
+        openAt(index, item);
+      });
     });
 
     closeBtn.addEventListener('click', requestClose);

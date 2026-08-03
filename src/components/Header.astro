@@ -64,7 +64,7 @@ const navItems = [
     </button>
   </div>
   
-  <div class="mobile-menu" id="mobile-menu" aria-hidden="true">
+  <div class="mobile-menu" id="mobile-menu" aria-hidden="true" inert>
     <nav>
       <ul class="mobile-nav-list">
         {navItems.map(item => (
@@ -72,13 +72,14 @@ const navItems = [
             <a 
               href={item.href} 
               class:list={['mobile-nav-link', { active: pathname === item.href || (item.href !== '/' && pathname.startsWith(item.href)) }]}
+              tabindex="-1"
             >
               &gt; {item.label}
             </a>
           </li>
         ))}
         <li>
-          <a class="mobile-nav-link" href="https://admin.bjsmith.xyz/">
+          <a class="mobile-nav-link" href="https://admin.bjsmith.xyz/" tabindex="-1">
             &gt; admin↗
           </a>
         </li>
@@ -103,6 +104,10 @@ const navItems = [
     const menu = document.getElementById('mobile-menu');
     toggle?.setAttribute('aria-expanded', 'false');
     menu?.setAttribute('aria-hidden', 'true');
+    if (menu) {
+      menu.inert = true;
+      menu.querySelectorAll<HTMLElement>('a, button').forEach((item) => { item.tabIndex = -1; });
+    }
     menu?.classList.remove('open');
     document.body.style.overflow = '';
     if (focusToggle) (toggle as HTMLElement | null)?.focus();
@@ -154,6 +159,10 @@ const navItems = [
       } else {
         mobileMenuToggle.setAttribute('aria-expanded', 'true');
         mobileMenu?.setAttribute('aria-hidden', 'false');
+        if (mobileMenu) {
+          mobileMenu.inert = false;
+          mobileMenu.querySelectorAll<HTMLElement>('a, button').forEach((item) => item.removeAttribute('tabindex'));
+        }
         mobileMenu?.classList.add('open');
         document.body.style.overflow = 'hidden';
       }
