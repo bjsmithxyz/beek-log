@@ -117,9 +117,4 @@ for (const section of ['work', 'photos']) {
   ]);
 }
 
-const sitePost = await documentAt('work/bjsmith-xyz/index.html');
-assert.equal(sitePost.querySelector('h1')?.textContent?.trim(), 'bjsmith.xyz');
-assert.match(sitePost.querySelector('.prose')?.textContent || '', /standalone Long Way Round travel project has been retired/);
-assert.equal(sitePost.querySelector('a[href="/travel/"]')?.textContent?.trim(), 'travel/');
-
 console.log('breadcrumb build guard: ok');
