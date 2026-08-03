@@ -19,7 +19,7 @@ corners, hard offset shadows, a faint dot grid, and a dark default theme with a
 light toggle. Tokens live in `src/styles/global.css`.
 
 Every page places semantic filesystem-style breadcrumb navigation in its shared
-sticky top toolbar, beside the theme and admin utilities on the public site.
+sticky top toolbar, beside the right-aligned theme control on the public site.
 Keeping the path in each workspace's layout gives every route the same screen
 position regardless of content width. The public homepage is `~`, public
 sections and files live below `~/beek`, and the admin dashboard and tools live
@@ -32,8 +32,9 @@ The root route is a filesystem-style site index: `~` lists the single protected
 `admin/` destination first, followed by an animated, collapsible `beek/` tree.
 Only branches with children expose disclosure controls; every branch starts
 collapsed, and `work/` and `photos/` can expand into their current
-Markdown-backed entries. Recent public rolls and work remain below the index.
-Public section routes share `PageHeader` and one page-title size token; detail
+Markdown-backed entries. The tree is the homepage content rather than a preface
+to duplicate recent-content listings. Public section routes share `PageHeader`
+and one page-title size token; detail
 headings and the isolated admin title token resolve to that same size. Admin
 typography otherwise uses the same xs/sm/base/display scale as the public site
 while retaining its isolated dark-only token names.

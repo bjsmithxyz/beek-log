@@ -82,8 +82,9 @@ for (const [relativePath, title] of sectionTitles) {
 
 const home = await documentAt('index.html');
 assert.doesNotMatch(home.body.textContent || '', /select a path or browse recent files|beek\/recent-(?:rolls|work)\//);
-assert.equal(home.querySelector('section[aria-label="Recent photo rolls"] a[aria-label="View all photo rolls"]')?.getAttribute('href'), '/photos/');
-assert.equal(home.querySelector('section[aria-label="Recent work"] a[aria-label="View all work"]')?.getAttribute('href'), '/work/');
+assert.equal(home.querySelector('.recent-content, section[aria-label="Recent photo rolls"], section[aria-label="Recent work"]'), null);
+assert.equal(home.querySelector('.site-chrome > header a[href^="https://admin.bjsmith.xyz"]'), null, 'public toolbar must not duplicate the admin destination');
+assert.equal(home.querySelector('.header-inner')?.lastElementChild?.querySelector('#theme-toggle')?.id, 'theme-toggle', 'theme toggle must be the rightmost toolbar control');
 const siteIndex = home.querySelector('nav[aria-label="Site index"]');
 assert.ok(siteIndex, 'homepage must expose a filesystem site index');
 const siteIndexLinks = [...siteIndex.querySelectorAll('a')];

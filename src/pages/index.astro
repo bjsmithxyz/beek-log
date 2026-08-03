@@ -2,14 +2,10 @@
 import BaseLayout from '../layouts/BaseLayout.astro';
 import SiteTree from '../components/SiteTree.astro';
 import PageHeader from '../components/PageHeader.astro';
-import WorkRow from '../components/WorkRow.astro';
-import RollRow from '../components/RollRow.astro';
 import { getWorkEntries, getPhotoRolls, byDateDesc } from '../lib/collections';
 
 const allWork = (await getWorkEntries()).sort(byDateDesc);
 const allRolls = (await getPhotoRolls()).sort(byDateDesc);
-const recentWork = allWork.slice(0, 8);
-const recentRolls = allRolls.slice(0, 5);
 const workTreeItems = allWork.map((entry) => ({
   label: `${entry.id}.md`,
   href: `/work/${entry.id}/`,
@@ -28,34 +24,6 @@ const rollTreeItems = allRolls.map((entry) => ({
       <PageHeader title="index/" />
 
       <SiteTree workItems={workTreeItems} rollItems={rollTreeItems} />
-
-      <div class="recent-content">
-        {recentRolls.length > 0 && (
-          <section class="recent" aria-label="Recent photo rolls">
-            <div class="recent-action">
-              <a href="/photos/" class="recent-link" aria-label="View all photo rolls">view all →</a>
-            </div>
-            <div class="dir-list">
-              {recentRolls.map(roll => (
-                <RollRow roll={roll} />
-              ))}
-            </div>
-          </section>
-        )}
-
-        {recentWork.length > 0 && (
-          <section class="recent" aria-label="Recent work">
-            <div class="recent-action">
-              <a href="/work/" class="recent-link" aria-label="View all work">view all →</a>
-            </div>
-            <div class="dir-list">
-              {recentWork.map(work => (
-                <WorkRow work={work} showDescription={false} />
-              ))}
-            </div>
-          </section>
-        )}
-      </div>
     </div>
   </section>
 </BaseLayout>
@@ -63,32 +31,5 @@ const rollTreeItems = allRolls.map((entry) => ({
 <style>
   .home {
     padding: var(--space-10) 0 var(--space-16);
-  }
-
-  .recent-content {
-    margin-top: var(--space-10);
-  }
-
-  .recent + .recent {
-    margin-top: var(--space-10);
-  }
-
-  .recent-action {
-    display: flex;
-    justify-content: flex-end;
-    margin-bottom: var(--space-3);
-  }
-
-  .recent-link {
-    font-size: var(--font-size-sm);
-    color: var(--color-text-muted);
-  }
-
-  .recent-link:hover {
-    color: var(--color-accent-primary);
-  }
-
-  .dir-list {
-    border-top: 1px solid var(--color-border);
   }
 </style>
