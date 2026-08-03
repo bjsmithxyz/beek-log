@@ -1,4 +1,3 @@
-import crypto from 'node:crypto';
 import { env, githubHeaders } from './auth.mjs';
 
 const SHA = /^[0-9a-f]{40}$/;
@@ -359,8 +358,4 @@ export function publicationErrorResponse(error) {
     return { status, body: { ok: false, error: 'GitHub could not complete the publication.', code: 'github_error' } };
   }
   return { status: 500, body: { ok: false, error: 'Publication failed safely.', code: 'server_error' } };
-}
-
-export function newRequestId() {
-  return crypto.randomUUID();
 }

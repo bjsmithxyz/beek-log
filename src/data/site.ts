@@ -2,7 +2,6 @@
 
 export const siteName = 'bjsmith.xyz';
 export const personName = 'beek';
-export const personRole = 'tech guy & creative';
 export const siteDescription = 'Portfolio of beek - tech guy & creative';
 export const tagline = '// be excellent to each other.';
 

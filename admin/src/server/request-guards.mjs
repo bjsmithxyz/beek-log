@@ -1,6 +1,6 @@
 import { isSameOrigin, json, readSession, withSessionCookie } from './auth.mjs';
 
-export const DEFAULT_MAX_BODY_BYTES = 256 * 1024;
+const DEFAULT_MAX_BODY_BYTES = 256 * 1024;
 
 function result(response, setCookie = null) {
   return { response: withSessionCookie(response, setCookie) };

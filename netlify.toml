@@ -20,6 +20,14 @@
   force = true
 
 # Redirects and headers
+#
+# One policy for every route. A per-route CSP cannot work here: ClientRouter
+# swaps documents without a navigation, so the browser keeps enforcing the CSP
+# of whichever page was loaded first. Scoping the map/weather origins to
+# /travel meant arriving there from any internal link blocked every tile and
+# forecast, while a direct hit worked — so the narrower policy bought no real
+# protection and broke the page. scripts/verify-csp.mjs keeps this in sync with
+# what src/scripts/travel-client.js actually requests.
 [[headers]]
   for = "/*"
   [headers.values]
@@ -30,18 +38,6 @@
     Permissions-Policy = "camera=(), microphone=(), geolocation=(), browsing-topics=()"
     # 'unsafe-inline' is required for Astro's inline theme/view-transition
     # scripts and inlined styles; acceptable on a fully static site.
-    Content-Security-Policy = "default-src 'self'; script-src 'self' 'unsafe-inline'; style-src 'self' 'unsafe-inline'; img-src 'self' data:; font-src 'self'; connect-src 'self'; object-src 'none'; base-uri 'self'; form-action 'self'; frame-ancestors 'none'; upgrade-insecure-requests"
-
-# Travel alone needs external map tiles and live weather. Repeat the complete
-# policy so the site-wide rule stays unchanged for every other route.
-[[headers]]
-  for = "/travel"
-  [headers.values]
-    Content-Security-Policy = "default-src 'self'; script-src 'self' 'unsafe-inline'; style-src 'self' 'unsafe-inline'; img-src 'self' data: https://*.basemaps.cartocdn.com; font-src 'self'; connect-src 'self' https://archive-api.open-meteo.com; object-src 'none'; base-uri 'self'; form-action 'self'; frame-ancestors 'none'; upgrade-insecure-requests"
-
-[[headers]]
-  for = "/travel/*"
-  [headers.values]
     Content-Security-Policy = "default-src 'self'; script-src 'self' 'unsafe-inline'; style-src 'self' 'unsafe-inline'; img-src 'self' data: https://*.basemaps.cartocdn.com; font-src 'self'; connect-src 'self' https://archive-api.open-meteo.com; object-src 'none'; base-uri 'self'; form-action 'self'; frame-ancestors 'none'; upgrade-insecure-requests"
 
 # Hashed build assets are immutable

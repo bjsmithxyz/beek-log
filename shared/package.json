@@ -4,6 +4,7 @@
   "type": "module",
   "exports": {
     "./deploy-context": "./deploy-context.mjs",
+    "./escape-html": "./escape-html.mjs",
     "./film-stocks": "./film-stocks.ts",
     "./folder-name": "./folder-name.mjs",
     "./image-constants": "./image-constants.ts",

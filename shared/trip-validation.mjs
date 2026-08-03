@@ -1,6 +1,6 @@
 // Pure validation shared by the public travel build and the hosted editor.
 const ISO_DATE = /^\d{4}-\d{2}-\d{2}$/;
-export const MAX_STOPS = 500;
+const MAX_STOPS = 500;
 
 function isPlainObject(value) {
   return value !== null && typeof value === 'object' && !Array.isArray(value);
