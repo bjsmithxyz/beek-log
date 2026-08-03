@@ -1,48 +1,60 @@
 ---
 import BaseLayout from '../layouts/BaseLayout.astro';
+import SiteTree from '../components/SiteTree.astro';
 import WorkRow from '../components/WorkRow.astro';
 import RollRow from '../components/RollRow.astro';
 import { getWorkEntries, getPhotoRolls, byDateDesc } from '../lib/collections';
 
-const recentWork = (await getWorkEntries()).sort(byDateDesc).slice(0, 8);
-const recentRolls = (await getPhotoRolls()).sort(byDateDesc).slice(0, 5);
+const allWork = (await getWorkEntries()).sort(byDateDesc);
+const allRolls = (await getPhotoRolls()).sort(byDateDesc);
+const recentWork = allWork.slice(0, 8);
+const recentRolls = allRolls.slice(0, 5);
+const totalFrames = allRolls.reduce((sum, roll) => sum + roll.data.photos.length, 0);
 ---
 
 <BaseLayout breadcrumbs={[{ label: '~', href: '/' }]}>
   <section class="home">
     <div class="container">
       <header class="home-header">
-        <h1 class="home-name">beek</h1>
-        <p class="home-role">tech guy & creative</p>
+        <h1 class="home-name">index/</h1>
+        <p class="home-role">select a path or browse recent files.</p>
       </header>
 
-      {recentRolls.length > 0 && (
-        <section class="recent" aria-labelledby="rolls-heading">
-          <div class="dir-header">
-            <h2 id="rolls-heading" class="dir-path">rolls/</h2>
-            <a href="/photos/" class="dir-link">view all →</a>
-          </div>
-          <div class="dir-list">
-            {recentRolls.map(roll => (
-              <RollRow roll={roll} />
-            ))}
-          </div>
-        </section>
-      )}
+      <SiteTree
+        workCount={allWork.length}
+        rollCount={allRolls.length}
+        frameCount={totalFrames}
+      />
 
-      {recentWork.length > 0 && (
-        <section class="recent" aria-labelledby="recent-heading">
-          <div class="dir-header">
-            <h2 id="recent-heading" class="dir-path">recent/</h2>
-            <a href="/work/" class="dir-link">view all →</a>
-          </div>
-          <div class="dir-list">
-            {recentWork.map(work => (
-              <WorkRow work={work} showDescription={false} />
-            ))}
-          </div>
-        </section>
-      )}
+      <div class="recent-content" id="recent">
+        {recentRolls.length > 0 && (
+          <section class="recent" aria-labelledby="rolls-heading">
+            <div class="dir-header">
+              <h2 id="rolls-heading" class="dir-path">beek/recent-rolls/</h2>
+              <a href="/photos/" class="dir-link">view all →</a>
+            </div>
+            <div class="dir-list">
+              {recentRolls.map(roll => (
+                <RollRow roll={roll} />
+              ))}
+            </div>
+          </section>
+        )}
+
+        {recentWork.length > 0 && (
+          <section class="recent" aria-labelledby="recent-heading">
+            <div class="dir-header">
+              <h2 id="recent-heading" class="dir-path">beek/recent-work/</h2>
+              <a href="/work/" class="dir-link">view all →</a>
+            </div>
+            <div class="dir-list">
+              {recentWork.map(work => (
+                <WorkRow work={work} showDescription={false} />
+              ))}
+            </div>
+          </section>
+        )}
+      </div>
     </div>
   </section>
 </BaseLayout>
@@ -67,6 +79,11 @@ const recentRolls = (await getPhotoRolls()).sort(byDateDesc).slice(0, 5);
     font-size: var(--font-size-lg);
     color: var(--color-accent-primary);
     margin-bottom: var(--space-5);
+  }
+
+  .recent-content {
+    margin-top: var(--space-10);
+    scroll-margin-top: 108px;
   }
 
   .recent + .recent {

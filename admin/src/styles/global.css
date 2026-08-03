@@ -19,11 +19,23 @@
   --shadow: 3px 3px 0 var(--border-strong);
   --shadow-accent: 3px 3px 0 var(--accent);
   --font: 'IBM Plex Mono', 'Courier New', monospace;
+  --font-size-xs: .6875rem;
+  --font-size-sm: .8125rem;
+  --font-size-base: .9375rem;
+  --font-size-lg: 1.0625rem;
+  --font-size-xl: 1.25rem;
+  --font-size-2xl: 1.5rem;
+  --font-size-3xl: 2rem;
+  --font-size-4xl: 2.5rem;
+  --font-weight-regular: 400;
+  --font-weight-medium: 500;
+  --font-weight-bold: 600;
+  --line-height-base: 1.6;
   color-scheme: dark;
 }
 
 html { font-family: var(--font); background: var(--bg); color: var(--text); }
-body { min-height: 100vh; background: var(--bg); line-height: 1.6; }
+body { min-height: 100vh; background: var(--bg); font-size: var(--font-size-base); font-weight: var(--font-weight-regular); line-height: var(--line-height-base); }
 body::before {
   content: '';
   position: fixed;
@@ -50,14 +62,14 @@ button { cursor: pointer; }
 .admin-header-inner { min-height: 56px; display: flex; align-items: center; gap: 1rem; }
 .admin-logo { color: var(--text); font-weight: 600; }
 .admin-logo span { color: var(--text-muted); }
-.public-home, .admin-nav a { display: flex; min-height: 40px; align-items: center; padding: 0 .65rem; color: var(--text-soft); border: 1px solid transparent; font-size: .8rem; }
+.public-home, .admin-nav a { display: flex; min-height: 40px; align-items: center; padding: 0 .65rem; color: var(--text-soft); border: 1px solid transparent; font-size: var(--font-size-sm); }
 .public-home:hover, .admin-nav a:hover, .admin-nav a[aria-current='page'] { color: var(--accent); border-color: var(--accent); background: var(--panel); }
 .admin-nav { display: flex; align-items: center; gap: .5rem; margin-left: auto; }
-.admin-user { color: var(--text-muted); font-size: .72rem; }
+.admin-user { color: var(--text-muted); font-size: var(--font-size-xs); }
 .admin-main { padding: 3rem 0 6rem; }
 
-h1 { font-size: clamp(1.8rem, 5vw, 2.5rem); line-height: 1.15; margin-bottom: .75rem; }
-h2 { font-size: 1rem; font-weight: 500; }
+h1 { font-size: var(--font-size-4xl); font-weight: var(--font-weight-medium); line-height: 1.2; margin-bottom: .75rem; }
+h2 { font-size: var(--font-size-base); font-weight: var(--font-weight-medium); }
 p { color: var(--text-soft); margin-bottom: 1rem; }
 
 .login-panel, .notice-panel {
@@ -67,7 +79,7 @@ p { color: var(--text-soft); margin-bottom: 1rem; }
   border: 1px solid var(--border);
   box-shadow: var(--shadow);
 }
-.login-panel h1 { font-size: 1.5rem; }
+.login-panel h1 { font-size: var(--font-size-2xl); }
 .login-action, .admin-button {
   display: inline-block;
   padding: .55rem .8rem;
@@ -78,20 +90,24 @@ p { color: var(--text-soft); margin-bottom: 1rem; }
 }
 .login-action:hover, .admin-button:hover { color: var(--bg); background: var(--accent); }
 .admin-button.secondary { color: var(--text-soft); border-color: var(--border-strong); box-shadow: var(--shadow); }
-.auth-error { margin-bottom: 1rem; padding: .75rem; color: #ff6b6b; border: 1px solid #ff6b6b; font-size: .8rem; }
+.auth-error { margin-bottom: 1rem; padding: .75rem; color: #ff6b6b; border: 1px solid #ff6b6b; font-size: var(--font-size-sm); }
 
 .dashboard-head { display: flex; align-items: end; justify-content: space-between; gap: 1rem; margin-bottom: 2rem; }
 .dashboard-head p { margin: 0; }
 .tool-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 1rem; }
 .tool-tile { display: flex; min-height: 12rem; flex-direction: column; padding: 1.25rem; color: var(--text); background: var(--panel); border: 1px solid var(--border); box-shadow: var(--shadow); }
 .tool-tile:hover { border-color: var(--accent); box-shadow: var(--shadow-accent); }
-.tool-path { color: var(--text-muted); font-size: .72rem; }
-.tool-tile h2 { margin: .7rem 0; color: var(--text); font-size: 1.2rem; }
-.tool-tile p { font-size: .82rem; }
-.tool-state { margin-top: auto; color: var(--amber); font-size: .72rem; }
+.tool-path { color: var(--text-muted); font-size: var(--font-size-xs); }
+.tool-tile h2 { margin: .7rem 0; color: var(--text); font-size: var(--font-size-xl); }
+.tool-tile p { font-size: var(--font-size-sm); }
+.tool-state { margin-top: auto; color: var(--amber); font-size: var(--font-size-xs); }
 .tool-state.live { color: var(--accent); }
 
 .page-head { padding-bottom: 1.5rem; border-bottom: 1px solid var(--border); margin-bottom: 1.5rem; }
+
+@media (max-width: 768px) {
+  :root { --font-size-4xl: 2rem; --font-size-3xl: 1.5rem; }
+}
 
 @media (max-width: 680px) {
   .admin-header-inner { align-items: flex-start; flex-wrap: wrap; padding: .75rem 0; }

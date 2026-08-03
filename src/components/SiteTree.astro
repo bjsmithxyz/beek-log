@@ -1,0 +1,122 @@
+---
+interface Props {
+  workCount: number;
+  rollCount: number;
+  frameCount: number;
+}
+
+const { workCount, rollCount, frameCount } = Astro.props;
+---
+
+<nav class="site-tree" aria-label="Site index">
+  <a class="tree-root" href="/" aria-current="page">~</a>
+  <ul>
+    <li>
+      <div class="tree-row">
+        <span class="tree-prefix" aria-hidden="true">├── </span>
+        <a href="#recent">beek/</a>
+        <span class="tree-meta">public home</span>
+      </div>
+      <ul>
+        <li class="tree-row">
+          <span class="tree-prefix" aria-hidden="true">│   ├── </span>
+          <a href="/work/">work/</a>
+          <span class="tree-meta">{workCount} entries</span>
+        </li>
+        <li class="tree-row">
+          <span class="tree-prefix" aria-hidden="true">│   ├── </span>
+          <a href="/photos/">photos/</a>
+          <span class="tree-meta">{rollCount} rolls · {frameCount} frames</span>
+        </li>
+        <li class="tree-row">
+          <span class="tree-prefix" aria-hidden="true">│   ├── </span>
+          <a href="/travel/">travel/</a>
+          <span class="tree-meta">journey</span>
+        </li>
+        <li class="tree-row">
+          <span class="tree-prefix" aria-hidden="true">│   └── </span>
+          <a href="/about/">about.md</a>
+          <span class="tree-meta">file</span>
+        </li>
+      </ul>
+    </li>
+    <li>
+      <div class="tree-row">
+        <span class="tree-prefix" aria-hidden="true">└── </span>
+        <a href="https://admin.bjsmith.xyz/">admin/↗</a>
+        <span class="tree-meta">protected</span>
+      </div>
+      <ul>
+        <li class="tree-row">
+          <span class="tree-prefix" aria-hidden="true">    ├── </span>
+          <a href="https://admin.bjsmith.xyz/rolls/">rolls/↗</a>
+          <span class="tree-meta">publisher</span>
+        </li>
+        <li class="tree-row">
+          <span class="tree-prefix" aria-hidden="true">    └── </span>
+          <a href="https://admin.bjsmith.xyz/travel/">travel/↗</a>
+          <span class="tree-meta">editor</span>
+        </li>
+      </ul>
+    </li>
+  </ul>
+</nav>
+
+<style>
+  .site-tree {
+    max-width: 48rem;
+    padding: var(--space-4);
+    overflow-x: auto;
+    border: 1px solid var(--color-border);
+    background: var(--color-bg-secondary);
+    box-shadow: var(--shadow-hard);
+    font-size: var(--font-size-sm);
+    scrollbar-width: thin;
+  }
+
+  .site-tree ul {
+    list-style: none;
+  }
+
+  .tree-root,
+  .tree-row {
+    min-height: 2rem;
+  }
+
+  .tree-root {
+    display: inline-flex;
+    align-items: center;
+    color: var(--color-accent-primary);
+    font-weight: var(--font-weight-medium);
+  }
+
+  .tree-row {
+    display: grid;
+    grid-template-columns: max-content minmax(max-content, 1fr) auto;
+    align-items: center;
+    min-width: 30rem;
+  }
+
+  .tree-prefix {
+    color: var(--color-text-muted);
+    white-space: pre;
+  }
+
+  .tree-row a {
+    width: fit-content;
+    color: var(--color-text-primary);
+  }
+
+  .tree-row a:hover,
+  .tree-row a:focus-visible {
+    color: var(--color-accent-primary);
+  }
+
+  .tree-meta {
+    padding-left: var(--space-6);
+    color: var(--color-text-muted);
+    font-size: var(--font-size-xs);
+    text-align: right;
+    white-space: nowrap;
+  }
+</style>

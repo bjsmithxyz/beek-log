@@ -27,6 +27,13 @@ route, the current self-link uses `aria-current="page"`, and long paths scroll
 horizontally on narrow screens. Public and admin use workspace-local Astro
 components so the admin remains isolated from the public rendering boundary.
 
+The root route is a filesystem-style site index: `~` branches into the public
+`beek/` tree and protected `admin/` tree, then retains recent public rolls and
+work below it. Because that index and the breadcrumb rail now carry primary
+navigation, the public header is intentionally reduced to theme and admin
+utilities. Admin typography uses the same xs/sm/base/display scale as the public
+site while retaining its isolated dark-only token names.
+
 ## Project structure
 
 ```text

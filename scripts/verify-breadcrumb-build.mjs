@@ -70,6 +70,30 @@ for (const [relativePath, expected] of staticPages) {
   assertBreadcrumb(await documentAt(relativePath), expected);
 }
 
+const home = await documentAt('index.html');
+const siteIndexLinks = [...home.querySelectorAll('nav[aria-label="Site index"] a')];
+assert.deepEqual(
+  siteIndexLinks.map((link) => link.textContent?.trim()),
+  ['~', 'beek/', 'work/', 'photos/', 'travel/', 'about.md', 'admin/↗', 'rolls/↗', 'travel/↗'],
+  'homepage must expose the public and admin file tree',
+);
+assert.deepEqual(
+  siteIndexLinks.map((link) => link.getAttribute('href')),
+  [
+    '/',
+    '#recent',
+    '/work/',
+    '/photos/',
+    '/travel/',
+    '/about/',
+    'https://admin.bjsmith.xyz/',
+    'https://admin.bjsmith.xyz/rolls/',
+    'https://admin.bjsmith.xyz/travel/',
+  ],
+  'homepage file tree must link to each represented route',
+);
+assert.equal(home.querySelector('header nav[aria-label="Main navigation"]'), null);
+
 for (const section of ['work', 'photos']) {
   const entries = (await readdir(join(dist, section), { withFileTypes: true }))
     .filter((entry) => entry.isDirectory())
