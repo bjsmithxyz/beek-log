@@ -200,16 +200,18 @@ Phase 4 passed its production gate on 2026-08-03.
 - [x] Delete the retired `scripts/admin/` localhost publisher after Phase 4
   production acceptance.
 - [x] Remove the root `admin` npm script and obsolete local-admin-only code.
-- [ ] Archive `bjsmithxyz/long-way-round`; retain or remove its old Netlify site
-  only after confirming the custom-domain redirect no longer depends on it.
-- [ ] Decide whether to enforce a GitHub ruleset requiring pull requests for
-  `main`; document the owner decision.
+- [ ] Archive `bjsmithxyz/long-way-round` and delete its old Netlify site; the
+  owner approved both after confirming the custom-domain redirect is independent.
+- [x] Decide whether to enforce a GitHub ruleset requiring pull requests for
+  `main`: owner approved PR-only enforcement on 2026-08-03.
+- [ ] Enable and verify the active `main` PR-only ruleset without granting the
+  admin App a bypass.
 - [x] Rewrite `docs/photography.md`, `docs/architecture.md`,
   `docs/deployment.md`, `AGENTS.md` and `README.md` to remove transition-state
   language.
 - [x] Expand the operations runbook with GitHub App recreation, client/session
   secret rotation, incident logout, DNS/TLS recovery and OAuth recovery.
-- [ ] Record where archival full-resolution scans live and how they are backed
+- [x] Record where archival full-resolution scans live and how they are backed
   up before declaring the local workflow retired.
 - [x] Document hardware-key 2FA on the GitHub owner account as a critical
   security boundary without recording recovery secrets.

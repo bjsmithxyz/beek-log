@@ -217,6 +217,62 @@ in this repository. Review GitHub sessions and authorized Apps periodically.
 - If travel rollback is required before the old site is retired, reattach its
   custom alias and point the CNAME back to `longwayround.netlify.app`.
 
+## Full-resolution scan archive
+
+The repository and public site contain only the web derivatives (maximum 2048px
+long edge), not the archival originals. The owner retains the full-resolution
+scans in two places:
+
+- the owner's personal endpoint as the primary working/archive copy
+- Proton Drive as the independent off-site cloud copy
+
+Do not record endpoint addresses, account details, paths, encryption material,
+or recovery credentials here. A repository clone is not a substitute for either
+archive. Periodically restore a sample scan from Proton Drive and compare it to
+the primary copy before treating the backup as healthy.
+
+## `main` pull-request ruleset
+
+Owner decision on 2026-08-03: enforce pull-request-only changes to `main`. The
+hosted admin already creates and merges pull requests, so it needs no bypass.
+Recommended GitHub repository ruleset:
+
+1. Open **Settings → Rules → Rulesets → New branch ruleset**.
+2. Name it `main requires reviewed PR`; set enforcement to **Active**.
+3. Target the default branch (`main`) only.
+4. Enable **Require a pull request before merging**, with zero required external
+   approvals for this single-owner repository. Keep conversation resolution
+   required if GitHub offers it without blocking comment-free PRs.
+5. Block force pushes and branch deletion.
+6. Do not add the GitHub App or owner to a bypass list. Do not require a named
+   Netlify status check yet; preview readiness is revalidated by the admin merge
+   endpoint and Netlify check names can change.
+7. Save, then verify a direct push to `main` is rejected and a disposable
+   admin-created PR can still merge after its preview is ready.
+
+Once enabled, repository maintenance outside the hosted admin must also use a
+branch and PR. Emergency bypass requires a deliberate temporary ruleset change,
+which should be documented in the incident record and reverted immediately.
+
+## Legacy travel retirement
+
+`travel.bjsmith.xyz` now CNAMEs to `beek-log.netlify.app` and redirects to the
+public `/travel/` route; it no longer depends on the legacy repository or
+Netlify project. Before archiving `bjsmithxyz/long-way-round`, disable its GitHub
+Pages deployment so the stale `bjsmithxyz.github.io/long-way-round/` copy is not
+left active. Then archive the repository under **Settings → General → Danger
+Zone**. The old `longwayround.netlify.app` project may be deleted after confirming
+it owns no custom domain. Post-change checks:
+
+```sh
+curl -sSI https://travel.bjsmith.xyz/
+curl -sSIL https://travel.bjsmith.xyz/ | grep -Ei '^(HTTP|location:)'
+curl -sS -o /dev/null -w '%{http_code}\n' https://longwayround.netlify.app/
+```
+
+Travel must still redirect and finish at HTTP 200; the deleted default Netlify
+hostname should no longer serve the legacy app.
+
 ## Verified baseline — 2026-08-02
 
 Owner-operated checks confirmed allowed login/logout and server-side rejection
