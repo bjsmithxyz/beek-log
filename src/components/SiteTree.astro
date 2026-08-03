@@ -1,70 +1,155 @@
 ---
-interface Props {
-  workCount: number;
-  rollCount: number;
-  frameCount: number;
+interface TreeFile {
+  label: string;
+  href: string;
+  meta?: string;
 }
 
-const { workCount, rollCount, frameCount } = Astro.props;
+interface Props {
+  workItems: TreeFile[];
+  rollItems: TreeFile[];
+}
+
+const { workItems, rollItems } = Astro.props;
 ---
 
 <nav class="site-tree" aria-label="Site index">
   <a class="tree-root" href="/" aria-current="page">~</a>
   <ul>
-    <li>
-      <div class="tree-row">
+    <li class="tree-row">
+      <a class="tree-main" href="https://admin.bjsmith.xyz/">
         <span class="tree-prefix" aria-hidden="true">├── </span>
-        <a href="#recent">beek/</a>
+        <span>admin/</span>
+      </a>
+      <span class="tree-meta">protected</span>
+    </li>
+    <li class="tree-branch" data-tree-branch>
+      <div class="tree-row">
+        <button class="tree-main tree-toggle" type="button" aria-expanded="true" aria-controls="tree-beek" data-tree-toggle>
+          <span class="tree-prefix" aria-hidden="true">└── </span>
+          <span>beek/</span>
+          <span class="tree-state" aria-hidden="true"></span>
+        </button>
         <span class="tree-meta">public home</span>
       </div>
-      <ul>
-        <li class="tree-row">
-          <span class="tree-prefix" aria-hidden="true">│   ├── </span>
-          <a href="/work/">work/</a>
-          <span class="tree-meta">{workCount} entries</span>
-        </li>
-        <li class="tree-row">
-          <span class="tree-prefix" aria-hidden="true">│   ├── </span>
-          <a href="/photos/">photos/</a>
-          <span class="tree-meta">{rollCount} rolls · {frameCount} frames</span>
-        </li>
-        <li class="tree-row">
-          <span class="tree-prefix" aria-hidden="true">│   ├── </span>
-          <a href="/travel/">travel/</a>
-          <span class="tree-meta">journey</span>
-        </li>
-        <li class="tree-row">
-          <span class="tree-prefix" aria-hidden="true">│   └── </span>
-          <a href="/about/">about.md</a>
-          <span class="tree-meta">file</span>
-        </li>
-      </ul>
-    </li>
-    <li>
-      <div class="tree-row">
-        <span class="tree-prefix" aria-hidden="true">└── </span>
-        <a href="https://admin.bjsmith.xyz/">admin/↗</a>
-        <span class="tree-meta">protected</span>
+      <div class="tree-collapse" id="tree-beek" data-tree-collapse data-collapsed="false">
+        <div class="tree-collapse-inner">
+          <ul>
+            <li class="tree-row">
+              <a class="tree-main" href="#recent">
+                <span class="tree-prefix" aria-hidden="true">    ├── </span>
+                <span>home/</span>
+              </a>
+              <span class="tree-meta">recent files</span>
+            </li>
+            <li class="tree-branch" data-tree-branch>
+              <div class="tree-row">
+                <button class="tree-main tree-toggle" type="button" aria-expanded="false" aria-controls="tree-work" data-tree-toggle>
+                  <span class="tree-prefix" aria-hidden="true">    ├── </span>
+                  <span>work/</span>
+                  <span class="tree-state" aria-hidden="true"></span>
+                </button>
+                <span class="tree-meta">{workItems.length} entries</span>
+              </div>
+              <div class="tree-collapse" id="tree-work" data-tree-collapse data-collapsed="true" inert>
+                <div class="tree-collapse-inner">
+                  <ul>
+                    <li class="tree-row">
+                      <a class="tree-main" href="/work/">
+                        <span class="tree-prefix" aria-hidden="true">    │   ├── </span>
+                        <span>index/</span>
+                      </a>
+                      <span class="tree-meta">all work</span>
+                    </li>
+                    {workItems.map((item, index) => (
+                      <li class="tree-row">
+                        <a class="tree-main" href={item.href}>
+                          <span class="tree-prefix" aria-hidden="true">{index === workItems.length - 1 ? '    │   └── ' : '    │   ├── '}</span>
+                          <span>{item.label}</span>
+                        </a>
+                        {item.meta && <span class="tree-meta">{item.meta}</span>}
+                      </li>
+                    ))}
+                  </ul>
+                </div>
+              </div>
+            </li>
+            <li class="tree-branch" data-tree-branch>
+              <div class="tree-row">
+                <button class="tree-main tree-toggle" type="button" aria-expanded="false" aria-controls="tree-photos" data-tree-toggle>
+                  <span class="tree-prefix" aria-hidden="true">    ├── </span>
+                  <span>photos/</span>
+                  <span class="tree-state" aria-hidden="true"></span>
+                </button>
+                <span class="tree-meta">{rollItems.length} rolls</span>
+              </div>
+              <div class="tree-collapse" id="tree-photos" data-tree-collapse data-collapsed="true" inert>
+                <div class="tree-collapse-inner">
+                  <ul>
+                    <li class="tree-row">
+                      <a class="tree-main" href="/photos/">
+                        <span class="tree-prefix" aria-hidden="true">    │   ├── </span>
+                        <span>index/</span>
+                      </a>
+                      <span class="tree-meta">all rolls</span>
+                    </li>
+                    {rollItems.map((item, index) => (
+                      <li class="tree-row">
+                        <a class="tree-main" href={item.href}>
+                          <span class="tree-prefix" aria-hidden="true">{index === rollItems.length - 1 ? '    │   └── ' : '    │   ├── '}</span>
+                          <span>{item.label}</span>
+                        </a>
+                        {item.meta && <span class="tree-meta">{item.meta}</span>}
+                      </li>
+                    ))}
+                  </ul>
+                </div>
+              </div>
+            </li>
+            <li class="tree-row">
+              <a class="tree-main" href="/travel/">
+                <span class="tree-prefix" aria-hidden="true">    ├── </span>
+                <span>travel/</span>
+              </a>
+              <span class="tree-meta">journey</span>
+            </li>
+            <li class="tree-row">
+              <a class="tree-main" href="/about/">
+                <span class="tree-prefix" aria-hidden="true">    └── </span>
+                <span>about.md</span>
+              </a>
+              <span class="tree-meta">file</span>
+            </li>
+          </ul>
+        </div>
       </div>
-      <ul>
-        <li class="tree-row">
-          <span class="tree-prefix" aria-hidden="true">    ├── </span>
-          <a href="https://admin.bjsmith.xyz/rolls/">rolls/↗</a>
-          <span class="tree-meta">publisher</span>
-        </li>
-        <li class="tree-row">
-          <span class="tree-prefix" aria-hidden="true">    └── </span>
-          <a href="https://admin.bjsmith.xyz/travel/">travel/↗</a>
-          <span class="tree-meta">editor</span>
-        </li>
-      </ul>
     </li>
   </ul>
 </nav>
 
+<script>
+  function setupSiteTree() {
+    document.querySelectorAll<HTMLButtonElement>('[data-tree-toggle]').forEach((button) => {
+      if (button.dataset.treeReady === 'true') return;
+      const panel = document.getElementById(button.getAttribute('aria-controls') || '');
+      if (!(panel instanceof HTMLElement)) return;
+      button.dataset.treeReady = 'true';
+      panel.inert = button.getAttribute('aria-expanded') !== 'true';
+      button.addEventListener('click', () => {
+        const expanded = button.getAttribute('aria-expanded') === 'true';
+        button.setAttribute('aria-expanded', String(!expanded));
+        panel.dataset.collapsed = String(expanded);
+        panel.inert = expanded;
+      });
+    });
+  }
+
+  document.addEventListener('astro:page-load', setupSiteTree);
+</script>
+
 <style>
   .site-tree {
-    max-width: 48rem;
+    max-width: 52rem;
     padding: var(--space-4);
     overflow-x: auto;
     border: 1px solid var(--color-border);
@@ -92,24 +177,50 @@ const { workCount, rollCount, frameCount } = Astro.props;
 
   .tree-row {
     display: grid;
-    grid-template-columns: max-content minmax(max-content, 1fr) auto;
+    grid-template-columns: minmax(0, 1fr) auto;
+    min-width: 38rem;
     align-items: center;
-    min-width: 30rem;
+  }
+
+  .tree-main {
+    display: flex;
+    width: fit-content;
+    min-width: 0;
+    align-items: center;
+    color: var(--color-text-primary);
+    font: inherit;
+    text-align: left;
+  }
+
+  button.tree-main {
+    padding: 0;
+    background: transparent;
+    border: 0;
+    cursor: pointer;
+  }
+
+  .tree-main:hover,
+  .tree-main:focus-visible {
+    color: var(--color-accent-primary);
   }
 
   .tree-prefix {
+    flex: none;
     color: var(--color-text-muted);
     white-space: pre;
   }
 
-  .tree-row a {
-    width: fit-content;
-    color: var(--color-text-primary);
+  .tree-state {
+    margin-left: var(--space-2);
+    color: var(--color-text-muted);
   }
 
-  .tree-row a:hover,
-  .tree-row a:focus-visible {
-    color: var(--color-accent-primary);
+  .tree-toggle[aria-expanded='true'] .tree-state::before {
+    content: '[-]';
+  }
+
+  .tree-toggle[aria-expanded='false'] .tree-state::before {
+    content: '[+]';
   }
 
   .tree-meta {
@@ -118,5 +229,22 @@ const { workCount, rollCount, frameCount } = Astro.props;
     font-size: var(--font-size-xs);
     text-align: right;
     white-space: nowrap;
+  }
+
+  .tree-collapse {
+    display: grid;
+    grid-template-rows: 1fr;
+    opacity: 1;
+    transition: grid-template-rows var(--transition-slow), opacity var(--transition-base);
+  }
+
+  .tree-collapse[data-collapsed='true'] {
+    grid-template-rows: 0fr;
+    opacity: 0;
+  }
+
+  .tree-collapse-inner {
+    min-height: 0;
+    overflow: hidden;
   }
 </style>

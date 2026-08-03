@@ -1,0 +1,41 @@
+// Executes the built homepage disclosure controller in a DOM runtime.
+import assert from 'node:assert/strict';
+import { readFile } from 'node:fs/promises';
+import { JSDOM } from 'jsdom';
+
+const html = await readFile(new URL('../dist/index.html', import.meta.url), 'utf8');
+const dom = new JSDOM(html, { url: 'https://bjsmith.xyz/' });
+const { window } = dom;
+for (const name of ['window', 'document', 'HTMLElement', 'Event']) {
+  Object.defineProperty(globalThis, name, {
+    value: window[name], configurable: true, writable: true,
+  });
+}
+
+const controller = [...document.querySelectorAll('script[type="module"]')]
+  .map((script) => script.textContent || '')
+  .find((source) => source.includes('data-tree-toggle'));
+assert.ok(controller, 'built homepage tree controller not found');
+await import(`data:text/javascript;base64,${Buffer.from(controller).toString('base64')}`);
+document.dispatchEvent(new window.Event('astro:page-load'));
+
+const branches = [...document.querySelectorAll('[data-tree-toggle]')];
+assert.equal(branches.length, 3, 'beek, work, and photos must be collapsible');
+for (const button of branches) {
+  const panel = document.getElementById(button.getAttribute('aria-controls') || '');
+  assert.ok(panel, 'each disclosure must control a tree panel');
+  const initiallyExpanded = button.getAttribute('aria-expanded') === 'true';
+  assert.equal(panel.inert, !initiallyExpanded, 'collapsed descendants must leave the tab order');
+
+  button.click();
+  assert.equal(button.getAttribute('aria-expanded'), String(!initiallyExpanded));
+  assert.equal(panel.dataset.collapsed, String(initiallyExpanded));
+  assert.equal(panel.inert, initiallyExpanded);
+
+  button.click();
+  assert.equal(button.getAttribute('aria-expanded'), String(initiallyExpanded));
+  assert.equal(panel.inert, !initiallyExpanded);
+}
+
+console.log('homepage tree disclosure guard: ok');
+window.close();

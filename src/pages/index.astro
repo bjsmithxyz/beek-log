@@ -9,7 +9,16 @@ const allWork = (await getWorkEntries()).sort(byDateDesc);
 const allRolls = (await getPhotoRolls()).sort(byDateDesc);
 const recentWork = allWork.slice(0, 8);
 const recentRolls = allRolls.slice(0, 5);
-const totalFrames = allRolls.reduce((sum, roll) => sum + roll.data.photos.length, 0);
+const workTreeItems = allWork.map((entry) => ({
+  label: `${entry.id}.md`,
+  href: `/work/${entry.id}/`,
+  meta: entry.data.category,
+}));
+const rollTreeItems = allRolls.map((entry) => ({
+  label: `${entry.id}.md`,
+  href: `/photos/${entry.id}/`,
+  meta: entry.data.date.toISOString().slice(0, 10),
+}));
 ---
 
 <BaseLayout breadcrumbs={[{ label: '~', href: '/' }]}>
@@ -20,11 +29,7 @@ const totalFrames = allRolls.reduce((sum, roll) => sum + roll.data.photos.length
         <p class="home-role">select a path or browse recent files.</p>
       </header>
 
-      <SiteTree
-        workCount={allWork.length}
-        rollCount={allRolls.length}
-        frameCount={totalFrames}
-      />
+      <SiteTree workItems={workTreeItems} rollItems={rollTreeItems} />
 
       <div class="recent-content" id="recent">
         {recentRolls.length > 0 && (
@@ -83,7 +88,7 @@ const totalFrames = allRolls.reduce((sum, roll) => sum + roll.data.photos.length
 
   .recent-content {
     margin-top: var(--space-10);
-    scroll-margin-top: 108px;
+    scroll-margin-top: 72px;
   }
 
   .recent + .recent {

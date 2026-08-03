@@ -56,15 +56,11 @@ button { cursor: pointer; }
 .admin-shell { position: relative; z-index: 1; min-height: 100vh; }
 .admin-container { width: min(100% - 2rem, 960px); margin: 0 auto; }
 .admin-chrome { position: sticky; top: 0; z-index: 100; background: var(--bg); }
-.admin-header { border-bottom: 1px solid var(--border); background: var(--bg); }
-.admin-breadcrumb-bar { min-height: 36px; border-bottom: 1px solid var(--border); background: var(--bg); }
-.admin-breadcrumb-inner { display: flex; min-height: 36px; align-items: center; }
+.admin-header { background: var(--bg); }
 .admin-header-inner { min-height: 56px; display: flex; align-items: center; gap: 1rem; }
-.admin-logo { color: var(--text); font-weight: 600; }
-.admin-logo span { color: var(--text-muted); }
-.public-home, .admin-nav a { display: flex; min-height: 40px; align-items: center; padding: 0 .65rem; color: var(--text-soft); border: 1px solid transparent; font-size: var(--font-size-sm); }
-.public-home:hover, .admin-nav a:hover, .admin-nav a[aria-current='page'] { color: var(--accent); border-color: var(--accent); background: var(--panel); }
-.admin-nav { display: flex; align-items: center; gap: .5rem; margin-left: auto; }
+.admin-utilities { display: flex; flex: none; align-items: center; gap: .5rem; }
+.public-home { display: flex; min-height: 40px; align-items: center; padding: 0 .65rem; color: var(--text-soft); border: 1px solid transparent; font-size: var(--font-size-sm); }
+.public-home:hover { color: var(--accent); border-color: var(--accent); background: var(--panel); }
 .admin-user { color: var(--text-muted); font-size: var(--font-size-xs); }
 .admin-main { padding: 3rem 0 6rem; }
 
@@ -110,9 +106,7 @@ p { color: var(--text-soft); margin-bottom: 1rem; }
 }
 
 @media (max-width: 680px) {
-  .admin-header-inner { align-items: flex-start; flex-wrap: wrap; padding: .75rem 0; }
-  .admin-nav { width: 100%; margin-left: 0; overflow-x: auto; }
-  .admin-user { margin-left: auto; }
+  .admin-user { display: none; }
   .tool-grid { grid-template-columns: 1fr; }
   .dashboard-head { align-items: start; flex-direction: column; }
 }

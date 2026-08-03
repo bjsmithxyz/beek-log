@@ -18,21 +18,23 @@ Design language is terminal / file-browser brutalism: monospace, square
 corners, hard offset shadows, a faint dot grid, and a dark default theme with a
 light toggle. Tokens live in `src/styles/global.css`.
 
-Every page places semantic filesystem-style breadcrumb navigation in a shared
-sticky rail immediately below its header. Keeping the rail in each workspace's
-layout gives every route the same screen position regardless of content width.
-The public homepage is `~`, public sections and files live below `~/beek`, and
-the admin dashboard and tools live below `~/admin`. Each segment maps to a real
-route, the current self-link uses `aria-current="page"`, and long paths scroll
-horizontally on narrow screens. Public and admin use workspace-local Astro
-components so the admin remains isolated from the public rendering boundary.
+Every page places semantic filesystem-style breadcrumb navigation in its shared
+sticky top toolbar, beside the theme and admin utilities on the public site.
+Keeping the path in each workspace's layout gives every route the same screen
+position regardless of content width. The public homepage is `~`, public
+sections and files live below `~/beek`, and the admin dashboard and tools live
+below `~/admin`. Each segment maps to a real route, the current self-link uses
+`aria-current="page"`, and long paths scroll horizontally on narrow screens.
+Public and admin use workspace-local Astro components so the admin remains
+isolated from the public rendering boundary.
 
-The root route is a filesystem-style site index: `~` branches into the public
-`beek/` tree and protected `admin/` tree, then retains recent public rolls and
-work below it. Because that index and the breadcrumb rail now carry primary
-navigation, the public header is intentionally reduced to theme and admin
-utilities. Admin typography uses the same xs/sm/base/display scale as the public
-site while retaining its isolated dark-only token names.
+The root route is a filesystem-style site index: `~` lists the single protected
+`admin/` destination first, followed by an animated, collapsible `beek/` tree.
+Only branches with children expose disclosure controls; `work/` and `photos/`
+can expand into their current Markdown-backed entries. Recent public rolls and
+work remain below the index. Admin typography uses the same
+xs/sm/base/display scale as the public site while retaining its isolated
+dark-only token names.
 
 ## Project structure
 
@@ -132,9 +134,13 @@ sitemap.
 `/travel/` is a read-only Astro page backed by `src/data/trips.json`. The shared
 trip validator runs in tests and during the build. Date-derived values — day
 count and past/current/upcoming status — are deliberately computed by the
-browser on every load, so they cannot freeze at the last deployment date.
-Leaflet is bundled from npm; only this route's CSP permits CARTO tile images and
-Open-Meteo weather requests.
+browser on every load, so they cannot freeze at the last deployment date. Four
+keyboard-operable tabs show only stats, route, road-ahead, or the complete
+latest-first timeline. Leaflet is recreated after the route panel becomes
+visible so it always receives real dimensions; only this route's CSP permits
+CARTO tile images and Open-Meteo weather requests. Route stop controls link to
+photo rolls whose effective shoot locations match by normalized place name or
+an 80 km proximity threshold.
 
 ## The photos map
 

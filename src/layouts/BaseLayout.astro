@@ -5,7 +5,6 @@ import '@fontsource/ibm-plex-mono/500.css';
 import '@fontsource/ibm-plex-mono/600.css';
 import '../styles/global.css';
 import Header from '../components/Header.astro';
-import Breadcrumb from '../components/Breadcrumb.astro';
 import Footer from '../components/Footer.astro';
 import JsonLd from '../components/JsonLd.astro';
 import { ClientRouter } from 'astro:transitions';
@@ -101,12 +100,7 @@ const themeDark = themeColors.dark;
   <a href="#main-content" class="skip-link">skip to content</a>
   <div class="page-wrapper">
     <div class="site-chrome">
-      <Header />
-      <div class="breadcrumb-bar">
-        <div class="breadcrumb-bar-inner container">
-          <Breadcrumb items={breadcrumbs} />
-        </div>
-      </div>
+      <Header breadcrumbs={breadcrumbs} />
     </div>
     <main id="main-content" tabindex="-1">
       <slot />
@@ -131,18 +125,6 @@ const themeDark = themeColors.dark;
     z-index: 100;
   }
 
-  .breadcrumb-bar {
-    min-height: 36px;
-    background: var(--color-bg-primary);
-    border-bottom: 1px solid var(--color-border);
-  }
-
-  .breadcrumb-bar-inner {
-    display: flex;
-    min-height: 36px;
-    align-items: center;
-  }
-  
   main {
     flex: 1;
   }

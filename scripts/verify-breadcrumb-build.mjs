@@ -12,10 +12,8 @@ async function documentAt(relativePath) {
 }
 
 function assertBreadcrumb(document, expected) {
-  const bar = document.querySelector('.site-chrome > .breadcrumb-bar');
-  assert.ok(bar, 'page must place its breadcrumb bar directly below the shared header');
-  const nav = bar.querySelector('nav[aria-label="Breadcrumb"]');
-  assert.ok(nav, 'breadcrumb bar must contain a navigation landmark');
+  const nav = document.querySelector('.site-chrome > header nav[aria-label="Breadcrumb"]');
+  assert.ok(nav, 'page must place its breadcrumb in the shared top toolbar');
 
   const links = [...nav.querySelectorAll('a')];
   assert.deepEqual(
@@ -71,26 +69,23 @@ for (const [relativePath, expected] of staticPages) {
 }
 
 const home = await documentAt('index.html');
-const siteIndexLinks = [...home.querySelectorAll('nav[aria-label="Site index"] a')];
+const siteIndex = home.querySelector('nav[aria-label="Site index"]');
+assert.ok(siteIndex, 'homepage must expose a filesystem site index');
+const siteIndexLinks = [...siteIndex.querySelectorAll('a')];
+const siteIndexHrefs = siteIndexLinks.map((link) => link.getAttribute('href'));
+for (const href of ['/', '#recent', '/work/', '/photos/', '/travel/', '/about/']) {
+  assert.ok(siteIndexHrefs.includes(href), `homepage file tree must link to ${href}`);
+}
 assert.deepEqual(
-  siteIndexLinks.map((link) => link.textContent?.trim()),
-  ['~', 'beek/', 'work/', 'photos/', 'travel/', 'about.md', 'admin/↗', 'rolls/↗', 'travel/↗'],
-  'homepage must expose the public and admin file tree',
+  siteIndexHrefs.filter((href) => href?.startsWith('https://admin.bjsmith.xyz')),
+  ['https://admin.bjsmith.xyz/'],
+  'admin must appear first as one unexpanded destination',
 );
 assert.deepEqual(
-  siteIndexLinks.map((link) => link.getAttribute('href')),
-  [
-    '/',
-    '#recent',
-    '/work/',
-    '/photos/',
-    '/travel/',
-    '/about/',
-    'https://admin.bjsmith.xyz/',
-    'https://admin.bjsmith.xyz/rolls/',
-    'https://admin.bjsmith.xyz/travel/',
-  ],
-  'homepage file tree must link to each represented route',
+  [...siteIndex.querySelectorAll('[data-tree-toggle]')]
+    .map((button) => button.textContent?.trim().replace(/^[├└]──\s*/, '')),
+  ['beek/', 'work/', 'photos/'],
+  'only branches with children should expose disclosure controls',
 );
 assert.equal(home.querySelector('header nav[aria-label="Main navigation"]'), null);
 
