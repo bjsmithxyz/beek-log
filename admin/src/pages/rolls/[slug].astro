@@ -5,7 +5,6 @@ const { slug } = Astro.params;
 if (!/^[a-z0-9-]+$/.test(slug || '')) return Astro.redirect('/rolls/');
 ---
 <AdminLayout title="edit roll">
-  <a class="back-link" href="/rolls/">← rolls/</a>
   <RollEditor mode="edit" slug={slug} />
 </AdminLayout>
 <script>

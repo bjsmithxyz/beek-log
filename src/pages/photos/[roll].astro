@@ -1,5 +1,6 @@
 ---
 import BaseLayout from '../../layouts/BaseLayout.astro';
+import Breadcrumb from '../../components/Breadcrumb.astro';
 import FilmStrip from '../../components/FilmStrip.astro';
 import Lightbox from '../../components/Lightbox.astro';
 import { render, type CollectionEntry } from 'astro:content';
@@ -59,12 +60,14 @@ const jsonLd = {
 >
   <article class="roll-detail">
     <div class="container">
-      <a href="/photos/" class="back-link">
-        ← photos/
-      </a>
-
       <header class="article-header">
-        <p class="file-path">photos/{entry.id}.md</p>
+        <Breadcrumb
+          items={[
+            { label: '~/beek', href: '/' },
+            { label: 'photos', href: '/photos/' },
+            { label: `${entry.id}.md`, href: `/photos/${entry.id}/` },
+          ]}
+        />
         <span class="stock-tag" data-type={film.type}>[{film.name}]</span>
         <h1 class="title">{title}</h1>
 

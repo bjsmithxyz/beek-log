@@ -1,5 +1,6 @@
 ---
 import AdminLayout from '../layouts/AdminLayout.astro';
+import Breadcrumb from '../components/Breadcrumb.astro';
 import { validateNext } from '../server/auth.mjs';
 
 const user = Astro.locals.user;
@@ -22,7 +23,7 @@ const authError = Astro.url.searchParams.get('auth') === 'error'
 <AdminLayout>
   {!user ? (
     <section class="login-panel" aria-labelledby="login-title">
-      <p class="prompt">~/beek/admin</p>
+      <Breadcrumb items={[{ label: '~/admin', href: '/' }]} />
       <h1 id="login-title">authentication required</h1>
       <p>One GitHub identity is permitted. No repository data is loaded until the server verifies it.</p>
       {authError && <p class="auth-error" role="alert">{authError}</p>}
@@ -32,7 +33,7 @@ const authError = Astro.url.searchParams.get('auth') === 'error'
     <>
       <header class="dashboard-head">
         <div>
-          <p class="prompt">~/beek/admin</p>
+          <Breadcrumb items={[{ label: '~/admin', href: '/' }]} />
           <h1>dashboard/</h1>
           <p>signed in as <strong>{user.login}</strong></p>
         </div>

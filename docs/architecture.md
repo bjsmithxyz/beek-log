@@ -18,6 +18,13 @@ Design language is terminal / file-browser brutalism: monospace, square
 corners, hard offset shadows, a faint dot grid, and a dark default theme with a
 light toggle. Tokens live in `src/styles/global.css`.
 
+Every page begins with semantic filesystem-style breadcrumb navigation. The
+public homepage is `~`, public sections and files live below `~/beek`, and the
+admin dashboard and tools live below `~/admin`. Each segment maps to a real
+route, the current self-link uses `aria-current="page"`, and long paths scroll
+horizontally on narrow screens. Public and admin use workspace-local Astro
+components so the admin remains isolated from the public rendering boundary.
+
 ## Project structure
 
 ```text

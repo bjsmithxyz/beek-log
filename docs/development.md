@@ -69,7 +69,9 @@ files. Coverage focuses on the pure logic behind the roll admin and the map:
   order, generic Git tree/PR publishing, roll create/edit/delete planning,
   travel schema/state logic, image boundaries, and browser-editor regressions.
 
-Astro pages are also verified by building both workspaces. Pull requests run
+Astro pages are also verified by building both workspaces. The public build
+checks the filesystem-style breadcrumb labels, links, and `aria-current`
+contract on representative index and detail routes. Pull requests run
 `npm run verify` under the production Node 22.18 baseline in GitHub Actions; the
 `Project verification` job is required by the `main` ruleset. Monthly grouped
 Dependabot updates use the same gate. `astro dev` renders the admin SSR shell but

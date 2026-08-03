@@ -10,7 +10,13 @@ import { socialLinks, personName } from '../data/site';
 >
   <section class="about-page">
     <div class="container">
-      <PageHeader prompt="~/beek/about" title="about.md" />
+      <PageHeader
+        breadcrumbs={[
+          { label: '~/beek', href: '/' },
+          { label: 'about', href: '/about/' },
+        ]}
+        title="about.md"
+      />
       
       <div class="about-content">
         <div class="bio-block">

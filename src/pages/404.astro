@@ -1,12 +1,18 @@
 ---
 import BaseLayout from '../layouts/BaseLayout.astro';
+import Breadcrumb from '../components/Breadcrumb.astro';
 ---
 
 <BaseLayout title="404" description="Page not found">
   <section class="error-page">
     <div class="container">
       <div class="error-content">
-        <p class="prompt">~/beek/404</p>
+        <Breadcrumb
+          items={[
+            { label: '~/beek', href: '/' },
+            { label: '404', href: '/404.html' },
+          ]}
+        />
         <h1 class="error-code">404</h1>
         <p class="error-message">file not found</p>
         <p class="error-description">
@@ -30,12 +36,6 @@ import BaseLayout from '../layouts/BaseLayout.astro';
     max-width: 480px;
   }
 
-  .prompt {
-    font-size: var(--font-size-sm);
-    color: var(--color-text-muted);
-    margin-bottom: var(--space-2);
-  }
-  
   .error-code {
     font-size: 5rem;
     font-weight: var(--font-weight-bold);

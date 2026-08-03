@@ -1,15 +1,22 @@
 ---
+import Breadcrumb from './Breadcrumb.astro';
+
+interface BreadcrumbItem {
+  label: string;
+  href: string;
+}
+
 interface Props {
-  prompt: string;
+  breadcrumbs: BreadcrumbItem[];
   title: string;
   description?: string;
 }
 
-const { prompt, title, description } = Astro.props;
+const { breadcrumbs, title, description } = Astro.props;
 ---
 
 <header class="page-header">
-  <p class="prompt">{prompt}</p>
+  <Breadcrumb items={breadcrumbs} />
   <h1 class="page-title">{title}</h1>
   {description && <p class="page-description">{description}</p>}
 </header>

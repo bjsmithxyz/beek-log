@@ -1,11 +1,22 @@
 ---
+import Breadcrumb from './Breadcrumb.astro';
+
 interface Props {
   mode: 'create' | 'edit';
   slug?: string;
 }
 const { mode, slug = '' } = Astro.props;
+const breadcrumbs = [
+  { label: '~/admin', href: '/' },
+  { label: 'rolls', href: '/rolls/' },
+  mode === 'create'
+    ? { label: 'new', href: '/rolls/new/' }
+    : { label: slug, href: `/rolls/${slug}/` },
+];
 ---
 <section id="roll-editor-root" data-mode={mode} data-slug={slug}>
+  <Breadcrumb items={breadcrumbs} />
+
   <section class="notice-panel unsupported" id="uploader-unsupported" hidden>
     <h1>desktop uploader unavailable</h1>
     <p>This browser cannot run the local image pipeline. Missing: <span id="missing-capabilities"></span>.</p>
@@ -15,7 +26,6 @@ const { mode, slug = '' } = Astro.props;
   <div id="uploader-supported" hidden>
     <header class="page-head roll-head">
       <div>
-        <p class="prompt">~/beek/admin/rolls/{mode === 'create' ? 'new' : slug}</p>
         <h1>{mode === 'create' ? 'new-roll/' : 'edit-roll/'}</h1>
         <p id="roll-status" role="status">Preparing the desktop uploader…</p>
       </div>

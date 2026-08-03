@@ -20,7 +20,10 @@ const LIST_COLS = '5rem 6.5rem 1fr auto 1.5rem';
   <section class="work-page">
     <div class="container">
       <PageHeader
-        prompt="~/beek/work"
+        breadcrumbs={[
+          { label: '~/beek', href: '/' },
+          { label: 'work', href: '/work/' },
+        ]}
         title="work/"
         description={`${sortedWork.length} entries — projects, art, photography`}
       />
