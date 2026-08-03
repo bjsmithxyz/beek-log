@@ -207,11 +207,11 @@ Phase 4 passed its production gate on 2026-08-03.
 - [x] Rewrite `docs/photography.md`, `docs/architecture.md`,
   `docs/deployment.md`, `AGENTS.md` and `README.md` to remove transition-state
   language.
-- [ ] Expand the operations runbook with GitHub App recreation, client/session
+- [x] Expand the operations runbook with GitHub App recreation, client/session
   secret rotation, incident logout, DNS/TLS recovery and OAuth recovery.
 - [ ] Record where archival full-resolution scans live and how they are backed
   up before declaring the local workflow retired.
-- [ ] Document hardware-key 2FA on the GitHub owner account as a critical
+- [x] Document hardware-key 2FA on the GitHub owner account as a critical
   security boundary without recording recovery secrets.
 - [ ] Run final public/admin unit, build, accessibility, security-header and
   live publishing checks.

@@ -166,15 +166,44 @@ must not receive owner credentials:
 4. Complete a fresh login and `auth-me` check.
 5. Revoke/delete the old GitHub secret only after the new one works.
 
-### Suspected token or cookie compromise
+### Suspected token or cookie compromise / incident logout
 
-1. Rotate `SESSION_SECRET` immediately to invalidate every sealed cookie.
+1. Rotate `SESSION_SECRET` immediately and redeploy the admin. This is the
+   system-wide incident-logout mechanism because sessions are stateless.
 2. Revoke the affected GitHub App user authorization from GitHub account
-   settings.
+   settings. If the account itself may be compromised, revoke all App sessions.
 3. Rotate the GitHub client secret if it may be exposed.
-4. Review GitHub audit/security history, branches, commits and pull requests.
+4. Review GitHub audit/security history, `admin/*` branches, commits and pull
+   requests. Close unknown PRs before deleting their branches.
 5. Review Netlify deploys and environment-variable changes.
-6. Keep publishing disabled until the cause is understood.
+6. Keep publishing disabled until the cause is understood; a temporary invalid
+   `OAUTH_ALLOWED_USERS` value can fail closed while preserving the site.
+7. Restore the exact owner allow-list, redeploy, and complete login plus a
+   disposable abandon test before resuming publication.
+
+## OAuth recovery
+
+1. Confirm the GitHub App still exists, expiring user tokens remain enabled,
+   and its installation selects only `bjsmithxyz/beek-log`.
+2. Confirm its callback is exactly
+   `https://admin.bjsmith.xyz/.netlify/functions/auth-callback`.
+3. Confirm Netlify's `ADMIN_SITE_URL`, `GITHUB_CLIENT_ID`, repository ID, and
+   allow-list match the production inventory. Never print secret values.
+4. If code exchange fails, create a second GitHub client secret, replace the
+   Netlify value, redeploy, and test before revoking the old secret.
+5. Clear only the admin origin's cookies and restart login; stale OAuth state is
+   intentionally rejected rather than recovered.
+6. If refresh repeatedly fails, revoke the App's user authorization and perform
+   a new authorization. Do not disable token expiry or introduce a broad OAuth
+   scope as a workaround.
+
+## Owner-account security boundary
+
+The allowed GitHub owner account is the final authorization boundary. Protect it
+with WebAuthn hardware-key 2FA, ideally two independently stored keys. Keep
+GitHub recovery codes offline in the owner's password/recovery system; never
+record key identifiers, recovery codes, passwords, or secret-storage locations
+in this repository. Review GitHub sessions and authorized Apps periodically.
 
 ## DNS or TLS recovery
 
