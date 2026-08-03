@@ -1,9 +1,11 @@
 [build]
   command = "npm run build"
   publish = "dist"
-  # Admin-only commits should not produce a public deploy. Shared modules,
-  # source/content, build scripts and root configuration still rebuild it.
-  ignore = 'if [ -z "$CACHED_COMMIT_REF" ] || [ -z "$COMMIT_REF" ]; then exit 1; fi; git diff --quiet "$CACHED_COMMIT_REF" "$COMMIT_REF" -- src public shared scripts astro.config.mjs netlify.toml package.json package-lock.json tsconfig.json'
+  # Every PR must receive its own reviewable Deploy Preview. Comparing only to
+  # Netlify's cached commit can incorrectly cancel a deletion preview when the
+  # resulting tree matches an older cache. Outside Deploy Previews, admin-only
+  # commits may still skip the public build.
+  ignore = 'if [ "$CONTEXT" = "deploy-preview" ]; then exit 1; fi; if [ -z "$CACHED_COMMIT_REF" ] || [ -z "$COMMIT_REF" ]; then exit 1; fi; git diff --quiet "$CACHED_COMMIT_REF" "$COMMIT_REF" -- src public shared scripts astro.config.mjs netlify.toml package.json package-lock.json tsconfig.json'
 
 [build.environment]
   # Astro 7 requires Node >= 22.12; tests require Node >= 22.18

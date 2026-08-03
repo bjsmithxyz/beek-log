@@ -7,8 +7,11 @@ Two **Netlify** sites watch this repository:
   `admin/netlify.toml` (the root base is required for npm workspace resolution)
 
 Build-ignore rules keep public content commits from rebuilding the admin and
-admin-only commits from rebuilding the public site. Changes under `shared/` or
-the workspace lockfile rebuild both.
+admin-only production commits from rebuilding the public site. Every pull
+request still receives a public Deploy Preview: comparing only to Netlify's
+cached commit can otherwise cancel a deletion preview when its resulting tree
+matches an older cache. Changes under `shared/` or the workspace lockfile
+rebuild both.
 
 ## Admin deployment
 
