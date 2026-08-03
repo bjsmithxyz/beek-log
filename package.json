@@ -15,7 +15,7 @@
   },
   "scripts": {
     "dev": "astro dev",
-    "build": "astro build && node scripts/verify-travel-build.mjs",
+    "build": "astro build && node scripts/verify-travel-build.mjs && node scripts/verify-breadcrumb-build.mjs",
     "preview": "astro preview",
     "astro": "astro",
     "test": "node --test",

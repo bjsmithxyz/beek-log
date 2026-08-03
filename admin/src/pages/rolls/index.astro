@@ -1,11 +1,16 @@
 ---
 import AdminLayout from '../../layouts/AdminLayout.astro';
+import Breadcrumb from '../../components/Breadcrumb.astro';
 ---
 <AdminLayout title="rolls">
-  <a class="back-link" href="/">← dashboard/</a>
   <header class="page-head rolls-head">
     <div>
-      <p class="prompt">~/beek/admin/rolls</p>
+      <Breadcrumb
+        items={[
+          { label: '~/admin', href: '/' },
+          { label: 'rolls', href: '/rolls/' },
+        ]}
+      />
       <h1>film-rolls/</h1>
       <p>Encode scans locally, then publish through a reviewed pull request.</p>
     </div>

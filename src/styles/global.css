@@ -213,12 +213,6 @@ img {
     margin-bottom: var(--space-6);
 }
 
-.prompt {
-    font-size: var(--font-size-sm);
-    color: var(--color-text-muted);
-    margin-bottom: var(--space-2);
-}
-
 .page-title {
     font-size: var(--font-size-4xl);
     font-weight: var(--font-weight-bold);
@@ -324,24 +318,6 @@ img {
 }
 
 /* ——— Shared detail chrome (work/[slug] + photos/[roll]) ——— */
-.back-link {
-    display: inline-block;
-    color: var(--color-text-muted);
-    font-size: var(--font-size-sm);
-    margin-bottom: var(--space-6);
-    transition: color var(--transition-fast);
-}
-
-.back-link:hover {
-    color: var(--color-accent-primary);
-}
-
-.file-path {
-    font-size: var(--font-size-sm);
-    color: var(--color-text-muted);
-    margin-bottom: var(--space-3);
-}
-
 .article-header {
     margin-bottom: var(--space-6);
     padding-bottom: var(--space-6);

@@ -1,0 +1,74 @@
+---
+interface BreadcrumbItem {
+  label: string;
+  href: string;
+}
+
+interface Props {
+  items: BreadcrumbItem[];
+}
+
+const { items } = Astro.props;
+---
+
+<nav class="breadcrumb" aria-label="Breadcrumb">
+  <ol>
+    {items.map((item, index) => (
+      <li>
+        {index > 0 && <span class="breadcrumb-separator" aria-hidden="true">/</span>}
+        <a href={item.href} aria-current={index === items.length - 1 ? 'page' : undefined}>
+          {item.label}
+        </a>
+      </li>
+    ))}
+  </ol>
+</nav>
+
+<style>
+  .breadcrumb {
+    max-width: 100%;
+    margin-bottom: var(--space-2);
+    overflow-x: auto;
+    padding: 2px;
+    margin-left: -2px;
+    scrollbar-width: thin;
+  }
+
+  .breadcrumb ol {
+    display: flex;
+    width: max-content;
+    min-width: 0;
+    list-style: none;
+    font-size: var(--font-size-sm);
+    line-height: var(--line-height-base);
+    white-space: nowrap;
+  }
+
+  .breadcrumb li {
+    display: flex;
+    align-items: center;
+  }
+
+  .breadcrumb a,
+  .breadcrumb-separator {
+    color: var(--color-text-muted);
+  }
+
+  .breadcrumb a {
+    text-decoration: none;
+  }
+
+  .breadcrumb a:hover,
+  .breadcrumb a:focus-visible {
+    color: var(--color-accent-primary);
+  }
+
+  .breadcrumb a[aria-current='page'] {
+    color: var(--color-text-secondary);
+  }
+
+  .breadcrumb a[aria-current='page']:hover,
+  .breadcrumb a[aria-current='page']:focus-visible {
+    color: var(--color-accent-primary);
+  }
+</style>
