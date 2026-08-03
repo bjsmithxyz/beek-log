@@ -34,6 +34,12 @@ function setupTravel() {
   }
 
   const get = (id) => root.querySelector(`#${id}`);
+  let photoLinks = {};
+  try {
+    photoLinks = JSON.parse(get('travel-photo-links')?.textContent || '{}');
+  } catch {
+    photoLinks = {};
+  }
   const now = new Date();
   const today = todayIso(now);
   const trip = computeTrip(tripData.stops, now);
@@ -44,7 +50,6 @@ function setupTravel() {
   let futureLayer = null;
   let pastMarkers = null;
   let futureMarkers = null;
-  let timelineExpanded = false;
 
   const distanceFromPrevious = (index) => index <= 0 ? 0 : haversine(trip[index - 1], trip[index]);
   const isLight = () => document.documentElement.getAttribute('data-theme') === 'light';
@@ -102,7 +107,12 @@ function setupTravel() {
     if (!mapElement) return;
     if (map) map.remove();
     const palette = colours();
-    map = L.map(mapElement, { worldCopyJump: true, scrollWheelZoom: false }).setView([25, 40], 2);
+    map = L.map(mapElement, {
+      worldCopyJump: true,
+      scrollWheelZoom: false,
+      zoomSnap: 0.25,
+      zoomDelta: 0.5,
+    }).setView([25, 40], 2);
     tileLayer = L.tileLayer(`https://{s}.basemaps.cartocdn.com/${palette.tile}/{z}/{x}/{y}{r}.png`, {
       attribution: '© OpenStreetMap contributors © CARTO', subdomains: 'abcd', maxZoom: 19,
     }).addTo(map);
@@ -119,8 +129,14 @@ function setupTravel() {
     futureMarkers = L.layerGroup().addTo(map);
     trip.forEach((stop) => (stop.status === 'future' ? futureMarkers : pastMarkers).addLayer(markerFor(stop)));
 
-    if (travelled.length > 1) map.fitBounds(L.latLngBounds(travelled).pad(0.15));
-    else if (trip.length) map.setView([trip[0].lat, trip[0].lon], 4);
+    const renderedMap = map;
+    const fitRoute = () => {
+      if (map !== renderedMap) return;
+      renderedMap.invalidateSize();
+      if (travelled.length > 1) renderedMap.fitBounds(L.latLngBounds(travelled).pad(0.05));
+      else if (trip.length) renderedMap.setView([trip[0].lat, trip[0].lon], 4);
+    };
+    requestAnimationFrame(fitRoute);
 
     const pastButton = get('toggle-travelled');
     const futureButton = get('toggle-planned');
@@ -143,13 +159,31 @@ function setupTravel() {
   function renderMapStops() {
     const element = get('travel-map-stops');
     element.replaceChildren(...trip.map((stop) => {
+      const entry = document.createElement('div');
+      entry.className = 'map-stop-entry';
       const button = document.createElement('button');
       button.type = 'button';
       button.className = `map-stop ${stop.status}`;
       button.textContent = `${flag(stop.cc)} ${stop.name}`;
       button.dataset.status = stop.status;
       button.addEventListener('click', () => showStop(stop.index), { signal: abortController.signal });
-      return button;
+      entry.append(button);
+
+      const related = photoLinks[stop.index] || [];
+      if (related.length) {
+        const links = document.createElement('span');
+        links.className = 'map-stop-photos';
+        links.setAttribute('aria-label', `Photo rolls related to ${stop.name}`);
+        related.forEach((roll, index) => {
+          const link = document.createElement('a');
+          link.href = roll.href;
+          link.textContent = related.length === 1 ? 'photos →' : `photos ${index + 1} →`;
+          link.title = roll.title;
+          links.append(link);
+        });
+        entry.append(links);
+      }
+      return entry;
     }));
   }
 
@@ -174,8 +208,8 @@ function setupTravel() {
       [continents.size, 'Continents'],
       [trip.filter((stop) => stop.status === 'future').length, 'Stops still to come'],
     ];
-    get('travel-stats').innerHTML = stats.map(([number, label]) => `
-      <div class="travel-stat"><strong>${escapeHtml(number)}</strong><span>${escapeHtml(label)}</span></div>
+    get('travel-stats').innerHTML = stats.map(([number, label], index) => `
+      <div class="travel-stat"><strong${index === 0 ? ' id="travel-day"' : ''}>${escapeHtml(number)}</strong><span>${escapeHtml(label)}</span></div>
     `).join('');
     get('travel-facts').innerHTML = [
       longest ? `<span>longest stay: <b>${escapeHtml(longest.name)} · ${longest.nights} nights</b></span>` : '',
@@ -194,8 +228,6 @@ function setupTravel() {
         ? `next: <b>${flag(next.cc)} ${escapeHtml(next.name)}</b> · ${formatDateYear(next.arrive)}`
         : `journey complete · ${visited.length} stops`;
     }
-    get('travel-start').textContent = formatDateYear(start);
-    get('travel-day').textContent = String(elapsedDays);
   }
 
   function packingCue(minC, maxC, precipitation) {
@@ -288,9 +320,7 @@ function setupTravel() {
 
   function renderTimeline() {
     const element = get('travel-timeline');
-    const activeIndex = trip.findIndex((stop) => stop.status !== 'past');
-    const startIndex = Math.max(0, (activeIndex < 0 ? trip.length : activeIndex) - 6);
-    const shown = timelineExpanded ? trip : trip.slice(startIndex);
+    const shown = [...trip].sort((a, b) => a.arrive.localeCompare(b.arrive));
     let lastYear = null;
     element.innerHTML = shown.map((stop) => {
       const year = stop.arrive.slice(0, 4);
@@ -303,22 +333,42 @@ function setupTravel() {
     }).join('');
   }
 
-  const moreButton = get('travel-more');
-  moreButton.addEventListener('click', () => {
-    timelineExpanded = !timelineExpanded;
-    moreButton.textContent = timelineExpanded ? 'show less ↑' : 'show full journey ↓';
-    moreButton.setAttribute('aria-expanded', String(timelineExpanded));
-    renderTimeline();
-  }, { signal: abortController.signal });
+  const tabButtons = [...root.querySelectorAll('[data-travel-tab]')];
+  const panels = [...root.querySelectorAll('[data-travel-panel]')];
+  function selectPanel(name, moveFocus = false) {
+    tabButtons.forEach((button) => {
+      const selected = button.dataset.travelTab === name;
+      button.setAttribute('aria-selected', String(selected));
+      button.tabIndex = selected ? 0 : -1;
+      if (selected && moveFocus) button.focus();
+    });
+    panels.forEach((panel) => {
+      panel.hidden = panel.dataset.travelPanel !== name;
+    });
+    if (name === 'route') requestAnimationFrame(renderMap);
+  }
+  tabButtons.forEach((button, index) => {
+    button.addEventListener('click', () => selectPanel(button.dataset.travelTab), { signal: abortController.signal });
+    button.addEventListener('keydown', (event) => {
+      let nextIndex = null;
+      if (event.key === 'ArrowRight') nextIndex = (index + 1) % tabButtons.length;
+      if (event.key === 'ArrowLeft') nextIndex = (index - 1 + tabButtons.length) % tabButtons.length;
+      if (event.key === 'Home') nextIndex = 0;
+      if (event.key === 'End') nextIndex = tabButtons.length - 1;
+      if (nextIndex === null) return;
+      event.preventDefault();
+      selectPanel(tabButtons[nextIndex].dataset.travelTab, true);
+    }, { signal: abortController.signal });
+  });
 
   renderStats();
-  renderMap();
   renderMapStops();
   renderUpcoming();
   renderTimeline();
+  selectPanel('route');
 
   const themeObserver = new MutationObserver(() => {
-    if (tileLayer) renderMap();
+    if (!get('travel-panel-route').hidden) renderMap();
   });
   themeObserver.observe(document.documentElement, { attributes: true, attributeFilter: ['data-theme'] });
 

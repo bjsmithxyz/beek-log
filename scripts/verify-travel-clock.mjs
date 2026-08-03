@@ -65,5 +65,23 @@ const later = await stateAt('2026-08-02');
 assert.match(early.current || '', /Bangkok/);
 assert.match(later.current || '', /Amsterdam/);
 assert.notEqual(early.day, later.day);
+assert.equal(document.querySelector('[data-travel-tab="route"]')?.getAttribute('aria-selected'), 'true');
+assert.equal(document.querySelectorAll('[data-travel-panel]:not([hidden])').length, 1);
+assert.equal(document.querySelector('[data-travel-panel]:not([hidden])')?.getAttribute('data-travel-panel'), 'route');
+assert.ok(document.querySelector('#travel-map.leaflet-container'), 'Leaflet must initialise the route map');
+assert.ok(document.querySelectorAll('#travel-map .leaflet-interactive').length > 0, 'route map must render trip geometry');
+assert.ok(document.querySelectorAll('#travel-map-stops .map-stop').length > 0, 'route map must expose stop controls');
+assert.ok(document.querySelectorAll('#travel-map-stops .map-stop-photos a').length > 0, 'matching stops must link to related photo rolls');
+assert.equal(document.querySelector('#travel-more'), null, 'timeline must not have a collapsed-state control');
+const timelineDates = [...document.querySelectorAll('#travel-timeline time')]
+  .map((element) => element.getAttribute('datetime'));
+assert.deepEqual(timelineDates, [...timelineDates].sort(), 'timeline must be earliest first');
+for (const name of ['stats', 'timeline', 'route']) {
+  document.querySelector(`[data-travel-tab="${name}"]`)?.click();
+  await new Promise((resolve) => setTimeout(resolve, name === 'route' ? 50 : 0));
+  assert.equal(document.querySelector('[data-travel-tab][aria-selected="true"]')?.getAttribute('data-travel-tab'), name);
+  assert.equal(document.querySelector('[data-travel-panel]:not([hidden])')?.getAttribute('data-travel-panel'), name);
+}
+assert.ok(document.querySelectorAll('#travel-map .leaflet-interactive').length > 0, 'route map must survive tab changes');
 console.log(`travel clock guard: day ${early.day} (${early.current}) -> day ${later.day} (${later.current})`);
 window.close();

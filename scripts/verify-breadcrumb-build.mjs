@@ -12,10 +12,10 @@ async function documentAt(relativePath) {
 }
 
 function assertBreadcrumb(document, expected) {
-  const bar = document.querySelector('.site-chrome > .breadcrumb-bar');
-  assert.ok(bar, 'page must place its breadcrumb bar directly below the shared header');
-  const nav = bar.querySelector('nav[aria-label="Breadcrumb"]');
-  assert.ok(nav, 'breadcrumb bar must contain a navigation landmark');
+  const nav = document.querySelector('.page-wrapper > .breadcrumb-row > nav[aria-label="Breadcrumb"]');
+  assert.ok(nav, 'page must place its breadcrumb in the static top row');
+  assert.equal(nav.closest('header, .site-chrome'), null, 'breadcrumb must not be part of sticky site chrome');
+  assert.equal(nav.querySelector('.breadcrumb-backdrop'), null, 'static breadcrumb must not render a blur surface');
 
   const links = [...nav.querySelectorAll('a')];
   assert.deepEqual(
@@ -69,6 +69,58 @@ const staticPages = [
 for (const [relativePath, expected] of staticPages) {
   assertBreadcrumb(await documentAt(relativePath), expected);
 }
+
+const sectionTitles = [
+  ['index.html', 'index/'],
+  ['about/index.html', 'about.md'],
+  ['work/index.html', 'work/'],
+  ['photos/index.html', 'photos/'],
+  ['travel/index.html', 'travel'],
+];
+for (const [relativePath, title] of sectionTitles) {
+  const document = await documentAt(relativePath);
+  assert.equal(document.querySelector('h1.page-title')?.textContent?.trim(), title, `${relativePath} must use the shared page-title scale`);
+}
+
+const home = await documentAt('index.html');
+assert.doesNotMatch(home.body.textContent || '', /select a path or browse recent files|beek\/recent-(?:rolls|work)\//);
+assert.equal(home.querySelector('.recent-content, section[aria-label="Recent photo rolls"], section[aria-label="Recent work"]'), null);
+assert.equal(home.querySelector('.breadcrumb-row a[href^="https://admin.bjsmith.xyz"]'), null, 'public breadcrumb row must not duplicate the admin destination');
+assert.equal(home.querySelector('.breadcrumb-row #theme-toggle'), null, 'theme toggle must not remain in the top row');
+const footerSecondary = home.querySelector('footer .footer-secondary');
+assert.equal(footerSecondary?.firstElementChild?.id, 'theme-toggle', 'theme toggle must sit above the copyright');
+assert.ok(footerSecondary?.firstElementChild?.classList.contains('social-link'), 'theme toggle must use the social icon style');
+assert.ok(home.querySelector('footer a[aria-label="instagram"] svg.brand-icon path'));
+assert.equal(home.querySelector('footer a[aria-label="instagram"] rect'), null, 'Instagram must use the sourced brand glyph, not the filled box icon');
+const siteIndex = home.querySelector('nav[aria-label="Site index"]');
+assert.ok(siteIndex, 'homepage must expose a filesystem site index');
+const siteIndexLinks = [...siteIndex.querySelectorAll('a')];
+const siteIndexHrefs = siteIndexLinks.map((link) => link.getAttribute('href'));
+for (const href of ['/', '/work/', '/photos/', '/travel/', '/about/']) {
+  assert.ok(siteIndexHrefs.includes(href), `homepage file tree must link to ${href}`);
+}
+assert.ok(!siteIndexHrefs.includes('#recent'), 'homepage tree must not duplicate the recent-content section');
+assert.deepEqual(
+  siteIndexHrefs.filter((href) => href?.startsWith('https://admin.bjsmith.xyz')),
+  ['https://admin.bjsmith.xyz/'],
+  'admin must appear first as one unexpanded destination',
+);
+const treeToggleLabels = [...siteIndex.querySelectorAll('[data-tree-toggle]')]
+  .map((button) => button.querySelector(':scope > span:nth-child(2)')?.textContent?.trim());
+assert.deepEqual(treeToggleLabels.slice(0, 5), ['beek/', 'work/', 'dev/', 'art/', 'photos/']);
+assert.ok(treeToggleLabels.slice(5).every((label) => /^\d{4}\/$/.test(label || '')), 'photo subsections must be years');
+
+const groupedWorkHrefs = ['tree-work-dev', 'tree-work-art']
+  .flatMap((id) => [...siteIndex.querySelectorAll(`#${id} a`)].map((link) => link.getAttribute('href')))
+  .sort();
+const workHrefs = siteIndexHrefs.filter((href) => href?.startsWith('/work/') && href !== '/work/').sort();
+assert.deepEqual(groupedWorkHrefs, workHrefs, 'dev and art subsections must contain every work entry once');
+const groupedRollHrefs = [...siteIndex.querySelectorAll('[id^="tree-photos-"] a')]
+  .map((link) => link.getAttribute('href'))
+  .sort();
+const rollHrefs = siteIndexHrefs.filter((href) => href?.startsWith('/photos/') && href !== '/photos/').sort();
+assert.deepEqual(groupedRollHrefs, rollHrefs, 'year subsections must contain every photo roll once');
+assert.equal(home.querySelector('header nav[aria-label="Main navigation"]'), null);
 
 for (const section of ['work', 'photos']) {
   const entries = (await readdir(join(dist, section), { withFileTypes: true }))

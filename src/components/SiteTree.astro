@@ -1,0 +1,310 @@
+---
+interface TreeFile {
+  label: string;
+  href: string;
+  meta?: string;
+}
+
+interface Props {
+  workItems: TreeFile[];
+  rollItems: TreeFile[];
+}
+
+const { workItems, rollItems } = Astro.props;
+const devWorkItems = workItems.filter((item) => item.meta === 'dev');
+const artWorkItems = workItems.filter((item) => item.meta !== 'dev');
+const rollYear = (item: TreeFile) => item.meta?.slice(0, 4) ?? 'unknown';
+const photoYears = [...new Set(rollItems.map(rollYear))]
+  .sort((a, b) => b.localeCompare(a))
+  .map((year) => ({ year, items: rollItems.filter((item) => rollYear(item) === year) }));
+---
+
+<nav class="site-tree" aria-label="Site index">
+  <a class="tree-root" href="/" aria-current="page">~</a>
+  <ul>
+    <li class="tree-row">
+      <a class="tree-main" href="https://admin.bjsmith.xyz/">
+        <span class="tree-prefix" aria-hidden="true">├── </span>
+        <span>admin/</span>
+      </a>
+      <span class="tree-meta">protected</span>
+    </li>
+    <li class="tree-branch" data-tree-branch>
+      <div class="tree-row">
+        <button class="tree-main tree-toggle" type="button" aria-expanded="true" aria-controls="tree-beek" data-tree-toggle>
+          <span class="tree-prefix" aria-hidden="true">└── </span>
+          <span>beek/</span>
+          <span class="tree-state" aria-hidden="true"></span>
+        </button>
+        <span class="tree-meta">public home</span>
+      </div>
+      <div class="tree-collapse" id="tree-beek" data-tree-collapse data-collapsed="false">
+        <div class="tree-collapse-inner">
+          <ul>
+            <li class="tree-branch" data-tree-branch>
+              <div class="tree-row">
+                <button class="tree-main tree-toggle" type="button" aria-expanded="false" aria-controls="tree-work" data-tree-toggle>
+                  <span class="tree-prefix" aria-hidden="true">    ├── </span>
+                  <span>work/</span>
+                  <span class="tree-state" aria-hidden="true"></span>
+                </button>
+                <span class="tree-meta">{workItems.length} entries</span>
+              </div>
+              <div class="tree-collapse" id="tree-work" data-tree-collapse data-collapsed="true" inert>
+                <div class="tree-collapse-inner">
+                  <ul>
+                    <li class="tree-row">
+                      <a class="tree-main" href="/work/">
+                        <span class="tree-prefix" aria-hidden="true">    │   ├── </span>
+                        <span>index/</span>
+                      </a>
+                      <span class="tree-meta">all work</span>
+                    </li>
+                    <li class="tree-branch" data-tree-branch>
+                      <div class="tree-row">
+                        <button class="tree-main tree-toggle" type="button" aria-expanded="false" aria-controls="tree-work-dev" data-tree-toggle>
+                          <span class="tree-prefix" aria-hidden="true">    │   ├── </span>
+                          <span>dev/</span>
+                          <span class="tree-state" aria-hidden="true"></span>
+                        </button>
+                        <span class="tree-meta">{devWorkItems.length} entries</span>
+                      </div>
+                      <div class="tree-collapse" id="tree-work-dev" data-tree-collapse data-collapsed="true" inert>
+                        <div class="tree-collapse-inner">
+                          <ul>
+                            {devWorkItems.map((item, index) => (
+                              <li class="tree-row">
+                                <a class="tree-main" href={item.href}>
+                                  <span class="tree-prefix" aria-hidden="true">{index === devWorkItems.length - 1 ? '    │   │   └── ' : '    │   │   ├── '}</span>
+                                  <span>{item.label}</span>
+                                </a>
+                              </li>
+                            ))}
+                          </ul>
+                        </div>
+                      </div>
+                    </li>
+                    <li class="tree-branch" data-tree-branch>
+                      <div class="tree-row">
+                        <button class="tree-main tree-toggle" type="button" aria-expanded="false" aria-controls="tree-work-art" data-tree-toggle>
+                          <span class="tree-prefix" aria-hidden="true">    │   └── </span>
+                          <span>art/</span>
+                          <span class="tree-state" aria-hidden="true"></span>
+                        </button>
+                        <span class="tree-meta">{artWorkItems.length} entries</span>
+                      </div>
+                      <div class="tree-collapse" id="tree-work-art" data-tree-collapse data-collapsed="true" inert>
+                        <div class="tree-collapse-inner">
+                          <ul>
+                            {artWorkItems.map((item, index) => (
+                              <li class="tree-row">
+                                <a class="tree-main" href={item.href}>
+                                  <span class="tree-prefix" aria-hidden="true">{index === artWorkItems.length - 1 ? '    │       └── ' : '    │       ├── '}</span>
+                                  <span>{item.label}</span>
+                                </a>
+                              </li>
+                            ))}
+                          </ul>
+                        </div>
+                      </div>
+                    </li>
+                  </ul>
+                </div>
+              </div>
+            </li>
+            <li class="tree-branch" data-tree-branch>
+              <div class="tree-row">
+                <button class="tree-main tree-toggle" type="button" aria-expanded="false" aria-controls="tree-photos" data-tree-toggle>
+                  <span class="tree-prefix" aria-hidden="true">    ├── </span>
+                  <span>photos/</span>
+                  <span class="tree-state" aria-hidden="true"></span>
+                </button>
+                <span class="tree-meta">{rollItems.length} rolls</span>
+              </div>
+              <div class="tree-collapse" id="tree-photos" data-tree-collapse data-collapsed="true" inert>
+                <div class="tree-collapse-inner">
+                  <ul>
+                    <li class="tree-row">
+                      <a class="tree-main" href="/photos/">
+                        <span class="tree-prefix" aria-hidden="true">    │   ├── </span>
+                        <span>index/</span>
+                      </a>
+                      <span class="tree-meta">all rolls</span>
+                    </li>
+                    {photoYears.map(({ year, items }, yearIndex) => {
+                      const lastYear = yearIndex === photoYears.length - 1;
+                      const childPrefix = lastYear ? '    │       ' : '    │   │   ';
+                      return (
+                        <li class="tree-branch" data-tree-branch>
+                          <div class="tree-row">
+                            <button class="tree-main tree-toggle" type="button" aria-expanded="false" aria-controls={`tree-photos-${year}`} data-tree-toggle>
+                              <span class="tree-prefix" aria-hidden="true">{lastYear ? '    │   └── ' : '    │   ├── '}</span>
+                              <span>{year}/</span>
+                              <span class="tree-state" aria-hidden="true"></span>
+                            </button>
+                            <span class="tree-meta">{items.length} rolls</span>
+                          </div>
+                          <div class="tree-collapse" id={`tree-photos-${year}`} data-tree-collapse data-collapsed="true" inert>
+                            <div class="tree-collapse-inner">
+                              <ul>
+                                {items.map((item, index) => (
+                                  <li class="tree-row">
+                                    <a class="tree-main" href={item.href}>
+                                      <span class="tree-prefix" aria-hidden="true">{`${childPrefix}${index === items.length - 1 ? '└── ' : '├── '}`}</span>
+                                      <span>{item.label}</span>
+                                    </a>
+                                    {item.meta && <span class="tree-meta">{item.meta}</span>}
+                                  </li>
+                                ))}
+                              </ul>
+                            </div>
+                          </div>
+                        </li>
+                      );
+                    })}
+                  </ul>
+                </div>
+              </div>
+            </li>
+            <li class="tree-row">
+              <a class="tree-main" href="/travel/">
+                <span class="tree-prefix" aria-hidden="true">    ├── </span>
+                <span>travel/</span>
+              </a>
+              <span class="tree-meta">journey</span>
+            </li>
+            <li class="tree-row">
+              <a class="tree-main" href="/about/">
+                <span class="tree-prefix" aria-hidden="true">    └── </span>
+                <span>about.md</span>
+              </a>
+              <span class="tree-meta">file</span>
+            </li>
+          </ul>
+        </div>
+      </div>
+    </li>
+  </ul>
+</nav>
+
+<script>
+  function setupSiteTree() {
+    document.querySelectorAll<HTMLButtonElement>('[data-tree-toggle]').forEach((button) => {
+      if (button.dataset.treeReady === 'true') return;
+      const panel = document.getElementById(button.getAttribute('aria-controls') || '');
+      if (!(panel instanceof HTMLElement)) return;
+      button.dataset.treeReady = 'true';
+      panel.inert = button.getAttribute('aria-expanded') !== 'true';
+      button.addEventListener('click', () => {
+        const expanded = button.getAttribute('aria-expanded') === 'true';
+        button.setAttribute('aria-expanded', String(!expanded));
+        panel.dataset.collapsed = String(expanded);
+        panel.inert = expanded;
+      });
+    });
+  }
+
+  document.addEventListener('astro:page-load', setupSiteTree);
+</script>
+
+<style>
+  .site-tree {
+    max-width: 52rem;
+    padding: var(--space-4);
+    overflow-x: auto;
+    border: 1px solid var(--color-border);
+    background: var(--color-bg-secondary);
+    box-shadow: var(--shadow-hard);
+    font-size: var(--font-size-sm);
+    scrollbar-width: thin;
+  }
+
+  .site-tree ul {
+    list-style: none;
+  }
+
+  .tree-root,
+  .tree-row {
+    min-height: 2rem;
+  }
+
+  .tree-root {
+    display: inline-flex;
+    align-items: center;
+    color: var(--color-accent-primary);
+    font-weight: var(--font-weight-medium);
+  }
+
+  .tree-row {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr) auto;
+    min-width: 38rem;
+    align-items: center;
+  }
+
+  .tree-main {
+    display: flex;
+    width: fit-content;
+    min-width: 0;
+    align-items: center;
+    color: var(--color-text-primary);
+    font: inherit;
+    text-align: left;
+  }
+
+  button.tree-main {
+    padding: 0;
+    background: transparent;
+    border: 0;
+    cursor: pointer;
+  }
+
+  .tree-main:hover,
+  .tree-main:focus-visible {
+    color: var(--color-accent-primary);
+  }
+
+  .tree-prefix {
+    flex: none;
+    color: var(--color-text-muted);
+    white-space: pre;
+  }
+
+  .tree-state {
+    margin-left: var(--space-2);
+    color: var(--color-text-muted);
+  }
+
+  .tree-toggle[aria-expanded='true'] .tree-state::before {
+    content: '[-]';
+  }
+
+  .tree-toggle[aria-expanded='false'] .tree-state::before {
+    content: '[+]';
+  }
+
+  .tree-meta {
+    padding-left: var(--space-6);
+    color: var(--color-text-muted);
+    font-size: var(--font-size-xs);
+    text-align: right;
+    white-space: nowrap;
+  }
+
+  .tree-collapse {
+    display: grid;
+    grid-template-rows: 1fr;
+    opacity: 1;
+    transition: grid-template-rows var(--transition-slow), opacity var(--transition-base);
+  }
+
+  .tree-collapse[data-collapsed='true'] {
+    grid-template-rows: 0fr;
+    opacity: 0;
+  }
+
+  .tree-collapse-inner {
+    min-height: 0;
+    overflow: hidden;
+  }
+</style>

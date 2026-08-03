@@ -4,7 +4,6 @@ import '@fontsource/ibm-plex-mono/400-italic.css';
 import '@fontsource/ibm-plex-mono/500.css';
 import '@fontsource/ibm-plex-mono/600.css';
 import '../styles/global.css';
-import Header from '../components/Header.astro';
 import Breadcrumb from '../components/Breadcrumb.astro';
 import Footer from '../components/Footer.astro';
 import JsonLd from '../components/JsonLd.astro';
@@ -100,13 +99,8 @@ const themeDark = themeColors.dark;
 <body>
   <a href="#main-content" class="skip-link">skip to content</a>
   <div class="page-wrapper">
-    <div class="site-chrome">
-      <Header />
-      <div class="breadcrumb-bar">
-        <div class="breadcrumb-bar-inner container">
-          <Breadcrumb items={breadcrumbs} />
-        </div>
-      </div>
+    <div class="breadcrumb-row container">
+      <Breadcrumb items={breadcrumbs} />
     </div>
     <main id="main-content" tabindex="-1">
       <slot />
@@ -125,24 +119,13 @@ const themeDark = themeColors.dark;
     z-index: 1;
   }
 
-  .site-chrome {
-    position: sticky;
-    top: 0;
-    z-index: 100;
-  }
-
-  .breadcrumb-bar {
-    min-height: 36px;
-    background: var(--color-bg-primary);
-    border-bottom: 1px solid var(--color-border);
-  }
-
-  .breadcrumb-bar-inner {
+  .breadcrumb-row {
     display: flex;
-    min-height: 36px;
+    height: 56px;
+    flex: 0 0 auto;
     align-items: center;
   }
-  
+
   main {
     flex: 1;
   }

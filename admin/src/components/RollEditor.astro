@@ -140,11 +140,11 @@ const { mode, slug = '' } = Astro.props;
   fieldset:disabled { opacity: .65; }
   .editor-panel, .review-panel, .publication-panel { margin-bottom: 1rem; padding: 1rem; border: 1px solid var(--border); background: var(--panel); box-shadow: var(--shadow); }
   .section-heading { display: flex; align-items: center; justify-content: space-between; gap: 1rem; margin-bottom: .8rem; }
-  .section-heading h2 { font-size: 1rem; }
-  .section-path { color: var(--text-muted); font-size: .67rem; }
-  .hint, .progress-label { margin: .3rem 0 .7rem; color: var(--text-muted); font-size: .7rem; }
+  .section-heading h2 { font-size: var(--font-size-base); }
+  .section-path { color: var(--text-muted); font-size: var(--font-size-xs); }
+  .hint, .progress-label { margin: .3rem 0 .7rem; color: var(--text-muted); font-size: var(--font-size-xs); }
   code { color: var(--text-soft); }
-  label { display: grid; gap: .3rem; min-width: 0; color: var(--text-muted); font-size: .68rem; }
+  label { display: grid; gap: .3rem; min-width: 0; color: var(--text-muted); font-size: var(--font-size-xs); }
   input, select, textarea { width: 100%; min-width: 0; padding: .52rem .6rem; border: 1px solid var(--border); border-radius: 0; background: var(--bg); color: var(--text); font: inherit; }
   input:focus, select:focus, textarea:focus { border-color: var(--accent); }
   input[type='checkbox'] { width: 1rem; height: 1rem; accent-color: var(--accent); }
@@ -153,33 +153,33 @@ const { mode, slug = '' } = Astro.props;
   .metadata-grid { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: .7rem; }
   .metadata-grid .wide { grid-column: span 2; }
   .location-row { display: flex; align-items: end; justify-content: space-between; gap: .75rem; padding: .6rem; border: 1px solid var(--border); }
-  .field-label { color: var(--text-muted); font-size: .68rem; }
-  .location-row p { margin: .2rem 0 0; color: var(--text-soft); font-size: .78rem; }
+  .field-label { color: var(--text-muted); font-size: var(--font-size-xs); }
+  .location-row p { margin: .2rem 0 0; color: var(--text-soft); font-size: var(--font-size-sm); }
   .frames-heading { align-items: end; }
   .frame-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(190px, 1fr)); gap: .75rem; }
   :global(.roll-frame) { min-width: 0; padding: .55rem; border: 1px solid var(--border); background: var(--bg); }
   :global(.roll-frame.dragover) { border-color: var(--accent); box-shadow: 2px 2px 0 var(--accent); }
   :global(.frame-head) { display: flex; justify-content: space-between; gap: .4rem; align-items: center; margin-bottom: .4rem; }
-  :global(.frame-number) { color: var(--amber); font-size: .7rem; }
+  :global(.frame-number) { color: var(--amber); font-size: var(--font-size-xs); }
   :global(.frame-actions) { display: flex; gap: .2rem; }
   :global(.frame-actions button) { width: 1.7rem; height: 1.7rem; padding: 0; border: 1px solid var(--border); background: var(--panel); color: var(--text-muted); }
   :global(.frame-actions button:hover) { color: var(--accent); border-color: var(--accent); }
   :global(.frame-image) { width: 100%; aspect-ratio: 3 / 2; display: block; object-fit: cover; border: 0; background: var(--panel); cursor: zoom-in; }
   :global(.frame-fields) { display: grid; gap: .35rem; margin-top: .45rem; }
-  :global(.frame-fields input) { font-size: .68rem; padding: .35rem; }
-  :global(.frame-location) { overflow: hidden; color: var(--text-muted); font-size: .65rem; text-overflow: ellipsis; white-space: nowrap; }
+  :global(.frame-fields input) { font-size: var(--font-size-xs); padding: .35rem; }
+  :global(.frame-location) { overflow: hidden; color: var(--text-muted); font-size: var(--font-size-xs); text-overflow: ellipsis; white-space: nowrap; }
   :global(.frame-select) { display: flex; align-items: center; gap: .3rem; }
   .error-panel { margin-bottom: 1rem; padding: 1rem; border: 1px solid #ff6b6b; background: var(--panel); color: #ff9d9d; }
   .error-panel h2 { margin-bottom: .4rem; color: #ff6b6b; }
-  .error-panel ul { padding-left: 1.2rem; font-size: .75rem; }
+  .error-panel ul { padding-left: 1.2rem; font-size: var(--font-size-sm); }
   .review-panel { border-color: var(--amber); box-shadow: 3px 3px 0 var(--amber); }
   .publication-error { padding: .65rem; border: 1px solid #ff6b6b; color: #ff9d9d; }
   .publication-panel { border-color: var(--blue); box-shadow: 3px 3px 0 var(--blue); }
   .review-panel h2, .publication-panel h2 { margin: .35rem 0 .7rem; }
   .publication-links { margin: 1rem 0; border-top: 1px solid var(--border); }
   .publication-links div { display: grid; grid-template-columns: 9rem 1fr; gap: .6rem; padding: .6rem 0; border-bottom: 1px solid var(--border); }
-  .publication-links dt { color: var(--text-muted); font-size: .68rem; }
-  .publication-links dd { min-width: 0; overflow-wrap: anywhere; font-size: .75rem; }
+  .publication-links dt { color: var(--text-muted); font-size: var(--font-size-xs); }
+  .publication-links dd { min-width: 0; overflow-wrap: anywhere; font-size: var(--font-size-sm); }
   .progress-track { height: 4px; overflow: hidden; background: var(--border); }
   .progress-track span { display: block; width: 0; height: 100%; background: var(--accent); transition: width .15s linear; }
   .admin-dialog { width: min(620px, calc(100vw - 2rem)); max-height: calc(100vh - 2rem); padding: 1rem; overflow: auto; border: 1px solid var(--border-strong); background: var(--bg); color: var(--text); box-shadow: 5px 5px 0 var(--accent); }
@@ -191,7 +191,7 @@ const { mode, slug = '' } = Astro.props;
   .location-results button { width: 100%; padding: .45rem; text-align: left; border: 1px solid var(--border); background: var(--panel); color: var(--text-soft); }
   .location-results button:hover { color: var(--accent); border-color: var(--accent); }
   .location-chips { display: flex; flex-wrap: wrap; gap: .3rem; margin: .4rem 0; }
-  .location-chips button { padding: .25rem .4rem; border: 1px solid var(--border); background: var(--panel); color: var(--text-muted); font-size: .65rem; }
+  .location-chips button { padding: .25rem .4rem; border: 1px solid var(--border); background: var(--panel); color: var(--text-muted); font-size: var(--font-size-xs); }
   .location-map { height: 270px; margin: .6rem 0; border: 1px solid var(--border); }
   .location-fields { display: grid; grid-template-columns: 1fr 1fr; gap: .6rem; }
   .location-fields .wide { grid-column: span 2; }

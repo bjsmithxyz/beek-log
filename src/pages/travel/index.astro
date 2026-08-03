@@ -1,9 +1,35 @@
 ---
 import BaseLayout from '../../layouts/BaseLayout.astro';
+import PageHeader from '../../components/PageHeader.astro';
 import tripData from '../../data/trips.json';
 import { assertValidTrip } from '@beek/shared/trip-validation';
+import { haversine } from '@beek/shared/trip-runtime';
+import { getPhotoRolls, byDateDesc } from '../../lib/collections';
+import { effectiveLocations } from '../../data/locations';
 
 assertValidTrip(tripData);
+
+const normalizePlace = (value: string) => value
+  .normalize('NFD')
+  .replace(/[\u0300-\u036f]/g, '')
+  .toLowerCase()
+  .replace(/[^a-z0-9]/g, '');
+const photoRolls = (await getPhotoRolls()).sort(byDateDesc);
+const stopPhotoLinks = Object.fromEntries(tripData.stops.map((stop, index) => {
+  const stopName = normalizePlace(stop.name);
+  const related = photoRolls.filter((roll) => effectiveLocations(roll).some((location) => {
+    const names = [location.name, location.region?.name]
+      .filter((name): name is string => Boolean(name))
+      .map(normalizePlace);
+    const nameMatch = names.some((name) => name === stopName || name.includes(stopName) || stopName.includes(name));
+    const distance = haversine(stop, { lat: location.lat, lon: location.lng });
+    return nameMatch || distance <= 80;
+  })).map((roll) => ({
+    href: `/photos/${roll.id}/`,
+    title: roll.data.title,
+  }));
+  return [index, related];
+}));
 
 const jsonLd = {
   '@type': 'CreativeWork',
@@ -24,20 +50,26 @@ const jsonLd = {
 >
   <div class="travel-page" data-travel-page>
     <div class="container">
-      <header class="travel-header">
-        <h1>{tripData.meta.title}</h1>
-        <p class="travel-subtitle">{tripData.meta.subtitle}</p>
+      <div class="travel-header">
+        <PageHeader title={tripData.meta.title} description={tripData.meta.subtitle} />
         <p class="travel-nowline"><span class="travel-pulse" aria-hidden="true"></span><span id="travel-now">loading journey…</span></p>
-      </header>
+      </div>
+
+      <nav class="travel-tabs" role="tablist" aria-label="Travel sections">
+        <button id="travel-tab-stats" type="button" role="tab" aria-selected="false" aria-controls="travel-panel-stats" tabindex="-1" data-travel-tab="stats">stats/</button>
+        <button id="travel-tab-route" type="button" role="tab" aria-selected="true" aria-controls="travel-panel-route" data-travel-tab="route">route/</button>
+        <button id="travel-tab-road-ahead" type="button" role="tab" aria-selected="false" aria-controls="travel-panel-road-ahead" tabindex="-1" data-travel-tab="road-ahead">road-ahead/</button>
+        <button id="travel-tab-timeline" type="button" role="tab" aria-selected="false" aria-controls="travel-panel-timeline" tabindex="-1" data-travel-tab="timeline">timeline/</button>
+      </nav>
 
       <div class="travel-main">
-        <section aria-labelledby="travel-stats-heading">
+        <section id="travel-panel-stats" role="tabpanel" aria-labelledby="travel-tab-stats" data-travel-panel="stats" hidden>
           <h2 id="travel-stats-heading" class="travel-section-label">stats/</h2>
           <div class="travel-stats" id="travel-stats" aria-label="Trip statistics"></div>
           <div class="travel-facts" id="travel-facts"></div>
         </section>
 
-        <section aria-labelledby="travel-map-heading">
+        <section id="travel-panel-route" role="tabpanel" aria-labelledby="travel-tab-route" data-travel-panel="route">
           <div class="travel-section-head">
             <div>
               <h2 id="travel-map-heading">route/</h2>
@@ -57,7 +89,7 @@ const jsonLd = {
           <div id="travel-map-stops" class="travel-map-stops" aria-label="Show a stop on the map"></div>
         </section>
 
-        <section aria-labelledby="travel-planning-heading">
+        <section id="travel-panel-road-ahead" role="tabpanel" aria-labelledby="travel-tab-road-ahead" data-travel-panel="road-ahead" hidden>
           <div class="travel-section-head">
             <div>
               <h2 id="travel-planning-heading">road-ahead/</h2>
@@ -67,22 +99,11 @@ const jsonLd = {
           <div class="travel-legs" id="travel-legs"></div>
         </section>
 
-        <section aria-labelledby="travel-timeline-heading">
-          <div class="travel-section-head">
-            <div>
-              <h2 id="travel-timeline-heading">timeline/</h2>
-              <p>The whole journey, in route order.</p>
-            </div>
-          </div>
+        <section id="travel-panel-timeline" role="tabpanel" aria-labelledby="travel-tab-timeline" data-travel-panel="timeline" hidden>
           <div class="travel-timeline" id="travel-timeline"></div>
-          <button class="travel-more" id="travel-more" type="button" aria-expanded="false">show full journey ↓</button>
         </section>
       </div>
-
-      <footer class="travel-footer">
-        <p>Trip started <b id="travel-start"></b> · day <b id="travel-day"></b> on the road.</p>
-        <p>Weather via <a href="https://open-meteo.com" target="_blank" rel="noopener">Open-Meteo</a> · map tiles © <a href="https://carto.com" target="_blank" rel="noopener">CARTO</a> / OpenStreetMap contributors.</p>
-      </footer>
+      <script id="travel-photo-links" type="application/json" set:html={JSON.stringify(stopPhotoLinks)}></script>
     </div>
   </div>
 </BaseLayout>
@@ -93,24 +114,19 @@ const jsonLd = {
 
 <style is:global>
   .travel-page {
-    padding: var(--space-10) 0 var(--space-16);
+    padding: var(--page-content-top) 0 var(--space-16);
   }
 
   .travel-header {
-    padding-bottom: var(--space-6);
-    border-bottom: 1px solid var(--color-border);
+    padding-bottom: var(--space-4);
   }
 
-  .travel-header h1 {
-    font-size: var(--font-size-4xl);
-    font-weight: var(--font-weight-bold);
-    margin-bottom: var(--space-2);
-  }
-
-  .travel-subtitle {
-    max-width: 46rem;
-    font-size: var(--font-size-sm);
+  .travel-header .page-header {
     margin-bottom: var(--space-4);
+  }
+
+  .travel-header .page-description {
+    max-width: 46rem;
   }
 
   .travel-nowline {
@@ -138,7 +154,36 @@ const jsonLd = {
 
   @keyframes travel-blink { 50% { opacity: 0.35; } }
 
-  .travel-main > section { margin-top: var(--space-10); }
+  .travel-tabs {
+    display: flex;
+    gap: var(--space-2);
+    overflow-x: auto;
+    padding: var(--space-2) 0;
+    scrollbar-width: thin;
+  }
+
+  .travel-tabs button {
+    flex: none;
+    padding: var(--space-2) var(--space-3);
+    color: var(--color-text-muted);
+    background: var(--color-bg-secondary);
+    border: 1px solid var(--color-border);
+    font: inherit;
+    font-size: var(--font-size-sm);
+    cursor: pointer;
+  }
+
+  .travel-tabs button:hover,
+  .travel-tabs button[aria-selected='true'] {
+    color: var(--color-accent-primary);
+    border-color: var(--color-accent-primary);
+  }
+
+  .travel-tabs button[aria-selected='true'] {
+    box-shadow: var(--shadow-hard-accent);
+  }
+
+  .travel-main > section { margin-top: var(--space-6); }
 
   .travel-section-label,
   .travel-section-head h2 {
@@ -211,7 +256,6 @@ const jsonLd = {
   .travel-toggles { display: flex; gap: var(--space-2); }
 
   .travel-toggles button,
-  .travel-more,
   .map-stop {
     padding: var(--space-2) var(--space-3);
     color: var(--color-text-muted);
@@ -224,7 +268,6 @@ const jsonLd = {
 
   .travel-toggles button:hover,
   .travel-toggles button.active,
-  .travel-more:hover,
   .map-stop:hover {
     color: var(--color-accent-primary);
     border-color: var(--color-accent-primary);
@@ -293,9 +336,34 @@ const jsonLd = {
     overflow-x: auto;
   }
 
-  .map-stop { flex: none; }
+  .map-stop-entry {
+    display: flex;
+    flex: none;
+    flex-direction: column;
+    align-items: flex-start;
+    gap: var(--space-1);
+  }
+
   .map-stop.current { color: var(--color-accent-tertiary); border-color: var(--color-accent-tertiary); }
   .map-stop.future { color: var(--color-accent-secondary); }
+
+  .map-stop-photos {
+    display: flex;
+    max-width: 13rem;
+    flex-wrap: wrap;
+    gap: var(--space-1) var(--space-2);
+    padding-left: var(--space-1);
+    font-size: var(--font-size-xs);
+  }
+
+  .map-stop-photos a {
+    color: var(--color-text-muted);
+  }
+
+  .map-stop-photos a:hover,
+  .map-stop-photos a:focus-visible {
+    color: var(--color-accent-primary);
+  }
 
   .travel-legs {
     display: grid;
@@ -407,18 +475,6 @@ const jsonLd = {
   .timeline-row > div > span { margin-left: var(--space-2); color: var(--color-text-muted); font-size: var(--font-size-xs); }
   .timeline-row p { margin: var(--space-1) 0 0; color: var(--color-text-muted); font-size: var(--font-size-xs); font-style: italic; }
 
-  .travel-more { margin: var(--space-4) 0 0 8rem; }
-
-  .travel-footer {
-    margin-top: var(--space-10);
-    padding-top: var(--space-5);
-    color: var(--color-text-muted);
-    border-top: 1px solid var(--color-border);
-    font-size: var(--font-size-xs);
-  }
-
-  .travel-footer p { margin-bottom: var(--space-2); font-size: inherit; }
-  .travel-footer b { color: var(--color-text-secondary); }
   .travel-empty { padding: var(--space-6); border: 1px solid var(--color-border); }
 
   @media (max-width: 700px) {
@@ -427,7 +483,6 @@ const jsonLd = {
     .travel-legs { grid-template-columns: 1fr; }
     .travel-map { height: 430px; min-height: 320px; }
     .timeline-row { grid-template-columns: 6rem 1fr; }
-    .travel-more { margin-left: 6rem; }
   }
 
   @media (max-width: 420px) {
@@ -437,7 +492,6 @@ const jsonLd = {
     .timeline-row { grid-template-columns: 5rem 1fr; }
     .timeline-row time, .timeline-row > div { padding: var(--space-2); }
     .timeline-row > div > span { display: block; margin-left: 0; }
-    .travel-more { margin-left: 5rem; }
   }
 
   @media (prefers-reduced-motion: reduce) {
