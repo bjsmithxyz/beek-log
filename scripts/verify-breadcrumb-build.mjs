@@ -81,6 +81,9 @@ for (const [relativePath, title] of sectionTitles) {
 }
 
 const home = await documentAt('index.html');
+assert.doesNotMatch(home.body.textContent || '', /select a path or browse recent files|beek\/recent-(?:rolls|work)\//);
+assert.equal(home.querySelector('section[aria-label="Recent photo rolls"] a[aria-label="View all photo rolls"]')?.getAttribute('href'), '/photos/');
+assert.equal(home.querySelector('section[aria-label="Recent work"] a[aria-label="View all work"]')?.getAttribute('href'), '/work/');
 const siteIndex = home.querySelector('nav[aria-label="Site index"]');
 assert.ok(siteIndex, 'homepage must expose a filesystem site index');
 const siteIndexLinks = [...siteIndex.querySelectorAll('a')];

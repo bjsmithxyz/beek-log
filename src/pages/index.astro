@@ -25,16 +25,15 @@ const rollTreeItems = allRolls.map((entry) => ({
 <BaseLayout breadcrumbs={[{ label: '~', href: '/' }]}>
   <section class="home">
     <div class="container">
-      <PageHeader title="index/" description="select a path or browse recent files." />
+      <PageHeader title="index/" />
 
       <SiteTree workItems={workTreeItems} rollItems={rollTreeItems} />
 
       <div class="recent-content">
         {recentRolls.length > 0 && (
-          <section class="recent" aria-labelledby="rolls-heading">
-            <div class="dir-header">
-              <h2 id="rolls-heading" class="dir-path">beek/recent-rolls/</h2>
-              <a href="/photos/" class="dir-link">view all →</a>
+          <section class="recent" aria-label="Recent photo rolls">
+            <div class="recent-action">
+              <a href="/photos/" class="recent-link" aria-label="View all photo rolls">view all →</a>
             </div>
             <div class="dir-list">
               {recentRolls.map(roll => (
@@ -45,10 +44,9 @@ const rollTreeItems = allRolls.map((entry) => ({
         )}
 
         {recentWork.length > 0 && (
-          <section class="recent" aria-labelledby="recent-heading">
-            <div class="dir-header">
-              <h2 id="recent-heading" class="dir-path">beek/recent-work/</h2>
-              <a href="/work/" class="dir-link">view all →</a>
+          <section class="recent" aria-label="Recent work">
+            <div class="recent-action">
+              <a href="/work/" class="recent-link" aria-label="View all work">view all →</a>
             </div>
             <div class="dir-list">
               {recentWork.map(work => (
@@ -75,27 +73,18 @@ const rollTreeItems = allRolls.map((entry) => ({
     margin-top: var(--space-10);
   }
 
-  .dir-header {
+  .recent-action {
     display: flex;
-    align-items: baseline;
-    justify-content: space-between;
-    margin-bottom: var(--space-4);
-    gap: var(--space-4);
+    justify-content: flex-end;
+    margin-bottom: var(--space-3);
   }
 
-  .dir-path {
-    font-size: var(--font-size-base);
-    font-weight: var(--font-weight-medium);
-    color: var(--color-text-muted);
-    margin: 0;
-  }
-
-  .dir-link {
+  .recent-link {
     font-size: var(--font-size-sm);
     color: var(--color-text-muted);
   }
 
-  .dir-link:hover {
+  .recent-link:hover {
     color: var(--color-accent-primary);
   }
 
