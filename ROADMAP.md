@@ -17,7 +17,7 @@ The implementation brief remains the detailed source of acceptance criteria:
 | 2 — admin shell and authentication | Complete | SSR admin live with GitHub App OAuth, owner allow-list, sealed sessions and public header link |
 | 3 — travel publishing | Complete | PR #8 merged through preview; PR #9 abandoned without changing production |
 | 4 — roll publishing | Complete | PR #10 created a real roll, PR #11 edited it without re-upload, and PR #14 deleted a disposable roll |
-| 5 — retirement and operations | In progress | Localhost publisher retired; operational hardening remains |
+| 5 — retirement and operations | Complete | Local publisher retired; recovery, backups, legacy cleanup, PR ruleset, accessibility and live checks complete |
 | 6 — image-storage migration spec | Complete, specification only | R2-oriented migration, rollback, integrity, rendering, and storage-boundary plan documented |
 
 ## Verified production infrastructure
@@ -215,8 +215,9 @@ Phase 4 passed its production gate on 2026-08-03.
   up before declaring the local workflow retired.
 - [x] Document hardware-key 2FA on the GitHub owner account as a critical
   security boundary without recording recovery secrets.
-- [ ] Run final public/admin unit, build, accessibility, security-header and
-  live publishing checks.
+- [x] Run final public/admin unit, build, accessibility, security-header and
+  live publishing checks. Lighthouse accessibility scored 100 on the homepage,
+  a 33-frame photo roll, and `/travel/`; keyboard focus checks passed.
 
 ## Phase 6 — image storage migration specification only
 

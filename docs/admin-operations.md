@@ -355,3 +355,22 @@ removed both files, and deleted its branch.
 
 These checks complete Phase 4. The localhost direct-to-`main` publisher was
 retired only after this production acceptance.
+
+## Final Phase 5 verification — 2026-08-03
+
+- 96 full-suite tests and 53 admin-focused tests pass after removing the retired
+  localhost tests.
+- Public and admin production builds pass.
+- Lighthouse accessibility audits score 100 on the homepage, the 33-frame
+  Bukhara / Khiva roll, and `/travel/` after correcting muted-text contrast and
+  hidden-overlay focusability.
+- Keyboard checks confirm the mobile menu removes hidden links from tab order,
+  the lightbox opens from Enter/Space, traps controls, closes with Escape, and
+  restores focus to its originating frame.
+- Public and admin origins retain their intended CSP, HSTS, frame denial, and
+  content-type protections; the signed-out admin identity endpoint returns 401.
+- PR #14 proves the final hosted deletion path, and PR #15 proves ordinary
+  repository maintenance can merge through the active PR-only ruleset.
+
+Phases 0–6 of this roadmap are complete; the R2 document remains a
+specification, not an implemented migration.
