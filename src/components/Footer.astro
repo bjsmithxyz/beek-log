@@ -6,21 +6,33 @@ const currentYear = new Date().getFullYear();
 
 <footer class="footer">
   <div class="footer-inner container">
-    <p class="footer-tagline">{tagline}</p>
-    
-    <div class="social-links">
-      {socialLinks.map(link => (
-        <a 
-          href={link.href} 
-          target="_blank" 
-          rel="noopener noreferrer"
-          class="social-link"
-        >
-          {link.label}
-        </a>
-      ))}
+    <div class="footer-primary">
+      <nav class="social-links" aria-label="Social links">
+        {socialLinks.map(link => (
+          <a
+            href={link.href}
+            target="_blank"
+            rel="noopener noreferrer"
+            class="social-link"
+            aria-label={link.label}
+          >
+            {link.label === 'github' ? (
+              <svg viewBox="0 0 24 24" aria-hidden="true">
+                <path d="M12 .3a12 12 0 0 0-3.8 23.4c.6.1.8-.3.8-.6v-2.1c-3.3.7-4-1.4-4-1.4-.5-1.4-1.3-1.8-1.3-1.8-1.1-.7.1-.7.1-.7 1.2.1 1.8 1.2 1.8 1.2 1.1 1.8 2.8 1.3 3.5 1 .1-.8.4-1.3.8-1.6-2.7-.3-5.5-1.3-5.5-5.9 0-1.3.5-2.4 1.2-3.2-.1-.3-.5-1.5.1-3.2 0 0 1-.3 3.3 1.2a11.4 11.4 0 0 1 6 0c2.3-1.5 3.3-1.2 3.3-1.2.6 1.7.2 2.9.1 3.2.8.8 1.2 1.9 1.2 3.2 0 4.6-2.8 5.6-5.5 5.9.4.4.8 1.1.8 2.2v3.3c0 .3.2.7.8.6A12 12 0 0 0 12 .3Z"></path>
+              </svg>
+            ) : (
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+                <rect width="20" height="20" x="2" y="2" rx="5"></rect>
+                <path d="M16 11.4A4 4 0 1 1 12.6 8 4 4 0 0 1 16 11.4Z"></path>
+                <path d="M17.5 6.5h.01"></path>
+              </svg>
+            )}
+          </a>
+        ))}
+      </nav>
+      <p class="footer-tagline">{tagline}</p>
     </div>
-    
+
     <p class="copyright">© {currentYear} beek</p>
   </div>
 </footer>
@@ -28,15 +40,22 @@ const currentYear = new Date().getFullYear();
 <style>
   .footer {
     margin-top: auto;
-    padding: var(--space-8) 0 var(--space-6);
+    padding: var(--space-5) 0 var(--space-4);
     border-top: 1px solid var(--color-border);
   }
   
   .footer-inner {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr) auto;
+    align-items: end;
+    gap: var(--space-3) var(--space-4);
+  }
+
+  .footer-primary {
     display: flex;
     flex-direction: column;
     align-items: flex-start;
-    gap: var(--space-4);
+    gap: var(--space-2);
   }
   
   .footer-tagline {
@@ -47,27 +66,40 @@ const currentYear = new Date().getFullYear();
   
   .social-links {
     display: flex;
-    gap: var(--space-2);
+    gap: var(--space-3);
   }
   
   .social-link {
-    display: inline-block;
-    padding: var(--space-2) var(--space-3);
-    font-size: var(--font-size-sm);
+    display: flex;
+    width: 32px;
+    height: 32px;
+    align-items: center;
+    justify-content: center;
     color: var(--color-text-secondary);
-    border: 1px solid var(--color-border);
-    background: var(--color-bg-secondary);
-    transition: all var(--transition-fast);
+    transition: color var(--transition-fast);
+  }
+
+  .social-link svg {
+    width: 20px;
+    height: 20px;
+    fill: currentColor;
   }
   
   .social-link:hover {
     color: var(--color-accent-primary);
-    border-color: var(--color-accent-primary);
   }
   
   .copyright {
+    justify-self: end;
     font-size: var(--font-size-xs);
     color: var(--color-text-muted);
     margin: 0;
+    white-space: nowrap;
+  }
+
+  @media (max-width: 420px) {
+    .footer-inner {
+      grid-template-columns: 1fr;
+    }
   }
 </style>

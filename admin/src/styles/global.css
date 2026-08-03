@@ -47,9 +47,9 @@ button { cursor: pointer; }
 .admin-header-inner { min-height: 56px; display: flex; align-items: center; gap: 1rem; }
 .admin-logo { color: var(--text); font-weight: 600; }
 .admin-logo span { color: var(--text-muted); }
+.public-home, .admin-nav a { display: flex; min-height: 40px; align-items: center; padding: 0 .65rem; color: var(--text-soft); border: 1px solid transparent; font-size: .8rem; }
+.public-home:hover, .admin-nav a:hover, .admin-nav a[aria-current='page'] { color: var(--accent); border-color: var(--accent); background: var(--panel); }
 .admin-nav { display: flex; align-items: center; gap: .5rem; margin-left: auto; }
-.admin-nav a { padding: .4rem .65rem; color: var(--text-soft); border: 1px solid transparent; font-size: .8rem; }
-.admin-nav a:hover, .admin-nav a[aria-current='page'] { color: var(--accent); border-color: var(--accent); background: var(--panel); }
 .admin-user { color: var(--text-muted); font-size: .72rem; }
 .admin-main { padding: 3rem 0 6rem; }
 

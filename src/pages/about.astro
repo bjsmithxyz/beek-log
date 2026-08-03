@@ -1,7 +1,7 @@
 ---
 import BaseLayout from '../layouts/BaseLayout.astro';
 import PageHeader from '../components/PageHeader.astro';
-import { socialLinks, tagline, personName } from '../data/site';
+import { socialLinks, personName } from '../data/site';
 ---
 
 <BaseLayout 
@@ -9,7 +9,7 @@ import { socialLinks, tagline, personName } from '../data/site';
   description="who?"
 >
   <section class="about-page">
-    <div class="container container-narrow">
+    <div class="container">
       <PageHeader prompt="~/beek/about" title="about.md" />
       
       <div class="about-content">
@@ -18,7 +18,7 @@ import { socialLinks, tagline, personName } from '../data/site';
             My name is <span class="highlight">{personName}</span>. I'm a creative and tech guy based in Australia. I enjoy messing around with technical projects and creating art, sometimes the two intersect.
           </p>
           <p>
-            Links:
+            Links:{' '}
             {socialLinks.map((link, i) => (
               <span>
                 {i > 0 ? ', ' : ''}
@@ -26,9 +26,6 @@ import { socialLinks, tagline, personName } from '../data/site';
               </span>
             ))}
           </p>
-        </div>
-        <div class="tagline">
-          <p>{tagline}</p>
         </div>
       </div>
     </div>
@@ -45,13 +42,13 @@ import { socialLinks, tagline, personName } from '../data/site';
   }
   
   .about-content {
+    max-width: var(--container-narrow);
     border: 1px solid var(--color-border);
     background: var(--color-bg-secondary);
   }
 
   .bio-block {
     padding: var(--space-6);
-    border-bottom: 1px solid var(--color-border);
   }
   
   .bio-block p {
@@ -68,15 +65,5 @@ import { socialLinks, tagline, personName } from '../data/site';
   .highlight {
     color: var(--color-accent-primary);
     font-weight: var(--font-weight-medium);
-  }
-  
-  .tagline {
-    padding: var(--space-4) var(--space-6);
-  }
-  
-  .tagline p {
-    font-size: var(--font-size-sm);
-    color: var(--color-text-muted);
-    margin: 0;
   }
 </style>
