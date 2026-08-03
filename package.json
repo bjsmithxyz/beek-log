@@ -10,6 +10,9 @@
   "engines": {
     "node": ">=22.18.0"
   },
+  "overrides": {
+    "sharp": "$sharp"
+  },
   "scripts": {
     "dev": "astro dev",
     "build": "astro build && node scripts/verify-travel-build.mjs",
@@ -29,7 +32,6 @@
     "sharp": "^0.35.3"
   },
   "devDependencies": {
-    "@netlify/plugin-lighthouse": "^6.0.4",
     "@types/leaflet": "^1.9.22",
     "jsdom": "^30.0.1"
   }

@@ -63,9 +63,11 @@ Hashed build assets under `/_assets/*` are served `immutable` with a one-year
 ## Monitoring
 
 Netlify Observability provides the Free plan's rolling 24-hour request view and
-requires no site code. The Lighthouse build plugin reports mobile scores for
-the homepage and one image-heavy photo roll after each deploy. It is
-reporting-only: scores do not block releases. Audits cover the homepage, an image-heavy roll, and `/travel/`.
+requires no site code. Accessibility release gates use a current local
+Lighthouse/Chrome run against the homepage, an image-heavy roll, and `/travel/`.
+The former Netlify Lighthouse plugin was removed because its pinned browser
+tooling accumulated advisories; do not restore it without checking its full
+dependency audit.
 
 ## Gotchas
 
@@ -83,7 +85,8 @@ retains the Netlify adapter so Astro's `<Image />` component uses Netlify Image
 CDN transformations in production. Astro 7 requires Node ≥ 22.12; this project
 requires Node ≥ 22.18 for its test suite.
 
-`npm audit` reports advisories in transitive dependencies of the current Netlify
-adapter and its local development tooling. npm's suggested remediation is an
-incompatible downgrade of the adapter, so do not use `npm audit fix --force`;
-upgrade when Netlify publishes compatible patched dependencies.
+The root npm override makes Netlify's transitive `ipx` use the same patched
+Sharp release as Astro and the maintenance scripts. Remove the override only
+when `@netlify/images` natively permits that Sharp line. `npm audit` is clean as
+of the final 2026-08-03 review. Do not use `npm audit fix --force`; review and
+test dependency changes through a pull request.

@@ -371,6 +371,12 @@ retired only after this production acceptance.
   content-type protections; the signed-out admin identity endpoint returns 401.
 - PR #14 proves the final hosted deletion path, and PR #15 proves ordinary
   repository maintenance can merge through the active PR-only ruleset.
+- The final dependency audit reports zero vulnerabilities. Netlify's transitive
+  image tooling is constrained to the patched project Sharp version, and the
+  obsolete Lighthouse plugin/browser dependency chain was removed.
+- A tracked-file signature scan found no private keys, GitHub tokens, session
+  secrets, or non-example environment files. Live mutation checks still enforce
+  method → content type → same origin → session before endpoint processing.
 
 Phases 0–6 of this roadmap are complete; the R2 document remains a
 specification, not an implemented migration.
