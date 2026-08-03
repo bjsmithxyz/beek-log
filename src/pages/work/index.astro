@@ -13,17 +13,17 @@ const categories = [...new Set(allWork.map(w => w.data.category))];
 const LIST_COLS = '5rem 6.5rem 1fr auto 1.5rem';
 ---
 
-<BaseLayout 
+<BaseLayout
   title="work"
   description="collection of projects, artwork, and photography"
+  breadcrumbs={[
+    { label: '~/beek', href: '/' },
+    { label: 'work', href: '/work/' },
+  ]}
 >
   <section class="work-page">
     <div class="container">
       <PageHeader
-        breadcrumbs={[
-          { label: '~/beek', href: '/' },
-          { label: 'work', href: '/work/' },
-        ]}
         title="work/"
         description={`${sortedWork.length} entries — projects, art, photography`}
       />

@@ -1,16 +1,15 @@
 ---
 import AdminLayout from '../../layouts/AdminLayout.astro';
-import Breadcrumb from '../../components/Breadcrumb.astro';
 ---
-<AdminLayout title="rolls">
+<AdminLayout
+  title="rolls"
+  breadcrumbs={[
+    { label: '~/admin', href: '/' },
+    { label: 'rolls', href: '/rolls/' },
+  ]}
+>
   <header class="page-head rolls-head">
     <div>
-      <Breadcrumb
-        items={[
-          { label: '~/admin', href: '/' },
-          { label: 'rolls', href: '/rolls/' },
-        ]}
-      />
       <h1>film-rolls/</h1>
       <p>Encode scans locally, then publish through a reviewed pull request.</p>
     </div>

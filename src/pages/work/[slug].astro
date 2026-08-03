@@ -1,6 +1,5 @@
 ---
 import BaseLayout from '../../layouts/BaseLayout.astro';
-import Breadcrumb from '../../components/Breadcrumb.astro';
 import Lightbox from '../../components/Lightbox.astro';
 import { Image } from 'astro:assets';
 import { render, type CollectionEntry } from 'astro:content';
@@ -45,17 +44,20 @@ const jsonLd = {
 };
 ---
 
-<BaseLayout title={title} description={description} image={ogImage} jsonLd={jsonLd}>
+<BaseLayout
+  title={title}
+  description={description}
+  image={ogImage}
+  jsonLd={jsonLd}
+  breadcrumbs={[
+    { label: '~/beek', href: '/' },
+    { label: 'work', href: '/work/' },
+    { label: `${entry.id}.md`, href: `/work/${entry.id}/` },
+  ]}
+>
   <article class="work-detail">
     <div class="container container-narrow">
       <header class="article-header">
-        <Breadcrumb
-          items={[
-            { label: '~/beek', href: '/' },
-            { label: 'work', href: '/work/' },
-            { label: `${entry.id}.md`, href: `/work/${entry.id}/` },
-          ]}
-        />
         <span class={`category ${categoryClass}`}>[{category}]</span>
         <h1 class="title">{title}</h1>
         <p class="description">{description}</p>

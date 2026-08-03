@@ -196,6 +196,10 @@ img {
     color: var(--color-accent-primary);
 }
 
+#main-content {
+    scroll-margin-top: 92px;
+}
+
 #main-content:focus {
     outline: none;
 }

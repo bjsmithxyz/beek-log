@@ -1,16 +1,15 @@
 ---
 import AdminLayout from '../../layouts/AdminLayout.astro';
-import Breadcrumb from '../../components/Breadcrumb.astro';
 ---
-<AdminLayout title="travel">
+<AdminLayout
+  title="travel"
+  breadcrumbs={[
+    { label: '~/admin', href: '/' },
+    { label: 'travel', href: '/travel/' },
+  ]}
+>
   <header class="page-head travel-head">
     <div>
-      <Breadcrumb
-        items={[
-          { label: '~/admin', href: '/' },
-          { label: 'travel', href: '/travel/' },
-        ]}
-      />
       <h1>travel-editor/</h1>
       <p>Edit the committed itinerary, then review it through a pull request and public Deploy Preview.</p>
     </div>

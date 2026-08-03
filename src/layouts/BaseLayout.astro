@@ -5,6 +5,7 @@ import '@fontsource/ibm-plex-mono/500.css';
 import '@fontsource/ibm-plex-mono/600.css';
 import '../styles/global.css';
 import Header from '../components/Header.astro';
+import Breadcrumb from '../components/Breadcrumb.astro';
 import Footer from '../components/Footer.astro';
 import JsonLd from '../components/JsonLd.astro';
 import { ClientRouter } from 'astro:transitions';
@@ -16,11 +17,17 @@ import {
   themeColors,
 } from '../data/site';
 
+interface BreadcrumbItem {
+  label: string;
+  href: string;
+}
+
 interface Props {
   title?: string;
   description?: string;
   image?: string;
   jsonLd?: Record<string, unknown> | Record<string, unknown>[];
+  breadcrumbs?: BreadcrumbItem[];
 }
 
 const {
@@ -28,6 +35,7 @@ const {
   description = siteDescription,
   image = '/og-image.png',
   jsonLd,
+  breadcrumbs = [{ label: '~', href: '/' }],
 } = Astro.props;
 
 const canonicalURL = new URL(Astro.url.pathname, Astro.site);
@@ -92,7 +100,14 @@ const themeDark = themeColors.dark;
 <body>
   <a href="#main-content" class="skip-link">skip to content</a>
   <div class="page-wrapper">
-    <Header />
+    <div class="site-chrome">
+      <Header />
+      <div class="breadcrumb-bar">
+        <div class="breadcrumb-bar-inner container">
+          <Breadcrumb items={breadcrumbs} />
+        </div>
+      </div>
+    </div>
     <main id="main-content" tabindex="-1">
       <slot />
     </main>
@@ -108,6 +123,24 @@ const themeDark = themeColors.dark;
     min-height: 100vh;
     position: relative;
     z-index: 1;
+  }
+
+  .site-chrome {
+    position: sticky;
+    top: 0;
+    z-index: 100;
+  }
+
+  .breadcrumb-bar {
+    min-height: 36px;
+    background: var(--color-bg-primary);
+    border-bottom: 1px solid var(--color-border);
+  }
+
+  .breadcrumb-bar-inner {
+    display: flex;
+    min-height: 36px;
+    align-items: center;
   }
   
   main {

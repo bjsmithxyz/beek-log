@@ -1,6 +1,5 @@
 ---
 import BaseLayout from '../../layouts/BaseLayout.astro';
-import Breadcrumb from '../../components/Breadcrumb.astro';
 import tripData from '../../data/trips.json';
 import { assertValidTrip } from '@beek/shared/trip-validation';
 
@@ -18,16 +17,14 @@ const jsonLd = {
   title="travel"
   description="An interactive map, timeline, and weather planner for a long journey around the world"
   jsonLd={jsonLd}
+  breadcrumbs={[
+    { label: '~/beek', href: '/' },
+    { label: 'travel', href: '/travel/' },
+  ]}
 >
   <div class="travel-page" data-travel-page>
     <div class="container">
       <header class="travel-header">
-        <Breadcrumb
-          items={[
-            { label: '~/beek', href: '/' },
-            { label: 'travel', href: '/travel/' },
-          ]}
-        />
         <h1>{tripData.meta.title}</h1>
         <p class="travel-subtitle">{tripData.meta.subtitle}</p>
         <p class="travel-nowline"><span class="travel-pulse" aria-hidden="true"></span><span id="travel-now">loading journey…</span></p>

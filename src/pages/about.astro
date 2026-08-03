@@ -4,19 +4,17 @@ import PageHeader from '../components/PageHeader.astro';
 import { socialLinks, personName } from '../data/site';
 ---
 
-<BaseLayout 
+<BaseLayout
   title="about"
   description="who?"
+  breadcrumbs={[
+    { label: '~/beek', href: '/' },
+    { label: 'about', href: '/about/' },
+  ]}
 >
   <section class="about-page">
     <div class="container">
-      <PageHeader
-        breadcrumbs={[
-          { label: '~/beek', href: '/' },
-          { label: 'about', href: '/about/' },
-        ]}
-        title="about.md"
-      />
+      <PageHeader title="about.md" />
       
       <div class="about-content">
         <div class="bio-block">
