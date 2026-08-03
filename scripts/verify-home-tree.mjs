@@ -35,9 +35,10 @@ for (const button of branches) {
   const panel = document.getElementById(button.getAttribute('aria-controls') || '');
   assert.ok(panel, 'each disclosure must control a tree panel');
   const initiallyExpanded = button.getAttribute('aria-expanded') === 'true';
-  assert.equal(initiallyExpanded, false, 'all homepage tree branches must start collapsed');
-  assert.equal(panel.dataset.collapsed, 'true');
-  assert.equal(panel.inert, true, 'collapsed descendants must leave the tab order');
+  const expectedExpanded = button.getAttribute('aria-controls') === 'tree-beek';
+  assert.equal(initiallyExpanded, expectedExpanded, 'only the top-level beek branch must start expanded');
+  assert.equal(panel.dataset.collapsed, String(!expectedExpanded));
+  assert.equal(panel.inert, !expectedExpanded, 'collapsed descendants must leave the tab order');
 
   button.click();
   assert.equal(button.getAttribute('aria-expanded'), String(!initiallyExpanded));

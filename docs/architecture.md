@@ -31,8 +31,8 @@ isolated from the public rendering boundary.
 
 The root route is a filesystem-style site index: `~` lists the single protected
 `admin/` destination first, followed by an animated, collapsible `beek/` tree.
-Only branches with children expose disclosure controls; every branch starts
-collapsed, and `work/` and `photos/` can expand into their current
+Only branches with children expose disclosure controls; `beek/` starts open,
+while `work/` and `photos/` start collapsed and can expand into their current
 Markdown-backed entries. The tree is the homepage content rather than a preface
 to duplicate recent-content listings. Public section routes share `PageHeader`
 and one page-title size token; detail
