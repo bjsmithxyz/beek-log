@@ -126,6 +126,12 @@ the admin robots policy, and the signed-out identity response plus security
 headers. GitHub Actions failures are the operational alert; do not add secrets
 to this workflow.
 
+Repository-level Dependabot vulnerability alerts and automated security fixes
+are enabled. [`.github/dependabot.yml`](../.github/dependabot.yml) also opens one
+grouped npm version-update PR and one grouped GitHub Actions update PR each
+month. These PRs receive no bypass from the normal verification and preview
+requirements.
+
 Use this recurring owner checklist for checks that cannot safely be automated:
 
 | Cadence | Check |
