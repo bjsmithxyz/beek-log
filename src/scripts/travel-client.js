@@ -107,7 +107,12 @@ function setupTravel() {
     if (!mapElement) return;
     if (map) map.remove();
     const palette = colours();
-    map = L.map(mapElement, { worldCopyJump: true, scrollWheelZoom: false }).setView([25, 40], 2);
+    map = L.map(mapElement, {
+      worldCopyJump: true,
+      scrollWheelZoom: false,
+      zoomSnap: 0.25,
+      zoomDelta: 0.5,
+    }).setView([25, 40], 2);
     tileLayer = L.tileLayer(`https://{s}.basemaps.cartocdn.com/${palette.tile}/{z}/{x}/{y}{r}.png`, {
       attribution: '© OpenStreetMap contributors © CARTO', subdomains: 'abcd', maxZoom: 19,
     }).addTo(map);
@@ -128,7 +133,7 @@ function setupTravel() {
     const fitRoute = () => {
       if (map !== renderedMap) return;
       renderedMap.invalidateSize();
-      if (travelled.length > 1) renderedMap.fitBounds(L.latLngBounds(travelled).pad(0.15));
+      if (travelled.length > 1) renderedMap.fitBounds(L.latLngBounds(travelled).pad(0.05));
       else if (trip.length) renderedMap.setView([trip[0].lat, trip[0].lon], 4);
     };
     requestAnimationFrame(fitRoute);
