@@ -2,7 +2,14 @@
 import AdminLayout from '../../layouts/AdminLayout.astro';
 import RollEditor from '../../components/RollEditor.astro';
 ---
-<AdminLayout title="new roll">
+<AdminLayout
+  title="new roll"
+  breadcrumbs={[
+    { label: '~/admin', href: '/' },
+    { label: 'rolls', href: '/rolls/' },
+    { label: 'new', href: '/rolls/new/' },
+  ]}
+>
   <RollEditor mode="create" />
 </AdminLayout>
 <script>

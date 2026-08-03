@@ -1,6 +1,5 @@
 ---
 import BaseLayout from '../layouts/BaseLayout.astro';
-import Breadcrumb from '../components/Breadcrumb.astro';
 import WorkRow from '../components/WorkRow.astro';
 import RollRow from '../components/RollRow.astro';
 import { getWorkEntries, getPhotoRolls, byDateDesc } from '../lib/collections';
@@ -9,11 +8,10 @@ const recentWork = (await getWorkEntries()).sort(byDateDesc).slice(0, 8);
 const recentRolls = (await getPhotoRolls()).sort(byDateDesc).slice(0, 5);
 ---
 
-<BaseLayout>
+<BaseLayout breadcrumbs={[{ label: '~', href: '/' }]}>
   <section class="home">
     <div class="container">
       <header class="home-header">
-        <Breadcrumb items={[{ label: '~', href: '/' }]} />
         <h1 class="home-name">beek</h1>
         <p class="home-role">tech guy & creative</p>
       </header>

@@ -1,6 +1,5 @@
 ---
 import BaseLayout from '../../layouts/BaseLayout.astro';
-import Breadcrumb from '../../components/Breadcrumb.astro';
 import FilmStrip from '../../components/FilmStrip.astro';
 import Lightbox from '../../components/Lightbox.astro';
 import { render, type CollectionEntry } from 'astro:content';
@@ -57,17 +56,15 @@ const jsonLd = {
   description={`${film.name} · ${location.name} — ${photos.length} frames`}
   image={ogImage}
   jsonLd={jsonLd}
+  breadcrumbs={[
+    { label: '~/beek', href: '/' },
+    { label: 'photos', href: '/photos/' },
+    { label: `${entry.id}.md`, href: `/photos/${entry.id}/` },
+  ]}
 >
   <article class="roll-detail">
     <div class="container">
       <header class="article-header">
-        <Breadcrumb
-          items={[
-            { label: '~/beek', href: '/' },
-            { label: 'photos', href: '/photos/' },
-            { label: `${entry.id}.md`, href: `/photos/${entry.id}/` },
-          ]}
-        />
         <span class="stock-tag" data-type={film.type}>[{film.name}]</span>
         <h1 class="title">{title}</h1>
 

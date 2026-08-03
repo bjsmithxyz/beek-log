@@ -12,8 +12,10 @@ async function documentAt(relativePath) {
 }
 
 function assertBreadcrumb(document, expected) {
-  const nav = document.querySelector('main nav[aria-label="Breadcrumb"]');
-  assert.ok(nav, 'page must contain a breadcrumb navigation landmark');
+  const bar = document.querySelector('.site-chrome > .breadcrumb-bar');
+  assert.ok(bar, 'page must place its breadcrumb bar directly below the shared header');
+  const nav = bar.querySelector('nav[aria-label="Breadcrumb"]');
+  assert.ok(nav, 'breadcrumb bar must contain a navigation landmark');
 
   const links = [...nav.querySelectorAll('a')];
   assert.deepEqual(

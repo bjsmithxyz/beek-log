@@ -1,10 +1,20 @@
 ---
 import '../styles/global.css';
+import Breadcrumb from '../components/Breadcrumb.astro';
+
+interface BreadcrumbItem {
+  label: string;
+  href: string;
+}
 
 interface Props {
   title?: string;
+  breadcrumbs?: BreadcrumbItem[];
 }
-const { title = 'admin' } = Astro.props;
+const {
+  title = 'admin',
+  breadcrumbs = [{ label: '~/admin', href: '/' }],
+} = Astro.props;
 const user = Astro.locals.user;
 const pathname = Astro.url.pathname;
 const fullTitle = title === 'admin' ? 'admin.bjsmith.xyz' : `${title} | admin.bjsmith.xyz`;
@@ -22,20 +32,27 @@ const fullTitle = title === 'admin' ? 'admin.bjsmith.xyz' : `${title} | admin.bj
   </head>
   <body>
     <div class="admin-shell">
-      <header class="admin-header">
-        <div class="admin-container admin-header-inner">
-          <a class="admin-logo" href="/"><span>[</span>beek/admin<span>]</span></a>
-          <a class="public-home" href="https://bjsmith.xyz/">← home</a>
-          {user && <span class="admin-user">{user.login}</span>}
-          {user && (
-            <nav class="admin-nav" aria-label="Admin navigation">
-              <a href="/" aria-current={pathname === '/' ? 'page' : undefined}>dashboard</a>
-              <a href="/rolls/" aria-current={pathname.startsWith('/rolls') ? 'page' : undefined}>rolls</a>
-              <a href="/travel/" aria-current={pathname.startsWith('/travel') ? 'page' : undefined}>travel</a>
-            </nav>
-          )}
+      <div class="admin-chrome">
+        <header class="admin-header">
+          <div class="admin-container admin-header-inner">
+            <a class="admin-logo" href="/"><span>[</span>beek/admin<span>]</span></a>
+            <a class="public-home" href="https://bjsmith.xyz/">← home</a>
+            {user && <span class="admin-user">{user.login}</span>}
+            {user && (
+              <nav class="admin-nav" aria-label="Admin navigation">
+                <a href="/" aria-current={pathname === '/' ? 'page' : undefined}>dashboard</a>
+                <a href="/rolls/" aria-current={pathname.startsWith('/rolls') ? 'page' : undefined}>rolls</a>
+                <a href="/travel/" aria-current={pathname.startsWith('/travel') ? 'page' : undefined}>travel</a>
+              </nav>
+            )}
+          </div>
+        </header>
+        <div class="admin-breadcrumb-bar">
+          <div class="admin-container admin-breadcrumb-inner">
+            <Breadcrumb items={breadcrumbs} />
+          </div>
         </div>
-      </header>
+      </div>
       <main class="admin-main">
         <div class="admin-container">
           <slot />
