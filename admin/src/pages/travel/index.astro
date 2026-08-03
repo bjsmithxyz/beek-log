@@ -1,5 +1,6 @@
 ---
 import AdminLayout from '../../layouts/AdminLayout.astro';
+import PageHeader from '../../components/PageHeader.astro';
 ---
 <AdminLayout
   title="travel"
@@ -8,16 +9,15 @@ import AdminLayout from '../../layouts/AdminLayout.astro';
     { label: 'travel', href: '/travel/' },
   ]}
 >
-  <header class="page-head travel-head">
-    <div>
-      <h1>travel-editor/</h1>
-      <p>Edit the committed itinerary, then review it through a pull request and public Deploy Preview.</p>
-    </div>
-    <div class="head-actions">
+  <PageHeader
+    title="travel-editor/"
+    description="Edit the committed itinerary, then review it through a pull request and public Deploy Preview."
+  >
+    <Fragment slot="actions">
       <button class="admin-button secondary" id="reload-travel" type="button">reload</button>
       <button class="admin-button" id="review-travel" type="button" disabled>review changes →</button>
-    </div>
-  </header>
+    </Fragment>
+  </PageHeader>
 
   <p class="editor-status" id="editor-status" role="status">Loading the itinerary from GitHub…</p>
   <section class="error-panel" id="editor-errors" role="alert" hidden>
@@ -91,9 +91,7 @@ import AdminLayout from '../../layouts/AdminLayout.astro';
 
 <style>
   .sr-only { position: absolute; width: 1px; height: 1px; padding: 0; margin: -1px; overflow: hidden; clip: rect(0, 0, 0, 0); white-space: nowrap; border: 0; }
-  .travel-head { display: flex; align-items: end; justify-content: space-between; gap: 1rem; }
-  .travel-head p { margin-bottom: 0; }
-  .head-actions, .review-actions { display: flex; flex-wrap: wrap; gap: .75rem; }
+  .review-actions { display: flex; flex-wrap: wrap; gap: .75rem; }
   .editor-status { min-height: 1.6rem; color: var(--text-muted); font-size: var(--font-size-sm); }
   .error-panel { margin: 1rem 0; padding: 1rem; border: 1px solid #ff6b6b; background: var(--panel); color: #ff9d9d; }
   .error-panel h2 { margin-bottom: .5rem; color: #ff6b6b; }
@@ -139,8 +137,6 @@ import AdminLayout from '../../layouts/AdminLayout.astro';
   .publication-links dd { min-width: 0; overflow-wrap: anywhere; font-size: var(--font-size-sm); }
 
   @media (max-width: 800px) {
-    .travel-head { align-items: stretch; flex-direction: column; }
-    .head-actions > * { flex: 1; }
     .meta-grid { grid-template-columns: 1fr; }
     :global(.stop-grid) { grid-template-columns: 1fr 1fr; }
     :global(.stop-grid .name-field), :global(.stop-grid .note-field) { grid-column: 1 / -1; }

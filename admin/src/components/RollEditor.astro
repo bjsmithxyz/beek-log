@@ -1,4 +1,6 @@
 ---
+import PageHeader from './PageHeader.astro';
+
 interface Props {
   mode: 'create' | 'edit';
   slug?: string;
@@ -7,22 +9,19 @@ const { mode, slug = '' } = Astro.props;
 ---
 <section id="roll-editor-root" data-mode={mode} data-slug={slug}>
   <section class="notice-panel unsupported" id="uploader-unsupported" hidden>
-    <h1>desktop uploader unavailable</h1>
+    <h1 class="page-title">desktop uploader unavailable</h1>
     <p>This browser cannot run the local image pipeline. Missing: <span id="missing-capabilities"></span>.</p>
     <p>Use a current desktop Chromium browser, or continue with the <a href="/travel/">travel editor →</a></p>
   </section>
 
   <div id="uploader-supported" hidden>
-    <header class="page-head roll-head">
-      <div>
-        <h1>{mode === 'create' ? 'new-roll/' : 'edit-roll/'}</h1>
-        <p id="roll-status" role="status">Preparing the desktop uploader…</p>
-      </div>
-      <div class="head-actions">
+    <PageHeader title={mode === 'create' ? 'new-roll/' : 'edit-roll/'}>
+      <Fragment slot="actions">
         {mode === 'edit' && <button class="danger-button" id="delete-roll" type="button" disabled>delete roll</button>}
         <button class="admin-button" id="review-roll" type="button" disabled>review changes →</button>
-      </div>
-    </header>
+      </Fragment>
+    </PageHeader>
+    <p class="roll-status" id="roll-status" role="status">Preparing the desktop uploader…</p>
 
     <section class="error-panel" id="roll-errors" role="alert" hidden>
       <h2>fix these fields</h2>
@@ -128,9 +127,8 @@ const { mode, slug = '' } = Astro.props;
 <style>
   .sr-only { position: absolute; width: 1px; height: 1px; padding: 0; margin: -1px; overflow: hidden; clip: rect(0,0,0,0); white-space: nowrap; border: 0; }
   .unsupported { border-color: var(--amber); }
-  .roll-head { display: flex; align-items: end; justify-content: space-between; gap: 1rem; }
-  .roll-head p { margin: 0; }
-  .head-actions, .actions, .frame-tools, .search-row { display: flex; flex-wrap: wrap; gap: .6rem; }
+  .roll-status { margin-bottom: var(--space-5); color: var(--color-text-muted); font-size: var(--font-size-sm); }
+  .actions, .frame-tools, .search-row { display: flex; flex-wrap: wrap; gap: .6rem; }
   .danger-button, .small-button { padding: .45rem .65rem; border: 1px solid var(--border-strong); background: var(--panel-strong); color: var(--text-soft); }
   .danger-button { color: #ff8e8e; border-color: #994444; }
   .danger-button:hover { color: var(--bg); border-color: #ff6b6b; background: #ff6b6b; }
@@ -201,8 +199,6 @@ const { mode, slug = '' } = Astro.props;
   .image-dialog img { width: 100%; height: 100%; object-fit: contain; }
 
   @media (max-width: 760px) {
-    .roll-head { align-items: stretch; flex-direction: column; }
-    .head-actions > * { flex: 1; }
     .metadata-grid { grid-template-columns: 1fr 1fr; }
     .metadata-grid .wide { grid-column: span 2; }
   }

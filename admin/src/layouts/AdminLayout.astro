@@ -1,6 +1,8 @@
 ---
 import '../styles/global.css';
 import Breadcrumb from '../components/Breadcrumb.astro';
+import Footer from '../components/Footer.astro';
+import { siteName, themeColors } from '../data/site';
 
 interface BreadcrumbItem {
   label: string;
@@ -16,37 +18,40 @@ const {
   breadcrumbs = [{ label: '~/admin', href: '/' }],
 } = Astro.props;
 const user = Astro.locals.user;
-const fullTitle = title === 'admin' ? 'admin.bjsmith.xyz' : `${title} | admin.bjsmith.xyz`;
+const fullTitle = title === 'admin' ? siteName : `${title} | ${siteName}`;
+
+const themeLight = themeColors.light;
+const themeDark = themeColors.dark;
 ---
 
 <!doctype html>
-<html lang="en">
+<html lang="en" data-theme="dark">
   <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
     <meta name="robots" content="noindex, nofollow, noarchive" />
-    <meta name="theme-color" content="#0c0c0c" />
+    <meta name="theme-color" content={themeDark} />
     <title>{fullTitle}</title>
     <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
+
+    <script is:inline define:vars={{ themeLight, themeDark }}>
+      const theme = localStorage.getItem('theme') || (matchMedia('(prefers-color-scheme: light)').matches ? 'light' : 'dark');
+      document.documentElement.setAttribute('data-theme', theme);
+      document.querySelector('meta[name="theme-color"]')?.setAttribute('content', theme === 'light' ? themeLight : themeDark);
+    </script>
   </head>
   <body>
-    <div class="admin-shell">
-      <div class="admin-chrome">
-        <header class="admin-header">
-          <div class="admin-container admin-header-inner">
-            <Breadcrumb items={breadcrumbs} />
-            <div class="admin-utilities">
-              <a class="public-home" href="https://bjsmith.xyz/">home/</a>
-              {user && <span class="admin-user">{user.login}</span>}
-            </div>
-          </div>
-        </header>
+    <a href="#main-content" class="skip-link">skip to content</a>
+    <div class="page-wrapper">
+      <div class="breadcrumb-row admin-container">
+        <Breadcrumb items={breadcrumbs} />
       </div>
-      <main class="admin-main">
+      <main class="admin-main" id="main-content" tabindex="-1">
         <div class="admin-container">
           <slot />
         </div>
       </main>
+      <Footer user={user} />
     </div>
   </body>
 </html>

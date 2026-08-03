@@ -1,0 +1,191 @@
+---
+import { publicSite } from '../data/site';
+
+interface Props {
+  user: string;
+}
+
+const { user } = Astro.props;
+---
+
+<nav class="site-tree" aria-label="Admin index">
+  <a class="tree-root" href="/" aria-current="page">~/admin</a>
+  <ul>
+    <li class="tree-row">
+      <a class="tree-main" href={publicSite}>
+        <span class="tree-prefix" aria-hidden="true">├── </span>
+        <span>beek/</span>
+      </a>
+      <span class="tree-meta">public site</span>
+    </li>
+    <li class="tree-branch" data-tree-branch>
+      <div class="tree-row">
+        <button class="tree-main tree-toggle" type="button" aria-expanded="true" aria-controls="tree-admin" data-tree-toggle>
+          <span class="tree-prefix" aria-hidden="true">└── </span>
+          <span>admin/</span>
+          <span class="tree-state" aria-hidden="true"></span>
+        </button>
+        <span class="tree-meta">{user}</span>
+      </div>
+      <div class="tree-collapse" id="tree-admin" data-tree-collapse data-collapsed="false">
+        <div class="tree-collapse-inner">
+          <ul>
+            <li class="tree-branch" data-tree-branch>
+              <div class="tree-row">
+                <button class="tree-main tree-toggle" type="button" aria-expanded="false" aria-controls="tree-rolls" data-tree-toggle>
+                  <span class="tree-prefix" aria-hidden="true">    ├── </span>
+                  <span>rolls/</span>
+                  <span class="tree-state" aria-hidden="true"></span>
+                </button>
+                <span class="tree-meta">desktop beta</span>
+              </div>
+              <div class="tree-collapse" id="tree-rolls" data-tree-collapse data-collapsed="true" inert>
+                <div class="tree-collapse-inner">
+                  <ul>
+                    <li class="tree-row">
+                      <a class="tree-main" href="/rolls/">
+                        <span class="tree-prefix" aria-hidden="true">    │   ├── </span>
+                        <span>index/</span>
+                      </a>
+                      <span class="tree-meta">committed rolls</span>
+                    </li>
+                    <li class="tree-row">
+                      <a class="tree-main" href="/rolls/new/">
+                        <span class="tree-prefix" aria-hidden="true">    │   └── </span>
+                        <span>new/</span>
+                      </a>
+                      <span class="tree-meta">import scans</span>
+                    </li>
+                  </ul>
+                </div>
+              </div>
+            </li>
+            <li class="tree-row">
+              <a class="tree-main" href="/travel/">
+                <span class="tree-prefix" aria-hidden="true">    └── </span>
+                <span>travel/</span>
+              </a>
+              <span class="tree-meta">itinerary</span>
+            </li>
+          </ul>
+        </div>
+      </div>
+    </li>
+  </ul>
+</nav>
+
+<script>
+  document.querySelectorAll<HTMLButtonElement>('[data-tree-toggle]').forEach((button) => {
+    const panel = document.getElementById(button.getAttribute('aria-controls') || '');
+    if (!(panel instanceof HTMLElement)) return;
+    panel.inert = button.getAttribute('aria-expanded') !== 'true';
+    button.addEventListener('click', () => {
+      const expanded = button.getAttribute('aria-expanded') === 'true';
+      button.setAttribute('aria-expanded', String(!expanded));
+      panel.dataset.collapsed = String(expanded);
+      panel.inert = expanded;
+    });
+  });
+</script>
+
+<style>
+  .site-tree {
+    max-width: 52rem;
+    padding: var(--space-4);
+    overflow-x: auto;
+    border: 1px solid var(--color-border);
+    background: var(--color-bg-secondary);
+    box-shadow: var(--shadow-hard);
+    font-size: var(--font-size-sm);
+    scrollbar-width: thin;
+  }
+
+  .site-tree ul {
+    list-style: none;
+  }
+
+  .tree-root,
+  .tree-row {
+    min-height: 2rem;
+  }
+
+  .tree-root {
+    display: inline-flex;
+    align-items: center;
+    color: var(--color-accent-primary);
+    font-weight: var(--font-weight-medium);
+  }
+
+  .tree-row {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr) auto;
+    min-width: 38rem;
+    align-items: center;
+  }
+
+  .tree-main {
+    display: flex;
+    width: fit-content;
+    min-width: 0;
+    align-items: center;
+    color: var(--color-text-primary);
+    font: inherit;
+    text-align: left;
+  }
+
+  button.tree-main {
+    padding: 0;
+    background: transparent;
+    border: 0;
+    cursor: pointer;
+  }
+
+  .tree-main:hover,
+  .tree-main:focus-visible {
+    color: var(--color-accent-primary);
+  }
+
+  .tree-prefix {
+    flex: none;
+    color: var(--color-text-muted);
+    white-space: pre;
+  }
+
+  .tree-state {
+    margin-left: var(--space-2);
+    color: var(--color-text-muted);
+  }
+
+  .tree-toggle[aria-expanded='true'] .tree-state::before {
+    content: '[-]';
+  }
+
+  .tree-toggle[aria-expanded='false'] .tree-state::before {
+    content: '[+]';
+  }
+
+  .tree-meta {
+    padding-left: var(--space-6);
+    color: var(--color-text-muted);
+    font-size: var(--font-size-xs);
+    text-align: right;
+    white-space: nowrap;
+  }
+
+  .tree-collapse {
+    display: grid;
+    grid-template-rows: 1fr;
+    opacity: 1;
+    transition: grid-template-rows var(--transition-slow), opacity var(--transition-base);
+  }
+
+  .tree-collapse[data-collapsed='true'] {
+    grid-template-rows: 0fr;
+    opacity: 0;
+  }
+
+  .tree-collapse-inner {
+    min-height: 0;
+    overflow: hidden;
+  }
+</style>

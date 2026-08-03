@@ -16,14 +16,17 @@
 
 Design language is terminal / file-browser brutalism: monospace, square
 corners, hard offset shadows, a faint dot grid, and a dark default theme with a
-light toggle. Tokens live in `src/styles/global.css`.
+light toggle. Tokens live in `src/styles/global.css`, and
+`admin/src/styles/global.css` mirrors that vocabulary and both palettes so the
+two surfaces stay one design system; the admin keeps its short aliases
+(`--bg`, `--panel`, `--accent`) as pointers into the shared tokens.
 
-Every page places semantic filesystem-style breadcrumb navigation in its shared
-sticky top toolbar. A feathered backdrop blur follows only the width of the
-breadcrumb text, keeping the rest of the header transparent to the grid. The
-public theme control uses the same icon treatment as the
-social links and sits at the footer's bottom-right, immediately above the
-copyright. Keeping the path in each workspace's layout gives every route the
+Every page places semantic filesystem-style breadcrumb navigation in a static
+56px row at the top of the page flow, not in sticky chrome, so nothing floats
+over the grid as the page scrolls. The theme control uses the same icon
+treatment as the social links and sits at the footer's bottom-right,
+immediately above the copyright, on both surfaces. Keeping the path in each
+workspace's layout gives every route the
 same screen position regardless of content width. The public homepage is `~`,
 public sections and files live below `~/beek`, and the admin dashboard and tools live
 below `~/admin`. Each segment maps to a real route, the current self-link uses
@@ -37,11 +40,16 @@ Only branches with children expose disclosure controls; `beek/` starts open,
 while `work/` and `photos/` start collapsed. Work entries are grouped into
 collapsed `dev/` and `art/` subsections, and photo rolls into dynamically
 generated, newest-first year subsections. The tree is the homepage content
-rather than a preface to duplicate recent-content listings. Public section
-routes share `PageHeader` and one page-title size token; detail
-headings and the isolated admin title token resolve to that same size. Admin
-typography otherwise uses the same xs/sm/base/display scale as the public site
-while retaining its isolated dark-only token names.
+rather than a preface to duplicate recent-content listings.
+
+The admin repeats that format rather than inventing its own. `~/admin` is the
+same filesystem index — `beek/` links back to the public site and a collapsible
+`admin/` branch holds `rolls/` and `travel/` — and both workspaces share the
+page shell (skip link, static breadcrumb row, `PageHeader` with one page-title
+size token, footer-owned theme toggle). The components are workspace-local
+duplicates, not imports, so the admin stays isolated from the public rendering
+boundary; `admin/test/admin-format.test.mjs` guards the two from drifting,
+including asserting the palettes are value-for-value identical.
 
 ## Project structure
 
