@@ -233,9 +233,14 @@ the primary copy before treating the backup as healthy.
 
 ## `main` pull-request ruleset
 
-Owner decision on 2026-08-03: enforce pull-request-only changes to `main`. The
-hosted admin already creates and merges pull requests, so it needs no bypass.
-Recommended GitHub repository ruleset:
+Owner decision on 2026-08-03: enforce pull-request-only changes to `main`. Active
+ruleset `main requires reviewed PR` (ID `20260621`) targets only the default
+branch with no bypass actors. It requires a PR with zero approvals, resolved
+review threads, and allows merge/squash/rebase; deletion and non-fast-forward
+updates are blocked. The hosted admin already creates and squash-merges pull
+requests, so it needs no bypass.
+
+Recreation procedure:
 
 1. Open **Settings → Rules → Rulesets → New branch ruleset**.
 2. Name it `main requires reviewed PR`; set enforcement to **Active**.
@@ -258,11 +263,9 @@ which should be documented in the incident record and reverted immediately.
 
 `travel.bjsmith.xyz` now CNAMEs to `beek-log.netlify.app` and redirects to the
 public `/travel/` route; it no longer depends on the legacy repository or
-Netlify project. Before archiving `bjsmithxyz/long-way-round`, disable its GitHub
-Pages deployment so the stale `bjsmithxyz.github.io/long-way-round/` copy is not
-left active. Then archive the repository under **Settings → General → Danger
-Zone**. The old `longwayround.netlify.app` project may be deleted after confirming
-it owns no custom domain. Post-change checks:
+Netlify project. On 2026-08-03 the owner disabled the legacy GitHub Pages site,
+archived `bjsmithxyz/long-way-round`, and deleted the old Netlify project after
+confirming it owned no custom domain. Post-change checks:
 
 ```sh
 curl -sSI https://travel.bjsmith.xyz/
@@ -270,8 +273,8 @@ curl -sSIL https://travel.bjsmith.xyz/ | grep -Ei '^(HTTP|location:)'
 curl -sS -o /dev/null -w '%{http_code}\n' https://longwayround.netlify.app/
 ```
 
-Travel must still redirect and finish at HTTP 200; the deleted default Netlify
-hostname should no longer serve the legacy app.
+Verified result: travel still redirects and finishes at HTTP 200; both the
+legacy GitHub Pages URL and deleted default Netlify hostname return HTTP 404.
 
 ## Verified baseline — 2026-08-02
 

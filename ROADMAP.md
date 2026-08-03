@@ -18,7 +18,7 @@ The implementation brief remains the detailed source of acceptance criteria:
 | 3 — travel publishing | Complete | PR #8 merged through preview; PR #9 abandoned without changing production |
 | 4 — roll publishing | Complete | PR #10 created a real roll, PR #11 edited it without re-upload, and PR #14 deleted a disposable roll |
 | 5 — retirement and operations | In progress | Localhost publisher retired; operational hardening remains |
-| 6 — image-storage migration spec | Planned, specification only | Design future object-storage migration; do not implement it here |
+| 6 — image-storage migration spec | Complete, specification only | R2-oriented migration, rollback, integrity, rendering, and storage-boundary plan documented |
 
 ## Verified production infrastructure
 
@@ -200,12 +200,12 @@ Phase 4 passed its production gate on 2026-08-03.
 - [x] Delete the retired `scripts/admin/` localhost publisher after Phase 4
   production acceptance.
 - [x] Remove the root `admin` npm script and obsolete local-admin-only code.
-- [ ] Archive `bjsmithxyz/long-way-round` and delete its old Netlify site; the
-  owner approved both after confirming the custom-domain redirect is independent.
+- [x] Archive `bjsmithxyz/long-way-round`, disable its Pages deployment, and
+  delete its old Netlify site after confirming the travel redirect is independent.
 - [x] Decide whether to enforce a GitHub ruleset requiring pull requests for
   `main`: owner approved PR-only enforcement on 2026-08-03.
-- [ ] Enable and verify the active `main` PR-only ruleset without granting the
-  admin App a bypass.
+- [x] Enable and verify the active `main` PR-only ruleset without granting the
+  admin App a bypass (ruleset ID `20260621`).
 - [x] Rewrite `docs/photography.md`, `docs/architecture.md`,
   `docs/deployment.md`, `AGENTS.md` and `README.md` to remove transition-state
   language.
@@ -220,17 +220,17 @@ Phase 4 passed its production gate on 2026-08-03.
 
 ## Phase 6 — image storage migration specification only
 
-- [ ] Write a design spec for moving roll frames to a free-egress object store
-  such as Cloudflare R2; do not implement the migration in this project.
-- [ ] Specify object keys, immutable/cache behavior, backup and lifecycle rules.
-- [ ] Define how photo Markdown references remote frames.
-- [ ] Choose replacements for `astro:assets` transformations and the Netlify
+- [x] Write a design spec for moving roll frames to Cloudflare R2 without
+  implementing the migration.
+- [x] Specify object keys, immutable/cache behavior, backup and lifecycle rules.
+- [x] Define how photo Markdown references remote frames.
+- [x] Choose replacements for `astro:assets` transformations and the Netlify
   Image CDN.
-- [ ] Evaluate history rewrite with `git filter-repo` versus stopping future
+- [x] Evaluate history rewrite with `git filter-repo` versus stopping future
   repository growth without rewriting history.
-- [ ] Define migration/rollback, integrity verification and public URL
+- [x] Define migration/rollback, integrity verification and public URL
   compatibility.
-- [ ] Show how Phase 4's `storeBytes` boundary retargets without changing the
+- [x] Show how Phase 4's `storeBytes` boundary retargets without changing the
   editor or generic publisher.
 
 ## Constraints that remain locked
