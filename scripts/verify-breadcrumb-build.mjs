@@ -68,6 +68,18 @@ for (const [relativePath, expected] of staticPages) {
   assertBreadcrumb(await documentAt(relativePath), expected);
 }
 
+const sectionTitles = [
+  ['index.html', 'index/'],
+  ['about/index.html', 'about.md'],
+  ['work/index.html', 'work/'],
+  ['photos/index.html', 'photos/'],
+  ['travel/index.html', 'travel'],
+];
+for (const [relativePath, title] of sectionTitles) {
+  const document = await documentAt(relativePath);
+  assert.equal(document.querySelector('h1.page-title')?.textContent?.trim(), title, `${relativePath} must use the shared page-title scale`);
+}
+
 const home = await documentAt('index.html');
 const siteIndex = home.querySelector('nav[aria-label="Site index"]');
 assert.ok(siteIndex, 'homepage must expose a filesystem site index');

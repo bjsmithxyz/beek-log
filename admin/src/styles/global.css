@@ -27,6 +27,7 @@
   --font-size-2xl: 1.5rem;
   --font-size-3xl: 2rem;
   --font-size-4xl: 2.5rem;
+  --font-size-page-title: var(--font-size-4xl);
   --font-weight-regular: 400;
   --font-weight-medium: 500;
   --font-weight-bold: 600;
@@ -64,7 +65,7 @@ button { cursor: pointer; }
 .admin-user { color: var(--text-muted); font-size: var(--font-size-xs); }
 .admin-main { padding: 3rem 0 6rem; }
 
-h1 { font-size: var(--font-size-4xl); font-weight: var(--font-weight-medium); line-height: 1.2; margin-bottom: .75rem; }
+h1 { font-size: var(--font-size-page-title); font-weight: var(--font-weight-medium); line-height: 1.2; margin-bottom: .75rem; }
 h2 { font-size: var(--font-size-base); font-weight: var(--font-weight-medium); }
 p { color: var(--text-soft); margin-bottom: 1rem; }
 

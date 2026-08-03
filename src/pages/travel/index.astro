@@ -1,5 +1,6 @@
 ---
 import BaseLayout from '../../layouts/BaseLayout.astro';
+import PageHeader from '../../components/PageHeader.astro';
 import tripData from '../../data/trips.json';
 import { assertValidTrip } from '@beek/shared/trip-validation';
 import { haversine } from '@beek/shared/trip-runtime';
@@ -49,11 +50,10 @@ const jsonLd = {
 >
   <div class="travel-page" data-travel-page>
     <div class="container">
-      <header class="travel-header">
-        <h1>{tripData.meta.title}</h1>
-        <p class="travel-subtitle">{tripData.meta.subtitle}</p>
+      <div class="travel-header">
+        <PageHeader title={tripData.meta.title} description={tripData.meta.subtitle} />
         <p class="travel-nowline"><span class="travel-pulse" aria-hidden="true"></span><span id="travel-now">loading journey…</span></p>
-      </header>
+      </div>
 
       <nav class="travel-tabs" role="tablist" aria-label="Travel sections">
         <button id="travel-tab-stats" type="button" role="tab" aria-selected="false" aria-controls="travel-panel-stats" tabindex="-1" data-travel-tab="stats">stats/</button>
@@ -127,16 +127,12 @@ const jsonLd = {
     padding-bottom: var(--space-4);
   }
 
-  .travel-header h1 {
-    font-size: var(--font-size-4xl);
-    font-weight: var(--font-weight-bold);
-    margin-bottom: var(--space-2);
+  .travel-header .page-header {
+    margin-bottom: var(--space-4);
   }
 
-  .travel-subtitle {
+  .travel-header .page-description {
     max-width: 46rem;
-    font-size: var(--font-size-sm);
-    margin-bottom: var(--space-4);
   }
 
   .travel-nowline {

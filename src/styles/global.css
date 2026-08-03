@@ -40,6 +40,7 @@
     --font-size-3xl: 2rem;
     --font-size-4xl: 2.5rem;
     --font-size-5xl: 3rem;
+    --font-size-page-title: var(--font-size-4xl);
 
     --line-height-tight: 1.2;
     --line-height-base: 1.6;
@@ -130,7 +131,7 @@ h1, h2, h3, h4, h5, h6 {
     color: var(--color-text-primary);
 }
 
-h1 { font-size: var(--font-size-4xl); }
+h1 { font-size: var(--font-size-page-title); }
 h2 { font-size: var(--font-size-2xl); }
 h3 { font-size: var(--font-size-xl); }
 h4 { font-size: var(--font-size-lg); }
@@ -218,7 +219,7 @@ img {
 }
 
 .page-title {
-    font-size: var(--font-size-4xl);
+    font-size: var(--font-size-page-title);
     font-weight: var(--font-weight-bold);
     margin-bottom: var(--space-2);
 }
@@ -329,7 +330,7 @@ img {
 }
 
 .article-header .title {
-    font-size: var(--font-size-3xl);
+    font-size: var(--font-size-page-title);
     font-weight: var(--font-weight-bold);
     margin-bottom: var(--space-3);
 }
