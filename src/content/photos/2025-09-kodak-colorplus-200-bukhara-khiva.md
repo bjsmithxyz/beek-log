@@ -197,14 +197,6 @@ photos:
         lng: 63.9528098
   - src: ../../assets/photos/2025-09-kodak-colorplus-200-bukhara-khiva/033.jpg
     alt: ""
-    location:
-      name: Khiva
-      lat: 41.3775101
-      lng: 60.3634553
-      region:
-        name: Uzbekistan
-        lat: 41.32373
-        lng: 63.9528098
 ---
 
 
