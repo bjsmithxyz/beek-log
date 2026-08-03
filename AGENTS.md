@@ -26,6 +26,8 @@ Public site:
 - `npm test`
 - `npm run build` → `./dist/`
 - `npm run test:travel-clock` after a build verifies browser-derived travel dates
+- `npm run verify` runs the required tests, public build/clock guard, and admin build
+- `npm run test:live` runs credential-free production DNS/HTTP/security checks
 
 Admin workspace:
 

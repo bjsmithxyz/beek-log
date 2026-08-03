@@ -118,6 +118,33 @@ HSTS. `auth-me` should be HTTP 401 while signed out.
 
 ## Routine verification
 
+The credential-free portion runs every Monday in
+[`.github/workflows/production-smoke.yml`](../.github/workflows/production-smoke.yml)
+and can also be dispatched manually with `npm run test:live`. It checks both
+CNAMEs, representative public routes, the path/query-preserving travel redirect,
+the admin robots policy, and the signed-out identity response plus security
+headers. GitHub Actions failures are the operational alert; do not add secrets
+to this workflow.
+
+Repository-level Dependabot vulnerability alerts and automated security fixes
+are enabled. [`.github/dependabot.yml`](../.github/dependabot.yml) also opens one
+grouped npm version-update PR and one grouped GitHub Actions update PR each
+month. These PRs receive no bypass from the normal verification and preview
+requirements.
+
+Use this recurring owner checklist for checks that cannot safely be automated:
+
+| Cadence | Check |
+| --- | --- |
+| Monthly | Review grouped Dependabot PRs and the latest production-smoke run; merge dependency updates only after the required verification check and previews pass |
+| Quarterly | Complete owner login/deep-link/logout checks, inspect the GitHub App installation and `main` ruleset, and exercise a disposable publish → preview → abandon flow |
+| Every six months | Restore and compare a sample full-resolution scan from the off-site backup; review GitHub sessions, authorized Apps, Netlify environment access, DNS, and TLS |
+| Annually or after suspected exposure | Exercise the session/client-secret rotation runbooks, then complete a fresh login and disposable abandon test |
+| After publishing or infrastructure changes | Run the relevant checks below immediately rather than waiting for the next interval |
+
+The equivalent manual credential-free commands remain useful during incident
+response:
+
 ```sh
 # DNS
 dig +short CNAME admin.bjsmith.xyz
@@ -236,9 +263,11 @@ the primary copy before treating the backup as healthy.
 Owner decision on 2026-08-03: enforce pull-request-only changes to `main`. Active
 ruleset `main requires reviewed PR` (ID `20260621`) targets only the default
 branch with no bypass actors. It requires a PR with zero approvals, resolved
-review threads, and allows merge/squash/rebase; deletion and non-fast-forward
-updates are blocked. The hosted admin already creates and squash-merges pull
-requests, so it needs no bypass.
+review threads, and the `Project verification` GitHub Actions check; it allows
+merge/squash/rebase while blocking deletion and non-fast-forward updates. The
+hosted admin already creates and squash-merges pull requests, so it needs no
+bypass. Its public-preview readiness check remains separate from the repository
+verification check.
 
 Recreation procedure:
 
@@ -249,11 +278,15 @@ Recreation procedure:
    approvals for this single-owner repository. Keep conversation resolution
    required if GitHub offers it without blocking comment-free PRs.
 5. Block force pushes and branch deletion.
-6. Do not add the GitHub App or owner to a bypass list. Do not require a named
-   Netlify status check yet; preview readiness is revalidated by the admin merge
-   endpoint and Netlify check names can change.
-7. Save, then verify a direct push to `main` is rejected and a disposable
-   admin-created PR can still merge after its preview is ready.
+6. Add the GitHub Actions status check named `Project verification` as a
+   required status check. Keep strict status-check policy disabled so a branch
+   is not required to be current with unrelated `main` changes.
+7. Do not add the GitHub App or owner to a bypass list. Do not require a named
+   Netlify status check; preview readiness is separately revalidated by the
+   admin merge endpoint and Netlify check names can change.
+8. Save, then verify a direct push to `main` is rejected and a disposable
+   admin-created PR can still merge only after both `Project verification` and
+   its Deploy Preview are ready.
 
 Once enabled, repository maintenance outside the hosted admin must also use a
 branch and PR. Emergency bypass requires a deliberate temporary ruleset change,

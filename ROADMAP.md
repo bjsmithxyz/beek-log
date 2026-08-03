@@ -20,6 +20,14 @@ The implementation brief remains the detailed source of acceptance criteria:
 | 5 — retirement and operations | Complete | Local publisher retired; recovery, backups, legacy cleanup, PR ruleset, accessibility and live checks complete |
 | 6 — image-storage migration spec | Complete, specification only | R2-oriented migration, rollback, integrity, rendering, and storage-boundary plan documented |
 
+Ongoing maintenance uses the required `Project verification` GitHub Actions
+check, grouped monthly dependency updates, and weekly credential-free production
+smoke checks. Authenticated publishing, owner-account, backup, and secret-rotation
+checks remain owner-operated on the cadence in
+[`docs/admin-operations.md`](docs/admin-operations.md). The R2 specification now
+records the current 235 MiB photo / 313 MiB local Git baseline and explicit
+implementation triggers; no migration has begun.
+
 ## Verified production infrastructure
 
 - Public site: `https://bjsmith.xyz` (`beek-log.netlify.app`)
