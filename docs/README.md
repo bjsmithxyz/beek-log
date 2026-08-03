@@ -9,7 +9,7 @@ is the high-level overview; the detail lives here.
 | :--- | :--- |
 | [architecture.md](architecture.md) | Tech stack, project structure, content collections, the photos data model and map |
 | [development.md](development.md) | Local setup, authoring content, commands, tests |
-| [photography.md](photography.md) | The `/photos` section and the dev-only roll-import admin (`npm run admin`) |
+| [photography.md](photography.md) | The `/photos` section and hosted roll-publishing workflow |
 | [images-and-assets.md](images-and-assets.md) | Image compression, the Netlify Image CDN, and the asset-generation scripts |
 | [deployment.md](deployment.md) | Netlify build/deploy, security headers, caching, and gotchas |
 | [admin-infrastructure-setup.md](admin-infrastructure-setup.md) | Recreation checklist for Netlify, DNS, GitHub App OAuth, and live verification |

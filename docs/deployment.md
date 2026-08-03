@@ -73,8 +73,8 @@ reporting-only: scores do not block releases. Audits cover the homepage, an imag
   `404.html` for unmatched routes automatically, and the explicit rule breaks
   dev-server routing under the Netlify adapter (it makes `astro dev` 404 any
   route not present in the last `dist` build).
-- The roll-import admin (`scripts/admin/`) is intentionally **not** part of the
-  Astro build, so it never reaches `dist/` and never deploys.
+- Do not restore the retired localhost publisher or any direct-to-`main`
+  authoring path; hosted mutations must pass through a reviewed PR.
 
 ## Upgrades
 

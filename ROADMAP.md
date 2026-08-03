@@ -16,8 +16,8 @@ The implementation brief remains the detailed source of acceptance criteria:
 | 1 — public travel route | Complete | Static `/travel/` live; legacy subdomain redirects with path/query preservation |
 | 2 — admin shell and authentication | Complete | SSR admin live with GitHub App OAuth, owner allow-list, sealed sessions and public header link |
 | 3 — travel publishing | Complete | PR #8 merged through preview; PR #9 abandoned without changing production |
-| 4 — roll publishing | In progress | PR #10 published the first real roll; edit and disposable-delete acceptance remain |
-| 5 — retirement and operations | Planned | Remove localhost publisher only after a real hosted roll succeeds |
+| 4 — roll publishing | Complete | PR #10 created a real roll, PR #11 edited it without re-upload, and PR #14 deleted a disposable roll |
+| 5 — retirement and operations | In progress | Localhost publisher retired; operational hardening remains |
 | 6 — image-storage migration spec | Planned, specification only | Design future object-storage migration; do not implement it here |
 
 ## Verified production infrastructure
@@ -185,26 +185,26 @@ Do not begin Phase 4 until this gate is recorded as complete.
   all 33 JPEGs are sequential, valid, and capped at a 2048px long edge.
 - [x] Edit that roll, including frame order/location changes, through preview
   (PR #11); all 33 existing image blobs were reused without re-encoding.
-- [ ] Exercise deletion on a disposable test roll through preview.
+- [x] Exercise deletion on a disposable test roll through preview (PR #12
+  created it; canceled PR #13 exposed a preview-skip edge case; PR #14 deleted it).
 - [x] Verify failure during encode/upload/publish leaves `main` untouched; the
   initial Netlify handler failures created neither a branch nor a PR.
 - [x] Verify unsupported capability messaging and desktop directory-input
   fallback in production.
 - [x] Public and admin tests/builds pass (113 full-suite tests after PR #10).
 
-Do not delete the localhost publisher before the real-roll acceptance test.
+Phase 4 passed its production gate on 2026-08-03.
 
 ## Phase 5 — retirement, hardening and complete operations
 
-- [ ] Delete `scripts/admin/server.mjs` and `scripts/admin/publish.mjs` only after
-  Phase 4 production acceptance.
-- [ ] Remove the root `admin` npm script and obsolete local-admin-only code and
-  dependencies.
+- [x] Delete the retired `scripts/admin/` localhost publisher after Phase 4
+  production acceptance.
+- [x] Remove the root `admin` npm script and obsolete local-admin-only code.
 - [ ] Archive `bjsmithxyz/long-way-round`; retain or remove its old Netlify site
   only after confirming the custom-domain redirect no longer depends on it.
 - [ ] Decide whether to enforce a GitHub ruleset requiring pull requests for
   `main`; document the owner decision.
-- [ ] Rewrite `docs/photography.md`, `docs/architecture.md`,
+- [x] Rewrite `docs/photography.md`, `docs/architecture.md`,
   `docs/deployment.md`, `AGENTS.md` and `README.md` to remove transition-state
   language.
 - [ ] Expand the operations runbook with GitHub App recreation, client/session
@@ -240,7 +240,7 @@ Do not delete the localhost publisher before the real-roll acceptance test.
   of browser validation.
 - Draft photos render in local development and public Deploy Previews, never in
   production.
-- `scripts/admin/` remains until a real hosted roll has been published.
+- The retired localhost direct-to-`main` publisher must not be restored.
 - Node is at least 22.18; npm and `package-lock.json` remain authoritative.
 - New pure logic receives unit tests; public and admin tests/builds are the
   phase gate.

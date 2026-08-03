@@ -23,7 +23,7 @@ light toggle. Tokens live in `src/styles/global.css`.
 ```text
 /
 ├── public/          # Static assets (favicons, robots.txt, og-image)
-├── scripts/         # Maintenance + the roll-import admin (see photography.md)
+├── scripts/         # Build, image-maintenance, and verification utilities
 ├── shared/          # Pure authoring rules used by public + admin tooling
 ├── admin/           # Astro SSR admin + Netlify Functions
 ├── docs/            # This documentation

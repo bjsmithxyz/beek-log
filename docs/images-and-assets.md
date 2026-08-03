@@ -33,5 +33,4 @@ Sharp.
 ## Favicons
 
 - `public/favicon.svg` / `public/favicon.ico` — the site favicon.
-- `scripts/admin/favicon.svg` — a distinct camera icon for the roll-admin tab,
-  served by the admin server only.
+- `admin/public/favicon.svg` — the distinct camera icon for the hosted admin.

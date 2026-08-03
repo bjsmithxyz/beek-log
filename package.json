@@ -15,7 +15,6 @@
     "build": "astro build && node scripts/verify-travel-build.mjs",
     "preview": "astro preview",
     "astro": "astro",
-    "admin": "node --disable-warning=ExperimentalWarning scripts/admin/server.mjs",
     "test": "node --test",
     "test:travel-clock": "node scripts/verify-travel-clock.mjs"
   },

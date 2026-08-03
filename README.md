@@ -22,7 +22,7 @@ Detailed, technical docs live in [docs/](docs/README.md):
 
 - [Architecture](docs/architecture.md) — stack, project structure, content collections, the photos map
 - [Development](docs/development.md) — local setup, authoring content, commands, tests
-- [Photography](docs/photography.md) — the `/photos` section and the roll-import admin (`npm run admin`)
+- [Photography](docs/photography.md) — the `/photos` section and hosted roll-publishing workflow
 - [Images & assets](docs/images-and-assets.md) — image compression, the Netlify Image CDN, asset generators
 - [Deployment](docs/deployment.md) — Netlify, security headers, caching, gotchas
 

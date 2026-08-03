@@ -255,4 +255,15 @@ paths. The before/after image-blob multisets were identical, proving the editor
 reused every existing image without uploading or re-encoding it. The publishing
 branch was deleted after merge.
 
-Phase 4 remains open only until a merged disposable-roll deletion is accepted.
+PR [#12](https://github.com/bjsmithxyz/beek-log/pull/12) created a one-frame
+draft disposable roll. PR #13 correctly planned deletion of only its Markdown
+and JPEG, but Netlify canceled the preview because its cached-commit comparison
+matched the resulting source tree. It was abandoned without merge. The public
+build-ignore rule now always builds pull requests, with a regression test.
+PR [#14](https://github.com/bjsmithxyz/beek-log/pull/14) then produced a working
+deletion preview: `/photos/` returned 200 without the marker and the deleted roll
+returned 404. It merged as `920fb5d9124849d63e9fff25a57e76c802f1b4ba`,
+removed both files, and deleted its branch.
+
+These checks complete Phase 4. The localhost direct-to-`main` publisher was
+retired only after this production acceptance.

@@ -32,8 +32,8 @@ liveUrl: "https://example.com"
 ---
 ```
 
-Film rolls are **not** authored by hand — use the roll-import admin documented
-in [photography.md](photography.md).
+Film rolls are **not** authored by hand — use the authenticated hosted admin
+documented in [photography.md](photography.md).
 
 The public travel itinerary lives in `src/data/trips.json`. Its shared validator
 runs under `npm test` and the public build fails if the committed data is
@@ -49,7 +49,6 @@ direct-to-main save endpoint.
 | `npm run build` | Build the production site to `./dist/` |
 | `npm run preview` | Preview the production build locally |
 | `npm run astro ...` | Run Astro CLI commands |
-| `npm run admin` | Legacy localhost roll admin at `127.0.0.1:4322` |
 | `npm test` | Run the full workspace-aware unit suite |
 | `npm run dev --workspace @beek/admin` | Admin SSR dev server |
 | `npm test --workspace @beek/admin` | Admin-focused tests |
@@ -63,13 +62,10 @@ files. Coverage focuses on the pure logic behind the roll admin and the map:
 
 - `shared/*.test.mjs` — folder-name parsing, slug derivation, roll-Markdown
   round-trips, location helpers, constants, and trip validation.
-- `scripts/admin/lib.test.mjs` / `publish.test.mjs` — localhost guards, frame
-  processing, and the temp-dir rebuild used when reordering/adding/removing
-  frames.
 - `src/data/locations.test.mjs` — `effectiveLocations` de-duplication.
 - `admin/test/` — redirect validation, session sealing/refresh, request-guard
-  order, generic Git tree/PR publishing, travel schema/state logic, and a JSDOM
-  browser-editor regression.
+  order, generic Git tree/PR publishing, roll create/edit/delete planning,
+  travel schema/state logic, image boundaries, and browser-editor regressions.
 
 Astro pages are also verified by building both workspaces. `astro dev` renders
 the admin SSR shell but does not emulate the production custom Netlify

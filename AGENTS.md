@@ -10,8 +10,8 @@ shared package:
 - `shared/` → authoring rules imported by both
 
 Content remains file-based under `src/content/` and `src/data/`; there is no
-database. The legacy localhost roll tool remains under `scripts/admin/` until
-the hosted uploader publishes a real roll end to end.
+database. Film rolls and travel data are authored through the hosted admin and
+published only through reviewed pull requests.
 
 ### Node version
 
@@ -35,5 +35,5 @@ Admin workspace:
 
 The admin needs the variables listed in `admin/.env.example` for live OAuth.
 Neither site has lint or `astro check`; tests plus builds are the verification
-gate. The local `npm run admin` workflow still needs `gh`, Sharp and filesystem
-access until Phase 5 retirement.
+gate. The retired localhost roll publisher and its direct-to-main workflow must
+not be restored.
