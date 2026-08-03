@@ -29,7 +29,7 @@ const rollTreeItems = allRolls.map((entry) => ({
 
       <SiteTree workItems={workTreeItems} rollItems={rollTreeItems} />
 
-      <div class="recent-content" id="recent">
+      <div class="recent-content">
         {recentRolls.length > 0 && (
           <section class="recent" aria-labelledby="rolls-heading">
             <div class="dir-header">
@@ -69,7 +69,6 @@ const rollTreeItems = allRolls.map((entry) => ({
 
   .recent-content {
     margin-top: var(--space-10);
-    scroll-margin-top: 72px;
   }
 
   .recent + .recent {

@@ -19,6 +19,13 @@
   status = 301
   force = true
 
+# Preserve the retired travel project's work-post permalink after reframing
+# the entry around this site as a whole.
+[[redirects]]
+  from = "/work/the-long-way-round/"
+  to = "/work/bjsmith-xyz/"
+  status = 301
+
 # Redirects and headers
 [[headers]]
   for = "/*"

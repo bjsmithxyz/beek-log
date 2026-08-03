@@ -85,9 +85,10 @@ const siteIndex = home.querySelector('nav[aria-label="Site index"]');
 assert.ok(siteIndex, 'homepage must expose a filesystem site index');
 const siteIndexLinks = [...siteIndex.querySelectorAll('a')];
 const siteIndexHrefs = siteIndexLinks.map((link) => link.getAttribute('href'));
-for (const href of ['/', '#recent', '/work/', '/photos/', '/travel/', '/about/']) {
+for (const href of ['/', '/work/', '/photos/', '/travel/', '/about/']) {
   assert.ok(siteIndexHrefs.includes(href), `homepage file tree must link to ${href}`);
 }
+assert.ok(!siteIndexHrefs.includes('#recent'), 'homepage tree must not duplicate the recent-content section');
 assert.deepEqual(
   siteIndexHrefs.filter((href) => href?.startsWith('https://admin.bjsmith.xyz')),
   ['https://admin.bjsmith.xyz/'],
@@ -115,5 +116,10 @@ for (const section of ['work', 'photos']) {
     { label: `${slug}.md`, href: `/${section}/${slug}/` },
   ]);
 }
+
+const sitePost = await documentAt('work/bjsmith-xyz/index.html');
+assert.equal(sitePost.querySelector('h1')?.textContent?.trim(), 'bjsmith.xyz');
+assert.match(sitePost.querySelector('.prose')?.textContent || '', /standalone Long Way Round travel project has been retired/);
+assert.equal(sitePost.querySelector('a[href="/travel/"]')?.textContent?.trim(), 'travel/');
 
 console.log('breadcrumb build guard: ok');
