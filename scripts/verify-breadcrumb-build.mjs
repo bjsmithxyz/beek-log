@@ -14,6 +14,7 @@ async function documentAt(relativePath) {
 function assertBreadcrumb(document, expected) {
   const nav = document.querySelector('.site-chrome > header nav[aria-label="Breadcrumb"]');
   assert.ok(nav, 'page must place its breadcrumb in the shared top toolbar');
+  assert.ok(nav.querySelector('.breadcrumb-backdrop[aria-hidden="true"]'), 'breadcrumb text must have a dedicated positive-layer blur surface');
 
   const links = [...nav.querySelectorAll('a')];
   assert.deepEqual(
