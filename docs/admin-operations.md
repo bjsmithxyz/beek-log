@@ -247,5 +247,12 @@ sequential JPEGs. Independent checks confirmed:
   not change `main`
 - the full suite passes 113 tests and the production public build succeeds
 
-Phase 4 remains open until an edit with frame-order/location changes and a
-merged disposable-roll deletion are accepted.
+PR [#11](https://github.com/bjsmithxyz/beek-log/pull/11) then updated that roll
+through a reviewed Deploy Preview and merged as
+`15c3a187093a83873ea17200f33f613551273719`. It moved the former frame 16 to
+frame 33 and changed its inherited location while preserving 33 sequential
+paths. The before/after image-blob multisets were identical, proving the editor
+reused every existing image without uploading or re-encoding it. The publishing
+branch was deleted after merge.
+
+Phase 4 remains open only until a merged disposable-roll deletion is accepted.

@@ -183,7 +183,8 @@ Do not begin Phase 4 until this gate is recorded as complete.
 - [x] Review its Deploy Preview and merge it from the admin.
 - [x] Compare resulting paths, Markdown and numbering with localhost output;
   all 33 JPEGs are sequential, valid, and capped at a 2048px long edge.
-- [ ] Edit that roll, including frame order/location changes, through preview.
+- [x] Edit that roll, including frame order/location changes, through preview
+  (PR #11); all 33 existing image blobs were reused without re-encoding.
 - [ ] Exercise deletion on a disposable test roll through preview.
 - [x] Verify failure during encode/upload/publish leaves `main` untouched; the
   initial Netlify handler failures created neither a branch nor a PR.
