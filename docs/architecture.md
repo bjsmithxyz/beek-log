@@ -19,10 +19,11 @@ corners, hard offset shadows, a faint dot grid, and a dark default theme with a
 light toggle. Tokens live in `src/styles/global.css`.
 
 Every page places semantic filesystem-style breadcrumb navigation in its shared
-sticky top toolbar, beside the right-aligned theme control on the public site.
-Keeping the path in each workspace's layout gives every route the same screen
-position regardless of content width. The public homepage is `~`, public
-sections and files live below `~/beek`, and the admin dashboard and tools live
+sticky top toolbar. The public theme control uses the same icon treatment as the
+social links and sits at the footer's bottom-right, immediately above the
+copyright. Keeping the path in each workspace's layout gives every route the
+same screen position regardless of content width. The public homepage is `~`,
+public sections and files live below `~/beek`, and the admin dashboard and tools live
 below `~/admin`. Each segment maps to a real route, the current self-link uses
 `aria-current="page"`, and long paths scroll horizontally on narrow screens.
 Public and admin use workspace-local Astro components so the admin remains

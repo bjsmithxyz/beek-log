@@ -6,18 +6,28 @@ import { JSDOM } from 'jsdom';
 const html = await readFile(new URL('../dist/index.html', import.meta.url), 'utf8');
 const dom = new JSDOM(html, { url: 'https://bjsmith.xyz/' });
 const { window } = dom;
-for (const name of ['window', 'document', 'HTMLElement', 'Event']) {
+for (const name of ['window', 'document', 'HTMLElement', 'Event', 'localStorage']) {
   Object.defineProperty(globalThis, name, {
     value: window[name], configurable: true, writable: true,
   });
 }
 
-const controller = [...document.querySelectorAll('script[type="module"]')]
-  .map((script) => script.textContent || '')
-  .find((source) => source.includes('data-tree-toggle'));
-assert.ok(controller, 'built homepage tree controller not found');
-await import(`data:text/javascript;base64,${Buffer.from(controller).toString('base64')}`);
+const moduleSources = [...document.querySelectorAll('script[type="module"]')]
+  .map((script) => script.textContent || '');
+const treeController = moduleSources.find((source) => source.includes('data-tree-toggle'));
+const themeController = moduleSources.find((source) => source.includes('theme-toggle'));
+assert.ok(treeController, 'built homepage tree controller not found');
+assert.ok(themeController, 'built footer theme controller not found');
+await import(`data:text/javascript;base64,${Buffer.from(treeController).toString('base64')}`);
+await import(`data:text/javascript;base64,${Buffer.from(themeController).toString('base64')}`);
 document.dispatchEvent(new window.Event('astro:page-load'));
+
+const themeToggle = document.getElementById('theme-toggle');
+assert.equal(document.documentElement.getAttribute('data-theme'), 'dark');
+assert.equal(themeToggle?.getAttribute('aria-label'), 'Switch to light mode');
+themeToggle?.click();
+assert.equal(document.documentElement.getAttribute('data-theme'), 'light');
+assert.equal(themeToggle?.getAttribute('aria-label'), 'Switch to dark mode');
 
 const branches = [...document.querySelectorAll('[data-tree-toggle]')];
 assert.equal(branches.length, 3, 'beek, work, and photos must be collapsible');
