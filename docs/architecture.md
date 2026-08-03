@@ -152,8 +152,8 @@ count and past/current/upcoming status — are deliberately computed by the
 browser on every load, so they cannot freeze at the last deployment date. Four
 keyboard-operable tabs show only stats, route, road-ahead, or the complete
 chronological timeline. Leaflet is recreated after the route panel becomes
-visible so it always receives real dimensions; only this route's CSP permits
-CARTO tile images and Open-Meteo weather requests. Route stop controls link to
+visible so it always receives real dimensions; the site-wide CSP permits the
+CARTO tile images and Open-Meteo weather requests this route needs. Route stop controls link to
 photo rolls whose effective shoot locations match by normalized place name or
 an 80 km proximity threshold.
 

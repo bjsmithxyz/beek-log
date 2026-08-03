@@ -1,12 +1,16 @@
 import { test } from 'node:test';
 import assert from 'node:assert/strict';
 import currentTrip from '../src/data/trips.json' with { type: 'json' };
-import { computeTrip, daysBetween, haversine, statusOf, todayIso } from './trip-runtime.mjs';
+import { computeTrip, daysBetween, haversine, isoDate, statusOf } from './trip-runtime.mjs';
 
 const stop = { name: 'Bangkok', arrive: '2025-06-20', depart: '2025-06-23', lat: 13.7563, lon: 100.5018 };
 
-test('todayIso uses the caller local calendar date', () => {
-  assert.equal(todayIso(new Date(2026, 7, 2, 23, 30)), '2026-08-02');
+test('isoDate uses the caller local calendar date', () => {
+  assert.equal(isoDate(new Date(2026, 7, 2, 23, 30)), '2026-08-02');
+});
+
+test('isoDate formats an arbitrary date, not only today', () => {
+  assert.equal(isoDate(new Date(2024, 0, 5)), '2024-01-05');
 });
 
 test('status is future before arrival, current until departure, then past', () => {

@@ -1,5 +1,6 @@
 import L from 'leaflet';
 import 'leaflet/dist/leaflet.css';
+import { escapeHtml } from '@beek/shared/escape-html';
 import { filmStocks } from '@beek/shared/film-stocks';
 import { parseFolderName } from '@beek/shared/folder-name';
 import { fillForward, knownLocations } from '@beek/shared/loc-utils';
@@ -63,11 +64,6 @@ const fields = {
   draft: document.getElementById('roll-draft'),
   body: document.getElementById('roll-body'),
 };
-
-function escapeHtml(value) {
-  return String(value ?? '').replaceAll('&', '&amp;').replaceAll('<', '&lt;')
-    .replaceAll('>', '&gt;').replaceAll('"', '&quot;').replaceAll("'", '&#039;');
-}
 
 async function api(url, options = {}) {
   const response = await fetch(url, { credentials: 'same-origin', ...options });

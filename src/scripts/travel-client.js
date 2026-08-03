@@ -6,9 +6,10 @@ import {
   continentOf,
   daysBetween,
   haversine,
+  isoDate,
   parseLocalDate,
-  todayIso,
 } from '@beek/shared/trip-runtime';
+import { escapeHtml } from '@beek/shared/escape-html';
 
 let cleanup = null;
 
@@ -16,14 +17,10 @@ const flag = (code) => String(code || '')
   .toUpperCase()
   .replace(/[^A-Z]/g, '')
   .replace(/./g, (character) => String.fromCodePoint(127397 + character.charCodeAt(0)));
-const escapeHtml = (value) => String(value ?? '').replace(/[&<>"]/g, (character) => ({
-  '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;',
-}[character]));
 const formatDate = (value) => parseLocalDate(value).toLocaleDateString('en-US', { month: 'short', day: 'numeric' });
 const formatDateYear = (value) => parseLocalDate(value).toLocaleDateString('en-US', {
   month: 'short', day: 'numeric', year: 'numeric',
 });
-const formatIsoDate = (date) => `${date.getFullYear()}-${String(date.getMonth() + 1).padStart(2, '0')}-${String(date.getDate()).padStart(2, '0')}`;
 
 function setupTravel() {
   cleanup?.();
@@ -41,11 +38,10 @@ function setupTravel() {
     photoLinks = {};
   }
   const now = new Date();
-  const today = todayIso(now);
+  const today = isoDate(now);
   const trip = computeTrip(tripData.stops, now);
   const abortController = new AbortController();
   let map = null;
-  let tileLayer = null;
   let pastLayer = null;
   let futureLayer = null;
   let pastMarkers = null;
@@ -113,7 +109,7 @@ function setupTravel() {
       zoomSnap: 0.25,
       zoomDelta: 0.5,
     }).setView([25, 40], 2);
-    tileLayer = L.tileLayer(`https://{s}.basemaps.cartocdn.com/${palette.tile}/{z}/{x}/{y}{r}.png`, {
+    L.tileLayer(`https://{s}.basemaps.cartocdn.com/${palette.tile}/{z}/{x}/{y}{r}.png`, {
       attribution: '© OpenStreetMap contributors © CARTO', subdomains: 'abcd', maxZoom: 19,
     }).addTo(map);
 
@@ -251,8 +247,8 @@ function setupTravel() {
     const url = new URL('https://archive-api.open-meteo.com/v1/archive');
     url.searchParams.set('latitude', stop.lat);
     url.searchParams.set('longitude', stop.lon);
-    url.searchParams.set('start_date', formatIsoDate(start));
-    url.searchParams.set('end_date', formatIsoDate(end));
+    url.searchParams.set('start_date', isoDate(start));
+    url.searchParams.set('end_date', isoDate(end));
     url.searchParams.set('daily', 'temperature_2m_max,temperature_2m_min,precipitation_sum,daylight_duration');
     url.searchParams.set('timezone', 'auto');
     const response = await fetch(url, { signal: abortController.signal });

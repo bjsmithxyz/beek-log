@@ -1,9 +1,11 @@
 // Date and distance derivation for the travel page. Nothing here runs at build
 // time; callers supply the browser's current Date on each page load.
-export const DAY_MS = 86_400_000;
+const DAY_MS = 86_400_000;
 
-export function todayIso(now = new Date()) {
-  return `${now.getFullYear()}-${String(now.getMonth() + 1).padStart(2, '0')}-${String(now.getDate()).padStart(2, '0')}`;
+// Local-calendar ISO date. Defaults to today; callers also pass arbitrary dates
+// (e.g. the climate lookup's same-window-last-year range).
+export function isoDate(date = new Date()) {
+  return `${date.getFullYear()}-${String(date.getMonth() + 1).padStart(2, '0')}-${String(date.getDate()).padStart(2, '0')}`;
 }
 
 export function parseLocalDate(value) {
@@ -20,7 +22,7 @@ export function daysBetween(start, end) {
 }
 
 export function statusOf(stop, now = new Date()) {
-  const today = todayIso(now);
+  const today = isoDate(now);
   if (today < stop.arrive) return 'future';
   if (today < stop.depart) return 'current';
   return 'past';

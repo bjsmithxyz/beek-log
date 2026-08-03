@@ -1,3 +1,4 @@
+import { escapeHtml } from '@beek/shared/escape-html';
 import { validateTrip } from '@beek/shared/trip-validation';
 import {
   addStop,
@@ -41,15 +42,6 @@ let publication = restorePublication();
 let pendingRequestId = null;
 let pollTimer = null;
 let pollAttempts = 0;
-
-function escapeHtml(value) {
-  return String(value ?? '')
-    .replaceAll('&', '&amp;')
-    .replaceAll('<', '&lt;')
-    .replaceAll('>', '&gt;')
-    .replaceAll('"', '&quot;')
-    .replaceAll("'", '&#039;');
-}
 
 function restorePublication() {
   try {

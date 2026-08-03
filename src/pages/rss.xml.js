@@ -1,6 +1,7 @@
 import rss from '@astrojs/rss';
 import { getFilmStock } from '@beek/shared/film-stocks';
 import { getWorkEntries, getPhotoRolls } from '../lib/collections';
+import { siteDescription, siteName } from '../data/site';
 
 export async function GET(context) {
   const work = await getWorkEntries();
@@ -22,8 +23,8 @@ export async function GET(context) {
   ].sort((a, b) => b.pubDate - a.pubDate);
 
   return rss({
-    title: 'bjsmith.xyz',
-    description: 'Portfolio of beek - tech guy & creative',
+    title: siteName,
+    description: siteDescription,
     site: context.site,
     items,
   });

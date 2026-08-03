@@ -206,10 +206,7 @@ img {
     outline: none;
 }
 
-.text-muted { color: var(--color-text-muted); }
-.text-secondary { color: var(--color-text-secondary); }
-
-/* Category tag colours */
+/* Category tag colours — applied dynamically as `tag-${category}` */
 .tag-dev { color: var(--color-accent-tertiary); }
 .tag-art { color: var(--color-accent-secondary); }
 .tag-photography { color: var(--color-accent-primary); }
