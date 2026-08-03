@@ -1,6 +1,6 @@
 # Unified site and admin roadmap
 
-Last updated: 2026-08-02
+Last updated: 2026-08-03
 
 This is the operational development roadmap for consolidating the public site,
 travel app and publishing tools. The approved architecture is in
@@ -16,7 +16,7 @@ The implementation brief remains the detailed source of acceptance criteria:
 | 1 — public travel route | Complete | Static `/travel/` live; legacy subdomain redirects with path/query preservation |
 | 2 — admin shell and authentication | Complete | SSR admin live with GitHub App OAuth, owner allow-list, sealed sessions and public header link |
 | 3 — travel publishing | Complete | PR #8 merged through preview; PR #9 abandoned without changing production |
-| 4 — roll publishing | In progress | Desktop uploader/editor using the generic publisher |
+| 4 — roll publishing | In progress | PR #10 published the first real roll; edit and disposable-delete acceptance remain |
 | 5 — retirement and operations | Planned | Remove localhost publisher only after a real hosted roll succeeds |
 | 6 — image-storage migration spec | Planned, specification only | Design future object-storage migration; do not implement it here |
 
@@ -178,14 +178,18 @@ Do not begin Phase 4 until this gate is recorded as complete.
 
 ### 4.4 Roll acceptance
 
-- [ ] Create a real roll end to end from a desktop browser.
-- [ ] Review its Deploy Preview and merge it from the admin.
-- [ ] Compare resulting paths, Markdown and numbering with localhost output.
+- [x] Create a real roll end to end from a desktop browser (Bukhara / Khiva,
+  PR #10, 33 frames).
+- [x] Review its Deploy Preview and merge it from the admin.
+- [x] Compare resulting paths, Markdown and numbering with localhost output;
+  all 33 JPEGs are sequential, valid, and capped at a 2048px long edge.
 - [ ] Edit that roll, including frame order/location changes, through preview.
 - [ ] Exercise deletion on a disposable test roll through preview.
-- [ ] Verify failure during encode/upload/publish leaves `main` untouched.
-- [ ] Verify unsupported/mobile capability messaging.
-- [ ] Public and admin tests/builds pass.
+- [x] Verify failure during encode/upload/publish leaves `main` untouched; the
+  initial Netlify handler failures created neither a branch nor a PR.
+- [x] Verify unsupported capability messaging and desktop directory-input
+  fallback in production.
+- [x] Public and admin tests/builds pass (113 full-suite tests after PR #10).
 
 Do not delete the localhost publisher before the real-roll acceptance test.
 

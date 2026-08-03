@@ -228,3 +228,24 @@ never appeared in the production itinerary.
 Together these checks prove the production branch → PR → preview → merge and
 abandon paths. Phase 3 closed with 95 full-suite tests, 35 admin tests, both
 builds passing, and phone/desktop editor checks accepted.
+
+## Phase 4 live roll evidence
+
+PR [#10](https://github.com/bjsmithxyz/beek-log/pull/10) was created by the
+hosted roll editor on 2026-08-03 from branch
+`admin/rolls/f2ee7d5d-0e84-4c91-aebe-a60bf7fe27d2`. Its Deploy Preview was
+reviewed and the admin merged it as commit
+`6bf1e8b39a0acb7ef4c604fffe47919eab3f3593`; the publishing branch was then
+deleted. It added the real Bukhara / Khiva roll with one Markdown file and 33
+sequential JPEGs. Independent checks confirmed:
+
+- production serves the roll and lists 20 committed rolls
+- Markdown preserves Bukhara as the primary location, Khiva frame overrides,
+  and Uzbekistan as the shared region
+- all 33 assets are valid JPEGs with a maximum long edge of 2048px
+- the first failed publication attempts created neither a PR nor branch and did
+  not change `main`
+- the full suite passes 113 tests and the production public build succeeds
+
+Phase 4 remains open until an edit with frame-order/location changes and a
+merged disposable-roll deletion are accepted.
