@@ -37,6 +37,8 @@ const { items } = Astro.props;
   }
 
   .breadcrumb ol {
+    position: relative;
+    isolation: isolate;
     display: flex;
     width: max-content;
     min-width: 0;
@@ -44,6 +46,19 @@ const { items } = Astro.props;
     font-size: var(--font-size-sm);
     line-height: var(--line-height-base);
     white-space: nowrap;
+  }
+
+  .breadcrumb ol::before {
+    content: '';
+    position: absolute;
+    inset: -0.65rem -1.25rem;
+    z-index: -1;
+    pointer-events: none;
+    background: color-mix(in srgb, var(--color-bg-primary) 22%, transparent);
+    backdrop-filter: blur(10px);
+    -webkit-backdrop-filter: blur(10px);
+    mask-image: radial-gradient(ellipse at center, #000 52%, rgb(0 0 0 / 82%) 68%, transparent 100%);
+    -webkit-mask-image: radial-gradient(ellipse at center, #000 52%, rgb(0 0 0 / 82%) 68%, transparent 100%);
   }
 
   .breadcrumb li {

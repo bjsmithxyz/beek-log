@@ -19,7 +19,9 @@ corners, hard offset shadows, a faint dot grid, and a dark default theme with a
 light toggle. Tokens live in `src/styles/global.css`.
 
 Every page places semantic filesystem-style breadcrumb navigation in its shared
-sticky top toolbar. The public theme control uses the same icon treatment as the
+sticky top toolbar. A feathered backdrop blur follows only the width of the
+breadcrumb text, keeping the rest of the header transparent to the grid. The
+public theme control uses the same icon treatment as the
 social links and sits at the footer's bottom-right, immediately above the
 copyright. Keeping the path in each workspace's layout gives every route the
 same screen position regardless of content width. The public homepage is `~`,
