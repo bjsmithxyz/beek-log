@@ -41,8 +41,8 @@ const { items } = Astro.props;
     width: max-content;
     min-width: 0;
     list-style: none;
-    color: var(--text-muted);
     font-size: var(--font-size-sm);
+    line-height: var(--line-height-base);
     white-space: nowrap;
   }
 
@@ -53,17 +53,24 @@ const { items } = Astro.props;
 
   .breadcrumb a,
   .breadcrumb-separator {
-    color: var(--text-muted);
+    color: var(--color-text-muted);
+  }
+
+  .breadcrumb a {
+    text-decoration: none;
   }
 
   .breadcrumb a:hover,
-  .breadcrumb a:focus-visible,
-  .breadcrumb a[aria-current='page']:hover,
-  .breadcrumb a[aria-current='page']:focus-visible {
-    color: var(--accent);
+  .breadcrumb a:focus-visible {
+    color: var(--color-accent-primary);
   }
 
   .breadcrumb a[aria-current='page'] {
-    color: var(--text-soft);
+    color: var(--color-text-secondary);
+  }
+
+  .breadcrumb a[aria-current='page']:hover,
+  .breadcrumb a[aria-current='page']:focus-visible {
+    color: var(--color-accent-primary);
   }
 </style>

@@ -1,5 +1,6 @@
 ---
 import AdminLayout from '../../layouts/AdminLayout.astro';
+import PageHeader from '../../components/PageHeader.astro';
 ---
 <AdminLayout
   title="rolls"
@@ -8,13 +9,12 @@ import AdminLayout from '../../layouts/AdminLayout.astro';
     { label: 'rolls', href: '/rolls/' },
   ]}
 >
-  <header class="page-head rolls-head">
-    <div>
-      <h1>film-rolls/</h1>
-      <p>Encode scans locally, then publish through a reviewed pull request.</p>
-    </div>
-    <a class="admin-button" id="new-roll-link" href="/rolls/new/">new roll →</a>
-  </header>
+  <PageHeader
+    title="film-rolls/"
+    description="Encode scans locally, then publish through a reviewed pull request."
+  >
+    <a slot="actions" class="admin-button" id="new-roll-link" href="/rolls/new/">new roll →</a>
+  </PageHeader>
 
   <section class="notice-panel unsupported" id="uploader-unsupported" hidden>
     <h2>desktop uploader unavailable</h2>
@@ -31,20 +31,19 @@ import AdminLayout from '../../layouts/AdminLayout.astro';
 </script>
 
 <style>
-  .rolls-head { display: flex; align-items: end; justify-content: space-between; gap: 1rem; }
-  .rolls-head p { margin: 0; }
-  .unsupported { margin-bottom: 1.5rem; border-color: var(--amber); }
-  .unsupported h2 { margin-bottom: .5rem; color: var(--amber); }
-  .list-status { color: var(--text-muted); font-size: var(--font-size-sm); }
-  .roll-list { list-style: none; border-top: 1px solid var(--border); }
-  .roll-list li { border-bottom: 1px solid var(--border); }
-  .roll-list a { display: block; padding: .7rem .5rem; color: var(--text-soft); font-size: var(--font-size-sm); }
-  .roll-list a::before { content: 'src/content/photos/'; color: var(--text-muted); }
-  .roll-list a::after { content: '.md'; color: var(--text-muted); }
-  .roll-list a:hover { color: var(--accent); background: var(--panel); }
+  .unsupported { margin-bottom: var(--space-5); border-color: var(--color-accent-secondary); }
+  .unsupported h2 { margin-bottom: var(--space-2); color: var(--color-accent-secondary); }
+  .list-status { color: var(--color-text-muted); font-size: var(--font-size-sm); }
+  .roll-list { list-style: none; border-top: 1px solid var(--color-border); }
+  .roll-list li { border-bottom: 1px solid var(--color-border); }
+  .roll-list a { display: block; padding: .7rem .5rem; color: var(--color-text-secondary); font-size: var(--font-size-sm); }
+  .roll-list a::before { content: 'src/content/photos/'; color: var(--color-text-muted); }
+  .roll-list a::after { content: '.md'; color: var(--color-text-muted); }
+  .roll-list a:hover { color: var(--color-accent-primary); background: var(--color-bg-secondary); }
+  @media (max-width: 680px) {
+    .admin-button { text-align: center; }
+  }
   @media (max-width: 600px) {
-    .rolls-head { align-items: stretch; flex-direction: column; }
-    .rolls-head .admin-button { text-align: center; }
     .roll-list a::before { content: ''; }
   }
 </style>

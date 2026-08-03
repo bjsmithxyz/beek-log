@@ -1,0 +1,42 @@
+---
+interface Props {
+  title: string;
+  description?: string;
+}
+
+const { title, description } = Astro.props;
+---
+
+<header class="page-header">
+  <div class="page-header-row">
+    <div class="page-header-text">
+      <h1 class="page-title">{title}</h1>
+      {description && <p class="page-description">{description}</p>}
+    </div>
+    {Astro.slots.has('actions') && (
+      <div class="page-header-actions">
+        <slot name="actions" />
+      </div>
+    )}
+  </div>
+</header>
+
+<style>
+  .page-header-row {
+    display: flex;
+    align-items: end;
+    justify-content: space-between;
+    gap: var(--space-4);
+  }
+
+  .page-header-text {
+    min-width: 0;
+  }
+
+  @media (max-width: 680px) {
+    .page-header-row {
+      align-items: stretch;
+      flex-direction: column;
+    }
+  }
+</style>
