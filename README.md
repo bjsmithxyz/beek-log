@@ -10,6 +10,7 @@ site, an isolated Astro SSR admin, and pure authoring modules under `shared/`.
 npm install
 npm run dev      # http://localhost:4321
 npm run build    # public production build → ./dist/
+npm run verify   # complete tests + public/admin production builds
 
 npm run dev --workspace @beek/admin
 npm test --workspace @beek/admin

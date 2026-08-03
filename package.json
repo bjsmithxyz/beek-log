@@ -19,7 +19,9 @@
     "preview": "astro preview",
     "astro": "astro",
     "test": "node --test",
-    "test:travel-clock": "node scripts/verify-travel-clock.mjs"
+    "test:live": "node scripts/verify-live.mjs",
+    "test:travel-clock": "node scripts/verify-travel-clock.mjs",
+    "verify": "npm test && npm run build && npm run test:travel-clock && npm run build --workspace @beek/admin"
   },
   "dependencies": {
     "@astrojs/netlify": "^8.1.2",
@@ -34,5 +36,9 @@
   "devDependencies": {
     "@types/leaflet": "^1.9.22",
     "jsdom": "^30.0.1"
+  },
+  "allowScripts": {
+    "esbuild@0.28.1": true,
+    "fsevents@2.3.3": true
   }
 }

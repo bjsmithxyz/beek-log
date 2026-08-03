@@ -3,6 +3,39 @@
 Status: **design only**. Do not provision a bucket, rewrite Markdown, delete Git
 assets, or change production rendering as part of this specification.
 
+## Recorded baseline and implementation triggers
+
+Baseline measured on 2026-08-03 at commit `11b9559`:
+
+- 544 tracked roll JPEGs occupy approximately 235 MiB under
+  `src/assets/photos/`
+- the current local `.git` directory occupies approximately 313 MiB (clone and
+  garbage-collection state make this figure approximate)
+- a warm local public production build completes in approximately four seconds
+
+Recheck these figures quarterly with:
+
+```sh
+du -sh src/assets/photos .git
+git ls-files 'src/assets/photos/**' | wc -l
+time npm run build
+```
+
+Begin an implementation plan—not an automatic migration—when any one of these
+conditions is met:
+
+- tracked web-sized photo derivatives exceed 500 MiB
+- a clean clone's `.git` directory exceeds 1 GiB
+- median public deploy time exceeds ten minutes due primarily to image checkout,
+  processing, or upload
+- Netlify or GitHub storage, transfer, API, or billing limits materially affect
+  publishing
+- Git-backed blob upload failures make the hosted publisher unreliable
+
+Until a trigger is met, retain the simpler Git-backed pipeline and continue
+measuring. Crossing a trigger starts the staged design review below; it does not
+permit skipping the dual-read, integrity, preview, or rollback gates.
+
 ## Decision and goals
 
 If repository growth becomes operationally expensive, move future and existing

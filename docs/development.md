@@ -50,6 +50,8 @@ direct-to-main save endpoint.
 | `npm run preview` | Preview the production build locally |
 | `npm run astro ...` | Run Astro CLI commands |
 | `npm test` | Run the full workspace-aware unit suite |
+| `npm run verify` | Run the required unit, public-build, travel-clock, and admin-build gate |
+| `npm run test:live` | Run credential-free DNS and production HTTP/security smoke checks |
 | `npm run dev --workspace @beek/admin` | Admin SSR dev server |
 | `npm test --workspace @beek/admin` | Admin-focused tests |
 | `npm run build --workspace @beek/admin` | Build the admin site to `admin/dist/` |
@@ -67,7 +69,10 @@ files. Coverage focuses on the pure logic behind the roll admin and the map:
   order, generic Git tree/PR publishing, roll create/edit/delete planning,
   travel schema/state logic, image boundaries, and browser-editor regressions.
 
-Astro pages are also verified by building both workspaces. `astro dev` renders
-the admin SSR shell but does not emulate the production custom Netlify
-Functions; use mocked unit tests for publisher development and the authenticated
-production gate for a real branch/preview/merge check.
+Astro pages are also verified by building both workspaces. Pull requests run
+`npm run verify` under the production Node 22.18 baseline in GitHub Actions; the
+`Project verification` job is required by the `main` ruleset. Monthly grouped
+Dependabot updates use the same gate. `astro dev` renders the admin SSR shell but
+does not emulate the production custom Netlify Functions; use mocked unit tests
+for publisher development and the authenticated production gate for a real
+branch/preview/merge check.
