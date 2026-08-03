@@ -12,9 +12,10 @@ async function documentAt(relativePath) {
 }
 
 function assertBreadcrumb(document, expected) {
-  const nav = document.querySelector('.site-chrome > header nav[aria-label="Breadcrumb"]');
-  assert.ok(nav, 'page must place its breadcrumb in the shared top toolbar');
-  assert.ok(nav.querySelector('.breadcrumb-backdrop[aria-hidden="true"]'), 'breadcrumb text must have a dedicated positive-layer blur surface');
+  const nav = document.querySelector('.page-wrapper > .breadcrumb-row > nav[aria-label="Breadcrumb"]');
+  assert.ok(nav, 'page must place its breadcrumb in the static top row');
+  assert.equal(nav.closest('header, .site-chrome'), null, 'breadcrumb must not be part of sticky site chrome');
+  assert.equal(nav.querySelector('.breadcrumb-backdrop'), null, 'static breadcrumb must not render a blur surface');
 
   const links = [...nav.querySelectorAll('a')];
   assert.deepEqual(
@@ -84,8 +85,8 @@ for (const [relativePath, title] of sectionTitles) {
 const home = await documentAt('index.html');
 assert.doesNotMatch(home.body.textContent || '', /select a path or browse recent files|beek\/recent-(?:rolls|work)\//);
 assert.equal(home.querySelector('.recent-content, section[aria-label="Recent photo rolls"], section[aria-label="Recent work"]'), null);
-assert.equal(home.querySelector('.site-chrome > header a[href^="https://admin.bjsmith.xyz"]'), null, 'public toolbar must not duplicate the admin destination');
-assert.equal(home.querySelector('.site-chrome #theme-toggle'), null, 'theme toggle must not remain in the top toolbar');
+assert.equal(home.querySelector('.breadcrumb-row a[href^="https://admin.bjsmith.xyz"]'), null, 'public breadcrumb row must not duplicate the admin destination');
+assert.equal(home.querySelector('.breadcrumb-row #theme-toggle'), null, 'theme toggle must not remain in the top row');
 const footerSecondary = home.querySelector('footer .footer-secondary');
 assert.equal(footerSecondary?.firstElementChild?.id, 'theme-toggle', 'theme toggle must sit above the copyright');
 assert.ok(footerSecondary?.firstElementChild?.classList.contains('social-link'), 'theme toggle must use the social icon style');

@@ -12,19 +12,16 @@ const { items } = Astro.props;
 ---
 
 <nav class="breadcrumb" aria-label="Breadcrumb">
-  <div class="breadcrumb-path">
-    <span class="breadcrumb-backdrop" aria-hidden="true"></span>
-    <ol>
-      {items.map((item, index) => (
-        <li>
-          {index > 0 && <span class="breadcrumb-separator" aria-hidden="true">/</span>}
-          <a href={item.href} aria-current={index === items.length - 1 ? 'page' : undefined}>
-            {item.label}
-          </a>
-        </li>
-      ))}
-    </ol>
-  </div>
+  <ol>
+    {items.map((item, index) => (
+      <li>
+        {index > 0 && <span class="breadcrumb-separator" aria-hidden="true">/</span>}
+        <a href={item.href} aria-current={index === items.length - 1 ? 'page' : undefined}>
+          {item.label}
+        </a>
+      </li>
+    ))}
+  </ol>
 </nav>
 
 <style>
@@ -39,15 +36,7 @@ const { items } = Astro.props;
     scrollbar-width: thin;
   }
 
-  .breadcrumb-path {
-    position: relative;
-    width: max-content;
-    min-width: 0;
-  }
-
   .breadcrumb ol {
-    position: relative;
-    z-index: 1;
     display: flex;
     width: max-content;
     min-width: 0;
@@ -55,20 +44,6 @@ const { items } = Astro.props;
     font-size: var(--font-size-sm);
     line-height: var(--line-height-base);
     white-space: nowrap;
-  }
-
-  .breadcrumb-backdrop {
-    position: absolute;
-    display: block;
-    inset: -0.65rem -1.25rem;
-    z-index: 0;
-    pointer-events: none;
-    background: color-mix(in srgb, var(--color-bg-primary) 32%, transparent);
-    backdrop-filter: blur(20px);
-    -webkit-backdrop-filter: blur(20px);
-    border-radius: 999px;
-    mask-image: radial-gradient(ellipse at center, #000 52%, rgb(0 0 0 / 82%) 68%, transparent 100%);
-    -webkit-mask-image: radial-gradient(ellipse at center, #000 52%, rgb(0 0 0 / 82%) 68%, transparent 100%);
   }
 
   .breadcrumb li {
