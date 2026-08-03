@@ -64,6 +64,7 @@
     /* Layout */
     --container-max: 960px;
     --container-narrow: 720px;
+    --page-content-top: var(--space-5);
 
     /* Hard shadow for interactive elements */
     --shadow-hard: 3px 3px 0 var(--color-border-strong);
