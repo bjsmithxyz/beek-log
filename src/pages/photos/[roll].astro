@@ -81,8 +81,7 @@ const jsonLd = {
         <Content />
       </div>
 
-      <div class="contact-sheet">
-        <h2>contact-sheet/</h2>
+      <div class="contact-sheet" role="region" aria-label="Contact sheet">
         {strips.map((strip, i) => (
           <FilmStrip
             photos={strip}
@@ -131,12 +130,5 @@ const jsonLd = {
 
   .content {
     margin-bottom: var(--space-8);
-  }
-
-  .contact-sheet h2 {
-    font-size: var(--font-size-base);
-    color: var(--color-text-muted);
-    margin-bottom: var(--space-4);
-    font-weight: var(--font-weight-medium);
   }
 </style>

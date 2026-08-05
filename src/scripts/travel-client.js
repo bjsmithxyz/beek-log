@@ -51,10 +51,13 @@ function setupTravel() {
     : { past: '#33ff66', current: '#66ccff', tile: 'dark_all' };
   const reduceMotion = () => matchMedia('(prefers-reduced-motion: reduce)').matches;
 
-  // Place and country only. No date, no duration, no note.
+  // Place, country and the month the stay began. No day, no duration, no note.
+  // The stop being lived in right now says "here now" instead of a month.
   function popupFor(stop) {
-    const tag = stop.index === currentIndex ? ' · <span class="popup-current">here now</span>' : '';
-    return `<b>${flag(stop.cc)} ${escapeHtml(stop.name)}</b>${tag}<br><span class="popup-muted">${escapeHtml(stop.country)}</span>`;
+    const isCurrent = stop.index === currentIndex;
+    const tag = isCurrent ? ' · <span class="popup-current">here now</span>' : '';
+    const when = isCurrent ? '' : ` · ${escapeHtml(stop.month)} ${escapeHtml(stop.year)}`;
+    return `<b>${flag(stop.cc)} ${escapeHtml(stop.name)}</b>${tag}<br><span class="popup-muted">${escapeHtml(stop.country)}${when}</span>`;
   }
 
   function markerFor(stop) {
@@ -189,9 +192,14 @@ function setupTravel() {
     element.innerHTML = stops.map((stop) => {
       const heading = stop.year !== lastYear ? `<h3 class="timeline-year">${escapeHtml(stop.year)}</h3>` : '';
       lastYear = stop.year;
-      const here = stop.index === currentIndex ? '<span class="timeline-here">here now</span>' : '';
-      return `${heading}<div class="timeline-row${stop.index === currentIndex ? ' current' : ''}">
-        <strong>${flag(stop.cc)} ${escapeHtml(stop.name)}</strong><span>${escapeHtml(stop.country)}</span>${here}
+      const isCurrent = stop.index === currentIndex;
+      // A past stop is dated to the month it began; the current one is dated by
+      // "here now" instead, so the stay in progress stays open-ended.
+      const when = isCurrent
+        ? '<span class="timeline-here">here now</span>'
+        : `<span class="timeline-month">${escapeHtml(stop.month)}</span>`;
+      return `${heading}<div class="timeline-row${isCurrent ? ' current' : ''}">
+        <strong>${flag(stop.cc)} ${escapeHtml(stop.name)}</strong><span>${escapeHtml(stop.country)}</span>${when}
       </div>`;
     }).join('');
   }
