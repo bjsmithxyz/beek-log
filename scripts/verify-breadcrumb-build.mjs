@@ -75,7 +75,7 @@ const sectionTitles = [
   ['about/index.html', 'about.md'],
   ['work/index.html', 'work/'],
   ['photos/index.html', 'photos/'],
-  ['travel/index.html', 'travel'],
+  ['travel/index.html', 'travel/'],
 ];
 for (const [relativePath, title] of sectionTitles) {
   const document = await documentAt(relativePath);

@@ -329,7 +329,9 @@ async function pickFolder() {
     const parsed = parseFolderName(folder.name, filmStocks);
     if (parsed.date) fields.date.value = parsed.date;
     if (parsed.stockSlug) fields.stock.value = parsed.stockSlug;
-    fields.iso.value = parsed.iso || '';
+    // The field is labelled by what it means, so show the resolved country and
+    // keep the bare ISO 3166 code only when it resolves to nothing.
+    fields.iso.value = parsed.country || parsed.iso || '';
     // Reflect the folder in the slug now rather than after the encode: what was
     // detected should be visible while the scans are still being processed.
     refreshSlug();

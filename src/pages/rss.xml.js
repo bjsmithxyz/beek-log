@@ -10,7 +10,9 @@ export async function GET(context) {
   const items = [
     ...work.map((entry) => ({
       title: entry.data.title,
-      description: entry.data.description,
+      // A piece may carry no description; fall back rather than syndicate an
+      // empty element.
+      description: entry.data.description || `${entry.data.category} — ${entry.data.title}`,
       pubDate: entry.data.date,
       link: `/work/${entry.id}/`,
     })),

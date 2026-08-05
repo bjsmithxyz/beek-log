@@ -11,7 +11,10 @@
 // that day away, so withholding it would buy nothing.
 import { computeTrip } from './trip-runtime.mjs';
 
-const MONTHS = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'];
+const MONTHS = [
+  'January', 'February', 'March', 'April', 'May', 'June',
+  'July', 'August', 'September', 'October', 'November', 'December',
+];
 
 /** A stop may be published once it has begun, and only if it is not tentative. */
 export function isPublishable(stop) {

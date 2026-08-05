@@ -46,7 +46,7 @@ test('the year survives so the timeline can head its sections', () => {
 
 test('the month survives as a name, never as a fragment of the arrival date', () => {
   const { stops } = publicTrip(trip([BANGKOK]), AT_HANOI);
-  assert.equal(stops[0].month, 'Jun');
+  assert.equal(stops[0].month, 'June');
   assert.doesNotMatch(JSON.stringify(stops[0]), /06/, 'the numeric month must not ship');
 });
 
@@ -54,7 +54,7 @@ test('every month in the committed itinerary resolves to a name', () => {
   const { stops } = publicTrip(currentTrip, new Date(2026, 7, 2, 12));
   const months = new Set(stops.map((stop) => stop.month));
   assert.ok(months.size > 1);
-  for (const month of months) assert.match(month, /^[A-Z][a-z]{2}$/);
+  for (const month of months) assert.match(month, /^[A-Z][a-z]{2,8}$/);
 });
 
 test('start is the first published arrival, so the day counter can run live', () => {

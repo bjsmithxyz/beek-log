@@ -1,25 +1,17 @@
 ---
 title: "mates"
-description: "Just guys bein' dudes"
+description: ""
 date: 2022-11-14
 category: "art"
 tags:
   - illustration
 images:
   - src: "../../assets/images/redandblue.png"
-    alt: "Red and blue mates"
+    alt: "🥲🤚🖐️🥲"
   - src: "../../assets/images/blackandwhite.png"
-    alt: "Black and white mates"
+    alt: "😯🫱🫲😯"
   - src: "../../assets/images/3blokes.png"
-    alt: "3blokes"
+    alt: "🫳🫱🖐️"
   - src: "../../assets/images/3tyrants.png"
-    alt: "Three tyrants"
+    alt: "😡😨😠"
 ---
-
-🥲🤚🖐️🥲
-
-😯🫱🫲😯
-
-🫳🫱🖐️
-
-😡😨😠

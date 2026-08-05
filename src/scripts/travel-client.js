@@ -56,7 +56,7 @@ function setupTravel() {
   function popupFor(stop) {
     const isCurrent = stop.index === currentIndex;
     const tag = isCurrent ? ' · <span class="popup-current">here now</span>' : '';
-    const when = isCurrent ? '' : ` · ${escapeHtml(stop.month)} ${escapeHtml(stop.year)}`;
+    const when = isCurrent ? '' : `, ${escapeHtml(stop.month)} ${escapeHtml(stop.year)}`;
     return `<b>${flag(stop.cc)} ${escapeHtml(stop.name)}</b>${tag}<br><span class="popup-muted">${escapeHtml(stop.country)}${when}</span>`;
   }
 
@@ -182,26 +182,63 @@ function setupTravel() {
     }
   }
 
+  function timelineRow(stop) {
+    const isCurrent = stop.index === currentIndex;
+    // A past stop is dated to the month it began; the current one is dated by
+    // "here now" instead, so the stay in progress stays open-ended. The comma
+    // belongs to the pair, so it is only drawn when a month follows it.
+    const when = isCurrent
+      ? '<span class="timeline-here">here now</span>'
+      : `<span class="timeline-month">${escapeHtml(stop.month)}</span>`;
+    const comma = isCurrent ? '' : '<span class="timeline-comma">,</span>';
+    return `<div class="timeline-row${isCurrent ? ' current' : ''}">
+      <strong>${flag(stop.cc)} ${escapeHtml(stop.name)}</strong><span>${escapeHtml(stop.country)}${comma}</span>${when}
+    </div>`;
+  }
+
   function renderTimeline() {
     const element = get('travel-timeline');
     if (!stops.length) {
       element.innerHTML = '<p class="travel-empty">// no stops published yet</p>';
       return;
     }
-    let lastYear = null;
-    element.innerHTML = stops.map((stop) => {
-      const heading = stop.year !== lastYear ? `<h3 class="timeline-year">${escapeHtml(stop.year)}</h3>` : '';
-      lastYear = stop.year;
-      const isCurrent = stop.index === currentIndex;
-      // A past stop is dated to the month it began; the current one is dated by
-      // "here now" instead, so the stay in progress stays open-ended.
-      const when = isCurrent
-        ? '<span class="timeline-here">here now</span>'
-        : `<span class="timeline-month">${escapeHtml(stop.month)}</span>`;
-      return `${heading}<div class="timeline-row${isCurrent ? ' current' : ''}">
-        <strong>${flag(stop.cc)} ${escapeHtml(stop.name)}</strong><span>${escapeHtml(stop.country)}</span>${when}
-      </div>`;
+
+    // One disclosure per year, open by default — the same [-]/[+] idiom the
+    // homepage file tree uses, so the two indexes behave alike.
+    const years = [];
+    for (const stop of stops) {
+      const last = years.at(-1);
+      if (last && last.year === stop.year) last.stops.push(stop);
+      else years.push({ year: stop.year, stops: [stop] });
+    }
+
+    element.innerHTML = years.map(({ year, stops: yearStops }) => {
+      const panelId = `timeline-year-${escapeHtml(year)}`;
+      return `<section class="timeline-group">
+        <h3 class="timeline-year">
+          <button class="timeline-year-toggle" type="button" aria-expanded="true" aria-controls="${panelId}" data-timeline-toggle>
+            <span>${escapeHtml(year)}</span><span class="timeline-state" aria-hidden="true"></span>
+          </button>
+        </h3>
+        <div class="timeline-collapse" id="${panelId}" data-collapsed="false">
+          <div class="timeline-collapse-inner">${yearStops.map(timelineRow).join('')}</div>
+        </div>
+      </section>`;
     }).join('');
+
+    // Paired structurally rather than by id selector: the ids exist for
+    // aria-controls, and matching on them would need escaping this runs without.
+    element.querySelectorAll('.timeline-group').forEach((group) => {
+      const button = group.querySelector('[data-timeline-toggle]');
+      const panel = group.querySelector('.timeline-collapse');
+      if (!button || !panel) return;
+      button.addEventListener('click', () => {
+        const expanded = button.getAttribute('aria-expanded') === 'true';
+        button.setAttribute('aria-expanded', String(!expanded));
+        panel.dataset.collapsed = String(expanded);
+        panel.inert = expanded;
+      }, { signal: abortController.signal });
+    });
   }
 
   const tabButtons = [...root.querySelectorAll('[data-travel-tab]')];
