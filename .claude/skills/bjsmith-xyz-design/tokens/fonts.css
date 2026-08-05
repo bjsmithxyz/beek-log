@@ -1,0 +1,4 @@
+/* IBM Plex Mono — the site self-hosts via @fontsource (400, 400 italic, 500, 600).
+   No binaries were available in the repo, so this design system loads the same
+   family from Google Fonts. Same typeface, not a substitution. */
+@import url("https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:ital,wght@0,400;0,500;0,600;1,400&display=swap");

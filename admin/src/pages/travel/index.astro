@@ -19,6 +19,11 @@ import PageHeader from '../../components/PageHeader.astro';
     </Fragment>
   </PageHeader>
 
+  <section class="privacy-notice">
+    <span class="section-path">privacy/boundary</span>
+    <p>authenticated view — exact dates, forward plans and tentative stops are never published to bjsmith.xyz.</p>
+  </section>
+
   <p class="editor-status" id="editor-status" role="status">Loading the itinerary from GitHub…</p>
   <section class="error-panel" id="editor-errors" role="alert" hidden>
     <h2>fix these fields</h2>
@@ -57,6 +62,26 @@ import PageHeader from '../../components/PageHeader.astro';
       <div class="stop-list" id="stop-list"></div>
     </section>
   </fieldset>
+
+  <section class="overview-panel" aria-labelledby="overview-title">
+    <div class="section-heading">
+      <div>
+        <span class="section-path">trips.json/overview</span>
+        <h2 id="overview-title">full itinerary</h2>
+      </div>
+      <p class="overview-summary" id="travel-overview-summary"></p>
+    </div>
+    <div id="travel-overview-map" class="overview-map" role="region" aria-label="Map of the full itinerary"></div>
+    <div class="overview-table-scroll">
+      <table class="overview-table">
+        <caption class="sr-only">Every stop with its exact dates and state</caption>
+        <thead>
+          <tr><th scope="col">arrive</th><th scope="col">depart</th><th scope="col">stop</th><th scope="col">state</th></tr>
+        </thead>
+        <tbody id="travel-overview-rows"></tbody>
+      </table>
+    </div>
+  </section>
 
   <section class="review-panel" id="review-panel" aria-labelledby="review-title" hidden tabindex="-1">
     <span class="section-path">publication/review</span>
@@ -128,6 +153,33 @@ import PageHeader from '../../components/PageHeader.astro';
   :global(.stop-grid .dates) { display: grid; grid-template-columns: 1fr 1fr; gap: .6rem; grid-column: span 2; }
   :global(.stop-grid .note-field) { grid-column: span 2; }
   :global(.tentative-field) { display: flex; align-items: center; align-self: end; gap: .5rem; min-height: 2.35rem; }
+  /* The privacy boundary is stated in amber because it is a warning about what
+     this screen shows, not an error. */
+  .privacy-notice { margin: 1rem 0; padding: .75rem 1rem; border: 1px solid var(--amber); background: var(--panel); box-shadow: 3px 3px 0 var(--amber); }
+  .privacy-notice p { margin-top: .25rem; color: var(--text-soft); font-size: var(--font-size-sm); }
+
+  .overview-panel { margin: 1rem 0 2rem; padding: 1rem; border: 1px solid var(--border); background: var(--panel); box-shadow: var(--shadow); }
+  .overview-summary { color: var(--text-muted); font-size: var(--font-size-xs); font-variant-numeric: tabular-nums; }
+  .overview-map { height: min(55vh, 460px); min-height: 320px; border: 1px solid var(--border-strong); background: var(--panel-strong); }
+  .overview-map :global(.leaflet-popup-content-wrapper), .overview-map :global(.leaflet-popup-tip) { border-radius: 0; background: var(--panel); color: var(--text-soft); }
+  .overview-map :global(.leaflet-popup-content-wrapper) { border: 1px solid var(--border-strong); box-shadow: var(--shadow); font: var(--font-size-xs) var(--font-family); }
+  .overview-map :global(.leaflet-control-zoom a) { border-radius: 0; }
+  .overview-map :global(.overview-muted) { color: var(--text-muted); }
+  .overview-map :global(.overview-note) { margin-top: .25rem; color: var(--text-muted); font-style: italic; }
+
+  .overview-table-scroll { margin-top: 1rem; overflow-x: auto; scrollbar-width: thin; }
+  .overview-table { width: 100%; min-width: 34rem; border-collapse: collapse; font-size: var(--font-size-xs); }
+  .overview-table th { padding: .5rem .6rem; color: var(--text-muted); border-bottom: 1px solid var(--border-strong); text-align: left; text-transform: uppercase; letter-spacing: .05em; }
+  .overview-table :global(td) { padding: .5rem .6rem; border-bottom: 1px solid var(--border); vertical-align: top; font-variant-numeric: tabular-nums; }
+  .overview-table :global(td:nth-child(-n+2)) { color: var(--text-muted); white-space: nowrap; }
+  .overview-table :global(td b) { color: var(--text); font-weight: var(--font-weight-medium); }
+  .overview-table :global(td span) { display: block; color: var(--text-muted); }
+  .overview-table :global(.state) { display: inline-block; padding: .1rem .35rem; border: 1px solid currentColor; white-space: nowrap; }
+  .overview-table :global(.state-done) { color: var(--accent); }
+  .overview-table :global(.state-here-now) { color: var(--blue); }
+  .overview-table :global(.state-planned), .overview-table :global(.state-tentative) { color: var(--amber); }
+  .overview-table :global(.state-tentative) { border-style: dashed; }
+
   .review-panel { border-color: var(--amber); box-shadow: 3px 3px 0 var(--amber); }
   .review-panel h2, .publication-panel h2 { margin: .35rem 0 .75rem; }
   .publication-panel { border-color: var(--blue); box-shadow: 3px 3px 0 var(--blue); }

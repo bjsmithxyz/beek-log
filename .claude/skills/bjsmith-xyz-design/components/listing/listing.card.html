@@ -1,0 +1,35 @@
+<!-- @dsCard group="Components" viewport="700x340" name="Listing" subtitle="Filter bar, column header, work + roll rows" -->
+<!doctype html><html lang="en" data-theme="dark"><head><meta charset="utf-8"><title>Listing</title>
+<link rel="stylesheet" href="../../styles.css">
+<script src="https://unpkg.com/react@18.3.1/umd/react.development.js" integrity="sha384-hD6/rw4ppMLGNu3tX5cjIb+uRZ7UkRJ6BPkLpg4hAu/6onKUg4lLsHAs9EBPT82L" crossorigin="anonymous"></script>
+<script src="https://unpkg.com/react-dom@18.3.1/umd/react-dom.development.js" integrity="sha384-u6aeetuaXnQ38mYT8rp6sbXaQe3NL9t+IBXmnYxwkUI2Hw4bsp2Wvmx4yRQF1uAm" crossorigin="anonymous"></script>
+<script src="https://unpkg.com/@babel/standalone@7.29.0/babel.min.js" integrity="sha384-m08KidiNqLdpJqLq95G/LEi8Qvjl/xUYll3QILypMoQ65QorJ9Lvtp2RXYGBFj1y" crossorigin="anonymous"></script>
+<script src="../../_ds_bundle.js"></script>
+<style>body{padding:16px}body::before{display:none}.rowset{display:flex;flex-wrap:wrap;gap:12px;align-items:center}.stack{display:flex;flex-direction:column;gap:14px}.lbl{color:var(--color-text-muted);font-size:var(--font-size-xs);text-transform:uppercase;letter-spacing:.05em}</style>
+</head><body><div id="root"></div><script type="text/babel">
+const NS = window.BjsmithXyzDesignSystem_042b50;
+
+const { FilterBar, DirListHeader, WorkRow, RollRow } = NS;
+function Card(){
+  const [filter,setFilter] = React.useState('all');
+  const work = [
+    {slug:'loot-sheet',category:'dev',date:'2024-11-02',description:'a sheet, for loot'},
+    {slug:'mspaint',category:'art',date:'2019-01-31',description:'paint.exe'},
+    {slug:'dudes',category:'art',date:'2025-01-01',description:'Just dudes being guys tbh'},
+  ];
+  const shown = filter==='all' ? work : work.filter(w=>w.category===filter);
+  return (<div>
+    <FilterBar options={['dev','art','photography']} value={filter} onChange={setFilter} />
+    <DirListHeader columns={['type','date','name','description','']} cols="var(--work-cols)" />
+    <div>{shown.map(w=><WorkRow key={w.slug} {...w} href="#" />)}</div>
+    <div style={{height:'16px'}} />
+    <DirListHeader columns={['film','date','roll','location','']} cols="var(--roll-cols)" />
+    <div>
+      <RollRow href="#" slug="2025-08-fujifilm-400-almaty" stock="Fujifilm 400" stockType="color" date="2025-08-24" title="Almaty" location="Almaty" />
+      <RollRow href="#" slug="2025-07-kodak-tri-x-400-chiang-mai" stock="Kodak Tri-X 400" stockType="bw" date="2025-07-11" title="Chiang Mai" location="Chiang Mai +1" active />
+    </div>
+  </div>);
+}
+
+ReactDOM.createRoot(document.getElementById('root')).render(<Card/>);
+</script></body></html>

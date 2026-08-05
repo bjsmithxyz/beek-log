@@ -34,6 +34,18 @@ test('public Deploy Previews are never canceled by the cached-commit build ignor
   );
 });
 
+// The travel page's published set is decided at build time, so the nightly
+// build hook is the only thing that advances it. The ignore rule compares file
+// trees and would otherwise cancel that build for changing nothing.
+test('a build-hook run is never canceled by the ignore rule', async () => {
+  const config = await read('../netlify.toml');
+  assert.match(
+    config,
+    /if \[ -n "\$INCOMING_HOOK_TITLE" \]; then exit 1; fi;/,
+    'a scheduled rebuild changes no files — it must bypass the tree comparison',
+  );
+});
+
 // Regression guard. A per-route CSP silently stops applying once ClientRouter
 // is in play: it swaps documents without a navigation, so the browser keeps
 // enforcing whichever policy the first-loaded page carried. Scoping the map and

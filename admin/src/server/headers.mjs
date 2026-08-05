@@ -2,7 +2,9 @@ export const ADMIN_CSP = [
   "default-src 'self'",
   "script-src 'self' 'wasm-unsafe-eval'",
   "style-src 'self' 'unsafe-inline'",
-  "img-src 'self' data: blob: https://raw.githubusercontent.com https://*.tile.openstreetmap.org",
+  // openstreetmap: the roll editor's location picker. cartocdn: the travel
+  // overview map, which matches the public site's basemap.
+  "img-src 'self' data: blob: https://raw.githubusercontent.com https://*.tile.openstreetmap.org https://*.basemaps.cartocdn.com",
   "font-src 'self'",
   "connect-src 'self'",
   "worker-src 'self' blob:",

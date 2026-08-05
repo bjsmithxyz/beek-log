@@ -17,28 +17,25 @@ const {
   title = 'admin',
   breadcrumbs = [{ label: '~/admin', href: '/' }],
 } = Astro.props;
-const user = Astro.locals.user;
 const fullTitle = title === 'admin' ? siteName : `${title} | ${siteName}`;
 
-const themeLight = themeColors.light;
-const themeDark = themeColors.dark;
+// Resolved on the server, not by a before-paint inline script. The admin CSP
+// deliberately withholds 'unsafe-inline' from script-src — unlike the public
+// site, which grants it — so any such script is blocked and the stored
+// preference never applies. Being SSR, this surface can simply render the
+// answer. The cookie is written by the footer toggle in Footer.astro.
+const theme = Astro.cookies.get('theme')?.value === 'light' ? 'light' : 'dark';
 ---
 
 <!doctype html>
-<html lang="en" data-theme="dark">
+<html lang="en" data-theme={theme}>
   <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
     <meta name="robots" content="noindex, nofollow, noarchive" />
-    <meta name="theme-color" content={themeDark} />
+    <meta name="theme-color" content={theme === 'light' ? themeColors.light : themeColors.dark} />
     <title>{fullTitle}</title>
     <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
-
-    <script is:inline define:vars={{ themeLight, themeDark }}>
-      const theme = localStorage.getItem('theme') || (matchMedia('(prefers-color-scheme: light)').matches ? 'light' : 'dark');
-      document.documentElement.setAttribute('data-theme', theme);
-      document.querySelector('meta[name="theme-color"]')?.setAttribute('content', theme === 'light' ? themeLight : themeDark);
-    </script>
   </head>
   <body>
     <a href="#main-content" class="skip-link">skip to content</a>
@@ -51,7 +48,7 @@ const themeDark = themeColors.dark;
           <slot />
         </div>
       </main>
-      <Footer user={user} />
+      <Footer />
     </div>
   </body>
 </html>

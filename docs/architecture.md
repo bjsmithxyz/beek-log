@@ -147,15 +147,44 @@ sitemap.
 ## Travel
 
 `/travel/` is a read-only Astro page backed by `src/data/trips.json`. The shared
-trip validator runs in tests and during the build. Date-derived values — day
-count and past/current/upcoming status — are deliberately computed by the
-browser on every load, so they cannot freeze at the last deployment date. Four
-keyboard-operable tabs show only stats, route, road-ahead, or the complete
-chronological timeline. Leaflet is recreated after the route panel becomes
-visible so it always receives real dimensions; the site-wide CSP permits the
-CARTO tile images and Open-Meteo weather requests this route needs. Route stop controls link to
-photo rolls whose effective shoot locations match by normalized place name or
-an 80 km proximity threshold.
+trip validator runs in tests and during the build.
+
+**The public page publishes places, never a schedule.** Exact dates, onward legs
+and tentative stops are withheld. This is enforced where it cannot be worked
+around: `shared/trip-public.mjs` reduces the itinerary at build time and only
+that result is embedded in the page, so `trips.json` never enters the client
+bundle at all. Filtering in the browser would not do — the full itinerary would
+still ship to anyone who opened the JavaScript.
+
+The cost is that past/current status is decided at build time rather than by the
+browser. That is a deliberate reversal of the earlier design: computing status
+client-side requires giving the client every stop's dates, which is precisely
+what may not be published. Only the day counter stays live, derived from the one
+date the payload keeps — the first published arrival, which the counter plus
+today's date already discloses. `.github/workflows/refresh-travel.yml` rebuilds
+nightly so "here now" cannot drift far, and the `ignore` rule in `netlify.toml`
+exempts build-hook runs, which change no files and would otherwise be cancelled.
+
+When the current stop is tentative, or the journey is between stops, the page
+says "last seen in *place*" — it must never fall through to naming the stop that
+comes next. `scripts/verify-travel-build.mjs` asserts no withheld stop name and
+no itinerary date appears in the built page or any shipped script;
+`scripts/verify-travel-clock.mjs` asserts the day counter still advances under a
+moving clock while the published set does not.
+
+Three keyboard-operable tabs show stats, route, or the chronological timeline.
+The forward-looking `road-ahead/` tab and its Open-Meteo forecasts were removed
+with the privacy split — both existed only to describe stops not yet reached —
+so the site-wide CSP no longer needs a `connect-src` grant at all, only the
+CARTO tile images. Leaflet is recreated after the route panel becomes visible so
+it always receives real dimensions. Route stop controls link to photo rolls
+whose effective shoot locations match by normalized place name or an 80 km
+proximity threshold.
+
+`admin/src/pages/travel/` is the only surface in the system that renders exact
+dates, onward legs or tentative stops: it carries an amber privacy notice, a
+full-detail map with both travelled and planned layers, and a dated
+`arrive | depart | stop | state` table, all driven by the working draft.
 
 ## The photos map
 

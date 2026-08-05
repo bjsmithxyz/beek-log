@@ -1,0 +1,33 @@
+<!-- @dsCard group="Admin" viewport="1100x760" name="admin.bjsmith.xyz" subtitle="Sign-in, admin index, rolls list, film-roll editor with location picker, review + publication" -->
+<!doctype html><html lang="en" data-theme="dark"><head><meta charset="utf-8"><title>admin.bjsmith.xyz — UI kit</title>
+<link rel="icon" href="../../assets/favicon-admin.svg">
+<link rel="stylesheet" href="../../styles.css">
+<link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css">
+<script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+<script src="https://unpkg.com/react@18.3.1/umd/react.development.js" integrity="sha384-hD6/rw4ppMLGNu3tX5cjIb+uRZ7UkRJ6BPkLpg4hAu/6onKUg4lLsHAs9EBPT82L" crossorigin="anonymous"></script>
+<script src="https://unpkg.com/react-dom@18.3.1/umd/react-dom.development.js" integrity="sha384-u6aeetuaXnQ38mYT8rp6sbXaQe3NL9t+IBXmnYxwkUI2Hw4bsp2Wvmx4yRQF1uAm" crossorigin="anonymous"></script>
+<script src="https://unpkg.com/@babel/standalone@7.29.0/babel.min.js" integrity="sha384-m08KidiNqLdpJqLq95G/LEi8Qvjl/xUYll3QILypMoQ65QorJ9Lvtp2RXYGBFj1y" crossorigin="anonymous"></script>
+<script src="../../_ds_bundle.js"></script>
+<script src="../public-site/kit-data.js"></script>
+<script>
+// Local gazetteer source for the location picker (the live admin geocodes over HTTP).
+fetch('../../assets/trips.json').then(r => r.json()).then(d => { window.TRIP_STOPS = d.stops; });
+</script>
+<style>
+.travel-map .leaflet-control-attribution,.travel-map .leaflet-control-zoom a,.travel-map .leaflet-popup-content-wrapper,.travel-map .leaflet-popup-tip{color:var(--color-text-secondary);background:var(--color-bg-secondary)}
+.travel-map .leaflet-control-attribution a{color:var(--color-accent-tertiary)}
+.travel-map .leaflet-control-zoom a{border-color:var(--color-border);border-radius:0}
+.travel-map .leaflet-popup-content-wrapper{border:1px solid var(--color-border-strong);border-radius:0;box-shadow:var(--shadow-hard);font:var(--font-size-xs) var(--font-family)}
+.travel-map .leaflet-popup-content b{color:var(--color-text-primary)}
+.travel-map .popup-current{color:var(--color-accent-tertiary)}
+.travel-map .popup-future{color:var(--color-accent-secondary)}
+.travel-map .popup-muted{color:var(--color-text-muted)}
+.travel-popup-note{margin-top:var(--space-1);color:var(--color-text-muted);font-style:italic}
+</style>
+</head><body>
+<div id="root"></div>
+<script type="text/babel" src="../public-site/TravelMap.jsx"></script>
+<script type="text/babel" src="LocationPicker.jsx"></script>
+<script type="text/babel" src="AdminScreens.jsx"></script>
+<script type="text/babel" src="AdminApp.jsx"></script>
+</body></html>

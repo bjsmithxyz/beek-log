@@ -1,0 +1,12 @@
+:root{
+  --container-max:960px;
+  --container-narrow:720px;
+  --page-content-top:var(--space-5);
+  --breadcrumb-row-height:56px;
+  /* faint dot/line grid painted behind every page */
+  --grid-cell:24px;
+  --grid-opacity:0.15; /* @kind other */
+  /* directory-listing column templates, verbatim from the site */
+  --work-cols:5rem 6.5rem 1fr auto 1.5rem; /* @kind other */
+  --roll-cols:12rem 6.5rem 1fr 11rem 1.5rem; /* @kind other */
+}

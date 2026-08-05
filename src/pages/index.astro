@@ -1,7 +1,6 @@
 ---
 import BaseLayout from '../layouts/BaseLayout.astro';
 import SiteTree from '../components/SiteTree.astro';
-import PageHeader from '../components/PageHeader.astro';
 import { getWorkEntries, getPhotoRolls, byDateDesc } from '../lib/collections';
 
 const allWork = (await getWorkEntries()).sort(byDateDesc);
@@ -21,8 +20,8 @@ const rollTreeItems = allRolls.map((entry) => ({
 <BaseLayout breadcrumbs={[{ label: '~', href: '/' }]}>
   <section class="home">
     <div class="container">
-      <PageHeader title="index/" />
-
+      {/* No page title: the breadcrumb (~) and the tree's own root already
+          name this page, and the tree *is* the content. */}
       <SiteTree workItems={workTreeItems} rollItems={rollTreeItems} />
     </div>
   </section>

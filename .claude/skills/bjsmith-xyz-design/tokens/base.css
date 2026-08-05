@@ -1,0 +1,25 @@
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+html{scroll-behavior:smooth;-webkit-font-smoothing:antialiased}
+body{font-family:var(--font-family);font-size:var(--font-size-base);font-weight:var(--font-weight-regular);line-height:var(--line-height-base);color:var(--color-text-primary);background-color:var(--color-bg-primary);min-height:100vh;overflow-x:hidden}
+/* Subtle grid texture, fixed behind all content */
+body::before{content:'';position:fixed;inset:0;background-image:linear-gradient(var(--color-border) 1px,transparent 1px),linear-gradient(90deg,var(--color-border) 1px,transparent 1px);background-size:var(--grid-cell) var(--grid-cell);opacity:var(--grid-opacity);pointer-events:none;z-index:0}
+h1,h2,h3,h4,h5,h6{font-weight:var(--font-weight-medium);line-height:var(--line-height-tight);color:var(--color-text-primary)}
+h1{font-size:var(--font-size-page-title)}
+h2{font-size:var(--font-size-2xl)}
+h3{font-size:var(--font-size-xl)}
+h4{font-size:var(--font-size-lg)}
+p{margin-bottom:var(--space-4);color:var(--color-text-secondary)}
+a{color:var(--color-accent-primary);text-decoration:none;transition:color var(--transition-fast)}
+a:hover{color:var(--color-text-primary)}
+img{max-width:100%;height:auto;display:block}
+button,input,select,textarea{font:inherit}
+button{cursor:pointer}
+::selection{background-color:var(--color-accent-primary);color:var(--color-bg-primary)}
+:focus-visible{outline:2px solid var(--color-accent-primary);outline-offset:2px}
+.container{width:100%;max-width:var(--container-max);margin:0 auto;padding:0 var(--space-5)}
+.container-narrow{max-width:var(--container-narrow)}
+pre{background-color:var(--color-bg-tertiary);padding:var(--space-4);overflow-x:auto;font-size:var(--font-size-sm);line-height:var(--line-height-relaxed);border:1px solid var(--color-border)}
+code{font-family:inherit;font-size:0.9em}
+:not(pre)>code{background-color:var(--color-bg-tertiary);padding:0.15em 0.35em;border:1px solid var(--color-border)}
+@media (max-width:768px){.container{padding:0 var(--space-4)}}
+@media (prefers-reduced-motion:reduce){*,*::before,*::after{animation-duration:0.01ms !important;animation-iteration-count:1 !important;transition-duration:0.01ms !important;scroll-behavior:auto !important}}

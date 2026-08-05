@@ -1,0 +1,11 @@
+<!-- @dsCard group="Effects" viewport="700x160" name="Motion" subtitle="80–200ms ease; one blink, one overshoot" -->
+<!doctype html><html lang="en" data-theme="dark"><head><meta charset="utf-8"><link rel="stylesheet" href="../styles.css">
+<style>body{padding:14px}body::before{display:none}.g{display:flex;gap:8px;flex-wrap:wrap}.sw{flex:1;min-width:0;border:1px solid var(--color-border)}.sw i{display:block;height:52px}.sw b{display:block;padding:4px 6px;font-size:var(--font-size-xs);font-weight:var(--font-weight-medium);color:var(--color-text-primary);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}.sw span{display:block;padding:0 6px 5px;font-size:var(--font-size-xs);color:var(--color-text-muted)}
+.rows{display:grid;gap:6px}.r{display:grid;grid-template-columns:9rem 1fr;gap:12px;align-items:baseline;font-size:var(--font-size-xs);color:var(--color-text-muted)}
+</style></head><body><div class="rows">
+<div class="r"><span>--transition-fast</span><span style="color:var(--color-text-secondary)">80ms ease — colour on links, rows, buttons</span></div>
+<div class="r"><span>--transition-base</span><span style="color:var(--color-text-secondary)">120ms ease — opacity, borders, map pins</span></div>
+<div class="r"><span>--transition-slow</span><span style="color:var(--color-text-secondary)">200ms ease — tree branch collapse (grid-template-rows 1fr→0fr)</span></div>
+<div class="r"><span>blink</span><span style="color:var(--color-text-secondary)"><i style="display:inline-block;width:7px;height:7px;background:var(--color-accent-primary);animation:b 1.8s steps(2,start) infinite;vertical-align:middle"></i> steps(2,start) — "now" pulse, loading…</span></div>
+<div class="r"><span>overshoot</span><span style="color:var(--color-text-secondary)">cubic-bezier(.34,1.56,.64,1) — lightbox open only</span></div>
+</div><style>@keyframes b{50%{opacity:.35}}</style></body></html>

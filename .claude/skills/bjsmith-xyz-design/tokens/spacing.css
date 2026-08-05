@@ -1,0 +1,19 @@
+:root{
+  --space-1:0.25rem;
+  --space-2:0.5rem;
+  --space-3:0.75rem;
+  --space-4:1rem;
+  --space-5:1.5rem;
+  --space-6:2rem;
+  --space-8:3rem;
+  --space-10:4rem;
+  --space-16:8rem;
+
+  /* Semantic */
+  --pad-row:var(--space-3) var(--space-4);
+  --pad-panel:var(--space-4);
+  --pad-panel-lg:var(--space-6);
+  --gap-inline:var(--space-2);
+  --gap-columns:var(--space-4);
+  --stack-section:var(--space-6);
+}

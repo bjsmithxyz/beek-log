@@ -1,0 +1,74 @@
+:root{
+  /* Base — high contrast, no gradients. Dark is the default theme. */
+  --color-bg-primary:#0c0c0c;
+  --color-bg-secondary:#141414;
+  --color-bg-tertiary:#1a1a1a;
+
+  --color-text-primary:#e8e8e8;
+  --color-text-secondary:#999999;
+  --color-text-muted:#888888;
+
+  /* Terminal phosphor green is the brand accent; amber + cyan are the pair. */
+  --color-accent-primary:#33ff66;
+  --color-accent-secondary:#ffaa00;
+  --color-accent-tertiary:#66ccff;
+
+  /* Admin-only semantic; the public site has no error colour. */
+  --color-danger:#ff6b6b;
+
+  --color-border:#333333;
+  --color-border-strong:#555555;
+
+  /* Semantic aliases */
+  --surface-page:var(--color-bg-primary);
+  --surface-panel:var(--color-bg-secondary);
+  --surface-raised:var(--color-bg-tertiary);
+  --text-body:var(--color-text-secondary);
+  --text-strong:var(--color-text-primary);
+  --text-meta:var(--color-text-muted);
+  --link:var(--color-accent-primary);
+  --link-hover:var(--color-text-primary);
+  --focus-ring:var(--color-accent-primary);
+  --tag-dev:var(--color-accent-tertiary);
+  --tag-art:var(--color-accent-secondary);
+  --tag-photography:var(--color-accent-primary);
+  --film-color-edge:var(--color-accent-secondary);
+  --film-bw-edge:var(--color-text-secondary);
+  --film-base:#161412;
+
+  /* Short aliases the admin surface uses throughout its editors. */
+  --bg:var(--color-bg-primary);
+  --panel:var(--color-bg-secondary);
+  --panel-strong:var(--color-bg-tertiary);
+  --text:var(--color-text-primary);
+  --text-soft:var(--color-text-secondary);
+  --text-muted:var(--color-text-muted);
+  --accent:var(--color-accent-primary);
+  --amber:var(--color-accent-secondary);
+  --blue:var(--color-accent-tertiary);
+  --border:var(--color-border);
+  --border-strong:var(--color-border-strong);
+  color-scheme:dark;
+}
+[data-theme="light"]{
+  --color-bg-primary:#f4f4f0;
+  --color-bg-secondary:#eaeae4;
+  --color-bg-tertiary:#e0e0da;
+
+  --color-text-primary:#111111;
+  --color-text-secondary:#444444;
+  --color-text-muted:#666666;
+
+  --color-accent-primary:#008833;
+  --color-accent-secondary:#cc7700;
+  --color-accent-tertiary:#0066aa;
+
+  --color-danger:#cc2222;
+
+  --color-border:#cccccc;
+  --color-border-strong:#999999;
+
+  --shadow-hard:3px 3px 0 #aaaaaa;
+  --shadow-hard-accent:3px 3px 0 var(--color-accent-primary);
+  color-scheme:light;
+}
