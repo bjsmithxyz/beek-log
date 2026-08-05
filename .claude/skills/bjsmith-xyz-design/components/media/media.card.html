@@ -1,0 +1,30 @@
+<!-- @dsCard group="Components" viewport="700x380" name="Media" subtitle="Contact-sheet film strip, dot-matrix map, lightbox" -->
+<!doctype html><html lang="en" data-theme="dark"><head><meta charset="utf-8"><title>Media</title>
+<link rel="stylesheet" href="../../styles.css">
+<script src="https://unpkg.com/react@18.3.1/umd/react.development.js" integrity="sha384-hD6/rw4ppMLGNu3tX5cjIb+uRZ7UkRJ6BPkLpg4hAu/6onKUg4lLsHAs9EBPT82L" crossorigin="anonymous"></script>
+<script src="https://unpkg.com/react-dom@18.3.1/umd/react-dom.development.js" integrity="sha384-u6aeetuaXnQ38mYT8rp6sbXaQe3NL9t+IBXmnYxwkUI2Hw4bsp2Wvmx4yRQF1uAm" crossorigin="anonymous"></script>
+<script src="https://unpkg.com/@babel/standalone@7.29.0/babel.min.js" integrity="sha384-m08KidiNqLdpJqLq95G/LEi8Qvjl/xUYll3QILypMoQ65QorJ9Lvtp2RXYGBFj1y" crossorigin="anonymous"></script>
+<script src="../../_ds_bundle.js"></script>
+<style>body{padding:16px}body::before{display:none}.rowset{display:flex;flex-wrap:wrap;gap:12px;align-items:center}.stack{display:flex;flex-direction:column;gap:14px}.lbl{color:var(--color-text-muted);font-size:var(--font-size-xs);text-transform:uppercase;letter-spacing:.05em}</style>
+</head><body><div id="root"></div><script type="text/babel">
+const NS = window.BjsmithXyzDesignSystem_042b50;
+
+const { FilmStrip, WorldMap, Lightbox } = NS;
+const frames = [1,2,3,4,5,6].map(n=>({src:'../../assets/photos/almaty-00'+n+'.jpg',alt:'Almaty frame '+n,caption:'Almaty',meta:'FUJIFILM 400 · '+n+'A · 08 25 · ALMATY'}));
+function Card(){
+  const [dots,setDots] = React.useState([]);
+  const [i,setI] = React.useState(null);
+  React.useEffect(()=>{fetch('../../assets/world-dots.json').then(r=>r.json()).then(setDots)},[]);
+  const pins = [
+    {label:'Kazakhstan',lat:48.1,lng:66.78,count:18,members:['Almaty'],slug:'a',slugs:['a']},
+    {label:'Vietnam',lat:14.06,lng:108.28,count:64,members:['Ha Noi','Ha Giang'],slug:'b',slugs:['b']},
+  ];
+  return (<div className="stack">
+    <FilmStrip photos={frames} stockName="Fujifilm 400" stockType="color" startFrame={1} onSelect={setI} />
+    <WorldMap dots={dots} pins={pins} />
+    <Lightbox open={i!==null} items={frames} index={i||0} onClose={()=>setI(null)} onNavigate={d=>setI(v=>(v+d+frames.length)%frames.length)} />
+  </div>);
+}
+
+ReactDOM.createRoot(document.getElementById('root')).render(<Card/>);
+</script></body></html>

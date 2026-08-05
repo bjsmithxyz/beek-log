@@ -1,0 +1,31 @@
+<!-- @dsCard group="Components" viewport="700x400" name="Navigation" subtitle="Breadcrumb row, ASCII site tree, footer" -->
+<!doctype html><html lang="en" data-theme="dark"><head><meta charset="utf-8"><title>Navigation</title>
+<link rel="stylesheet" href="../../styles.css">
+<script src="https://unpkg.com/react@18.3.1/umd/react.development.js" integrity="sha384-hD6/rw4ppMLGNu3tX5cjIb+uRZ7UkRJ6BPkLpg4hAu/6onKUg4lLsHAs9EBPT82L" crossorigin="anonymous"></script>
+<script src="https://unpkg.com/react-dom@18.3.1/umd/react-dom.development.js" integrity="sha384-u6aeetuaXnQ38mYT8rp6sbXaQe3NL9t+IBXmnYxwkUI2Hw4bsp2Wvmx4yRQF1uAm" crossorigin="anonymous"></script>
+<script src="https://unpkg.com/@babel/standalone@7.29.0/babel.min.js" integrity="sha384-m08KidiNqLdpJqLq95G/LEi8Qvjl/xUYll3QILypMoQ65QorJ9Lvtp2RXYGBFj1y" crossorigin="anonymous"></script>
+<script src="../../_ds_bundle.js"></script>
+<style>body{padding:16px}body::before{display:none}.rowset{display:flex;flex-wrap:wrap;gap:12px;align-items:center}.stack{display:flex;flex-direction:column;gap:14px}.lbl{color:var(--color-text-muted);font-size:var(--font-size-xs);text-transform:uppercase;letter-spacing:.05em}</style>
+</head><body><div id="root"></div><script type="text/babel">
+const NS = window.BjsmithXyzDesignSystem_042b50;
+
+const { Breadcrumb, SiteTree, Footer } = NS;
+function Card(){
+  const [theme,setTheme] = React.useState('dark');
+  React.useEffect(()=>{document.documentElement.setAttribute('data-theme',theme)},[theme]);
+  return (<div className="stack">
+    <Breadcrumb row={false} items={[{label:'~/beek',href:'#'},{label:'photos',href:'#'},{label:'2025-08-fujifilm-400-almaty.md',href:'#'}]} />
+    <SiteTree root="~" nodes={[
+      {label:'admin/',href:'#',meta:'protected'},
+      {label:'beek/',meta:'public home',open:true,children:[
+        {label:'work/',meta:'24 entries',children:[{label:'index/',href:'#',meta:'all work'},{label:'dev/',meta:'9 entries',children:[{label:'loot-sheet.md',href:'#'}]},{label:'art/',meta:'15 entries',children:[{label:'mspaint.md',href:'#'}]}]},
+        {label:'photos/',meta:'17 rolls',children:[{label:'index/',href:'#',meta:'all rolls'}]},
+        {label:'travel/',href:'#',meta:'journey'},
+        {label:'about.md',href:'#',meta:'file'}]}
+    ]} />
+    <Footer theme={theme} onToggleTheme={()=>setTheme(t=>t==='dark'?'light':'dark')} />
+  </div>);
+}
+
+ReactDOM.createRoot(document.getElementById('root')).render(<Card/>);
+</script></body></html>

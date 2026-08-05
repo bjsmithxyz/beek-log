@@ -1,0 +1,20 @@
+:root{
+  /* Square corners everywhere: there is no radius token by design. */
+  --radius:0;
+  --border-width:1px;
+  --border-accent-width:3px;
+
+  --shadow-hard:3px 3px 0 var(--color-border-strong);
+  --shadow-hard-accent:3px 3px 0 var(--color-accent-primary);
+  --shadow-hard-amber:3px 3px 0 var(--color-accent-secondary);
+  --shadow-hard-blue:3px 3px 0 var(--color-accent-tertiary);
+  --shadow-dialog:5px 5px 0 var(--color-accent-primary);
+
+  /* Snappy, not floaty */
+  --transition-fast:80ms ease; /* @kind other */
+  --transition-base:120ms ease; /* @kind other */
+  --transition-slow:200ms ease; /* @kind other */
+
+  --overlay-scrim:rgba(0,0,0,0.95);
+  --overlay-blur:blur(12px); /* @kind other */
+}

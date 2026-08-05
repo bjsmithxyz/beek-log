@@ -1,0 +1,35 @@
+:root{
+  --font-family:'IBM Plex Mono','Courier New',monospace;
+  --font-mono:var(--font-family);
+
+  --font-size-xs:0.6875rem;
+  --font-size-sm:0.8125rem;
+  --font-size-base:0.9375rem;
+  --font-size-lg:1.0625rem;
+  --font-size-xl:1.25rem;
+  --font-size-2xl:1.5rem;
+  --font-size-3xl:2rem;
+  --font-size-4xl:2.5rem;
+  --font-size-5xl:3rem;
+  --font-size-page-title:var(--font-size-4xl);
+
+  --line-height-tight:1.2;
+  --line-height-base:1.6;
+  --line-height-relaxed:1.75;
+
+  --font-weight-regular:400;
+  --font-weight-medium:500;
+  --font-weight-bold:600;
+
+  /* Uppercase micro-labels (column headers, stat captions, badges) */
+  --letter-spacing-label:0.05em;
+  /* Film edge markings */
+  --letter-spacing-edge:0.18em;
+  --letter-spacing-frame:0.1em;
+
+  --text-title:var(--font-size-page-title);
+  --text-section:var(--font-size-base);
+  --text-row:var(--font-size-sm);
+  --text-micro:var(--font-size-xs);
+}
+@media (max-width:768px){:root{--font-size-4xl:2rem;--font-size-3xl:1.5rem}}
