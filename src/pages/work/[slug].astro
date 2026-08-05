@@ -33,10 +33,13 @@ const formattedDate = formatLongDate(date);
 const categoryClass = `tag-${category}`;
 
 const ogImage = `/og/work/${entry.id}.png`;
+// A piece may carry no description — the images are the work. Where one is
+// absent the page must fall back rather than publish an empty string as its
+// meta description or advertise an empty field in structured data.
 const jsonLd = {
   '@type': 'CreativeWork',
   name: title,
-  description,
+  ...(description ? { description } : {}),
   datePublished: date.toISOString(),
   url: new URL(`/work/${entry.id}/`, Astro.site).href,
   image: new URL(ogImage, Astro.site).href,
@@ -46,7 +49,7 @@ const jsonLd = {
 
 <BaseLayout
   title={title}
-  description={description}
+  description={description || undefined}
   image={ogImage}
   jsonLd={jsonLd}
   breadcrumbs={[
@@ -60,8 +63,8 @@ const jsonLd = {
       <header class="article-header">
         <span class={`category ${categoryClass}`}>[{category}]</span>
         <h1 class="title">{title}</h1>
-        <p class="description">{description}</p>
-        
+        {description && <p class="description">{description}</p>}
+
         <div class="meta">
           <time datetime={date.toISOString()}>{formattedDate}</time>
           {tags.length > 0 && (

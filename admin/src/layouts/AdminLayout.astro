@@ -42,6 +42,7 @@ const theme = Astro.cookies.get('theme')?.value === 'light' ? 'light' : 'dark';
     <div class="page-wrapper">
       <div class="breadcrumb-row admin-container">
         <Breadcrumb items={breadcrumbs} />
+        <slot name="chrome" />
       </div>
       <main class="admin-main" id="main-content" tabindex="-1">
         <div class="admin-container">

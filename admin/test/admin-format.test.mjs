@@ -146,7 +146,10 @@ test('admin dashboard renders a filesystem tree', async () => {
   const dashboard = await read('pages/index.astro');
 
   assert.match(dashboard, /<AdminTree user=\{user\.login\} \/>/, 'dashboard must render the admin tree');
-  assert.match(dashboard, /<PageHeader title="index\/"/, 'dashboard must use the shared page title scale');
+  // The tree is the dashboard's content and the breadcrumb already names the
+  // page, so it carries no title of its own — as on the public homepage.
+  assert.doesNotMatch(dashboard, /<PageHeader/, 'dashboard must not repeat its own name as a title');
+  assert.match(dashboard, /slot="chrome"[\s\S]*id="admin-logout"/, 'sign out must sit in the breadcrumb row');
 
   assert.match(tree, /aria-label="Admin index"/, 'tree must be labelled like the public site index');
   assert.match(tree, /class="tree-root"/, 'tree must render a root node');
@@ -158,7 +161,7 @@ test('admin dashboard renders a filesystem tree', async () => {
   assert.match(tree, /\[-\]/, 'expanded branches must show the collapse affordance');
   assert.match(tree, /\[\+\]/, 'collapsed branches must show the expand affordance');
 
-  for (const href of ['/rolls/', '/rolls/new/', '/travel/']) {
+  for (const href of ['/rolls/', '/rolls/new-roll/', '/travel/']) {
     assert.ok(tree.includes(`href="${href}"`), `admin tree must link to ${href}`);
   }
   assert.match(tree, /href=\{publicSite\}/, 'admin tree must link back to the public site');
@@ -171,8 +174,7 @@ test('admin pages use the shared page header contract', async () => {
   assert.match(header, /class="page-description"/);
 
   const pages = [
-    ['pages/index.astro', 'index/'],
-    ['pages/rolls/index.astro', 'film-rolls/'],
+    ['pages/rolls/index.astro', 'rolls/'],
     ['pages/travel/index.astro', 'travel-editor/'],
   ];
   for (const [page, title] of pages) {

@@ -18,13 +18,16 @@ import { publicTrip } from '@beek/shared/trip-public';
 const dist = new URL('../dist/', import.meta.url).pathname;
 const html = await readFile(join(dist, 'travel/index.html'), 'utf8');
 
-assert.match(html, /<h1[^>]*class="page-title"[^>]*>travel<\/h1>/, 'travel must use the shared page-title scale');
+assert.match(html, /<h1[^>]*class="page-title"[^>]*>travel\/<\/h1>/, 'travel must name itself as a directory, like work\/ and photos\/');
 assert.doesNotMatch(html, /Long Way Round/, 'retired travel title must not ship');
 assert.match(html, /role="tablist"[^>]*aria-label="Travel sections"/, 'travel section tabs must be built');
 assert.doesNotMatch(html, /data-travel-panel="timeline"[^>]*>\s*<div class="travel-section-head"/, 'timeline panel must not repeat the tab label');
 assert.doesNotMatch(html, /The whole journey, latest date first/, 'timeline panel must not describe the retired ordering');
 assert.doesNotMatch(html, /Trip started|Weather via Open-Meteo/, 'legacy travel footer must be removed');
 assert.doesNotMatch(html, /edit trip|save to github/i, 'public travel page must not contain editor UI');
+
+// The map legend is retired: two colours with no key beat a key nobody reads.
+assert.doesNotMatch(html, /travel-map-legend|legend-dot|been there/, 'the retired map legend must not ship');
 
 // The forward-looking tab is gone from the public surface entirely.
 assert.doesNotMatch(html, /road-ahead/, 'the road-ahead tab must not exist on the public page');

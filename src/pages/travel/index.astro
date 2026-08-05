@@ -74,7 +74,9 @@ const jsonLd = {
   <div class="travel-page" data-travel-page>
     <div class="container">
       <div class="travel-header">
-        <PageHeader title={tripData.meta.title} />
+        {/* Named as a directory, like work/ and photos/ — the itinerary's own
+            meta.title stays clean for structured data. */}
+        <PageHeader title={`${tripData.meta.title}/`} />
         <p class="travel-nowline"><span class="travel-pulse" aria-hidden="true"></span><span id="travel-now">loading journey…</span></p>
       </div>
 
@@ -92,10 +94,6 @@ const jsonLd = {
 
         <section id="travel-panel-route" role="tabpanel" aria-labelledby="travel-tab-route" data-travel-panel="route">
           <div id="travel-map" class="travel-map" role="region" aria-label="Interactive map of the journey" tabindex="0"></div>
-          <div class="travel-map-legend" aria-label="Map legend">
-            <span><i class="legend-dot travelled"></i>been there</span>
-            <span><i class="legend-dot current"></i>here now</span>
-          </div>
           <div id="travel-map-stops" class="travel-map-stops" aria-label="Show a stop on the map"></div>
         </section>
 
@@ -283,19 +281,6 @@ const jsonLd = {
   .travel-map .popup-current { color: var(--color-accent-tertiary); }
   .travel-map .popup-muted { color: var(--color-text-muted); }
 
-  .travel-map-legend {
-    display: flex;
-    flex-wrap: wrap;
-    gap: var(--space-4);
-    margin-top: var(--space-3);
-    color: var(--color-text-muted);
-    font-size: var(--font-size-xs);
-  }
-
-  .travel-map-legend span { display: inline-flex; align-items: center; gap: var(--space-2); }
-  .legend-dot { width: 8px; height: 8px; background: var(--color-accent-primary); }
-  .legend-dot.current { background: var(--color-accent-tertiary); }
-
   .travel-map-stops {
     display: flex;
     gap: var(--space-2);
@@ -345,6 +330,40 @@ const jsonLd = {
     letter-spacing: 0.12em;
   }
 
+  .timeline-year-toggle {
+    display: flex;
+    width: 100%;
+    align-items: center;
+    gap: var(--space-2);
+    padding: 0;
+    color: inherit;
+    background: transparent;
+    border: 0;
+    font: inherit;
+    letter-spacing: inherit;
+    text-align: left;
+    cursor: pointer;
+  }
+
+  .timeline-year-toggle:hover,
+  .timeline-year-toggle:focus-visible { color: var(--color-accent-tertiary); }
+
+  .timeline-state { color: var(--color-text-muted); }
+  .timeline-year-toggle[aria-expanded='true'] .timeline-state::before { content: '[-]'; }
+  .timeline-year-toggle[aria-expanded='false'] .timeline-state::before { content: '[+]'; }
+
+  /* Same grid-rows collapse the homepage tree uses, so both indexes animate
+     identically and a closed year leaves the tab order via `inert`. */
+  .timeline-collapse {
+    display: grid;
+    grid-template-rows: 1fr;
+    opacity: 1;
+    transition: grid-template-rows var(--transition-slow), opacity var(--transition-base);
+  }
+
+  .timeline-collapse[data-collapsed='true'] { grid-template-rows: 0fr; opacity: 0; }
+  .timeline-collapse-inner { min-height: 0; overflow: hidden; }
+
   /* Without dates the row is a single column; the 3px accent stays as the
      timeline spine, and turns cyan on the stop being published as "now". */
   .timeline-row {
@@ -354,7 +373,7 @@ const jsonLd = {
     border-left: 3px solid var(--color-accent-primary);
   }
 
-  .timeline-year + .timeline-row { border-top: 0; }
+  .timeline-collapse-inner > .timeline-row:first-child { border-top: 0; }
 
   .timeline-row.current { border-left-color: var(--color-accent-tertiary); }
   .timeline-row strong { color: var(--color-text-primary); }
@@ -375,6 +394,8 @@ const jsonLd = {
     .travel-map { height: 380px; }
     .timeline-row { padding: var(--space-2); }
     .timeline-row > span { display: block; margin-left: 0; }
+    /* Stacked, the country ends a line — a trailing comma would dangle. */
+    .timeline-comma { display: none; }
   }
 
   @media (prefers-reduced-motion: reduce) {

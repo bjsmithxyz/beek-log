@@ -1,6 +1,6 @@
 ---
 title: "another day"
-description: "another "
+description: ""
 date: 2023-03-06
 category: "art"
 tags:
