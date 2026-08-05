@@ -22,7 +22,7 @@ test('admin layout uses the public page shell', async () => {
     /<div class="breadcrumb-row admin-container">\s*<Breadcrumb/,
     'breadcrumb must sit in the static top row',
   );
-  assert.match(layout, /<Footer user=\{user\} \/>/, 'admin must render the shared footer');
+  assert.match(layout, /<Footer\s*\/>/, 'admin must render the shared footer');
   assert.match(layout, /id="main-content"/, 'main must be the skip-link target');
 
   assert.doesNotMatch(layout, /admin-chrome|admin-header/, 'sticky admin chrome must be gone');

@@ -17,7 +17,6 @@ const {
   title = 'admin',
   breadcrumbs = [{ label: '~/admin', href: '/' }],
 } = Astro.props;
-const user = Astro.locals.user;
 const fullTitle = title === 'admin' ? siteName : `${title} | ${siteName}`;
 
 // Resolved on the server, not by a before-paint inline script. The admin CSP
@@ -49,7 +48,7 @@ const theme = Astro.cookies.get('theme')?.value === 'light' ? 'light' : 'dark';
           <slot />
         </div>
       </main>
-      <Footer user={user} />
+      <Footer />
     </div>
   </body>
 </html>

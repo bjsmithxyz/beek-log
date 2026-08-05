@@ -1,21 +1,12 @@
 ---
-import { publicSite, tagline } from '../data/site';
+import { tagline } from '../data/site';
 
-interface Props {
-  user?: { login?: string } | null;
-}
-
-const { user } = Astro.props;
 const currentYear = new Date().getFullYear();
 ---
 
 <footer class="footer">
   <div class="footer-inner admin-container">
     <div class="footer-primary">
-      <div class="footer-links">
-        <a class="public-home" href={publicSite}>bjsmith.xyz/</a>
-        {user?.login && <span class="admin-user">{user.login}</span>}
-      </div>
       <p class="footer-tagline">{tagline}</p>
     </div>
 
