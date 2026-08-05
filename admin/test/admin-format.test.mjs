@@ -33,15 +33,39 @@ test('admin layout uses the public page shell', async () => {
   );
 });
 
-test('admin theme bootstrap matches the public site', async () => {
-  const layout = await read('layouts/AdminLayout.astro');
+// The two surfaces resolve the theme differently *on purpose*, and this test
+// used to require otherwise. The public site is prerendered and grants
+// script-src 'unsafe-inline', so it can bootstrap from localStorage before
+// paint. The admin withholds 'unsafe-inline' — a deliberate hardening of the
+// surface that holds GitHub tokens — which silently blocked the copied-over
+// inline script and left the admin ignoring the stored preference on every
+// load. Being SSR, the admin resolves it from a cookie instead.
+test('the public site bootstraps its theme inline, before paint', async () => {
   const base = await publicRead('layouts/BaseLayout.astro');
+  assert.match(
+    base,
+    /const theme = localStorage\.getItem\('theme'\) \|\| \(matchMedia\('\(prefers-color-scheme: light\)'\)\.matches \? 'light' : 'dark'\);/,
+    'public bootstrap shape changed',
+  );
+});
 
-  const bootstrap = /const theme = localStorage\.getItem\('theme'\) \|\| \(matchMedia\('\(prefers-color-scheme: light\)'\)\.matches \? 'light' : 'dark'\);/;
-  assert.match(base, bootstrap, 'public bootstrap shape changed — update the admin guard');
-  assert.match(layout, bootstrap, 'admin must resolve the stored theme before paint');
-  assert.match(layout, /data-theme="dark"/, 'admin must ship a default theme attribute');
+test('the admin resolves its theme server-side, because its CSP blocks inline scripts', async () => {
+  const layout = await read('layouts/AdminLayout.astro');
+  const { ADMIN_CSP } = await import('../src/server/headers.mjs');
+
+  assert.doesNotMatch(
+    ADMIN_CSP.match(/script-src[^;]*/)?.[0] || '',
+    /unsafe-inline/,
+    'if the admin ever grants unsafe-inline, revisit this whole approach',
+  );
+  assert.doesNotMatch(layout, /<script\s+is:inline/, 'an inline script here would be blocked and silently do nothing');
+  assert.match(layout, /Astro\.cookies\.get\('theme'\)/, 'admin must read the stored theme on the server');
+  assert.match(layout, /data-theme=\{theme\}/, 'admin must render the resolved theme, not a fixed default');
   assert.match(layout, /name="theme-color"/, 'admin must set theme-color');
+
+  const footer = await read('components/Footer.astro');
+  assert.match(footer, /document\.cookie = /, 'the toggle must persist to the cookie the server reads');
+  assert.match(footer, /localStorage\.getItem\('theme'\)/, 'a preference set before the cookie must carry over');
 });
 
 test('theme toggle lives in the admin footer, above the copyright', async () => {

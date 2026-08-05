@@ -49,6 +49,23 @@ const currentYear = new Date().getFullYear();
 <script>
   import { themeColors } from '../data/site';
 
+  // The theme is a cookie because AdminLayout resolves it server-side: the
+  // admin CSP blocks inline scripts, so there is no before-paint hook to read
+  // localStorage from. localStorage is still read once, to carry over a
+  // preference set before this changed.
+  const COOKIE = 'theme';
+
+  function storedTheme() {
+    const match = document.cookie.match(/(?:^|;\s*)theme=(light|dark)\b/);
+    return match?.[1] || null;
+  }
+
+  function persist(theme: string) {
+    const secure = location.protocol === 'https:' ? '; secure' : '';
+    document.cookie = `${COOKIE}=${theme}; path=/; max-age=31536000; samesite=lax${secure}`;
+    localStorage.setItem('theme', theme);
+  }
+
   function applyTheme(theme: string) {
     document.documentElement.setAttribute('data-theme', theme);
     document
@@ -57,21 +74,24 @@ const currentYear = new Date().getFullYear();
   }
 
   const themeToggle = document.getElementById('theme-toggle');
-  const initialTheme = document.documentElement.getAttribute('data-theme') || 'dark';
-  applyTheme(initialTheme);
-  themeToggle?.setAttribute(
-    'aria-label',
-    initialTheme === 'dark' ? 'Switch to light mode' : 'Switch to dark mode',
-  );
+  const label = (theme: string) => (theme === 'dark' ? 'Switch to light mode' : 'Switch to dark mode');
+
+  // With a cookie set, the server already rendered the right theme and there is
+  // nothing to correct. Without one — a first visit, or a migration — settle it
+  // here and persist, so every later navigation is right before paint.
+  let theme = storedTheme() || document.documentElement.getAttribute('data-theme') || 'dark';
+  if (!storedTheme()) {
+    theme = localStorage.getItem('theme')
+      || (matchMedia('(prefers-color-scheme: light)').matches ? 'light' : 'dark');
+    persist(theme);
+  }
+  applyTheme(theme);
+  themeToggle?.setAttribute('aria-label', label(theme));
 
   themeToggle?.addEventListener('click', () => {
-    const currentTheme = document.documentElement.getAttribute('data-theme');
-    const nextTheme = currentTheme === 'dark' ? 'light' : 'dark';
+    const nextTheme = document.documentElement.getAttribute('data-theme') === 'dark' ? 'light' : 'dark';
     applyTheme(nextTheme);
-    localStorage.setItem('theme', nextTheme);
-    themeToggle.setAttribute(
-      'aria-label',
-      nextTheme === 'dark' ? 'Switch to light mode' : 'Switch to dark mode',
-    );
+    persist(nextTheme);
+    themeToggle.setAttribute('aria-label', label(nextTheme));
   });
 </script>

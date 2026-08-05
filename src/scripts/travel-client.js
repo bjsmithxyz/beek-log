@@ -156,6 +156,7 @@ function setupTravel() {
       [stops.length, 'Stops so far'],
       [`${(totalKm / 1000).toFixed(1)}k`, 'Kilometres travelled'],
       [continents.size, 'Continents'],
+      [payload.rollsOnRoute ?? 0, 'Rolls along the way'],
     ];
     get('travel-stats').innerHTML = stats.map(([number, label], index) => `
       <div class="travel-stat"><strong${index === 0 ? ' id="travel-day"' : ''}>${escapeHtml(number)}</strong><span>${escapeHtml(label)}</span></div>

@@ -38,6 +38,12 @@ const stopPhotoLinks = Object.fromEntries(published.stops.map((stop, index) => {
   return [index, related];
 }));
 
+// Distinct rolls matched to a published stop. Derived from links already built
+// above, so it discloses nothing the stop list does not.
+const rollsOnRoute = new Set(
+  Object.values(stopPhotoLinks).flat().map((roll) => roll.href),
+).size;
+
 const description = "Places I've been, in order — no dates, no onward plans.";
 const jsonLd = {
   '@type': 'CreativeWork',
@@ -91,7 +97,7 @@ const jsonLd = {
           <div class="travel-timeline" id="travel-timeline"></div>
         </section>
       </div>
-      <script id="travel-data" type="application/json" set:html={JSON.stringify({ ...published, photoLinks: stopPhotoLinks })}></script>
+      <script id="travel-data" type="application/json" set:html={JSON.stringify({ ...published, photoLinks: stopPhotoLinks, rollsOnRoute })}></script>
     </div>
   </div>
 </BaseLayout>
