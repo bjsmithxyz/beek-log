@@ -9,11 +9,8 @@ import PageHeader from '../../components/PageHeader.astro';
     { label: 'rolls', href: '/rolls/' },
   ]}
 >
-  <PageHeader
-    title="film-rolls/"
-    description="Encode scans locally, then publish through a reviewed pull request."
-  >
-    <a slot="actions" class="admin-button" id="new-roll-link" href="/rolls/new/">new roll →</a>
+  <PageHeader title="rolls/">
+    <a slot="actions" class="admin-button" id="new-roll-link" href="/rolls/new-roll/">new roll →</a>
   </PageHeader>
 
   <section class="notice-panel unsupported" id="uploader-unsupported" hidden>

@@ -1,7 +1,6 @@
 ---
 import AdminLayout from '../layouts/AdminLayout.astro';
 import AdminTree from '../components/AdminTree.astro';
-import PageHeader from '../components/PageHeader.astro';
 import { validateNext } from '../server/auth.mjs';
 
 const user = Astro.locals.user;
@@ -21,7 +20,20 @@ const authError = Astro.url.searchParams.get('auth') === 'error'
   : null;
 ---
 
+{/* No page title: the breadcrumb (~/admin) and the tree's own root already name
+    this page, and the tree *is* the content — the same bargain the public
+    homepage makes. Sign out therefore sits in the breadcrumb row rather than
+    heading a section of its own. */}
 <AdminLayout>
+  <Fragment slot="chrome">
+    {user && (
+      <div class="logout-control">
+        <button class="admin-button secondary small" id="admin-logout" type="button">sign out</button>
+        <p id="logout-status" role="status"></p>
+      </div>
+    )}
+  </Fragment>
+
   {!user ? (
     <section class="login-panel" aria-labelledby="login-title">
       <h1 class="page-title" id="login-title">authentication required</h1>
@@ -30,22 +42,19 @@ const authError = Astro.url.searchParams.get('auth') === 'error'
       <a class="login-action" href={loginHref}>sign in with GitHub →</a>
     </section>
   ) : (
-    <>
-      <PageHeader title="index/" description={`signed in as ${user.login}`}>
-        <Fragment slot="actions">
-          <div class="logout-control">
-            <button class="admin-button secondary" id="admin-logout" type="button">sign out</button>
-            <p id="logout-status" role="status"></p>
-          </div>
-        </Fragment>
-      </PageHeader>
-
-      <AdminTree user={user.login} />
-    </>
+    <AdminTree user={user.login} />
   )}
 </AdminLayout>
 
 <style>
+  .logout-control {
+    display: flex;
+    flex: none;
+    align-items: center;
+    gap: var(--space-3);
+    margin-left: auto;
+  }
+
   .logout-control p {
     margin: 0;
     color: var(--color-text-muted);

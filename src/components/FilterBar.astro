@@ -30,6 +30,8 @@ const { options, rowSelector, filterAttr } = Astro.props;
       const rowSelector = el.dataset.rowSelector;
       const filterAttr = el.dataset.filterAttr;
       if (!rowSelector || !filterAttr) return;
+      if (el.dataset.filtersReady === 'true') return;
+      el.dataset.filtersReady = 'true';
 
       const filterBtns = el.querySelectorAll('.filter-btn');
       const rows = document.querySelectorAll(rowSelector);
@@ -50,6 +52,11 @@ const { options, rowSelector, filterAttr } = Astro.props;
     });
   }
 
-  // Re-bind after ClientRouter navigations (module-load alone is not enough).
+  // Bind immediately, then again after each ClientRouter swap. Waiting for
+  // astro:page-load alone left the buttons dead on a cold load: the router
+  // raises that event from the window `load` event, which does not fire until
+  // every subresource has finished, so the page looked ready long before the
+  // filters answered a click. The dataset guard keeps the second call a no-op.
+  setupDirFilters();
   document.addEventListener('astro:page-load', setupDirFilters);
 </script>

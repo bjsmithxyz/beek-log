@@ -43,7 +43,7 @@ function assertBreadcrumb(document, expected) {
 }
 
 const staticPages = [
-  ['index.html', [{ label: '~', href: '/' }]],
+  ['index.html', [{ label: '~/beek', href: '/' }]],
   ['about/index.html', [
     { label: '~/beek', href: '/' },
     // Directory routes are bare; single-file routes keep their extension.
@@ -83,9 +83,16 @@ for (const [relativePath, title] of sectionTitles) {
 }
 
 const home = await documentAt('index.html');
-// The breadcrumb (~) and the tree's own root label already name the homepage,
-// so it carries no separate heading — the tree is the content.
+// The breadcrumb (~/beek) and the tree's own root label already name the
+// homepage, so it carries no separate heading — the tree is the content.
 assert.equal(home.querySelector('h1.page-title'), null, 'homepage must not repeat its own name as a title');
+// The tree root names the site the same way the admin tree names itself
+// (~/admin), rather than degrading to a bare tilde.
+assert.equal(
+  home.querySelector('nav[aria-label="Site index"] .tree-root')?.textContent?.trim(),
+  '~/beek',
+  'the public site index must root itself at ~/beek',
+);
 
 // A section label is earned only by a page with more than one section: /photos/
 // has a map above its listing, /work/ is a single listing.

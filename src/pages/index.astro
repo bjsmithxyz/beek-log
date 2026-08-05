@@ -17,10 +17,10 @@ const rollTreeItems = allRolls.map((entry) => ({
 }));
 ---
 
-<BaseLayout breadcrumbs={[{ label: '~', href: '/' }]}>
+<BaseLayout breadcrumbs={[{ label: '~/beek', href: '/' }]}>
   <section class="home">
     <div class="container">
-      {/* No page title: the breadcrumb (~) and the tree's own root already
+      {/* No page title: the breadcrumb (~/beek) and the tree's own root already
           name this page, and the tree *is* the content. */}
       <SiteTree workItems={workTreeItems} rollItems={rollTreeItems} />
     </div>
