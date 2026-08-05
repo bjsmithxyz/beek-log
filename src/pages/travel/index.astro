@@ -65,7 +65,7 @@ const jsonLd = {
   <div class="travel-page" data-travel-page>
     <div class="container">
       <div class="travel-header">
-        <PageHeader title={tripData.meta.title} description={description} />
+        <PageHeader title={tripData.meta.title} />
         <p class="travel-nowline"><span class="travel-pulse" aria-hidden="true"></span><span id="travel-now">loading journey…</span></p>
       </div>
 
@@ -82,9 +82,6 @@ const jsonLd = {
         </section>
 
         <section id="travel-panel-route" role="tabpanel" aria-labelledby="travel-tab-route" data-travel-panel="route">
-          <div class="travel-section-head">
-            <p>Every place I've been, in the order I got there.</p>
-          </div>
           <div id="travel-map" class="travel-map" role="region" aria-label="Interactive map of the journey" tabindex="0"></div>
           <div class="travel-map-legend" aria-label="Map legend">
             <span><i class="legend-dot travelled"></i>been there</span>
@@ -178,20 +175,6 @@ const jsonLd = {
   }
 
   .travel-main > section { margin-top: var(--space-6); }
-
-  .travel-section-head {
-    display: flex;
-    align-items: end;
-    justify-content: space-between;
-    gap: var(--space-4);
-    margin-bottom: var(--space-4);
-  }
-
-  .travel-section-head p {
-    margin: var(--space-1) 0 0;
-    font-size: var(--font-size-xs);
-    color: var(--color-text-muted);
-  }
 
   .travel-stats {
     display: grid;
@@ -372,7 +355,6 @@ const jsonLd = {
 
   @media (max-width: 700px) {
     .travel-stats { grid-template-columns: repeat(2, 1fr); }
-    .travel-section-head { align-items: start; flex-direction: column; }
     .travel-map { height: 430px; min-height: 320px; }
   }
 
