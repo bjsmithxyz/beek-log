@@ -33,7 +33,7 @@ test('no stop carries a date, a note or a tentative flag into the payload', () =
   for (const stop of stops) {
     assert.deepEqual(
       Object.keys(stop).sort(),
-      ['cc', 'country', 'lat', 'lon', 'name', 'year'],
+      ['cc', 'country', 'lat', 'lon', 'month', 'name', 'year'],
       'the public stop shape is a closed set — a new field here is a disclosure',
     );
   }
@@ -42,6 +42,19 @@ test('no stop carries a date, a note or a tentative flag into the payload', () =
 test('the year survives so the timeline can head its sections', () => {
   const { stops } = publicTrip(trip([BANGKOK]), AT_HANOI);
   assert.equal(stops[0].year, '2025');
+});
+
+test('the month survives as a name, never as a fragment of the arrival date', () => {
+  const { stops } = publicTrip(trip([BANGKOK]), AT_HANOI);
+  assert.equal(stops[0].month, 'Jun');
+  assert.doesNotMatch(JSON.stringify(stops[0]), /06/, 'the numeric month must not ship');
+});
+
+test('every month in the committed itinerary resolves to a name', () => {
+  const { stops } = publicTrip(currentTrip, new Date(2026, 7, 2, 12));
+  const months = new Set(stops.map((stop) => stop.month));
+  assert.ok(months.size > 1);
+  for (const month of months) assert.match(month, /^[A-Z][a-z]{2}$/);
 });
 
 test('start is the first published arrival, so the day counter can run live', () => {

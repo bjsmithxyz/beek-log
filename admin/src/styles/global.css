@@ -204,7 +204,9 @@ p { margin-bottom: var(--space-4); color: var(--color-text-secondary); }
   border: 1px solid var(--color-border);
   box-shadow: var(--shadow-hard);
 }
-.login-panel .page-title { font-size: var(--font-size-2xl); }
+.login-panel .page-title { font-size: var(--font-size-xl); }
+.login-panel p { font-size: var(--font-size-sm); }
+.login-panel .login-action { font-size: var(--font-size-sm); }
 .login-action, .admin-button {
   display: inline-block;
   padding: .55rem .8rem;

@@ -11,6 +11,8 @@
 // that day away, so withholding it would buy nothing.
 import { computeTrip } from './trip-runtime.mjs';
 
+const MONTHS = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'];
+
 /** A stop may be published once it has begun, and only if it is not tentative. */
 export function isPublishable(stop) {
   return stop.status !== 'future' && stop.tentative !== true;
@@ -40,6 +42,10 @@ export function publicTrip(tripData, now = new Date()) {
       lon: stop.lon,
       // Coarse enough to head a timeline section without dating the stay.
       year: stop.arrive.slice(0, 4),
+      // Same bargain one notch finer: the month a stay began, as a name rather
+      // than a number, so no fragment of an ISO date can ship. A day would
+      // start to reconstruct the schedule; a month does not.
+      month: MONTHS[Number(stop.arrive.slice(5, 7)) - 1],
     })),
   };
 }

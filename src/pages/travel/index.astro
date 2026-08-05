@@ -15,11 +15,20 @@ assertValidTrip(tripData);
 // stops, none of which this page may disclose.
 const published = publicTrip(tripData);
 
+// Word-preserving: separators collapse to spaces rather than vanishing, so
+// matching below can require whole words. Stripping them outright made
+// "Huacachina" contain "China", which linked every Chinese roll to a Peruvian
+// desert oasis.
 const normalizePlace = (value: string) => value
   .normalize('NFD')
   .replace(/[\u0300-\u036f]/g, '')
   .toLowerCase()
-  .replace(/[^a-z0-9]/g, '');
+  .replace(/[^a-z0-9]+/g, ' ')
+  .trim();
+// True when one place name contains the other as a whole run of words, so
+// "Chiang Mai City Municipality" still matches the stop "Chiang Mai".
+const containsWords = (haystack: string, needle: string) =>
+  ` ${haystack} `.includes(` ${needle} `);
 const photoRolls = (await getPhotoRolls()).sort(byDateDesc);
 // Keyed by index into the published list, which is what the client indexes.
 const stopPhotoLinks = Object.fromEntries(published.stops.map((stop, index) => {
@@ -28,7 +37,7 @@ const stopPhotoLinks = Object.fromEntries(published.stops.map((stop, index) => {
     const names = [location.name, location.region?.name]
       .filter((name): name is string => Boolean(name))
       .map(normalizePlace);
-    const nameMatch = names.some((name) => name === stopName || name.includes(stopName) || stopName.includes(name));
+    const nameMatch = names.some((name) => containsWords(name, stopName) || containsWords(stopName, name));
     const distance = haversine(stop, { lat: location.lat, lon: location.lng });
     return nameMatch || distance <= 80;
   })).map((roll) => ({
@@ -308,8 +317,9 @@ const jsonLd = {
   .map-stop-photos {
     display: flex;
     max-width: 13rem;
-    flex-wrap: wrap;
-    gap: var(--space-1) var(--space-2);
+    flex-direction: column;
+    align-items: flex-start;
+    gap: var(--space-1);
     padding-left: var(--space-1);
     font-size: var(--font-size-xs);
   }
@@ -350,6 +360,7 @@ const jsonLd = {
   .timeline-row strong { color: var(--color-text-primary); }
   .timeline-row > span { margin-left: var(--space-2); color: var(--color-text-muted); font-size: var(--font-size-xs); }
   .timeline-row .timeline-here { color: var(--color-accent-tertiary); }
+  .timeline-row .timeline-month { color: var(--color-text-secondary); letter-spacing: 0.08em; }
 
   .travel-empty { padding: var(--space-6); border: 1px solid var(--color-border); }
 
