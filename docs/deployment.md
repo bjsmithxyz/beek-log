@@ -47,13 +47,15 @@ activated.
 - **Permissions-Policy** — camera/microphone/geolocation/browsing-topics denied.
 - **X-Frame-Options**, **X-Content-Type-Options**, **Referrer-Policy**.
 
-The single site-wide policy also allows CARTO tiles in `img-src` and Open-Meteo
-in `connect-src`, which only the travel route uses. These previously sat in
-route-specific `/travel` rules, but a route-scoped CSP cannot survive
-`ClientRouter`: it swaps documents without a navigation, so the browser keeps
-enforcing whichever policy the first-loaded page carried. Reaching `/travel/`
-from an internal link therefore blocked every tile and forecast while a direct
-load worked — the narrower policy bought no real protection and broke the page.
+The single site-wide policy also allows CARTO tiles in `img-src`, which only the
+travel route uses. (`connect-src` is now bare `'self'`: the Open-Meteo grant went
+with the `road-ahead/` tab, which the travel privacy split removed — see
+`docs/architecture.md`.) This previously sat in a route-specific `/travel` rule,
+but a route-scoped CSP cannot survive `ClientRouter`: it swaps documents without
+a navigation, so the browser keeps enforcing whichever policy the first-loaded
+page carried. Reaching `/travel/` from an internal link therefore blocked every
+tile while a direct load worked — the narrower policy bought no real protection
+and broke the page.
 `scripts/netlify-config.test.mjs` fails the build if a route-scoped CSP returns,
 or if the policy stops covering an origin `travel-client.js` requests.
 

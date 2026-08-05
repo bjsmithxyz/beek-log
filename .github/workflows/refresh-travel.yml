@@ -1,0 +1,40 @@
+name: Refresh travel
+
+# Which stops the public travel page may publish is decided at build time —
+# see shared/trip-public.mjs. The browser is deliberately not given the dates it
+# would need to work that out for itself, so nothing advances "here now" or
+# retires a stop from the withheld set except a rebuild.
+#
+# Requires a NETLIFY_BUILD_HOOK repository secret: create a build hook for the
+# public site under Site configuration → Build & deploy → Build hooks, and paste
+# its URL. Without the secret this job no-ops rather than failing the schedule.
+
+on:
+  schedule:
+    # 18:10 UTC ≈ 04:10 next day in Australia/Sydney — a quiet hour either way.
+    - cron: "10 18 * * *"
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  refresh:
+    name: Trigger a public rebuild
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    steps:
+      - name: Trigger the Netlify build hook
+        env:
+          BUILD_HOOK: ${{ secrets.NETLIFY_BUILD_HOOK }}
+        run: |
+          if [ -z "$BUILD_HOOK" ]; then
+            echo "NETLIFY_BUILD_HOOK is not set — skipping. The travel page will" \
+                 "stay as fresh as the last deploy until it is configured."
+            exit 0
+          fi
+          curl --fail --silent --show-error --request POST \
+            --data '{"trigger_title":"scheduled travel refresh"}' \
+            --header 'Content-Type: application/json' \
+            "$BUILD_HOOK"
+          echo "Requested a rebuild."

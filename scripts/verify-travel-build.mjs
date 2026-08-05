@@ -1,9 +1,22 @@
-// Build-time regression guard: all date-derived travel state must be filled by
-// the browser, never frozen into the prerendered HTML.
+// Build-time guard for the public travel page.
+//
+// The contract this enforces changed with the privacy split. It used to be
+// "status must never be prerendered, the browser fills it in" — which only
+// worked because the whole of trips.json was bundled into the client. That
+// bundle published every exact date, onward leg and tentative stop to anyone
+// who opened it.
+//
+// The contract is now the inverse: the build decides what may be published and
+// nothing else is allowed to reach the browser. Status is therefore baked, and
+// what must be absent is the itinerary itself. See shared/trip-public.mjs.
 import assert from 'node:assert/strict';
-import { readFile } from 'node:fs/promises';
+import { readdir, readFile } from 'node:fs/promises';
+import { join } from 'node:path';
+import trip from '../src/data/trips.json' with { type: 'json' };
+import { publicTrip } from '@beek/shared/trip-public';
 
-const html = await readFile(new URL('../dist/travel/index.html', import.meta.url), 'utf8');
+const dist = new URL('../dist/', import.meta.url).pathname;
+const html = await readFile(join(dist, 'travel/index.html'), 'utf8');
 
 assert.match(html, /<h1[^>]*class="page-title"[^>]*>travel<\/h1>/, 'travel must use the shared page-title scale');
 assert.doesNotMatch(html, /Long Way Round/, 'retired travel title must not ship');
@@ -11,6 +24,64 @@ assert.match(html, /role="tablist"[^>]*aria-label="Travel sections"/, 'travel se
 assert.doesNotMatch(html, /data-travel-panel="timeline"[^>]*>\s*<div class="travel-section-head"/, 'timeline panel must not repeat the tab label');
 assert.doesNotMatch(html, /The whole journey, latest date first/, 'timeline panel must not describe the retired ordering');
 assert.doesNotMatch(html, /Trip started|Weather via Open-Meteo/, 'legacy travel footer must be removed');
-assert.doesNotMatch(html, /data-status="(?:past|current|future)"/, 'trip status must not be prerendered');
 assert.doesNotMatch(html, /edit trip|save to github/i, 'public travel page must not contain editor UI');
-console.log('travel prerender guard: ok');
+
+// The forward-looking tab is gone from the public surface entirely.
+assert.doesNotMatch(html, /road-ahead/, 'the road-ahead tab must not exist on the public page');
+assert.deepEqual(
+  [...html.matchAll(/data-travel-tab="([^"]+)"/g)].map(([, name]) => name),
+  ['stats', 'route', 'timeline'],
+  'the public page publishes exactly three tabs',
+);
+
+// --- The privacy contract -------------------------------------------------
+// Nothing the build withheld may appear anywhere in the shipped site: not in
+// the page, not in a JS chunk, not in the embedded payload.
+const published = publicTrip(trip);
+const publishedNames = new Set(published.stops.map((stop) => stop.name));
+const withheld = trip.stops.filter((stop) => !publishedNames.has(stop.name));
+assert.ok(withheld.length > 0, 'expected the committed itinerary to have something to withhold');
+
+// Scope: the travel page itself plus every shipped script. Those are the only
+// surfaces the itinerary can reach. Scanning the whole site instead would trip
+// over legitimate content — photo rolls carry ISO dates, and a withheld city is
+// often somewhere already photographed.
+async function* scripts(directory) {
+  for (const entry of await readdir(directory, { withFileTypes: true })) {
+    const path = join(directory, entry.name);
+    if (entry.isDirectory()) yield* scripts(path);
+    else if (entry.name.endsWith('.js')) yield path;
+  }
+}
+
+async function* surfaces() {
+  yield join(dist, 'travel/index.html');
+  yield* scripts(dist);
+}
+
+for await (const path of surfaces()) {
+  const contents = await readFile(path, 'utf8');
+  const relative = path.slice(dist.length);
+
+  for (const stop of withheld) {
+    assert.ok(
+      !contents.includes(stop.name),
+      `${relative} leaks the withheld stop "${stop.name}" — onward and tentative stops must not ship`,
+    );
+  }
+
+  // Every stop date in the itinerary, published or not. The reduced payload
+  // keeps one: the first published arrival, which the live day counter needs
+  // and which N-plus-today already discloses.
+  for (const stop of trip.stops) {
+    for (const date of [stop.arrive, stop.depart]) {
+      if (date === published.start) continue;
+      assert.ok(
+        !contents.includes(date),
+        `${relative} leaks the itinerary date ${date} — the public site publishes places, not a schedule`,
+      );
+    }
+  }
+}
+
+console.log(`travel privacy guard: ok (${published.stops.length} published, ${withheld.length} withheld)`);

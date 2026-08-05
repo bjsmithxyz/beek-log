@@ -40,6 +40,8 @@ const LIST_COLS = '12rem 6.5rem 1fr 11rem 1.5rem';
         </div>
       )}
 
+      <h2 class="section-label rolls-label">rolls/</h2>
+
       {years.length > 1 && (
         <FilterBar
           options={years}
@@ -80,5 +82,10 @@ const LIST_COLS = '12rem 6.5rem 1fr 11rem 1.5rem';
     color: var(--color-text-muted);
     margin-bottom: var(--space-3);
     font-weight: var(--font-weight-medium);
+  }
+
+  /* Only labelled because this page has two sections; /work/ stays unlabelled. */
+  .rolls-label {
+    margin-top: var(--space-6);
   }
 </style>

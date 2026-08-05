@@ -138,6 +138,7 @@ function renderEditor() {
   titleInput.value = draft.meta.title;
   subtitleInput.value = draft.meta.subtitle;
   renderStops();
+  drawOverview();
   editor.disabled = Boolean(publication);
   updateDirtyState();
 }
@@ -169,6 +170,23 @@ function stopIndex(target) {
   return Number(target.closest('.stop-card')?.dataset.index);
 }
 
+// Loaded on demand: it pulls in Leaflet, which the editing UI itself never
+// needs, and it is absent entirely from the minimal DOM the unit test builds.
+let overviewModule = null;
+async function drawOverview() {
+  if (!draft || !document.getElementById('travel-overview-map')) return;
+  overviewModule ??= await import('./travel-overview.js');
+  overviewModule.renderOverview(draft);
+}
+
+// Rebuilding the map on every keystroke would be wasteful, and a half-typed
+// date or coordinate is not worth drawing. Settle first.
+let overviewTimer = null;
+function refreshOverview() {
+  clearTimeout(overviewTimer);
+  overviewTimer = setTimeout(drawOverview, 400);
+}
+
 stopList.addEventListener('input', (event) => {
   const input = event.target.closest('[data-field]');
   if (!input || !draft) return;
@@ -186,6 +204,7 @@ stopList.addEventListener('input', (event) => {
   const preview = input.closest('.stop-card')?.querySelector('.stop-name-preview');
   if (field === 'name' && preview) preview.textContent = value || 'unnamed stop';
   updateDirtyState();
+  refreshOverview();
 });
 
 stopList.addEventListener('click', (event) => {
@@ -203,6 +222,7 @@ stopList.addEventListener('click', (event) => {
   }
   renderStops();
   updateDirtyState();
+  refreshOverview();
   stopList.querySelector(`[data-index="${focusIndex}"] input[data-field="name"]`)?.focus();
 });
 
@@ -219,6 +239,7 @@ document.getElementById('add-stop').addEventListener('click', () => {
   const index = addStop(draft);
   renderStops();
   updateDirtyState();
+  refreshOverview();
   stopList.querySelector(`[data-index="${index}"] input[data-field="name"]`)?.focus();
 });
 

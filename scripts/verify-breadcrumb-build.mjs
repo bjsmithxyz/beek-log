@@ -46,7 +46,8 @@ const staticPages = [
   ['index.html', [{ label: '~', href: '/' }]],
   ['about/index.html', [
     { label: '~/beek', href: '/' },
-    { label: 'about', href: '/about/' },
+    // Directory routes are bare; single-file routes keep their extension.
+    { label: 'about.md', href: '/about/' },
   ]],
   ['work/index.html', [
     { label: '~/beek', href: '/' },
@@ -71,7 +72,6 @@ for (const [relativePath, expected] of staticPages) {
 }
 
 const sectionTitles = [
-  ['index.html', 'index/'],
   ['about/index.html', 'about.md'],
   ['work/index.html', 'work/'],
   ['photos/index.html', 'photos/'],
@@ -83,6 +83,24 @@ for (const [relativePath, title] of sectionTitles) {
 }
 
 const home = await documentAt('index.html');
+// The breadcrumb (~) and the tree's own root label already name the homepage,
+// so it carries no separate heading — the tree is the content.
+assert.equal(home.querySelector('h1.page-title'), null, 'homepage must not repeat its own name as a title');
+
+// A section label is earned only by a page with more than one section: /photos/
+// has a map above its listing, /work/ is a single listing.
+const photos = await documentAt('photos/index.html');
+assert.deepEqual(
+  [...photos.querySelectorAll('.section-label')].map((element) => element.textContent?.trim()),
+  ['map/', 'rolls/'],
+  'photos must label both of its sections',
+);
+assert.equal(
+  (await documentAt('work/index.html')).querySelector('.section-label'),
+  null,
+  'work is a single-section page and must stay unlabelled',
+);
+
 assert.doesNotMatch(home.body.textContent || '', /select a path or browse recent files|beek\/recent-(?:rolls|work)\//);
 assert.equal(home.querySelector('.recent-content, section[aria-label="Recent photo rolls"], section[aria-label="Recent work"]'), null);
 assert.equal(home.querySelector('.breadcrumb-row a[href^="https://admin.bjsmith.xyz"]'), null, 'public breadcrumb row must not duplicate the admin destination');

@@ -5,7 +5,11 @@
   # Netlify's cached commit can incorrectly cancel a deletion preview when the
   # resulting tree matches an older cache. Outside Deploy Previews, admin-only
   # commits may still skip the public build.
-  ignore = 'if [ "$CONTEXT" = "deploy-preview" ]; then exit 1; fi; if [ -z "$CACHED_COMMIT_REF" ] || [ -z "$COMMIT_REF" ]; then exit 1; fi; git diff --quiet "$CACHED_COMMIT_REF" "$COMMIT_REF" -- src public shared scripts astro.config.mjs netlify.toml package.json package-lock.json tsconfig.json'
+  #
+  # A build hook must always build even though no file changed: which travel
+  # stops are publishable is decided at build time, so the nightly refresh in
+  # .github/workflows/refresh-travel.yml is the only thing that advances it.
+  ignore = 'if [ "$CONTEXT" = "deploy-preview" ]; then exit 1; fi; if [ -n "$INCOMING_HOOK_TITLE" ]; then exit 1; fi; if [ -z "$CACHED_COMMIT_REF" ] || [ -z "$COMMIT_REF" ]; then exit 1; fi; git diff --quiet "$CACHED_COMMIT_REF" "$COMMIT_REF" -- src public shared scripts astro.config.mjs netlify.toml package.json package-lock.json tsconfig.json'
 
 [build.environment]
   # Astro 7 requires Node >= 22.12; tests require Node >= 22.18
@@ -23,11 +27,11 @@
 #
 # One policy for every route. A per-route CSP cannot work here: ClientRouter
 # swaps documents without a navigation, so the browser keeps enforcing the CSP
-# of whichever page was loaded first. Scoping the map/weather origins to
-# /travel meant arriving there from any internal link blocked every tile and
-# forecast, while a direct hit worked — so the narrower policy bought no real
-# protection and broke the page. scripts/verify-csp.mjs keeps this in sync with
-# what src/scripts/travel-client.js actually requests.
+# of whichever page was loaded first. Scoping the map origins to /travel meant
+# arriving there from any internal link blocked every tile, while a direct hit
+# worked — so the narrower policy bought no real protection and broke the page.
+# scripts/netlify-config.test.mjs keeps this in sync with what
+# src/scripts/travel-client.js actually requests.
 [[headers]]
   for = "/*"
   [headers.values]
@@ -38,7 +42,7 @@
     Permissions-Policy = "camera=(), microphone=(), geolocation=(), browsing-topics=()"
     # 'unsafe-inline' is required for Astro's inline theme/view-transition
     # scripts and inlined styles; acceptable on a fully static site.
-    Content-Security-Policy = "default-src 'self'; script-src 'self' 'unsafe-inline'; style-src 'self' 'unsafe-inline'; img-src 'self' data: https://*.basemaps.cartocdn.com; font-src 'self'; connect-src 'self' https://archive-api.open-meteo.com; object-src 'none'; base-uri 'self'; form-action 'self'; frame-ancestors 'none'; upgrade-insecure-requests"
+    Content-Security-Policy = "default-src 'self'; script-src 'self' 'unsafe-inline'; style-src 'self' 'unsafe-inline'; img-src 'self' data: https://*.basemaps.cartocdn.com; font-src 'self'; connect-src 'self'; object-src 'none'; base-uri 'self'; form-action 'self'; frame-ancestors 'none'; upgrade-insecure-requests"
 
 # Hashed build assets are immutable
 [[headers]]
