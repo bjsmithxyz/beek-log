@@ -204,8 +204,12 @@ const photoYears = [...new Set(rollItems.map(rollYear))]
     });
   }
 
-  document.addEventListener('astro:page-load', setupSiteTree);
+  // Bind immediately, then again after each ClientRouter swap. Waiting for
+  // astro:page-load alone left expand/collapse dead on a cold load: that event
+  // waits on window `load`, so the file-system UI looked ready while clicks did
+  // nothing. The dataset guard keeps the second call a no-op.
   setupSiteTree();
+  document.addEventListener('astro:page-load', setupSiteTree);
 </script>
 
 <style>
