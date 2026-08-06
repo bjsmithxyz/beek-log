@@ -15,6 +15,7 @@ const endpoints = {
   status: '/.netlify/functions/publish-status',
   merge: '/.netlify/functions/publish-merge',
   abandon: '/.netlify/functions/publish-abandon',
+  geocode: '/.netlify/functions/geocode',
 };
 const publicationKey = 'beek-admin-travel-publication';
 
@@ -22,8 +23,6 @@ const editor = document.getElementById('travel-editor');
 const statusNode = document.getElementById('editor-status');
 const errorsPanel = document.getElementById('editor-errors');
 const errorsList = document.getElementById('editor-error-list');
-const titleInput = document.getElementById('trip-title');
-const subtitleInput = document.getElementById('trip-subtitle');
 const stopList = document.getElementById('stop-list');
 const stopCount = document.getElementById('stop-count');
 const reviewButton = document.getElementById('review-travel');
@@ -93,7 +92,12 @@ function setErrors(errors) {
   errorsPanel.hidden = errors.length === 0;
 }
 
+function formatCoord(value) {
+  return typeof value === 'number' && Number.isFinite(value) ? value.toFixed(4) : '—';
+}
+
 function renderStops() {
+  clearGeocodeTimers();
   stopCount.textContent = `(${draft.stops.length})`;
   stopList.innerHTML = draft.stops.map((stop, index) => `
     <article class="stop-card" data-index="${index}">
@@ -112,12 +116,18 @@ function renderStops() {
       <div class="stop-grid">
         <label class="name-field"><span>place</span><input data-field="name" maxlength="120" required value="${escapeHtml(stop.name)}"></label>
         <label><span>country</span><input data-field="country" maxlength="120" required value="${escapeHtml(stop.country)}"></label>
-        <label><span>code</span><input data-field="cc" maxlength="2" required value="${escapeHtml(stop.cc)}"></label>
-        <label><span>latitude</span><input data-field="lat" type="number" min="-90" max="90" step="any" required value="${escapeHtml(stop.lat)}"></label>
-        <label><span>longitude</span><input data-field="lon" type="number" min="-180" max="180" step="any" required value="${escapeHtml(stop.lon)}"></label>
         <div class="dates">
           <label><span>arrive</span><input data-field="arrive" type="date" required value="${escapeHtml(stop.arrive)}"></label>
           <label><span>depart</span><input data-field="depart" type="date" required value="${escapeHtml(stop.depart)}"></label>
+        </div>
+        <div class="derived-field" role="group" aria-label="Resolved location for stop ${index + 1}">
+          <span class="derived-title">location</span>
+          <div class="derived-values">
+            <span class="derived-item"><span class="derived-key">code</span><span class="derived-value" data-derived="cc">${escapeHtml(stop.cc || '—')}</span></span>
+            <span class="derived-item"><span class="derived-key">lat</span><span class="derived-value" data-derived="lat">${formatCoord(stop.lat)}</span></span>
+            <span class="derived-item"><span class="derived-key">lon</span><span class="derived-value" data-derived="lon">${formatCoord(stop.lon)}</span></span>
+          </div>
+          <button type="button" class="refresh-geo" data-action="geocode" aria-label="Refresh location data for stop ${index + 1}" title="Refresh code, latitude and longitude from place + country">🌐</button>
         </div>
         <label class="note-field"><span>note</span><textarea data-field="note" maxlength="500">${escapeHtml(stop.note || '')}</textarea></label>
         <label class="tentative-field"><input data-field="tentative" type="checkbox" ${stop.tentative ? 'checked' : ''}><span>tentative</span></label>
@@ -126,17 +136,69 @@ function renderStops() {
   `).join('');
 }
 
+// The code / latitude / longitude are derived, not typed: place + country are
+// geocoded (debounced while typing, or on the globe button) and the resolved
+// values are written back into the draft and shown read-only on the card.
+const geocodeTimers = new Map();
+
+function clearGeocodeTimers() {
+  for (const timer of geocodeTimers.values()) clearTimeout(timer);
+  geocodeTimers.clear();
+}
+
+function scheduleGeocode(index) {
+  clearTimeout(geocodeTimers.get(index));
+  geocodeTimers.set(index, setTimeout(() => {
+    geocodeTimers.delete(index);
+    geocodeStop(index);
+  }, 800));
+}
+
+function updateDerived(index) {
+  const card = stopList.querySelector(`[data-index="${index}"]`);
+  if (!card) return;
+  const stop = draft.stops[index];
+  card.querySelector('[data-derived="cc"]').textContent = stop.cc || '—';
+  card.querySelector('[data-derived="lat"]').textContent = formatCoord(stop.lat);
+  card.querySelector('[data-derived="lon"]').textContent = formatCoord(stop.lon);
+}
+
+async function geocodeStop(index) {
+  const stop = draft?.stops[index];
+  if (!stop) return;
+  const query = [stop.name, stop.country].map((part) => String(part || '').trim()).filter(Boolean).join(', ');
+  if (!query) return;
+  const button = stopList.querySelector(`[data-index="${index}"] [data-action="geocode"]`);
+  button?.setAttribute('aria-busy', 'true');
+  try {
+    const body = await post(endpoints.geocode, { kind: 'place', query });
+    const result = body.results?.[0];
+    if (!result) {
+      setStatus(`No location match for “${query}”.`);
+      return;
+    }
+    stop.lat = Number(result.lat);
+    stop.lon = Number(result.lng);
+    if (result.cc) stop.cc = result.cc;
+    updateDerived(index);
+    updateDirtyState();
+    refreshOverview();
+  } catch (error) {
+    setStatus(error.message || 'Could not resolve this location.');
+  } finally {
+    button?.removeAttribute('aria-busy');
+  }
+}
+
 function updateDirtyState() {
   const dirty = original && !tripsEqual(original, draft);
   reviewButton.disabled = !dirty || Boolean(publication);
-  setStatus(dirty ? 'Unpublished changes.' : 'Itinerary matches main.');
+  setStatus(dirty ? 'Unpublished changes.' : '');
   reviewPanel.hidden = true;
   setErrors([]);
 }
 
 function renderEditor() {
-  titleInput.value = draft.meta.title;
-  subtitleInput.value = draft.meta.subtitle;
   renderStops();
   drawOverview();
   editor.disabled = Boolean(publication);
@@ -196,13 +258,10 @@ stopList.addEventListener('input', (event) => {
   let value = input.value;
   if (input.type === 'number') value = input.value === '' ? Number.NaN : Number(input.value);
   if (input.type === 'checkbox') value = input.checked;
-  if (field === 'cc') {
-    value = String(value).toUpperCase();
-    input.value = value;
-  }
   draft.stops[index][field] = value;
   const preview = input.closest('.stop-card')?.querySelector('.stop-name-preview');
   if (field === 'name' && preview) preview.textContent = value || 'unnamed stop';
+  if (field === 'name' || field === 'country') scheduleGeocode(index);
   updateDirtyState();
   refreshOverview();
 });
@@ -212,6 +271,12 @@ stopList.addEventListener('click', (event) => {
   if (!button || !draft) return;
   const index = stopIndex(button);
   const action = button.dataset.action;
+  if (action === 'geocode') {
+    clearTimeout(geocodeTimers.get(index));
+    geocodeTimers.delete(index);
+    geocodeStop(index);
+    return;
+  }
   let focusIndex = index;
   if (action === 'up' && moveStop(draft, index, -1)) focusIndex = index - 1;
   if (action === 'down' && moveStop(draft, index, 1)) focusIndex = index + 1;
@@ -224,15 +289,6 @@ stopList.addEventListener('click', (event) => {
   updateDirtyState();
   refreshOverview();
   stopList.querySelector(`[data-index="${focusIndex}"] input[data-field="name"]`)?.focus();
-});
-
-titleInput.addEventListener('input', () => {
-  draft.meta.title = titleInput.value;
-  updateDirtyState();
-});
-subtitleInput.addEventListener('input', () => {
-  draft.meta.subtitle = subtitleInput.value;
-  updateDirtyState();
 });
 
 document.getElementById('add-stop').addEventListener('click', () => {
