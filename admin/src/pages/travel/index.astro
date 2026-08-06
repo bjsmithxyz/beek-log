@@ -40,9 +40,12 @@ import PageHeader from '../../components/PageHeader.astro';
 
   <section class="overview-panel" aria-labelledby="overview-title">
     <div class="section-heading">
-      <div>
-        <span class="section-path">trips.json/overview</span>
-        <h2 id="overview-title">full itinerary</h2>
+      <div class="overview-heading-text">
+        <button type="button" class="stop-collapse" id="overview-collapse" aria-expanded="true" aria-label="Collapse the full itinerary">▾</button>
+        <div>
+          <span class="section-path">trips.json/overview</span>
+          <h2 id="overview-title">full itinerary</h2>
+        </div>
       </div>
       <p class="overview-summary" id="travel-overview-summary"></p>
     </div>
@@ -93,6 +96,20 @@ import PageHeader from '../../components/PageHeader.astro';
   .sr-only { position: absolute; width: 1px; height: 1px; padding: 0; margin: -1px; overflow: hidden; clip: rect(0, 0, 0, 0); white-space: nowrap; border: 0; }
   .review-actions { display: flex; flex-wrap: wrap; gap: .75rem; }
   .editor-status { min-height: 1.6rem; color: var(--text-muted); font-size: var(--font-size-sm); }
+  /* Unpublished changes read as a live, pulsing green box so they are hard to
+     miss before review. */
+  .editor-status.is-dirty {
+    display: inline-block; margin: .1rem 0; padding: .25rem .6rem;
+    color: var(--accent); border: 1px solid var(--accent);
+    animation: status-pulse 1.6s ease-in-out infinite;
+  }
+  @keyframes status-pulse {
+    0%, 100% { box-shadow: 0 0 0 0 rgba(51, 255, 102, .45); }
+    50% { box-shadow: 0 0 0 5px rgba(51, 255, 102, 0); }
+  }
+  @media (prefers-reduced-motion: reduce) {
+    .editor-status.is-dirty { animation: none; }
+  }
   .error-panel { margin: 1rem 0; padding: 1rem; border: 1px solid #ff6b6b; background: var(--panel); color: #ff9d9d; }
   .error-panel h2 { margin-bottom: .5rem; color: #ff6b6b; }
   .error-panel ul { padding-left: 1.25rem; font-size: var(--font-size-sm); }
@@ -128,15 +145,25 @@ import PageHeader from '../../components/PageHeader.astro';
   :global(.stop-card:focus-within) { border-color: var(--border-strong); }
   :global(.stop-card-head) { display: flex; align-items: flex-start; justify-content: space-between; gap: .75rem; margin-bottom: .75rem; }
   :global(.stop-card-id) { display: flex; align-items: center; gap: .5rem; min-width: 0; }
-  :global(.stop-number) { color: var(--accent); font-size: var(--font-size-sm); }
-  :global(.stop-name-preview) { color: var(--text-soft); font-size: var(--font-size-sm); overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+  /* Collapse toggle — a chevron that rotates when its section is minimised.
+     Shared by every stop card and the full-itinerary panel. */
+  :global(.stop-collapse) { flex: none; width: 1.7rem; height: 1.7rem; border: 1px solid var(--border); background: var(--bg); color: var(--text-muted); cursor: pointer; line-height: 1; transition: transform var(--transition-fast); }
+  :global(.stop-collapse:hover) { color: var(--accent); border-color: var(--accent); }
+  :global(.stop-collapse[aria-expanded='false']) { transform: rotate(-90deg); }
+  :global(.stop-card[data-collapsed] .stop-grid) { display: none; }
+  :global(.stop-card[data-collapsed]) .stop-card-head { margin-bottom: 0; }
+  :global(.stop-number) { color: var(--accent); font-size: var(--font-size-lg); }
+  :global(.stop-name-preview) { color: var(--text-soft); font-size: var(--font-size-lg); overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
   /* Actions on top, the tentative toggle tucked beneath them, both right-aligned. */
   :global(.stop-head-controls) { display: flex; flex: none; flex-direction: column; align-items: flex-end; gap: .4rem; }
   :global(.stop-actions) { display: flex; gap: .35rem; }
   :global(.stop-actions button) { width: 2rem; height: 2rem; border: 1px solid var(--border); background: var(--bg); color: var(--text-muted); }
   :global(.stop-actions button:hover) { color: var(--accent); border-color: var(--accent); }
   :global(.stop-actions .remove-stop:hover) { color: #ff6b6b; border-color: #ff6b6b; }
-  :global(.tentative-field) { display: flex; align-items: center; gap: .4rem; color: var(--text-muted); font-size: var(--font-size-xs); white-space: nowrap; }
+  /* .stop-card label sets display:grid (for the date fields); tentative needs a
+     single centered row, so it must out-specify that rule. */
+  :global(.stop-card .tentative-field) { display: flex; align-items: center; gap: .4rem; color: var(--text-muted); font-size: var(--font-size-xs); line-height: 1; white-space: nowrap; cursor: pointer; }
+  :global(.stop-card .tentative-field input) { margin: 0; }
 
   /* Editable fields on the left, the read-only location readout stacked on the
      right (one line each: code / lat / lon). */
@@ -146,16 +173,21 @@ import PageHeader from '../../components/PageHeader.astro';
   :global(.stop-fields .field-note) { grid-column: 1 / -1; }
 
   /* Resolved location: shown, never typed. Populated from place + country by the
-     geocoder, refreshable with the globe button. */
-  :global(.derived-field) { display: grid; justify-items: end; align-content: start; gap: .3rem; font-size: var(--font-size-xs); text-align: right; }
+     geocoder, refreshable with the globe button. Its own bordered box, labels
+     left-aligned, values in accent green. */
+  :global(.derived-field) { display: grid; justify-items: start; align-content: start; gap: .3rem; padding: .5rem .6rem; border: 1px solid var(--border); background: var(--bg); font-size: var(--font-size-xs); text-align: left; }
   :global(.derived-item) { display: flex; align-items: baseline; gap: .4rem; }
   :global(.derived-item .derived-key) { color: var(--text-muted); }
-  :global(.derived-item .derived-value) { color: var(--text-soft); font-variant-numeric: tabular-nums; }
-  :global(.refresh-geo) { margin-top: .15rem; flex: none; width: 1.9rem; height: 1.9rem; border: 1px solid var(--border); background: var(--bg); color: var(--text-muted); cursor: pointer; }
+  :global(.derived-item .derived-value) { color: var(--accent); font-variant-numeric: tabular-nums; }
+  :global(.refresh-geo) { justify-self: end; margin-top: .15rem; flex: none; width: 1.9rem; height: 1.9rem; border: 1px solid var(--border); background: var(--bg); color: var(--text-muted); cursor: pointer; }
   :global(.refresh-geo:hover) { color: var(--accent); border-color: var(--accent); }
   :global(.refresh-geo[aria-busy='true']) { opacity: .55; cursor: progress; }
 
   .overview-panel { margin: 1rem 0 2rem; padding: 1rem; border: 1px solid var(--border); background: var(--panel); box-shadow: var(--shadow); }
+  .overview-heading-text { display: flex; align-items: center; gap: .5rem; }
+  .overview-panel[data-collapsed] .section-heading { margin-bottom: 0; }
+  .overview-panel[data-collapsed] .overview-map,
+  .overview-panel[data-collapsed] .overview-table-scroll { display: none; }
   .overview-summary { color: var(--text-muted); font-size: var(--font-size-xs); font-variant-numeric: tabular-nums; }
   .overview-map { height: min(55vh, 460px); min-height: 320px; border: 1px solid var(--border-strong); background: var(--panel-strong); }
   .overview-map :global(.leaflet-popup-content-wrapper), .overview-map :global(.leaflet-popup-tip) { border-radius: 0; background: var(--panel); color: var(--text-soft); }
