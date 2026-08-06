@@ -129,7 +129,9 @@ const { mode, slug = '' } = Astro.props;
   .unsupported { border-color: var(--amber); }
   .roll-status { margin-bottom: var(--space-5); color: var(--color-text-muted); font-size: var(--font-size-sm); }
   .actions, .frame-tools, .search-row { display: flex; flex-wrap: wrap; gap: .6rem; }
-  .danger-button, .small-button { padding: .45rem .65rem; border: 1px solid var(--border-strong); background: var(--panel-strong); color: var(--text-soft); }
+  /* Match the sign-out button on the index page: compact padding + xs font. */
+  .admin-button, .danger-button, .small-button { padding: .3rem .55rem; font-size: var(--font-size-xs); }
+  .danger-button, .small-button { border: 1px solid var(--border-strong); background: var(--panel-strong); color: var(--text-soft); }
   .danger-button { color: #ff8e8e; border-color: #994444; }
   .danger-button:hover { color: var(--bg); border-color: #ff6b6b; background: #ff6b6b; }
   .small-button:hover { color: var(--accent); border-color: var(--accent); }

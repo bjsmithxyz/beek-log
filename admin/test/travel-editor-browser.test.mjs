@@ -3,7 +3,7 @@ import assert from 'node:assert/strict';
 import { JSDOM } from 'jsdom';
 
 const html = `<!doctype html><body>
-<fieldset id="travel-editor" disabled><input id="trip-title"><input id="trip-subtitle"><button id="add-stop"></button><div id="stop-list"></div></fieldset>
+<fieldset id="travel-editor" disabled><button id="add-stop"></button><div id="stop-list"></div></fieldset>
 <p id="editor-status"></p><section id="editor-errors" hidden><ul id="editor-error-list"></ul></section><span id="stop-count"></span>
 <button id="review-travel" disabled></button><button id="reload-travel"></button>
 <section id="review-panel" hidden tabindex="-1"><p id="review-summary"></p><button id="cancel-review"></button><button id="publish-travel"></button></section>
@@ -44,14 +44,21 @@ test('travel browser editor loads, edits, validates and opens review', async () 
     assert.equal(document.getElementById('travel-editor').disabled, false);
     assert.equal(document.getElementById('review-travel').disabled, true);
 
-    const title = document.getElementById('trip-title');
-    title.value = 'Changed trip';
-    title.dispatchEvent(new dom.window.Event('input', { bubbles: true }));
+    // Editing a stop's date (not place/country) makes the itinerary dirty
+    // without invoking the geocoder.
+    const depart = document.querySelector('.stop-card input[data-field="depart"]');
+    depart.value = '2025-01-05';
+    depart.dispatchEvent(new dom.window.Event('input', { bubbles: true }));
     assert.equal(document.getElementById('review-travel').disabled, false);
     document.getElementById('review-travel').click();
     assert.equal(document.getElementById('review-panel').hidden, false);
     assert.match(document.getElementById('review-summary').textContent, /2 stops/);
     assert.equal(document.getElementById('editor-errors').hidden, true);
+
+    // Editing a stop schedules a debounced overview redraw; let it fire (it
+    // returns early with no map element) before tearing the DOM down, so no
+    // timer runs after globals are restored.
+    await new Promise((resolve) => setTimeout(resolve, 450));
   } finally {
     for (const [key, value] of Object.entries(previous)) {
       if (value === undefined) delete globalThis[key];

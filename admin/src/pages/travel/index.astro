@@ -10,7 +10,7 @@ import PageHeader from '../../components/PageHeader.astro';
   ]}
 >
   <PageHeader
-    title="travel-editor/"
+    title="travel/"
     description="Edit the committed itinerary, then review it through a pull request and public Deploy Preview."
   >
     <Fragment slot="actions">
@@ -18,11 +18,6 @@ import PageHeader from '../../components/PageHeader.astro';
       <button class="admin-button" id="review-travel" type="button" disabled>review changes →</button>
     </Fragment>
   </PageHeader>
-
-  <section class="privacy-notice">
-    <span class="section-path">privacy/boundary</span>
-    <p>authenticated view — exact dates, forward plans and tentative stops are never published to bjsmith.xyz.</p>
-  </section>
 
   <p class="editor-status" id="editor-status" role="status">Loading the itinerary from GitHub…</p>
   <section class="error-panel" id="editor-errors" role="alert" hidden>
@@ -32,25 +27,6 @@ import PageHeader from '../../components/PageHeader.astro';
 
   <fieldset class="travel-editor" id="travel-editor" disabled>
     <legend class="sr-only">Travel itinerary</legend>
-    <section class="meta-editor" aria-labelledby="meta-title">
-      <div class="section-heading">
-        <div>
-          <span class="section-path">trips.json/meta</span>
-          <h2 id="meta-title">trip metadata</h2>
-        </div>
-      </div>
-      <div class="meta-grid">
-        <label>
-          <span>title</span>
-          <input id="trip-title" name="title" maxlength="100" required />
-        </label>
-        <label>
-          <span>subtitle</span>
-          <input id="trip-subtitle" name="subtitle" maxlength="240" />
-        </label>
-      </div>
-    </section>
-
     <section aria-labelledby="stops-title">
       <div class="section-heading sticky-heading">
         <div>
@@ -123,18 +99,19 @@ import PageHeader from '../../components/PageHeader.astro';
   .error-panel ul { padding-left: 1.25rem; font-size: var(--font-size-sm); }
   .travel-editor { min-width: 0; border: 0; }
   .travel-editor:disabled { opacity: .6; }
-  .meta-editor, .review-panel, .publication-panel { margin: 1rem 0 2rem; padding: 1rem; border: 1px solid var(--border); background: var(--panel); box-shadow: var(--shadow); }
+  .review-panel, .publication-panel { margin: 1rem 0 2rem; padding: 1rem; border: 1px solid var(--border); background: var(--panel); box-shadow: var(--shadow); }
   .section-heading { display: flex; align-items: center; justify-content: space-between; gap: 1rem; margin-bottom: 1rem; }
   .section-heading h2 { color: var(--text); font-size: var(--font-size-base); }
   .section-path { color: var(--text-muted); font-size: var(--font-size-xs); }
-  .meta-grid { display: grid; grid-template-columns: 1fr 2fr; gap: .75rem; }
   label { display: grid; gap: .3rem; min-width: 0; color: var(--text-muted); font-size: var(--font-size-xs); }
   input, textarea { width: 100%; min-width: 0; padding: .52rem .6rem; border: 1px solid var(--border); border-radius: 0; background: var(--bg); color: var(--text); }
   input:hover, textarea:hover { border-color: var(--border-strong); }
   input:focus, textarea:focus { border-color: var(--accent); }
   textarea { min-height: 4.2rem; resize: vertical; }
   input[type='checkbox'] { width: 1rem; height: 1rem; accent-color: var(--accent); }
-  .small-button, .danger-button { padding: .4rem .6rem; border: 1px solid var(--border-strong); background: var(--panel-strong); color: var(--text-soft); }
+  /* Match the compact button sizing used across the admin (see the sign-out button). */
+  .admin-button, .small-button, .danger-button { padding: .3rem .55rem; font-size: var(--font-size-xs); }
+  .small-button, .danger-button { border: 1px solid var(--border-strong); background: var(--panel-strong); color: var(--text-soft); }
   .small-button:hover { border-color: var(--accent); color: var(--accent); }
   .danger-button { color: #ff8e8e; border-color: #994444; }
   .danger-button:hover { color: var(--bg); background: #ff6b6b; border-color: #ff6b6b; }
@@ -149,14 +126,26 @@ import PageHeader from '../../components/PageHeader.astro';
   :global(.stop-actions button) { width: 2rem; height: 2rem; border: 1px solid var(--border); background: var(--bg); color: var(--text-muted); }
   :global(.stop-actions button:hover) { color: var(--accent); border-color: var(--accent); }
   :global(.stop-actions .remove-stop:hover) { color: #ff6b6b; border-color: #ff6b6b; }
-  :global(.stop-grid) { display: grid; grid-template-columns: 2fr 1.5fr .55fr 1fr 1fr; gap: .6rem; }
-  :global(.stop-grid .dates) { display: grid; grid-template-columns: 1fr 1fr; gap: .6rem; grid-column: span 2; }
-  :global(.stop-grid .note-field) { grid-column: span 2; }
-  :global(.tentative-field) { display: flex; align-items: center; align-self: end; gap: .5rem; min-height: 2.35rem; }
-  /* The privacy boundary is stated in amber because it is a warning about what
-     this screen shows, not an error. */
-  .privacy-notice { margin: 1rem 0; padding: .75rem 1rem; border: 1px solid var(--amber); background: var(--panel); box-shadow: 3px 3px 0 var(--amber); }
-  .privacy-notice p { margin-top: .25rem; color: var(--text-soft); font-size: var(--font-size-sm); }
+  /* Two columns so a stop card is the same width as every other panel: the
+     resolved code / lat / lon now live in one read-only strip rather than three
+     extra input columns that stretched the card to the right. */
+  :global(.stop-grid) { display: grid; grid-template-columns: 1fr 1fr; gap: .6rem; align-items: start; }
+  :global(.stop-grid .dates) { display: grid; grid-template-columns: 1fr 1fr; gap: .6rem; grid-column: 1 / -1; }
+  :global(.stop-grid .note-field) { grid-column: 1 / -1; }
+  :global(.stop-grid .derived-field) { grid-column: 1 / -1; }
+  :global(.tentative-field) { display: flex; align-items: center; gap: .5rem; grid-column: 1 / -1; }
+
+  /* Resolved location: shown, never typed. Populated from place + country by the
+     geocoder, refreshable with the globe button. */
+  :global(.derived-field) { display: flex; flex-wrap: wrap; align-items: center; gap: .35rem .85rem; padding: .45rem .6rem; border: 1px solid var(--border); background: var(--bg); font-size: var(--font-size-xs); }
+  :global(.derived-field .derived-title) { color: var(--text-muted); }
+  :global(.derived-values) { display: flex; flex-wrap: wrap; align-items: center; gap: .3rem .85rem; }
+  :global(.derived-item) { display: inline-flex; align-items: baseline; gap: .35rem; }
+  :global(.derived-item .derived-key) { color: var(--text-muted); }
+  :global(.derived-item .derived-value) { color: var(--text-soft); font-variant-numeric: tabular-nums; }
+  :global(.refresh-geo) { margin-left: auto; flex: none; width: 2rem; height: 2rem; border: 1px solid var(--border); background: var(--bg); color: var(--text-muted); cursor: pointer; }
+  :global(.refresh-geo:hover) { color: var(--accent); border-color: var(--accent); }
+  :global(.refresh-geo[aria-busy='true']) { opacity: .55; cursor: progress; }
 
   .overview-panel { margin: 1rem 0 2rem; padding: 1rem; border: 1px solid var(--border); background: var(--panel); box-shadow: var(--shadow); }
   .overview-summary { color: var(--text-muted); font-size: var(--font-size-xs); font-variant-numeric: tabular-nums; }
@@ -188,18 +177,10 @@ import PageHeader from '../../components/PageHeader.astro';
   .publication-links dt { color: var(--text-muted); font-size: var(--font-size-xs); }
   .publication-links dd { min-width: 0; overflow-wrap: anywhere; font-size: var(--font-size-sm); }
 
-  @media (max-width: 800px) {
-    .meta-grid { grid-template-columns: 1fr; }
-    :global(.stop-grid) { grid-template-columns: 1fr 1fr; }
-    :global(.stop-grid .name-field), :global(.stop-grid .note-field) { grid-column: 1 / -1; }
-    :global(.stop-grid .dates) { grid-column: 1 / -1; }
-  }
-
   @media (max-width: 480px) {
     :global(.stop-card) { padding: .75rem; }
     :global(.stop-card-head) { align-items: flex-start; }
     :global(.stop-grid) { grid-template-columns: 1fr; }
-    :global(.stop-grid .name-field), :global(.stop-grid .note-field), :global(.stop-grid .dates) { grid-column: auto; }
     :global(.stop-grid .dates) { grid-template-columns: 1fr; }
     .publication-links div { grid-template-columns: 1fr; gap: .2rem; }
     .review-actions > * { flex: 1 1 auto; }

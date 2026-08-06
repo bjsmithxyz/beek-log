@@ -19,7 +19,7 @@ test('admin layout uses the public page shell', async () => {
   assert.match(layout, /<div class="page-wrapper">/, 'admin must use the shared page-wrapper shell');
   assert.match(
     layout,
-    /<div class="breadcrumb-row admin-container">\s*<Breadcrumb/,
+    /<div class="breadcrumb-row admin-container">\s*<div class="breadcrumb-row-inner">\s*<Breadcrumb/,
     'breadcrumb must sit in the static top row',
   );
   assert.match(layout, /<Footer\s*\/>/, 'admin must render the shared footer');
@@ -175,7 +175,7 @@ test('admin pages use the shared page header contract', async () => {
 
   const pages = [
     ['pages/rolls/index.astro', 'rolls/'],
-    ['pages/travel/index.astro', 'travel-editor/'],
+    ['pages/travel/index.astro', 'travel/'],
   ];
   for (const [page, title] of pages) {
     const source = await read(page);

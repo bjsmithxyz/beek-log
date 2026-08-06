@@ -50,6 +50,10 @@ const authError = Astro.url.searchParams.get('auth') === 'error'
   .logout-control {
     display: flex;
     flex: none;
+    /* Reversed so the sign-out button stays the rightmost element, keeping its
+       right edge flush with the file-structure box below even when the status
+       message is present. DOM order (button then status) is preserved. */
+    flex-direction: row-reverse;
     align-items: center;
     gap: var(--space-3);
     margin-left: auto;

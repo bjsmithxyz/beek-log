@@ -63,6 +63,7 @@ export default async function geocode(request) {
       lat: Number(result.lat),
       lng: Number(result.lon),
       regionName: result.address?.country || null,
+      cc: String(result.address?.country_code || '').toUpperCase() || null,
     })).filter((result) => result.name && Number.isFinite(result.lat) && Number.isFinite(result.lng));
     return mutationResponse(json(200, { ok: true, results }), context);
   } catch {

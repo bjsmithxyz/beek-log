@@ -62,6 +62,9 @@
   --space-16: 8rem;
 
   --container-max: 960px;
+  /* Shared by the index tree box and the breadcrumb-row chrome, so the sign-out
+     button's right edge lines up with the file-structure box below it. */
+  --admin-tree-max: 52rem;
   --page-content-top: var(--space-5);
 
   --transition-fast: 80ms ease;
@@ -135,7 +138,8 @@ img { display: block; max-width: 100%; height: auto; }
 
 /* ——— Page shell (mirrors the public BaseLayout) ——— */
 .page-wrapper { position: relative; z-index: 1; display: flex; min-height: 100vh; flex-direction: column; }
-.breadcrumb-row { display: flex; height: 56px; flex: 0 0 auto; align-items: center; gap: var(--space-3); }
+.breadcrumb-row { display: flex; height: 56px; flex: 0 0 auto; align-items: center; }
+.breadcrumb-row-inner { display: flex; align-items: center; gap: var(--space-3); width: 100%; max-width: var(--admin-tree-max); }
 .admin-main { flex: 1; padding: var(--page-content-top) 0 var(--space-16); }
 .admin-container, .container { width: 100%; max-width: var(--container-max); margin: 0 auto; padding: 0 var(--space-5); }
 
