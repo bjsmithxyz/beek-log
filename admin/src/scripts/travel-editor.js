@@ -81,6 +81,9 @@ function post(url, body) {
 
 function setStatus(message) {
   statusNode.textContent = message;
+  // Any explicit status message clears the "unpublished" styling; only
+  // updateDirtyState re-applies it, so loading/error text never pulses green.
+  statusNode.classList.remove('is-dirty');
 }
 
 function setErrors(errors) {
@@ -103,6 +106,7 @@ function renderStops() {
     <article class="stop-card" data-index="${index}">
       <header class="stop-card-head">
         <div class="stop-card-id">
+          <button type="button" class="stop-collapse" data-action="collapse" aria-expanded="true" aria-label="Collapse stop ${index + 1}">▾</button>
           <span class="stop-number">${String(index + 1).padStart(3, '0')}</span>
           <span class="stop-name-preview">${escapeHtml(stop.name || 'unnamed stop')}</span>
         </div>
@@ -195,6 +199,7 @@ function updateDirtyState() {
   const dirty = original && !tripsEqual(original, draft);
   reviewButton.disabled = !dirty || Boolean(publication);
   setStatus(dirty ? 'Unpublished changes.' : '');
+  statusNode.classList.toggle('is-dirty', Boolean(dirty));
   reviewPanel.hidden = true;
   setErrors([]);
 }
@@ -272,6 +277,12 @@ stopList.addEventListener('click', (event) => {
   if (!button || !draft) return;
   const index = stopIndex(button);
   const action = button.dataset.action;
+  if (action === 'collapse') {
+    const card = button.closest('.stop-card');
+    const nowCollapsed = card.toggleAttribute('data-collapsed');
+    button.setAttribute('aria-expanded', String(!nowCollapsed));
+    return;
+  }
   if (action === 'geocode') {
     clearTimeout(geocodeTimers.get(index));
     geocodeTimers.delete(index);
@@ -301,6 +312,16 @@ document.getElementById('add-stop').addEventListener('click', () => {
 });
 
 document.getElementById('reload-travel').addEventListener('click', () => loadData());
+
+// The full-itinerary panel (map + table) can be minimised. Re-rendering the
+// overview on expand lets Leaflet recompute its size after being unhidden.
+const overviewPanel = document.querySelector('.overview-panel');
+document.getElementById('overview-collapse')?.addEventListener('click', (event) => {
+  const button = event.currentTarget;
+  const nowCollapsed = overviewPanel.toggleAttribute('data-collapsed');
+  button.setAttribute('aria-expanded', String(!nowCollapsed));
+  if (!nowCollapsed) refreshOverview();
+});
 
 reviewButton.addEventListener('click', () => {
   const errors = validateTrip(draft);
