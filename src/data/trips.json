@@ -943,7 +943,7 @@
     },
     {
       "name": "Istanbul",
-      "country": "Turkey",
+      "country": "Türkiye",
       "cc": "TR",
       "lat": 41.0082,
       "lon": 28.9784,
@@ -953,7 +953,7 @@
     },
     {
       "name": "Konya",
-      "country": "Turkey",
+      "country": "Türkiye",
       "cc": "TR",
       "lat": 37.8746,
       "lon": 32.4932,
@@ -963,7 +963,7 @@
     },
     {
       "name": "Adana",
-      "country": "Turkey",
+      "country": "Türkiye",
       "cc": "TR",
       "lat": 37,
       "lon": 35.3213,
@@ -973,7 +973,7 @@
     },
     {
       "name": "Gaziantep",
-      "country": "Turkey",
+      "country": "Türkiye",
       "cc": "TR",
       "lat": 37.0662,
       "lon": 37.3833,
@@ -989,12 +989,12 @@
       "lon": 37.1343,
       "arrive": "2026-11-20",
       "depart": "2026-11-23",
-      "note": "Possible detour, contingent on political situation — not confirmed",
+      "note": "Possible detour, contingent on political situation.",
       "tentative": true
     },
     {
       "name": "Şanlıurfa",
-      "country": "Turkey",
+      "country": "Türkiye",
       "cc": "TR",
       "lat": 37.1591,
       "lon": 38.7969,
@@ -1004,7 +1004,7 @@
     },
     {
       "name": "Diyarbakır",
-      "country": "Turkey",
+      "country": "Türkiye",
       "cc": "TR",
       "lat": 37.9144,
       "lon": 40.2306,
@@ -1014,13 +1014,13 @@
     },
     {
       "name": "Mardin",
-      "country": "Turkey",
+      "country": "Türkiye",
       "cc": "TR",
       "lat": 37.3212,
       "lon": 40.7245,
       "arrive": "2026-11-29",
       "depart": "2026-12-02",
-      "note": "Staging point for Iraqi Kurdistan detour via Silopi / Ibrahim Khalil crossing",
+      "note": "Staging point for Iraqi Kurdistan detour via Silopi / Ibrahim Khalil crossing.",
       "tentative": true
     },
     {
@@ -1031,7 +1031,7 @@
       "lon": 42.995,
       "arrive": "2026-12-02",
       "depart": "2026-12-06",
-      "note": "Iraqi Kurdistan detour",
+      "note": "Iraqi Kurdistan.",
       "tentative": true
     },
     {
@@ -1062,12 +1062,12 @@
       "lon": 43.4886,
       "arrive": "2026-12-18",
       "depart": "2026-12-22",
-      "note": "Amadiyah old town + Lalish temple; return to Turkey via Ibrahim Khalil/Silopi",
+      "note": "Amadiyah old town + Lalish temple; return to Turkey via Ibrahim Khalil/Silopi.",
       "tentative": true
     },
     {
       "name": "Van",
-      "country": "Turkey",
+      "country": "Türkiye",
       "cc": "TR",
       "lat": 38.4891,
       "lon": 43.4089,
@@ -1077,13 +1077,13 @@
     },
     {
       "name": "Kars",
-      "country": "Turkey",
+      "country": "Türkiye",
       "cc": "TR",
       "lat": 40.6013,
       "lon": 43.0975,
       "arrive": "2027-01-05",
       "depart": "2027-01-15",
-      "note": "Harsh winter — around -15°C; Turkey–Armenia border closed since 1993, routing via Georgia",
+      "note": "Harsh winter, around -15°C. Türkiye-Armenia border closed since 1993, routing via Georgia.",
       "tentative": true
     },
     {
