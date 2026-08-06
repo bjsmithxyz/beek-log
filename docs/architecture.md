@@ -93,7 +93,9 @@ Authenticated admin reads and mutations pass through Netlify Functions; GitHub
 tokens never reach browser JavaScript. The generic publisher in
 `admin/src/server/publisher.mjs` accepts a server-policy-checked set of create,
 update and delete operations, verifies expected blob SHAs against `main`, builds
-one Git tree and commit, and fast-forwards `refs/heads/main`. It does not open
+one Git tree and commit, and fast-forwards `refs/heads/main`. After a successful
+content commit it best-effort POSTs the public Netlify build hook
+(`NETLIFY_BUILD_HOOK`) so `bjsmith.xyz` rebuilds promptly. It does not open
 pull requests for content publishes. Concurrent edits fail with a stale-base or
 stale-content error so the editor can reload and retry.
 

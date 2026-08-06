@@ -27,15 +27,24 @@ function permits(sources, host) {
 }
 
 // Path-based production skips raced with Netlify canceling in-progress builds
-// when a newer push arrived: an admin-only commit could cancel a content build
-// then skip itself, leaving production stuck. Always building closes that hole
-// and also keeps nightly / Actions build-hook runs working when no files change.
+// when a newer push arrived, and content-only admin skips looked like failed
+// roll deploys. Both sites always build; nightly / Actions build hooks still
+// need a forced build when no files change.
 test('public builds are never skipped by the ignore rule', async () => {
   const config = await read('../netlify.toml');
   assert.match(
     config,
     /ignore\s*=\s*"exit 1"/,
     'public production, previews, and build hooks must always build',
+  );
+});
+
+test('admin builds are never skipped by the ignore rule', async () => {
+  const config = await read('../admin/netlify.toml');
+  assert.match(
+    config,
+    /ignore\s*=\s*"exit 1"/,
+    'admin must always build so content publishes are not shown as canceled',
   );
 });
 

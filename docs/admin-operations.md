@@ -34,10 +34,8 @@ Both sites use the same public GitHub repository and `main` branch.
 - Admin site: root base directory, `admin` package directory,
   `admin/netlify.toml`, SSR output in `admin/dist/`, custom functions in
   `admin/netlify/functions/`.
-- The public site always rebuilds on push. Admin build-ignore skips content-only
-  commits; changes to shared workspace configuration rebuild admin where needed.
-  GitHub Actions also hits the public Netlify build hook when public paths land
-  on `main` (and nightly for travel freshness).
+- Both Netlify sites always rebuild on push. The publisher and GitHub Actions
+  also POST the public build hook so rolls ship without waiting on runners.
 
 The admin site's environment contains these keys:
 
@@ -47,6 +45,10 @@ The admin site's environment contains these keys:
 - `GITHUB_REPOSITORY_ID`
 - `OAUTH_ALLOWED_USERS`
 - `SESSION_SECRET`
+- `NETLIFY_BUILD_HOOK` — public-site build hook URL (same value as the GitHub
+  Actions secret). After each content commit the publisher POSTs this so
+  `bjsmith.xyz` rebuilds promptly; without it, rolls still commit to `main` but
+  may wait on Netlify's git trigger or the Actions safety net.
 
 On plans without production-only Function scoping, retain Netlify's **Require
 approval** sensitive-variable policy for untrusted deploys. Never approve an

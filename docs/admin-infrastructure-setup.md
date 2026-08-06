@@ -212,6 +212,7 @@ Evidence:
    | `GITHUB_REPOSITORY_ID` | `1147572483` |
    | `OAUTH_ALLOWED_USERS` | `bjsmithxyz` |
    | `SESSION_SECRET` | output of `openssl rand -hex 32` |
+   | `NETLIFY_BUILD_HOOK` | public site build hook URL (same as the GitHub Actions `NETLIFY_BUILD_HOOK` secret) |
 
 4. Mark `GITHUB_CLIENT_SECRET` and `SESSION_SECRET` as secret/sensitive values
    if the UI and plan offer that option.

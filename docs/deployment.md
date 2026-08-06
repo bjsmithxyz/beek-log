@@ -6,13 +6,13 @@ Two **Netlify** sites watch this repository:
 - admin: repository-root base plus `admin/` package directory, configured by
   `admin/netlify.toml` (the root base is required for npm workspace resolution)
 
-Build-ignore on the admin site skips public content commits. The public site
-always builds: a path-based skip could cancel an in-progress content deploy
-when a later admin-only push arrived and then skip itself, leaving production
-stuck. `.github/workflows/refresh-travel.yml` also POSTs the public Netlify
-build hook on main pushes that touch public paths (and nightly for travel
-"here now"), so a missed git webhook still rebuilds. Changes under `shared/`
-or the workspace lockfile rebuild admin as well.
+Both Netlify sites always rebuild on push (path-based skips used to cancel
+in-progress content deploys and showed up as confusing "canceled" admin builds
+during normal roll publishing). After each content commit the admin publisher
+also POSTs the public Netlify build hook so `bjsmith.xyz` does not depend on
+GitHub Actions runners. `.github/workflows/refresh-travel.yml` additionally
+POSTs that hook on main pushes that touch public paths (and nightly for travel
+"here now").
 
 ## Admin deployment
 

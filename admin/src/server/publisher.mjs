@@ -283,7 +283,28 @@ export async function createPublication(rawInput, {
     throw error;
   }
 
+  // Kick the public build hook so bjsmith.xyz rebuilds without waiting on
+  // GitHub Actions runners or Netlify's git webhook. Failures are ignored —
+  // the commit already landed.
+  await requestPublicRebuild(fetchImpl, input.resource);
+
   return publicationResult(input, commit);
+}
+
+/** Best-effort public Netlify rebuild. No-ops when NETLIFY_BUILD_HOOK is unset. */
+export async function requestPublicRebuild(fetchImpl = fetch, resource = 'content') {
+  const hook = process.env.NETLIFY_BUILD_HOOK;
+  if (typeof hook !== 'string' || !hook.startsWith('https://')) return false;
+  try {
+    const response = await fetchImpl(hook, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ trigger_title: `admin ${resource} publish` }),
+    });
+    return response.ok;
+  } catch {
+    return false;
+  }
 }
 
 export function publicationErrorResponse(error) {

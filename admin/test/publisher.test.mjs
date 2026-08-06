@@ -4,6 +4,7 @@ import {
   PublishError,
   TRAVEL_POLICY,
   createPublication,
+  requestPublicRebuild,
   validateOperations,
   validatePublicationInput,
 } from '../src/server/publisher.mjs';
@@ -33,13 +34,16 @@ const response = (status, body = {}) => new Response(
   { status, headers: { 'Content-Type': 'application/json' } },
 );
 
-function successfulPublisherFetch({ treeEntries, refStatus = 200, priorCommits = [], blobs = {} } = {}) {
+function successfulPublisherFetch({ treeEntries, refStatus = 200, priorCommits = [], blobs = {}, hookStatus = 200 } = {}) {
   const calls = [];
   const fetchImpl = async (url, options = {}) => {
     const parsed = new URL(url);
     const path = `${parsed.pathname}${parsed.search}`;
     const method = options.method || 'GET';
     calls.push({ url, path, method, body: options.body ? JSON.parse(options.body) : null });
+    if (parsed.hostname === 'api.netlify.com' && parsed.pathname.includes('/build_hooks/')) {
+      return response(hookStatus, {});
+    }
     if (parsed.pathname.endsWith('/commits') && parsed.searchParams.get('sha') === 'main') {
       return response(200, priorCommits);
     }
@@ -118,6 +122,53 @@ test('generic publisher builds one commit and updates main', async () => {
   assert.equal(ref.body.force, false);
   const commit = sideEffects.find((call) => call.path.endsWith('/git/commits'));
   assert.deepEqual(commit.body.parents, [A]);
+});
+
+test('publisher POSTs the public build hook after updating main', async () => {
+  const previous = process.env.NETLIFY_BUILD_HOOK;
+  process.env.NETLIFY_BUILD_HOOK = 'https://api.netlify.com/build_hooks/testhook';
+  try {
+    const fake = successfulPublisherFetch();
+    await createPublication(travelInput, {
+      token: 'token', policy: TRAVEL_POLICY, fetchImpl: fake.fetchImpl,
+    });
+    const hook = fake.calls.find((call) => call.url.includes('/build_hooks/testhook'));
+    assert.ok(hook);
+    assert.equal(hook.method, 'POST');
+    assert.equal(hook.body.trigger_title, 'admin travel publish');
+  } finally {
+    if (previous === undefined) delete process.env.NETLIFY_BUILD_HOOK;
+    else process.env.NETLIFY_BUILD_HOOK = previous;
+  }
+});
+
+test('a failing public build hook does not fail the publication', async () => {
+  const previous = process.env.NETLIFY_BUILD_HOOK;
+  process.env.NETLIFY_BUILD_HOOK = 'https://api.netlify.com/build_hooks/testhook';
+  try {
+    const fake = successfulPublisherFetch({ hookStatus: 500 });
+    const publication = await createPublication(travelInput, {
+      token: 'token', policy: TRAVEL_POLICY, fetchImpl: fake.fetchImpl,
+    });
+    assert.equal(publication.commitSha, F);
+    assert.equal(await requestPublicRebuild(async () => { throw new Error('network'); }), false);
+  } finally {
+    if (previous === undefined) delete process.env.NETLIFY_BUILD_HOOK;
+    else process.env.NETLIFY_BUILD_HOOK = previous;
+  }
+});
+
+test('requestPublicRebuild no-ops without a configured hook', async () => {
+  const previous = process.env.NETLIFY_BUILD_HOOK;
+  delete process.env.NETLIFY_BUILD_HOOK;
+  try {
+    assert.equal(await requestPublicRebuild(async () => {
+      throw new Error('should not fetch');
+    }), false);
+  } finally {
+    if (previous === undefined) delete process.env.NETLIFY_BUILD_HOOK;
+    else process.env.NETLIFY_BUILD_HOOK = previous;
+  }
 });
 
 test('pre-uploaded blob operations reuse their SHA without another blob upload', async () => {
