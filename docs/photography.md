@@ -22,16 +22,16 @@ closed and link to the travel editor.
    for primary and per-frame locations. Country is retained as `region`.
 4. Review the operation. New encoded images upload as unreferenced Git blobs;
    no repository path or production content changes yet.
-5. The server creates one atomic branch commit and pull request. Review the
-   public Deploy Preview, then merge or abandon separately from the admin.
+5. The server creates one atomic commit on `main`. Netlify rebuilds production
+   from that commit.
 
 ## Edit or delete a roll
 
 Load an existing roll from the admin list to reorder, relabel, add/remove frames,
 change locations, rename, or delete it. Existing frame blobs are reused
 losslessly. Stale SHA and complete-inventory checks prevent overwriting newer
-content or leaving orphaned numbered frames. Every operation follows the same
-branch → PR → Deploy Preview → explicit merge flow.
+content or leaving orphaned numbered frames. Every operation commits directly to
+`main` through the same authenticated publisher.
 
 ## Film stocks
 

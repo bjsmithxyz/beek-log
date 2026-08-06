@@ -76,22 +76,19 @@ admin Origin before parsing their strict schemas.
 | Function | Purpose |
 | --- | --- |
 | `travel-data` | Load and validate `src/data/trips.json` plus its current blob SHA |
-| `publish-start` | Validate travel data, build one branch commit and open a PR |
-| `publish-status` | Revalidate the marked PR and check its public Deploy Preview URL |
-| `publish-merge` | Revalidate head/preview/mergeability and merge the reviewed PR |
-| `publish-abandon` | Close the PR and best-effort delete its admin branch |
+| `publish-start` | Validate travel data and commit the update directly to `main` |
 | `rolls-data` / `roll-data` | Load guarded roll inventories and Markdown for editing |
 | `blob-upload` | Store one authenticated encoded JPEG as an unreferenced Git blob |
-| `publish-roll` | Map strict create/edit/rename/delete input to allowed roll paths |
+| `publish-roll` | Map strict create/edit/rename/delete input to allowed roll paths and commit to `main` |
 | `geocode` | Throttled same-origin proxy for location and country lookup |
 
 The browser never chooses an arbitrary repository path. Travel publishing is
 server-mapped to `src/data/trips.json`; roll publishing is server-mapped to one
 Markdown path and sequential `NNN.jpg` paths. Stale SHA and complete-inventory
 checks prevent overwriting a newer edit or leaving old frames behind. A
-client-generated UUID makes network retries resumable without duplicate PR
-creation. Image uploads accept no path and remain unreachable dangling blobs
-until one atomic create/update/delete operation set is committed on a PR branch.
+client-generated UUID tags the commit message for retry correlation. Image
+uploads accept no path and remain unreachable dangling blobs until one atomic
+create/update/delete operation set is committed on `main`.
 
 Source: `admin/src/server/publisher.mjs`, `request-guards.mjs`, and
 `travel-publish.mjs`. Tests: `admin/test/publisher.test.mjs`,
@@ -136,10 +133,10 @@ Use this recurring owner checklist for checks that cannot safely be automated:
 
 | Cadence | Check |
 | --- | --- |
-| Monthly | Review grouped Dependabot PRs and the latest production-smoke run; merge dependency updates only after the required verification check and previews pass |
-| Quarterly | Complete owner login/deep-link/logout checks, inspect the GitHub App installation and `main` ruleset, and exercise a disposable publish → preview → abandon flow |
+| Monthly | Review grouped Dependabot PRs and the latest production-smoke run; merge dependency updates only after the required verification check passes |
+| Quarterly | Complete owner login/deep-link/logout checks, inspect the GitHub App installation and `main` ruleset, and exercise a disposable travel or roll publish to `main` |
 | Every six months | Restore and compare a sample full-resolution scan from the off-site backup; review GitHub sessions, authorized Apps, Netlify environment access, DNS, and TLS |
-| Annually or after suspected exposure | Exercise the session/client-secret rotation runbooks, then complete a fresh login and disposable abandon test |
+| Annually or after suspected exposure | Exercise the session/client-secret rotation runbooks, then complete a fresh login and disposable publish test |
 | After publishing or infrastructure changes | Run the relevant checks below immediately rather than waiting for the next interval |
 
 The equivalent manual credential-free commands remain useful during incident
@@ -260,37 +257,37 @@ the primary copy before treating the backup as healthy.
 
 ## `main` pull-request ruleset
 
-Owner decision on 2026-08-03: enforce pull-request-only changes to `main`. Active
-ruleset `main requires reviewed PR` (ID `20260621`) targets only the default
-branch with no bypass actors. It requires a PR with zero approvals, resolved
-review threads, and the `Project verification` GitHub Actions check; it allows
-merge/squash/rebase while blocking deletion and non-fast-forward updates. The
-hosted admin already creates and squash-merges pull requests, so it needs no
-bypass. Its public-preview readiness check remains separate from the repository
-verification check.
+Active ruleset `main: PR + CI (admin may bypass)` (ID `20260621`) targets the
+default branch. It requires a PR with zero approvals, resolved review threads,
+and the `Project verification` GitHub Actions check for non-bypass actors. The
+repository **Admin** role may bypass so the hosted admin (acting as the owner
+OAuth session) can fast-forward content commits onto `main`. A second ruleset
+blocks force-pushes and branch deletion with no bypass.
+
+Code, docs, and Dependabot changes should still use pull requests. Content
+publishes from the hosted admin commit directly to `main`; production Netlify
+builds and `Project verification` on push remain the post-commit safety net.
 
 Recreation procedure:
 
 1. Open **Settings → Rules → Rulesets → New branch ruleset**.
-2. Name it `main requires reviewed PR`; set enforcement to **Active**.
+2. Name it `main: PR + CI (admin may bypass)`; set enforcement to **Active**.
 3. Target the default branch (`main`) only.
 4. Enable **Require a pull request before merging**, with zero required external
    approvals for this single-owner repository. Keep conversation resolution
    required if GitHub offers it without blocking comment-free PRs.
-5. Block force pushes and branch deletion.
-6. Add the GitHub Actions status check named `Project verification` as a
-   required status check. Keep strict status-check policy disabled so a branch
-   is not required to be current with unrelated `main` changes.
-7. Do not add the GitHub App or owner to a bypass list. Do not require a named
-   Netlify status check; preview readiness is separately revalidated by the
-   admin merge endpoint and Netlify check names can change.
-8. Save, then verify a direct push to `main` is rejected and a disposable
-   admin-created PR can still merge only after both `Project verification` and
-   its Deploy Preview are ready.
+5. Add the GitHub Actions status check named `Project verification` as a
+   required status check. Keep strict status-check policy disabled.
+6. Add the repository **Admin** role as a bypass actor (`always`) so owner
+   content publishes can update `main` without a PR.
+7. Keep a separate active ruleset that blocks force pushes and branch deletion
+   with no bypass actors.
+8. Save, then verify a non-admin direct push to `main` is rejected and an
+   authenticated admin publish can update `main`.
 
-Once enabled, repository maintenance outside the hosted admin must also use a
-branch and PR. Emergency bypass requires a deliberate temporary ruleset change,
-which should be documented in the incident record and reverted immediately.
+Emergency removal of the Admin bypass requires a deliberate temporary ruleset
+change, which should be documented in the incident record and reverted
+immediately.
 
 ## Legacy travel retirement
 

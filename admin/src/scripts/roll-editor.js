@@ -13,13 +13,9 @@ import { uploaderCapabilities } from '../lib/uploader-capabilities.mjs';
 const root = document.getElementById('roll-editor-root');
 const mode = root.dataset.mode;
 const routeSlug = root.dataset.slug;
-const publicationKey = 'beek-admin-roll-publication';
 const endpoints = {
   roll: '/.netlify/functions/roll-data',
   publish: '/.netlify/functions/publish-roll',
-  status: '/.netlify/functions/publish-status',
-  merge: '/.netlify/functions/publish-merge',
-  abandon: '/.netlify/functions/publish-abandon',
   geocode: '/.netlify/functions/geocode',
 };
 
@@ -30,9 +26,7 @@ let originalFingerprint = null;
 let slugManual = mode === 'edit';
 let pendingDelete = false;
 let pendingRequestId = null;
-let publication = restorePublication();
-let pollTimer = null;
-let pollAttempts = 0;
+let publishing = false;
 let pickerRegion = null;
 let locationApply = null;
 let map = null;
@@ -48,11 +42,7 @@ const reviewSummary = document.getElementById('roll-review-summary');
 const publicationError = document.getElementById('roll-publication-error');
 const errorsPanel = document.getElementById('roll-errors');
 const errorsList = document.getElementById('roll-error-list');
-const publicationPanel = document.getElementById('roll-publication');
 const publicationStatus = document.getElementById('roll-publication-status');
-const publicationPr = document.getElementById('roll-pr');
-const publicationPreview = document.getElementById('roll-preview');
-const mergeButton = document.getElementById('merge-roll-publication');
 const uploadProgress = document.getElementById('upload-progress');
 
 const fields = {
@@ -98,23 +88,6 @@ function setErrors(errors) {
   errorsPanel.hidden = errors.length === 0;
 }
 
-function restorePublication() {
-  try {
-    const value = JSON.parse(sessionStorage.getItem(publicationKey) || 'null');
-    if (Number.isSafeInteger(value?.number) && /^[0-9a-f]{40}$/.test(value?.headSha || '')) return value;
-  } catch {
-    // Discard malformed local status hints.
-  }
-  sessionStorage.removeItem(publicationKey);
-  return null;
-}
-
-function savePublication(value) {
-  publication = value;
-  if (value) sessionStorage.setItem(publicationKey, JSON.stringify(value));
-  else sessionStorage.removeItem(publicationKey);
-}
-
 function displayLocation(value) {
   return value ? `${value.name}${value.region ? ` · ${value.region.name}` : ''}` : '(none set)';
 }
@@ -149,12 +122,14 @@ function fingerprint() {
 }
 
 function updateReady() {
-  if (!frames.length) {
+  if (publishing) {
+    reviewButton.disabled = true;
+  } else if (!frames.length) {
     reviewButton.disabled = true;
   } else if (mode === 'edit' && originalFingerprint === fingerprint()) {
     reviewButton.disabled = true;
   } else {
-    reviewButton.disabled = Boolean(publication);
+    reviewButton.disabled = false;
   }
   reviewPanel.hidden = true;
   setErrors([]);
@@ -557,7 +532,8 @@ reviewButton.addEventListener('click', () => {
   reviewSummary.textContent = `${mode === 'create' ? 'Create' : 'Update'} “${fields.title.value.trim()}” with ${frames.length} frames; ${newFrames} require upload; ${fields.draft.checked ? 'draft' : 'published'}.`;
   publicationError.hidden = true;
   publicationError.textContent = '';
-  document.getElementById('publish-roll').textContent = 'upload + create pull request →';
+  publicationStatus.textContent = '';
+  document.getElementById('publish-roll').textContent = 'upload + publish to main →';
   reviewPanel.hidden = false;
   reviewPanel.focus();
 });
@@ -602,18 +578,16 @@ function sourcePayload() {
 async function createRollPublication() {
   const button = document.getElementById('publish-roll');
   button.disabled = true;
+  publishing = true;
   publicationError.hidden = true;
   publicationError.textContent = '';
-  publicationPanel.hidden = false;
-  reviewPanel.hidden = true;
   form.disabled = true;
+  reviewButton.disabled = true;
   pendingRequestId ||= crypto.randomUUID();
   try {
     let request;
-    let publishedSlug;
     if (pendingDelete) {
       request = { requestId: pendingRequestId, mode: 'delete', source: sourcePayload() };
-      publishedSlug = source.slug;
     } else {
       await uploadNewFrames();
       const roll = currentRoll();
@@ -623,141 +597,33 @@ async function createRollPublication() {
         ...(source ? { source: sourcePayload() } : {}),
         roll,
       };
-      publishedSlug = roll.slug;
     }
-    publicationStatus.textContent = 'Creating one atomic commit and pull request…';
+    publicationStatus.textContent = 'Committing roll to main…';
     const body = await post(endpoints.publish, request);
     pendingRequestId = null;
-    pollAttempts = 0;
-    savePublication({
-      ...body.publication,
-      rollSlug: publishedSlug,
-      rollMode: pendingDelete ? 'delete' : mode,
-    });
-    showPublication();
-    await refreshPublication();
+    const sha = body.publication?.commitSha?.slice(0, 7) || 'main';
+    publicationStatus.textContent = `Published ${sha}. Production will rebuild from main.`;
+    setStatus(`Published ${sha}. Redirecting…`);
+    await new Promise((resolve) => setTimeout(resolve, 750));
+    location.href = '/rolls/';
   } catch (error) {
     if (error.status === 409) pendingRequestId = null;
+    publishing = false;
     const message = error.message || 'Publication failed safely. Main was not changed.';
     publicationStatus.textContent = message;
     publicationError.textContent = `Publication failed safely: ${message}. Main was not changed; retry uploads only unfinished frames.`;
     publicationError.hidden = false;
     setStatus(`Publication failed safely: ${message}`);
-    publicationPanel.hidden = true;
     reviewPanel.hidden = false;
     reviewPanel.focus();
     reviewPanel.scrollIntoView({ block: 'start' });
     button.disabled = false;
     form.disabled = false;
+    updateReady();
   }
 }
 
 document.getElementById('publish-roll').addEventListener('click', createRollPublication);
-
-function previewHref(value) {
-  return value.rollMode === 'delete'
-    ? `${value.previewUrl}/photos/`
-    : `${value.previewUrl}/photos/${value.rollSlug}/`;
-}
-
-function showPublication() {
-  publicationPanel.hidden = false;
-  reviewPanel.hidden = true;
-  form.disabled = true;
-  reviewButton.disabled = true;
-  publicationPr.href = publication.prUrl;
-  publicationPr.textContent = `PR #${publication.number}`;
-  if (publication.preview === 'ready') {
-    publicationPreview.href = previewHref(publication);
-    publicationPreview.textContent = publication.rollMode === 'delete' ? 'review photos index ↗' : 'review roll preview ↗';
-    publicationPreview.removeAttribute('aria-disabled');
-  } else {
-    publicationPreview.removeAttribute('href');
-    publicationPreview.textContent = 'waiting for Netlify…';
-    publicationPreview.setAttribute('aria-disabled', 'true');
-  }
-  publicationPanel.scrollIntoView({ block: 'start' });
-}
-
-function stopPolling() {
-  if (pollTimer) clearTimeout(pollTimer);
-  pollTimer = null;
-}
-
-async function refreshPublication() {
-  if (!publication) return;
-  stopPolling();
-  publicationStatus.textContent = 'Checking GitHub and Netlify…';
-  try {
-    const body = await api(`${endpoints.status}?number=${encodeURIComponent(publication.number)}`);
-    savePublication({ ...publication, ...body.publication });
-    showPublication();
-    if (publication.state === 'merged') {
-      publicationStatus.textContent = 'Merged. Production will rebuild from main.';
-      mergeButton.disabled = true;
-      return;
-    }
-    if (publication.state !== 'open') {
-      publicationStatus.textContent = 'Publication is closed.';
-      mergeButton.disabled = true;
-      return;
-    }
-    if (publication.preview === 'ready' && publication.mergeable === true) {
-      publicationStatus.textContent = 'Deploy Preview is ready. Review it before merging.';
-      mergeButton.disabled = false;
-      return;
-    }
-    if (publication.preview === 'ready' && publication.mergeable === false) {
-      publicationStatus.textContent = 'The preview is ready, but this PR conflicts with main. Abandon and reload.';
-      mergeButton.disabled = true;
-      return;
-    }
-    mergeButton.disabled = true;
-    pollAttempts += 1;
-    publicationStatus.textContent = publication.preview === 'ready'
-      ? 'Preview ready; waiting for GitHub mergeability…'
-      : 'Waiting for the public Deploy Preview…';
-    if (pollAttempts < 30) pollTimer = setTimeout(refreshPublication, publication.preview === 'ready' ? 3_000 : 10_000);
-    else publicationStatus.textContent = 'Preview is still unavailable. Open the PR to inspect the Netlify check, then refresh.';
-  } catch (error) {
-    publicationStatus.textContent = error.message;
-  }
-}
-
-document.getElementById('refresh-roll-publication').addEventListener('click', () => {
-  pollAttempts = 0;
-  refreshPublication();
-});
-
-document.getElementById('merge-roll-publication').addEventListener('click', async () => {
-  if (!publication || !confirm(`Merge PR #${publication.number} after reviewing its Deploy Preview?`)) return;
-  mergeButton.disabled = true;
-  publicationStatus.textContent = 'Merging reviewed roll publication…';
-  try {
-    await post(endpoints.merge, { number: publication.number, headSha: publication.headSha });
-    savePublication(null);
-    location.href = '/rolls/';
-  } catch (error) {
-    publicationStatus.textContent = error.message;
-    mergeButton.disabled = false;
-  }
-});
-
-document.getElementById('abandon-roll-publication').addEventListener('click', async () => {
-  if (!publication || !confirm(`Close PR #${publication.number} and delete its publishing branch?`)) return;
-  publicationStatus.textContent = 'Abandoning publication…';
-  try {
-    await post(endpoints.abandon, { number: publication.number, headSha: publication.headSha });
-    stopPolling();
-    savePublication(null);
-    publicationPanel.hidden = true;
-    form.disabled = false;
-    updateReady();
-    setStatus('Publication abandoned. Local edits remain in this tab.');
-  } catch (error) {
-    publicationStatus.textContent = error.message;
-  }
-});
 
 if (mode === 'edit') {
   document.getElementById('delete-roll').addEventListener('click', () => {
@@ -767,8 +633,9 @@ if (mode === 'edit') {
       return;
     }
     pendingDelete = true;
-    reviewSummary.textContent = `Delete “${source.slug}” and all ${source.frames.length} committed frames. Production changes only after preview review and merge.`;
-    document.getElementById('publish-roll').textContent = 'create deletion pull request →';
+    reviewSummary.textContent = `Delete “${source.slug}” and all ${source.frames.length} committed frames. This commits the deletion to main.`;
+    publicationStatus.textContent = '';
+    document.getElementById('publish-roll').textContent = 'delete on main →';
     reviewPanel.hidden = false;
     reviewPanel.focus();
   });
@@ -816,7 +683,7 @@ async function loadExisting() {
   renderLocation();
   renderFrames();
   originalFingerprint = fingerprint();
-  form.disabled = Boolean(publication);
+  form.disabled = false;
   updateReady();
   setStatus('Committed roll loaded.');
 }
@@ -841,13 +708,9 @@ async function start() {
   bindMetadata();
   if (mode === 'edit') await loadExisting();
   else {
-    form.disabled = Boolean(publication);
+    form.disabled = false;
     setStatus('');
     refreshSlug();
-  }
-  if (publication) {
-    showPublication();
-    await refreshPublication();
   }
 }
 

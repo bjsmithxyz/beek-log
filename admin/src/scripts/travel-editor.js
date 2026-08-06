@@ -12,12 +12,8 @@ import {
 const endpoints = {
   data: '/.netlify/functions/travel-data',
   start: '/.netlify/functions/publish-start',
-  status: '/.netlify/functions/publish-status',
-  merge: '/.netlify/functions/publish-merge',
-  abandon: '/.netlify/functions/publish-abandon',
   geocode: '/.netlify/functions/geocode',
 };
-const publicationKey = 'beek-admin-travel-publication';
 
 const editor = document.getElementById('travel-editor');
 const statusNode = document.getElementById('editor-status');
@@ -28,36 +24,12 @@ const stopCount = document.getElementById('stop-count');
 const reviewButton = document.getElementById('review-travel');
 const reviewPanel = document.getElementById('review-panel');
 const reviewSummary = document.getElementById('review-summary');
-const publicationPanel = document.getElementById('publication-panel');
-const publicationStatus = document.getElementById('publication-status');
-const publicationPr = document.getElementById('publication-pr');
-const publicationPreview = document.getElementById('publication-preview');
-const mergeButton = document.getElementById('merge-publication');
 
 let original = null;
 let draft = null;
 let expectedSha = null;
-let publication = restorePublication();
 let pendingRequestId = null;
-let pollTimer = null;
-let pollAttempts = 0;
-
-function restorePublication() {
-  try {
-    const value = JSON.parse(sessionStorage.getItem(publicationKey) || 'null');
-    if (Number.isSafeInteger(value?.number) && /^[0-9a-f]{40}$/.test(value?.headSha || '')) return value;
-  } catch {
-    // A malformed local status hint is not trusted and can be discarded.
-  }
-  sessionStorage.removeItem(publicationKey);
-  return null;
-}
-
-function savePublication(value) {
-  publication = value;
-  if (value) sessionStorage.setItem(publicationKey, JSON.stringify(value));
-  else sessionStorage.removeItem(publicationKey);
-}
+let publishing = false;
 
 async function api(url, options = {}) {
   const response = await fetch(url, { credentials: 'same-origin', ...options });
@@ -206,7 +178,7 @@ async function geocodeStop(index) {
 
 function updateDirtyState() {
   const dirty = original && !tripsEqual(original, draft);
-  reviewButton.disabled = !dirty || Boolean(publication);
+  reviewButton.disabled = !dirty || publishing;
   setStatus(dirty ? 'Unpublished changes.' : '');
   statusNode.classList.toggle('is-dirty', Boolean(dirty));
   reviewPanel.hidden = true;
@@ -216,13 +188,12 @@ function updateDirtyState() {
 function renderEditor() {
   renderStops();
   drawOverview();
-  editor.disabled = Boolean(publication);
+  editor.disabled = publishing;
   updateDirtyState();
 }
 
 async function loadData({ force = false } = {}) {
   if (!force && original && !tripsEqual(original, draft) && !confirm('Discard unpublished travel edits and reload main?')) return;
-  stopPolling();
   editor.disabled = true;
   reviewButton.disabled = true;
   setErrors([]);
@@ -232,12 +203,8 @@ async function loadData({ force = false } = {}) {
     original = cloneTrip(body.trips);
     draft = cloneTrip(body.trips);
     expectedSha = body.sha;
+    publishing = false;
     renderEditor();
-    if (publication) {
-      editor.disabled = true;
-      showPublication();
-      await refreshPublication();
-    }
   } catch (error) {
     setStatus(error.message || 'Could not load the itinerary.');
   }
@@ -368,84 +335,14 @@ document.getElementById('cancel-review').addEventListener('click', () => {
   reviewButton.focus();
 });
 
-function showPublication() {
-  publicationPanel.hidden = false;
-  reviewPanel.hidden = true;
-  editor.disabled = true;
-  reviewButton.disabled = true;
-  publicationPr.href = publication.prUrl;
-  publicationPr.textContent = `PR #${publication.number}`;
-  if (publication.preview === 'ready') {
-    publicationPreview.href = publication.previewUrl;
-    publicationPreview.removeAttribute('aria-disabled');
-  } else {
-    publicationPreview.removeAttribute('href');
-    publicationPreview.setAttribute('aria-disabled', 'true');
-  }
-  mergeButton.disabled = true;
-  publicationPanel.scrollIntoView({ behavior: 'smooth', block: 'start' });
-}
-
-function stopPolling() {
-  if (pollTimer) clearTimeout(pollTimer);
-  pollTimer = null;
-}
-
-async function refreshPublication() {
-  if (!publication) return;
-  stopPolling();
-  publicationStatus.textContent = 'Checking GitHub and Netlify…';
-  try {
-    const body = await api(`${endpoints.status}?number=${encodeURIComponent(publication.number)}`);
-    savePublication({ ...publication, ...body.publication });
-    showPublication();
-    if (publication.state === 'merged') {
-      publicationStatus.textContent = 'Merged. Production will rebuild from main.';
-      mergeButton.disabled = true;
-      return;
-    }
-    if (publication.state !== 'open') {
-      publicationStatus.textContent = 'This publication is closed. Reload to continue editing.';
-      mergeButton.disabled = true;
-      return;
-    }
-    if (publication.preview === 'ready') {
-      publicationPreview.href = publication.previewUrl;
-      publicationPreview.removeAttribute('aria-disabled');
-      publicationPreview.textContent = 'open public preview ↗';
-      if (publication.mergeable === true) {
-        publicationStatus.textContent = 'Deploy Preview is ready. Review it before merging.';
-        mergeButton.disabled = false;
-      } else if (publication.mergeable === false) {
-        publicationStatus.textContent = 'Deploy Preview is ready, but the pull request conflicts with main. Abandon it, reload, and publish again.';
-        mergeButton.disabled = true;
-      } else {
-        publicationStatus.textContent = 'Deploy Preview is ready; waiting for GitHub to finish its mergeability check…';
-        mergeButton.disabled = true;
-        pollAttempts += 1;
-        if (pollAttempts < 30) pollTimer = setTimeout(refreshPublication, 3_000);
-      }
-    } else {
-      publicationStatus.textContent = 'Pull request created; waiting for the public Deploy Preview…';
-      publicationPreview.textContent = 'waiting for Netlify…';
-      mergeButton.disabled = true;
-      pollAttempts += 1;
-      if (pollAttempts < 30) {
-        pollTimer = setTimeout(refreshPublication, 10_000);
-      } else {
-        publicationStatus.textContent = 'Preview is still unavailable. Check the pull request for a failed Netlify build, then refresh status.';
-      }
-    }
-  } catch (error) {
-    publicationStatus.textContent = error.message || 'Could not refresh publication status.';
-  }
-}
-
 document.getElementById('publish-travel').addEventListener('click', async () => {
   const button = document.getElementById('publish-travel');
   button.disabled = true;
+  publishing = true;
+  editor.disabled = true;
+  reviewButton.disabled = true;
   pendingRequestId ||= crypto.randomUUID();
-  setStatus('Creating branch, commit and pull request…');
+  setStatus('Committing itinerary to main…');
   try {
     const body = await post(endpoints.start, {
       requestId: pendingRequestId,
@@ -453,52 +350,18 @@ document.getElementById('publish-travel').addEventListener('click', async () => 
       trips: draft,
     });
     pendingRequestId = null;
-    pollAttempts = 0;
-    savePublication(body.publication);
-    showPublication();
-    await refreshPublication();
-  } catch (error) {
-    if (error.status === 409) pendingRequestId = null;
-    setStatus(error.message || 'Publication failed safely. Main was not changed.');
-    button.disabled = false;
-  }
-});
-
-document.getElementById('refresh-publication').addEventListener('click', () => {
-  pollAttempts = 0;
-  refreshPublication();
-});
-
-mergeButton.addEventListener('click', async () => {
-  if (!publication || !confirm(`Merge PR #${publication.number} to main after reviewing its Deploy Preview?`)) return;
-  mergeButton.disabled = true;
-  publicationStatus.textContent = 'Merging the reviewed pull request…';
-  try {
-    await post(endpoints.merge, { number: publication.number, headSha: publication.headSha });
-    publicationStatus.textContent = 'Merged. Reloading the new main itinerary…';
-    savePublication(null);
+    const sha = body.publication?.commitSha?.slice(0, 7) || 'main';
+    setStatus(`Published ${sha}. Production will rebuild from main.`);
+    reviewPanel.hidden = true;
     await new Promise((resolve) => setTimeout(resolve, 750));
-    publicationPanel.hidden = true;
     await loadData({ force: true });
   } catch (error) {
-    publicationStatus.textContent = error.message || 'Merge failed; the pull request remains open.';
-    mergeButton.disabled = false;
-  }
-});
-
-document.getElementById('abandon-publication').addEventListener('click', async () => {
-  if (!publication || !confirm(`Close PR #${publication.number} and delete its publishing branch?`)) return;
-  publicationStatus.textContent = 'Abandoning publication…';
-  try {
-    await post(endpoints.abandon, { number: publication.number, headSha: publication.headSha });
-    stopPolling();
-    savePublication(null);
-    publicationPanel.hidden = true;
+    if (error.status === 409) pendingRequestId = null;
+    publishing = false;
     editor.disabled = false;
+    setStatus(error.message || 'Publication failed safely. Main was not changed.');
+    button.disabled = false;
     updateDirtyState();
-    setStatus('Publication abandoned. Your local edits are still here.');
-  } catch (error) {
-    publicationStatus.textContent = error.message || 'Could not abandon publication.';
   }
 });
 

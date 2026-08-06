@@ -2,7 +2,6 @@ import { env, githubHeaders } from './auth.mjs';
 
 const SHA = /^[0-9a-f]{40}$/;
 const REQUEST_ID = /^[0-9a-f]{8}-[0-9a-f]{4}-4[0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/;
-const MARKER = '<!-- beek-admin:publication:v1 -->';
 const BASE_BRANCH = 'main';
 
 export class PublishError extends Error {
@@ -120,28 +119,6 @@ export function validatePublicationInput(input, policy) {
   return { ...input, operations: validateOperations(input.operations, policy) };
 }
 
-function branchFor(input) {
-  return `admin/${input.resource}/${input.requestId}`;
-}
-
-function previewUrl(number) {
-  const host = env('PUBLIC_NETLIFY_HOST', 'beek-log.netlify.app');
-  if (!/^[a-z0-9-]+\.netlify\.app$/.test(host)) throw new Error('Invalid preview host configuration');
-  return `https://deploy-preview-${number}--${host}`;
-}
-
-function publicationFromPull(pull, branch, requestId) {
-  return {
-    requestId,
-    number: pull.number,
-    branch,
-    headSha: pull.head.sha,
-    prUrl: pull.html_url,
-    previewUrl: previewUrl(pull.number),
-    state: pull.merged_at ? 'merged' : pull.state === 'closed' ? 'closed' : 'preview_pending',
-  };
-}
-
 function createClient(token, fetchImpl) {
   const { owner, repo } = repository();
   const root = `https://api.github.com/repos/${owner}/${repo}`;
@@ -165,15 +142,6 @@ function createClient(token, fetchImpl) {
   };
 }
 
-async function existingPublication(client, branch, requestId) {
-  const ref = await client.request(`/git/ref/heads/${branch}`, { allow404: true });
-  if (!ref) return null;
-  const pulls = await client.request(`/pulls?state=all&head=${encodeURIComponent(`${client.owner}:${branch}`)}`);
-  const pull = pulls.find((candidate) => candidate.body?.includes(MARKER));
-  if (pull) return publicationFromPull(validatePublicationPull(pull), branch, requestId);
-  throw new PublishError('That publication request already exists.', { status: 409, code: 'request_conflict' });
-}
-
 function verifyCurrentTree(operations, tree, policy) {
   if (tree.truncated) throw new PublishError('Repository tree is too large to verify safely.', { status: 409, code: 'tree_truncated' });
   const blobs = new Map(tree.tree.filter((entry) => entry.type === 'blob').map((entry) => [entry.path, entry.sha]));
@@ -189,6 +157,16 @@ function verifyCurrentTree(operations, tree, policy) {
   }
 }
 
+function publicationResult(input, commit) {
+  const { owner, repo } = repository();
+  return {
+    requestId: input.requestId,
+    commitSha: commit.sha,
+    htmlUrl: commit.html_url || `https://github.com/${owner}/${repo}/commit/${commit.sha}`,
+    state: 'committed',
+  };
+}
+
 export async function createPublication(rawInput, {
   token,
   policy,
@@ -196,9 +174,6 @@ export async function createPublication(rawInput, {
 } = {}) {
   const input = validatePublicationInput(rawInput, policy);
   const client = createClient(token, fetchImpl);
-  const branch = branchFor(input);
-  const existing = await existingPublication(client, branch, input.requestId);
-  if (existing) return { ...existing, resumed: true };
 
   // The repository commit endpoint includes both the commit and tree SHAs.
   // Using it avoids a separate ref + Git-commit round trip, which matters on
@@ -237,116 +212,22 @@ export async function createPublication(rawInput, {
     },
   });
 
-  let branchCreated = false;
   try {
-    await client.request('/git/refs', {
-      method: 'POST', body: { ref: `refs/heads/${branch}`, sha: commit.sha },
+    await client.request(`/git/refs/heads/${BASE_BRANCH}`, {
+      method: 'PATCH',
+      body: { sha: commit.sha, force: false },
     });
-    branchCreated = true;
-    const pull = await client.request('/pulls', {
-      method: 'POST',
-      body: {
-        title: input.title,
-        head: branch,
-        base: BASE_BRANCH,
-        body: `${MARKER}\n\nCreated by the authenticated admin. Review the Deploy Preview before merging.\n\nRequest: \`${input.requestId}\``,
-      },
-    });
-    return publicationFromPull(pull, branch, input.requestId);
   } catch (error) {
-    if (branchCreated) {
-      await client.request(`/git/refs/heads/${branch}`, { method: 'DELETE' }).catch(() => {});
+    if (error instanceof GitHubError && (error.status === 409 || error.status === 422)) {
+      throw new PublishError(
+        'main moved while publishing; reload and try again.',
+        { status: 409, code: 'stale_base' },
+      );
     }
     throw error;
   }
-}
 
-function validatePublicationPull(pull) {
-  const { owner, repo } = repository();
-  if (!pull || pull.base?.ref !== BASE_BRANCH || !pull.head?.ref?.startsWith('admin/') ||
-      pull.head?.repo?.full_name !== `${owner}/${repo}` || !pull.body?.includes(MARKER)) {
-    throw new PublishError('Pull request is not an admin publication.', { status: 403, code: 'invalid_publication' });
-  }
-  return pull;
-}
-
-function validNumber(value) {
-  const number = Number(value);
-  if (!Number.isSafeInteger(number) || number < 1) throw new PublishError('Pull request number is invalid.');
-  return number;
-}
-
-export function validateControlInput(input) {
-  exactKeys(input, ['number', 'headSha'], 'Publication control request');
-  const number = validNumber(input.number);
-  if (!SHA.test(input.headSha || '')) throw new PublishError('Publication head SHA is invalid.');
-  return { number, headSha: input.headSha };
-}
-
-async function previewReady(url, fetchImpl) {
-  try {
-    const response = await fetchImpl(url, { method: 'HEAD', redirect: 'manual' });
-    return response.status >= 200 && response.status < 400;
-  } catch {
-    return false;
-  }
-}
-
-export async function publicationStatus(numberValue, { token, fetchImpl = fetch } = {}) {
-  const number = validNumber(numberValue);
-  const client = createClient(token, fetchImpl);
-  const pull = validatePublicationPull(await client.request(`/pulls/${number}`));
-  const url = previewUrl(number);
-  const ready = pull.state === 'open' && await previewReady(url, fetchImpl);
-  return {
-    number,
-    branch: pull.head.ref,
-    headSha: pull.head.sha,
-    prUrl: pull.html_url,
-    previewUrl: url,
-    preview: ready ? 'ready' : pull.state === 'open' ? 'pending' : 'unavailable',
-    state: pull.merged_at ? 'merged' : pull.state,
-    mergeable: pull.mergeable,
-  };
-}
-
-function assertHeadSha(value, pull) {
-  if (!SHA.test(value || '') || value !== pull.head.sha) {
-    throw new PublishError('Publication changed; reload its status.', { status: 409, code: 'stale_publication' });
-  }
-}
-
-export async function mergePublication(numberValue, headSha, { token, fetchImpl = fetch } = {}) {
-  const number = validNumber(numberValue);
-  const client = createClient(token, fetchImpl);
-  const pull = validatePublicationPull(await client.request(`/pulls/${number}`));
-  if (pull.state !== 'open') throw new PublishError('Publication is not open.', { status: 409, code: 'not_open' });
-  assertHeadSha(headSha, pull);
-  if (pull.mergeable !== true) {
-    throw new PublishError('Pull request is not currently mergeable.', { status: 409, code: 'not_mergeable' });
-  }
-  const url = previewUrl(number);
-  if (!await previewReady(url, fetchImpl)) {
-    throw new PublishError('Deploy Preview is not ready.', { status: 409, code: 'preview_pending' });
-  }
-  const merged = await client.request(`/pulls/${number}/merge`, {
-    method: 'PUT',
-    body: { sha: headSha, merge_method: 'squash', commit_title: pull.title },
-  });
-  if (!merged.merged) throw new PublishError('GitHub could not merge the publication.', { status: 409, code: 'merge_failed' });
-  await client.request(`/git/refs/heads/${pull.head.ref}`, { method: 'DELETE' }).catch(() => {});
-  return { number, merged: true, message: merged.message || 'Merged' };
-}
-
-export async function abandonPublication(numberValue, headSha, { token, fetchImpl = fetch } = {}) {
-  const number = validNumber(numberValue);
-  const client = createClient(token, fetchImpl);
-  const pull = validatePublicationPull(await client.request(`/pulls/${number}`));
-  if (pull.state !== 'open') throw new PublishError('Publication is not open.', { status: 409, code: 'not_open' });
-  assertHeadSha(headSha, pull);
-  await client.request(`/pulls/${number}`, { method: 'PATCH', body: { state: 'closed' } });
-  await client.request(`/git/refs/heads/${pull.head.ref}`, { method: 'DELETE' }).catch(() => {});
-  return { number, abandoned: true };
+  return publicationResult(input, commit);
 }
 
 export function publicationErrorResponse(error) {

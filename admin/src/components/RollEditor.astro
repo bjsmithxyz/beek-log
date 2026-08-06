@@ -78,26 +78,12 @@ const { mode, slug = '' } = Astro.props;
       <h2>review roll publication</h2>
       <p id="roll-review-summary"></p>
       <p class="publication-error" id="roll-publication-error" role="alert" hidden></p>
-      <p>New scans are stored as unreferenced GitHub blobs first. One later commit atomically applies every image, Markdown, rename, or deletion on a review branch.</p>
+      <p>New scans are stored as unreferenced GitHub blobs first. One commit then atomically applies every image, Markdown, rename, or deletion on <code>main</code>.</p>
+      <div class="progress-track" aria-hidden="true"><span id="upload-progress"></span></div>
+      <p id="roll-publication-status" role="status"></p>
       <div class="actions">
         <button class="admin-button secondary" id="cancel-roll-review" type="button">keep editing</button>
-        <button class="admin-button" id="publish-roll" type="button">upload + create pull request →</button>
-      </div>
-    </section>
-
-    <section class="publication-panel" id="roll-publication" hidden>
-      <span class="section-path">publication/status</span>
-      <h2>roll publication</h2>
-      <p id="roll-publication-status" role="status"></p>
-      <div class="progress-track" aria-hidden="true"><span id="upload-progress"></span></div>
-      <dl class="publication-links">
-        <div><dt>pull request</dt><dd><a id="roll-pr" target="_blank" rel="noopener">waiting…</a></dd></div>
-        <div><dt>deploy preview</dt><dd><a id="roll-preview" target="_blank" rel="noopener">waiting for Netlify…</a></dd></div>
-      </dl>
-      <div class="actions">
-        <button class="admin-button secondary" id="refresh-roll-publication" type="button">refresh status</button>
-        <button class="danger-button" id="abandon-roll-publication" type="button">abandon</button>
-        <button class="admin-button" id="merge-roll-publication" type="button" disabled>merge to main →</button>
+        <button class="admin-button" id="publish-roll" type="button">upload + publish to main →</button>
       </div>
     </section>
   </div>
@@ -138,7 +124,7 @@ const { mode, slug = '' } = Astro.props;
   button:disabled { cursor: not-allowed; opacity: .45; box-shadow: none; }
   fieldset { min-width: 0; border: 0; }
   fieldset:disabled { opacity: .65; }
-  .editor-panel, .review-panel, .publication-panel { margin-bottom: 1rem; padding: 1rem; border: 1px solid var(--border); background: var(--panel); box-shadow: var(--shadow); }
+  .editor-panel, .review-panel { margin-bottom: 1rem; padding: 1rem; border: 1px solid var(--border); background: var(--panel); box-shadow: var(--shadow); }
   .section-heading { display: flex; align-items: center; justify-content: space-between; gap: 1rem; margin-bottom: .8rem; }
   .section-heading h2 { font-size: var(--font-size-base); }
   .section-path { color: var(--text-muted); font-size: var(--font-size-xs); }
@@ -174,12 +160,7 @@ const { mode, slug = '' } = Astro.props;
   .error-panel ul { padding-left: 1.2rem; font-size: var(--font-size-sm); }
   .review-panel { border-color: var(--amber); box-shadow: 3px 3px 0 var(--amber); }
   .publication-error { padding: .65rem; border: 1px solid #ff6b6b; color: #ff9d9d; }
-  .publication-panel { border-color: var(--blue); box-shadow: 3px 3px 0 var(--blue); }
-  .review-panel h2, .publication-panel h2 { margin: .35rem 0 .7rem; }
-  .publication-links { margin: 1rem 0; border-top: 1px solid var(--border); }
-  .publication-links div { display: grid; grid-template-columns: 9rem 1fr; gap: .6rem; padding: .6rem 0; border-bottom: 1px solid var(--border); }
-  .publication-links dt { color: var(--text-muted); font-size: var(--font-size-xs); }
-  .publication-links dd { min-width: 0; overflow-wrap: anywhere; font-size: var(--font-size-sm); }
+  .review-panel h2 { margin: .35rem 0 .7rem; }
   .progress-track { height: 4px; overflow: hidden; background: var(--border); }
   .progress-track span { display: block; width: 0; height: 100%; background: var(--accent); transition: width .15s linear; }
   .admin-dialog { width: min(620px, calc(100vw - 2rem)); max-height: calc(100vh - 2rem); padding: 1rem; overflow: auto; border: 1px solid var(--border-strong); background: var(--bg); color: var(--text); box-shadow: 5px 5px 0 var(--accent); }

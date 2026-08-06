@@ -10,8 +10,9 @@ shared package:
 - `shared/` → authoring rules imported by both
 
 Content remains file-based under `src/content/` and `src/data/`; there is no
-database. Film rolls and travel data are authored through the hosted admin and
-published only through reviewed pull requests.
+database. Film rolls and travel data are authored through the hosted admin,
+which commits allowed content paths directly to `main`. Code and dependency
+changes still use normal pull requests.
 
 ### Node version
 
@@ -37,5 +38,4 @@ Admin workspace:
 
 The admin needs the variables listed in `admin/.env.example` for live OAuth.
 Neither site has lint or `astro check`; tests plus builds are the verification
-gate. The retired localhost roll publisher and its direct-to-main workflow must
-not be restored.
+gate.

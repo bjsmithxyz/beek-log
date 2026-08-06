@@ -51,7 +51,7 @@ The migration must:
 - retain the current 2048px maximum canonical derivative and quality target
 - keep the public site static and free of credentials
 - keep object-store credentials confined to authenticated admin Functions
-- retain branch → PR → Deploy Preview → merge publishing
+- retain direct-to-`main` admin publishing with server path policy
 - support mixed Git-backed and object-backed rolls during migration
 - provide a reversible, hash-verified transition
 - stop future image growth in Git without requiring a history rewrite

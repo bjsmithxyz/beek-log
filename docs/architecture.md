@@ -92,16 +92,15 @@ location and trip rules. It has no Astro or Node I/O dependencies.
 Authenticated admin reads and mutations pass through Netlify Functions; GitHub
 tokens never reach browser JavaScript. The generic publisher in
 `admin/src/server/publisher.mjs` accepts a server-policy-checked set of create,
-update and delete operations, verifies expected blob SHAs against `main`, and
-builds one Git tree and commit on a unique `admin/<resource>/<request-id>`
-branch. It then opens a marked pull request. It never updates `main` directly.
+update and delete operations, verifies expected blob SHAs against `main`, builds
+one Git tree and commit, and fast-forwards `refs/heads/main`. It does not open
+pull requests for content publishes. Concurrent edits fail with a stale-base or
+stale-content error so the editor can reload and retry.
 
-The browser polls the deterministic public Netlify Deploy Preview URL. Merge is
-a separate authenticated action that revalidates the PR marker, repository,
-base branch, head SHA, mergeability and preview availability. Abandon closes the
-PR and removes its branch. Phase 3's travel editor is restricted to
-`src/data/trips.json`. Phase 4 extends server path policy only to numbered film
-roll assets and Markdown; the browser still cannot choose an arbitrary path.
+Phase 3's travel editor is restricted to `src/data/trips.json`. Phase 4 extends
+server path policy only to numbered film roll assets and Markdown; the browser
+still cannot choose an arbitrary path. Manual code changes continue to use
+normal feature-branch pull requests.
 
 ### Hosted image pipeline
 
@@ -116,8 +115,8 @@ Function, which accepts no repository path and returns only a Git blob SHA.
 `admin/src/lib/store-bytes.js` is the sole client storage boundary so a future
 object-store migration can replace it. The final create/edit/rename/delete
 request maps those SHAs to server-generated allowed paths, verifies the complete
-current inventory, and commits all image and Markdown changes atomically through
-the generic PR publisher.
+current inventory, and commits all image and Markdown changes atomically to
+`main`.
 
 ## Content collections
 

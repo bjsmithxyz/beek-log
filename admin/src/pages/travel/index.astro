@@ -11,7 +11,7 @@ import PageHeader from '../../components/PageHeader.astro';
 >
   <PageHeader
     title="travel/"
-    description="Edit the committed itinerary, then review it through a pull request and public Deploy Preview."
+    description="Edit the committed itinerary, then publish it straight to main."
   >
     <Fragment slot="actions">
       <button class="admin-button secondary" id="reload-travel" type="button">reload</button>
@@ -70,25 +70,10 @@ import PageHeader from '../../components/PageHeader.astro';
     <span class="section-path">publication/review</span>
     <h2 id="review-title">review changes</h2>
     <p id="review-summary"></p>
-    <p>This creates a branch and pull request. Production remains unchanged until you review the public Deploy Preview and choose merge.</p>
+    <p>This commits the itinerary to <code>main</code>. Netlify rebuilds production from that commit.</p>
     <div class="review-actions">
       <button class="admin-button secondary" id="cancel-review" type="button">keep editing</button>
-      <button class="admin-button" id="publish-travel" type="button">create pull request →</button>
-    </div>
-  </section>
-
-  <section class="publication-panel" id="publication-panel" aria-labelledby="publication-title" hidden>
-    <span class="section-path">publication/status</span>
-    <h2 id="publication-title">publication in progress</h2>
-    <p id="publication-status" role="status"></p>
-    <dl class="publication-links">
-      <div><dt>pull request</dt><dd><a id="publication-pr" target="_blank" rel="noopener">waiting…</a></dd></div>
-      <div><dt>deploy preview</dt><dd><a id="publication-preview" target="_blank" rel="noopener">waiting for Netlify…</a></dd></div>
-    </dl>
-    <div class="review-actions">
-      <button class="admin-button secondary" id="refresh-publication" type="button">refresh status</button>
-      <button class="danger-button" id="abandon-publication" type="button">abandon</button>
-      <button class="admin-button" id="merge-publication" type="button" disabled>merge to main →</button>
+      <button class="admin-button" id="publish-travel" type="button">publish to main →</button>
     </div>
   </section>
 
@@ -122,7 +107,7 @@ import PageHeader from '../../components/PageHeader.astro';
   .error-panel ul { padding-left: 1.25rem; font-size: var(--font-size-sm); }
   .travel-editor { min-width: 0; border: 0; }
   .travel-editor:disabled { opacity: .6; }
-  .review-panel, .publication-panel { margin: 1rem 0 2rem; padding: 1rem; border: 1px solid var(--border); background: var(--panel); box-shadow: var(--shadow); }
+  .review-panel { margin: 1rem 0 2rem; padding: 1rem; border: 1px solid var(--border); background: var(--panel); box-shadow: var(--shadow); }
   .section-heading { display: flex; align-items: center; justify-content: space-between; gap: 1rem; margin-bottom: 1rem; }
   .section-heading h2 { color: var(--text); font-size: var(--font-size-base); }
   .section-path { color: var(--text-muted); font-size: var(--font-size-xs); }
@@ -237,12 +222,7 @@ import PageHeader from '../../components/PageHeader.astro';
   .overview-table :global(.state-tentative) { border-style: dashed; }
 
   .review-panel { border-color: var(--amber); box-shadow: 3px 3px 0 var(--amber); }
-  .review-panel h2, .publication-panel h2 { margin: .35rem 0 .75rem; }
-  .publication-panel { border-color: var(--blue); box-shadow: 3px 3px 0 var(--blue); }
-  .publication-links { margin: 1rem 0; border-top: 1px solid var(--border); }
-  .publication-links div { display: grid; grid-template-columns: 9rem 1fr; gap: 1rem; padding: .65rem 0; border-bottom: 1px solid var(--border); }
-  .publication-links dt { color: var(--text-muted); font-size: var(--font-size-xs); }
-  .publication-links dd { min-width: 0; overflow-wrap: anywhere; font-size: var(--font-size-sm); }
+  .review-panel h2 { margin: .35rem 0 .75rem; }
 
   @media (max-width: 480px) {
     :global(.stop-card) { padding: .75rem; }
@@ -250,7 +230,6 @@ import PageHeader from '../../components/PageHeader.astro';
     :global(.stop-fields) { grid-template-columns: 1fr; }
     :global(.stop-fields .dates) { grid-template-columns: 1fr; }
     :global(.derived-field) { justify-items: start; text-align: left; }
-    .publication-links div { grid-template-columns: 1fr; gap: .2rem; }
     .review-actions > * { flex: 1 1 auto; }
   }
 </style>

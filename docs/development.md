@@ -37,9 +37,9 @@ documented in [photography.md](photography.md).
 
 The public travel itinerary lives in `src/data/trips.json`. Its shared validator
 runs under `npm test` and the public build fails if the committed data is
-malformed. Production edits use the authenticated admin `/travel/` page and are
-published through a branch, pull request and Deploy Preview; do not restore a
-direct-to-main save endpoint.
+malformed. Production edits use the authenticated admin `/travel/` page, which
+commits allowed content directly to `main`. Code changes still use pull
+requests.
 
 ## Commands
 
@@ -66,7 +66,7 @@ files. Coverage focuses on the pure logic behind the roll admin and the map:
   round-trips, location helpers, constants, and trip validation.
 - `src/data/locations.test.mjs` — `effectiveLocations` de-duplication.
 - `admin/test/` — redirect validation, session sealing/refresh, request-guard
-  order, generic Git tree/PR publishing, roll create/edit/delete planning,
+  order, generic Git tree publishing to `main`, roll create/edit/delete planning,
   travel schema/state logic, image boundaries, and browser-editor regressions.
 
 Astro pages are also verified by building both workspaces. The public build
@@ -77,5 +77,5 @@ and keyboard-safe animated disclosures in the root filesystem index. Pull reques
 `Project verification` job is required by the `main` ruleset. Monthly grouped
 Dependabot updates use the same gate. `astro dev` renders the admin SSR shell but
 does not emulate the production custom Netlify Functions; use mocked unit tests
-for publisher development and the authenticated production gate for a real
-branch/preview/merge check.
+for publisher development and the authenticated production admin for a real
+content publish.

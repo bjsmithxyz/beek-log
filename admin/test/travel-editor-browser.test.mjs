@@ -7,7 +7,6 @@ const html = `<!doctype html><body>
 <p id="editor-status"></p><section id="editor-errors" hidden><ul id="editor-error-list"></ul></section><span id="stop-count"></span>
 <button id="review-travel" disabled></button><button id="reload-travel"></button>
 <section id="review-panel" hidden tabindex="-1"><p id="review-summary"></p><button id="cancel-review"></button><button id="publish-travel"></button></section>
-<section id="publication-panel" hidden><p id="publication-status"></p><a id="publication-pr"></a><a id="publication-preview"></a><button id="refresh-publication"></button><button id="abandon-publication"></button><button id="merge-publication"></button></section>
 </body>`;
 
 const trips = {
