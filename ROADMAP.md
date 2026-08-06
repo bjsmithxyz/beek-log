@@ -1,6 +1,6 @@
 # Unified site and admin roadmap
 
-Last updated: 2026-08-03
+Last updated: 2026-08-06
 
 This is the operational development roadmap for consolidating the public site,
 travel app and publishing tools. The approved architecture is in
@@ -101,7 +101,8 @@ merge workflow with small, known-good JSON before the image pipeline is added.
   writes.
 - [x] Verify stale SHAs, branch collisions, partial blob failures, failed PR
   creation, preview failure, merge conflict and abandon behavior.
-- [x] Verify no code path writes directly to `main`.
+- [x] Verify Phase 3's branch/PR publish path (later superseded: authenticated
+  admin content publishes now fast-forward `main`; see Constraints).
 - [x] Test authentication, content type, method and origin failures for every
   mutation endpoint.
 - [x] Test that API errors are sanitized before reaching the browser.
@@ -246,7 +247,8 @@ Phase 4 passed its production gate on 2026-08-03.
 
 - The public site stays static, secret-free and unpersonalized.
 - Admin credentials and sessions remain isolated to `admin.bjsmith.xyz`.
-- Publishing never writes directly to `main`.
+- Authenticated admin content publishes may fast-forward `refs/heads/main`;
+  code and dependency changes still use pull requests.
 - The server revalidates identity, request shape, paths and content regardless
   of browser validation.
 - Draft photos render in local development and public Deploy Previews, never in

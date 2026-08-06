@@ -1,5 +1,9 @@
 # Agent prompt — unified public site + admin subdomain
 
+> **Historical.** Branch+PR content publishing described here was superseded;
+> current truth is [`docs/architecture.md`](../../architecture.md) and
+> [`docs/development.md`](../../development.md) (admin fast-forwards content to `main`).
+
 **Date:** 2026-08-02
 **Design doc:** [../specs/2026-08-02-unified-admin-design.md](../specs/2026-08-02-unified-admin-design.md)
 

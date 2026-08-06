@@ -1,5 +1,9 @@
 # Unified public site + admin subdomain — design
 
+> **Historical.** Branch+PR content publishing described here was superseded;
+> current truth is [`docs/architecture.md`](../../architecture.md) and
+> [`docs/development.md`](../../development.md) (admin fast-forwards content to `main`).
+
 **Date:** 2026-08-02
 **Status:** Proposed
 **Supersedes:** [2026-06-15-hosted-admin-investigation.md](2026-06-15-hosted-admin-investigation.md) (DEFERRED → revisited)
