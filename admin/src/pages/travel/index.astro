@@ -29,8 +29,13 @@ import PageHeader from '../../components/PageHeader.astro';
     <legend class="sr-only">Travel itinerary</legend>
     <section aria-labelledby="stops-title">
       <div class="section-heading sticky-heading">
-        <div>
+        <div class="stops-heading-text">
           <h2 id="stops-title">stops <span id="stop-count"></span></h2>
+          <div class="stop-filters" role="group" aria-label="Filter stops">
+            <button type="button" id="filter-past" class="filter-button" aria-pressed="true" title="Show or hide past stops">past</button>
+            <button type="button" id="filter-future" class="filter-button" aria-pressed="true" title="Show or hide future stops">future</button>
+            <button type="button" id="collapse-stops" class="filter-button" aria-pressed="false" title="Collapse the whole list to reach the next section">collapse all</button>
+          </div>
         </div>
         <button class="small-button" id="add-stop" type="button">+ add stop</button>
       </div>
@@ -86,6 +91,8 @@ import PageHeader from '../../components/PageHeader.astro';
       <button class="admin-button" id="merge-publication" type="button" disabled>merge to main →</button>
     </div>
   </section>
+
+  <a class="back-to-top" href="#main-content" aria-label="Back to top of page">top ^</a>
 </AdminLayout>
 
 <script>
@@ -140,23 +147,33 @@ import PageHeader from '../../components/PageHeader.astro';
   .danger-button { color: #ff8e8e; border-color: #994444; }
   .danger-button:hover { color: var(--bg); background: #ff6b6b; border-color: #ff6b6b; }
   button:disabled { cursor: not-allowed; opacity: .45; box-shadow: none; }
+  /* Stops heading: title plus the view filters. */
+  .stops-heading-text { display: flex; flex-wrap: wrap; align-items: center; gap: .5rem .85rem; }
+  .stop-filters { display: flex; flex-wrap: wrap; gap: .35rem; }
+  .filter-button { padding: .2rem .5rem; color: var(--text-muted); border: 1px solid var(--border); background: var(--bg); font-size: var(--font-size-xs); cursor: pointer; }
+  .filter-button:hover { color: var(--accent); border-color: var(--border-strong); }
+  .filter-button[aria-pressed='true'] { color: var(--accent); border-color: var(--accent); }
   .stop-list { display: grid; gap: .75rem; }
+  /* View filters toggle whole time buckets; collapse-all hides the list so the
+     next section is one scroll away. */
+  .stop-list.hide-past :global([data-when='past']),
+  .stop-list.hide-future :global([data-when='future']) { display: none; }
+  .stop-list.is-collapsed { display: none; }
   :global(.stop-card) { padding: 1rem; border: 1px solid var(--border); background: var(--panel); box-shadow: 2px 2px 0 var(--border); }
   :global(.stop-card:focus-within) { border-color: var(--border-strong); }
   :global(.stop-card-head) { display: flex; align-items: flex-start; justify-content: space-between; gap: .75rem; margin-bottom: .75rem; }
-  :global(.stop-card-id) { display: flex; align-items: center; gap: .5rem; min-width: 0; }
-  /* Collapse toggle — a chevron that rotates when its section is minimised.
-     Shared by every stop card and the full-itinerary panel. */
+  /* Number + name on the first line, the tentative toggle beneath them,
+     left-aligned under the name. */
+  :global(.stop-card-id) { display: flex; flex-direction: column; align-items: flex-start; gap: .5rem; min-width: 0; }
+  :global(.stop-id-line) { display: flex; align-items: center; gap: .5rem; min-width: 0; }
+  /* Collapse toggle — a chevron that rotates when the full-itinerary panel is
+     minimised. */
   :global(.stop-collapse) { flex: none; width: 1.7rem; height: 1.7rem; border: 1px solid var(--border); background: var(--bg); color: var(--text-muted); cursor: pointer; line-height: 1; transition: transform var(--transition-fast); }
   :global(.stop-collapse:hover) { color: var(--accent); border-color: var(--accent); }
   :global(.stop-collapse[aria-expanded='false']) { transform: rotate(-90deg); }
-  :global(.stop-card[data-collapsed] .stop-grid) { display: none; }
-  :global(.stop-card[data-collapsed]) .stop-card-head { margin-bottom: 0; }
   :global(.stop-number) { color: var(--accent); font-size: var(--font-size-lg); }
   :global(.stop-name-preview) { color: var(--text-soft); font-size: var(--font-size-lg); overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
-  /* Actions on top, the tentative toggle tucked beneath them, both right-aligned. */
-  :global(.stop-head-controls) { display: flex; flex: none; flex-direction: column; align-items: flex-end; gap: .4rem; }
-  :global(.stop-actions) { display: flex; gap: .35rem; }
+  :global(.stop-actions) { display: flex; flex: none; gap: .35rem; }
   :global(.stop-actions button) { width: 2rem; height: 2rem; border: 1px solid var(--border); background: var(--bg); color: var(--text-muted); }
   :global(.stop-actions button:hover) { color: var(--accent); border-color: var(--accent); }
   :global(.stop-actions .remove-stop:hover) { color: #ff6b6b; border-color: #ff6b6b; }
@@ -173,15 +190,25 @@ import PageHeader from '../../components/PageHeader.astro';
   :global(.stop-fields .field-note) { grid-column: 1 / -1; }
 
   /* Resolved location: shown, never typed. Populated from place + country by the
-     geocoder, refreshable with the globe button. Its own bordered box, labels
-     left-aligned, values in accent green. */
+     geocoder (refresh it with the globe button in the action bar). Its own
+     bordered box, labels left-aligned, values in accent green. */
   :global(.derived-field) { display: grid; justify-items: start; align-content: start; gap: .3rem; padding: .5rem .6rem; border: 1px solid var(--border); background: var(--bg); font-size: var(--font-size-xs); text-align: left; }
   :global(.derived-item) { display: flex; align-items: baseline; gap: .4rem; }
   :global(.derived-item .derived-key) { color: var(--text-muted); }
   :global(.derived-item .derived-value) { color: var(--accent); font-variant-numeric: tabular-nums; }
-  :global(.refresh-geo) { justify-self: end; margin-top: .15rem; flex: none; width: 1.9rem; height: 1.9rem; border: 1px solid var(--border); background: var(--bg); color: var(--text-muted); cursor: pointer; }
-  :global(.refresh-geo:hover) { color: var(--accent); border-color: var(--accent); }
+  /* The globe lives in the action bar, so .stop-actions button governs its size. */
   :global(.refresh-geo[aria-busy='true']) { opacity: .55; cursor: progress; }
+
+  /* Persistent jump-to-top, fixed to the viewport's bottom-left. */
+  :global(html) { scroll-behavior: smooth; }
+  @media (prefers-reduced-motion: reduce) { :global(html) { scroll-behavior: auto; } }
+  .back-to-top {
+    position: fixed; left: var(--space-4); bottom: var(--space-4); z-index: 20;
+    padding: .35rem .6rem; color: var(--accent); background: var(--panel);
+    border: 1px solid var(--accent); box-shadow: var(--shadow-hard-accent);
+    font-size: var(--font-size-xs); text-decoration: none; letter-spacing: .03em;
+  }
+  .back-to-top:hover, .back-to-top:focus-visible { color: var(--bg); background: var(--accent); }
 
   .overview-panel { margin: 1rem 0 2rem; padding: 1rem; border: 1px solid var(--border); background: var(--panel); box-shadow: var(--shadow); }
   .overview-heading-text { display: flex; align-items: center; gap: .5rem; }

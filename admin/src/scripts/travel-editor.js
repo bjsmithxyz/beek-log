@@ -99,25 +99,35 @@ function formatCoord(value) {
   return typeof value === 'number' && Number.isFinite(value) ? value.toFixed(4) : '—';
 }
 
+// Time bucket for the past/future filters. Anything neither finished nor
+// clearly upcoming (including a new stop with no dates yet) counts as current
+// and always shows.
+function stopWhen(stop) {
+  const today = new Date().toISOString().slice(0, 10);
+  if (stop.depart && stop.depart < today) return 'past';
+  if (stop.arrive && stop.arrive > today) return 'future';
+  return 'current';
+}
+
 function renderStops() {
   clearGeocodeTimers();
   stopCount.textContent = `(${draft.stops.length})`;
   stopList.innerHTML = draft.stops.map((stop, index) => `
-    <article class="stop-card" data-index="${index}">
+    <article class="stop-card" data-index="${index}" data-when="${stopWhen(stop)}">
       <header class="stop-card-head">
         <div class="stop-card-id">
-          <button type="button" class="stop-collapse" data-action="collapse" aria-expanded="true" aria-label="Collapse stop ${index + 1}">▾</button>
-          <span class="stop-number">${String(index + 1).padStart(3, '0')}</span>
-          <span class="stop-name-preview">${escapeHtml(stop.name || 'unnamed stop')}</span>
-        </div>
-        <div class="stop-head-controls">
-          <div class="stop-actions" aria-label="Reorder stop ${index + 1}">
-            <button type="button" data-action="up" aria-label="Move stop ${index + 1} up" ${index === 0 ? 'disabled' : ''}>↑</button>
-            <button type="button" data-action="down" aria-label="Move stop ${index + 1} down" ${index === draft.stops.length - 1 ? 'disabled' : ''}>↓</button>
-            <button type="button" data-action="add-after" aria-label="Add a stop after stop ${index + 1}">+</button>
-            <button class="remove-stop" type="button" data-action="remove" aria-label="Delete stop ${index + 1}" ${draft.stops.length === 1 ? 'disabled' : ''}>×</button>
+          <div class="stop-id-line">
+            <span class="stop-number">${String(index + 1).padStart(3, '0')}</span>
+            <span class="stop-name-preview">${escapeHtml(stop.name || 'unnamed stop')}</span>
           </div>
           <label class="tentative-field"><input data-field="tentative" type="checkbox" ${stop.tentative ? 'checked' : ''}><span>tentative</span></label>
+        </div>
+        <div class="stop-actions" aria-label="Stop ${index + 1} actions">
+          <button type="button" data-action="up" aria-label="Move stop ${index + 1} up" ${index === 0 ? 'disabled' : ''}>↑</button>
+          <button type="button" data-action="down" aria-label="Move stop ${index + 1} down" ${index === draft.stops.length - 1 ? 'disabled' : ''}>↓</button>
+          <button type="button" data-action="add-after" aria-label="Add a stop after stop ${index + 1}">+</button>
+          <button class="remove-stop" type="button" data-action="remove" aria-label="Delete stop ${index + 1}" ${draft.stops.length === 1 ? 'disabled' : ''}>×</button>
+          <button type="button" class="refresh-geo" data-action="geocode" aria-label="Refresh location data for stop ${index + 1}" title="Refresh code, latitude and longitude from place + country">🌐</button>
         </div>
       </header>
       <div class="stop-grid">
@@ -134,7 +144,6 @@ function renderStops() {
           <div class="derived-item"><span class="derived-key">code</span><span class="derived-value" data-derived="cc">${escapeHtml(stop.cc || '—')}</span></div>
           <div class="derived-item"><span class="derived-key">lat</span><span class="derived-value" data-derived="lat">${formatCoord(stop.lat)}</span></div>
           <div class="derived-item"><span class="derived-key">lon</span><span class="derived-value" data-derived="lon">${formatCoord(stop.lon)}</span></div>
-          <button type="button" class="refresh-geo" data-action="geocode" aria-label="Refresh location data for stop ${index + 1}" title="Refresh code, latitude and longitude from place + country">🌐</button>
         </div>
       </div>
     </article>
@@ -277,12 +286,6 @@ stopList.addEventListener('click', (event) => {
   if (!button || !draft) return;
   const index = stopIndex(button);
   const action = button.dataset.action;
-  if (action === 'collapse') {
-    const card = button.closest('.stop-card');
-    const nowCollapsed = card.toggleAttribute('data-collapsed');
-    button.setAttribute('aria-expanded', String(!nowCollapsed));
-    return;
-  }
   if (action === 'geocode') {
     clearTimeout(geocodeTimers.get(index));
     geocodeTimers.delete(index);
@@ -312,6 +315,26 @@ document.getElementById('add-stop').addEventListener('click', () => {
 });
 
 document.getElementById('reload-travel').addEventListener('click', () => loadData());
+
+// Stop-list view controls: hide a time bucket, or collapse the whole list so
+// the full-itinerary section below is a short scroll away.
+function bindFilter(id, hiddenClass) {
+  const button = document.getElementById(id);
+  button?.addEventListener('click', () => {
+    const showing = button.getAttribute('aria-pressed') !== 'true';
+    button.setAttribute('aria-pressed', String(showing));
+    stopList.classList.toggle(hiddenClass, !showing);
+  });
+}
+bindFilter('filter-past', 'hide-past');
+bindFilter('filter-future', 'hide-future');
+
+document.getElementById('collapse-stops')?.addEventListener('click', (event) => {
+  const button = event.currentTarget;
+  const collapsed = stopList.classList.toggle('is-collapsed');
+  button.setAttribute('aria-pressed', String(collapsed));
+  button.textContent = collapsed ? 'expand all' : 'collapse all';
+});
 
 // The full-itinerary panel (map + table) can be minimised. Re-rendering the
 // overview on expand lets Leaflet recompute its size after being unhidden.
