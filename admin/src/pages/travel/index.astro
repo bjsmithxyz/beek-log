@@ -30,7 +30,6 @@ import PageHeader from '../../components/PageHeader.astro';
     <section aria-labelledby="stops-title">
       <div class="section-heading sticky-heading">
         <div>
-          <span class="section-path">trips.json/stops[]</span>
           <h2 id="stops-title">stops <span id="stop-count"></span></h2>
         </div>
         <button class="small-button" id="add-stop" type="button">+ add stop</button>
@@ -103,12 +102,20 @@ import PageHeader from '../../components/PageHeader.astro';
   .section-heading { display: flex; align-items: center; justify-content: space-between; gap: 1rem; margin-bottom: 1rem; }
   .section-heading h2 { color: var(--text); font-size: var(--font-size-base); }
   .section-path { color: var(--text-muted); font-size: var(--font-size-xs); }
-  label { display: grid; gap: .3rem; min-width: 0; color: var(--text-muted); font-size: var(--font-size-xs); }
-  input, textarea { width: 100%; min-width: 0; padding: .52rem .6rem; border: 1px solid var(--border); border-radius: 0; background: var(--bg); color: var(--text); }
-  input:hover, textarea:hover { border-color: var(--border-strong); }
-  input:focus, textarea:focus { border-color: var(--accent); }
-  textarea { min-height: 4.2rem; resize: vertical; }
-  input[type='checkbox'] { width: 1rem; height: 1rem; accent-color: var(--accent); }
+  /* Stop cards are injected as innerHTML, so their controls need :global rules —
+     Astro's scoped element selectors never reach them. One shared font size
+     (sm for typed fields, xs for the muted labels/readout) keeps the card
+     consistent. */
+  :global(.stop-card label) { display: grid; gap: .3rem; min-width: 0; color: var(--text-muted); font-size: var(--font-size-xs); }
+  :global(.stop-card input:not([type='checkbox'])), :global(.stop-card textarea) {
+    width: 100%; min-width: 0; padding: .5rem .55rem; border: 1px solid var(--border); border-radius: 0;
+    background: var(--bg); color: var(--text); font-size: var(--font-size-sm);
+  }
+  :global(.stop-card input:hover), :global(.stop-card textarea:hover) { border-color: var(--border-strong); }
+  :global(.stop-card input:focus), :global(.stop-card textarea:focus) { border-color: var(--accent); }
+  :global(.stop-card input::placeholder), :global(.stop-card textarea::placeholder) { color: var(--text-muted); opacity: 1; }
+  :global(.stop-card textarea) { min-height: 4.2rem; resize: vertical; }
+  :global(.stop-card input[type='checkbox']) { width: .95rem; height: .95rem; accent-color: var(--accent); }
   /* Match the compact button sizing used across the admin (see the sign-out button). */
   .admin-button, .small-button, .danger-button { padding: .3rem .55rem; font-size: var(--font-size-xs); }
   .small-button, .danger-button { border: 1px solid var(--border-strong); background: var(--panel-strong); color: var(--text-soft); }
@@ -119,31 +126,32 @@ import PageHeader from '../../components/PageHeader.astro';
   .stop-list { display: grid; gap: .75rem; }
   :global(.stop-card) { padding: 1rem; border: 1px solid var(--border); background: var(--panel); box-shadow: 2px 2px 0 var(--border); }
   :global(.stop-card:focus-within) { border-color: var(--border-strong); }
-  :global(.stop-card-head) { display: flex; align-items: center; justify-content: space-between; gap: .75rem; margin-bottom: .75rem; }
+  :global(.stop-card-head) { display: flex; align-items: flex-start; justify-content: space-between; gap: .75rem; margin-bottom: .75rem; }
+  :global(.stop-card-id) { display: flex; align-items: center; gap: .5rem; min-width: 0; }
   :global(.stop-number) { color: var(--accent); font-size: var(--font-size-sm); }
-  :global(.stop-name-preview) { color: var(--text-soft); font-size: var(--font-size-sm); }
+  :global(.stop-name-preview) { color: var(--text-soft); font-size: var(--font-size-sm); overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+  /* Actions on top, the tentative toggle tucked beneath them, both right-aligned. */
+  :global(.stop-head-controls) { display: flex; flex: none; flex-direction: column; align-items: flex-end; gap: .4rem; }
   :global(.stop-actions) { display: flex; gap: .35rem; }
   :global(.stop-actions button) { width: 2rem; height: 2rem; border: 1px solid var(--border); background: var(--bg); color: var(--text-muted); }
   :global(.stop-actions button:hover) { color: var(--accent); border-color: var(--accent); }
   :global(.stop-actions .remove-stop:hover) { color: #ff6b6b; border-color: #ff6b6b; }
-  /* Two columns so a stop card is the same width as every other panel: the
-     resolved code / lat / lon now live in one read-only strip rather than three
-     extra input columns that stretched the card to the right. */
-  :global(.stop-grid) { display: grid; grid-template-columns: 1fr 1fr; gap: .6rem; align-items: start; }
-  :global(.stop-grid .dates) { display: grid; grid-template-columns: 1fr 1fr; gap: .6rem; grid-column: 1 / -1; }
-  :global(.stop-grid .note-field) { grid-column: 1 / -1; }
-  :global(.stop-grid .derived-field) { grid-column: 1 / -1; }
-  :global(.tentative-field) { display: flex; align-items: center; gap: .5rem; grid-column: 1 / -1; }
+  :global(.tentative-field) { display: flex; align-items: center; gap: .4rem; color: var(--text-muted); font-size: var(--font-size-xs); white-space: nowrap; }
+
+  /* Editable fields on the left, the read-only location readout stacked on the
+     right (one line each: code / lat / lon). */
+  :global(.stop-grid) { display: grid; grid-template-columns: minmax(0, 1fr) auto; gap: .6rem .9rem; align-items: start; }
+  :global(.stop-fields) { display: grid; grid-template-columns: 1fr 1fr; gap: .6rem; min-width: 0; }
+  :global(.stop-fields .dates) { grid-column: 1 / -1; display: grid; grid-template-columns: 1fr 1fr; gap: .6rem; }
+  :global(.stop-fields .field-note) { grid-column: 1 / -1; }
 
   /* Resolved location: shown, never typed. Populated from place + country by the
      geocoder, refreshable with the globe button. */
-  :global(.derived-field) { display: flex; flex-wrap: wrap; align-items: center; gap: .35rem .85rem; padding: .45rem .6rem; border: 1px solid var(--border); background: var(--bg); font-size: var(--font-size-xs); }
-  :global(.derived-field .derived-title) { color: var(--text-muted); }
-  :global(.derived-values) { display: flex; flex-wrap: wrap; align-items: center; gap: .3rem .85rem; }
-  :global(.derived-item) { display: inline-flex; align-items: baseline; gap: .35rem; }
+  :global(.derived-field) { display: grid; justify-items: end; align-content: start; gap: .3rem; font-size: var(--font-size-xs); text-align: right; }
+  :global(.derived-item) { display: flex; align-items: baseline; gap: .4rem; }
   :global(.derived-item .derived-key) { color: var(--text-muted); }
   :global(.derived-item .derived-value) { color: var(--text-soft); font-variant-numeric: tabular-nums; }
-  :global(.refresh-geo) { margin-left: auto; flex: none; width: 2rem; height: 2rem; border: 1px solid var(--border); background: var(--bg); color: var(--text-muted); cursor: pointer; }
+  :global(.refresh-geo) { margin-top: .15rem; flex: none; width: 1.9rem; height: 1.9rem; border: 1px solid var(--border); background: var(--bg); color: var(--text-muted); cursor: pointer; }
   :global(.refresh-geo:hover) { color: var(--accent); border-color: var(--accent); }
   :global(.refresh-geo[aria-busy='true']) { opacity: .55; cursor: progress; }
 
@@ -179,9 +187,10 @@ import PageHeader from '../../components/PageHeader.astro';
 
   @media (max-width: 480px) {
     :global(.stop-card) { padding: .75rem; }
-    :global(.stop-card-head) { align-items: flex-start; }
     :global(.stop-grid) { grid-template-columns: 1fr; }
-    :global(.stop-grid .dates) { grid-template-columns: 1fr; }
+    :global(.stop-fields) { grid-template-columns: 1fr; }
+    :global(.stop-fields .dates) { grid-template-columns: 1fr; }
+    :global(.derived-field) { justify-items: start; text-align: left; }
     .publication-links div { grid-template-columns: 1fr; gap: .2rem; }
     .review-actions > * { flex: 1 1 auto; }
   }
