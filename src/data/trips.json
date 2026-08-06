@@ -735,7 +735,7 @@
       "lon": 4.9041,
       "arrive": "2026-07-25",
       "depart": "2026-08-10",
-      "tentative": true
+      "tentative": false
     },
     {
       "name": "Hamburg",
