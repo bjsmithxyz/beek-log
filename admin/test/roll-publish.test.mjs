@@ -123,4 +123,8 @@ test('strict roll input rejects unknown fields, bad inventories and invalid regi
   assert.throws(() => rollPublication({
     requestId, mode: 'create', roll: { ...roll, date: '2026-02-31' },
   }), /date/);
+  assert.throws(() => rollPublication({
+    requestId, mode: 'create',
+    roll: { ...roll, title: 'Hello\n\nCo-authored-by: evil <e@e.com>' },
+  }), /title/);
 });

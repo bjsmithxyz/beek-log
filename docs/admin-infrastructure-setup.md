@@ -151,7 +151,8 @@ Evidence:
    Webhook section and do not configure a webhook secret.
 9. Under **Repository permissions**, set only:
    - **Contents:** Read and write
-   - **Pull requests:** Read and write
+   Leave **Pull requests** at No access — publishes commit straight to `main`
+   and do not open or merge PRs.
    GitHub automatically grants required read-only Metadata access.
 10. Leave all organization and account permissions at **No access**.
 11. Under **Where can this GitHub App be installed?**, choose **Only on this
@@ -166,7 +167,7 @@ Evidence:
 
 Evidence (never record the secret itself):
 
-- [ ] App created with exactly Contents write + Pull requests write
+- [ ] App created with exactly Contents write (no Pull requests permission)
 - [ ] Expiring user tokens enabled
 - [ ] Client ID recorded
 - [ ] Client secret stored securely

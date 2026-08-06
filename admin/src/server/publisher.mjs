@@ -3,6 +3,8 @@ import { env, githubHeaders } from './auth.mjs';
 const SHA = /^[0-9a-f]{40}$/;
 const REQUEST_ID = /^[0-9a-f]{8}-[0-9a-f]{4}-4[0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/;
 const BASE_BRANCH = 'main';
+const CONTROL_CHARS = /[\u0000-\u001f\u007f]/;
+const REQUEST_ID_MARKER = 'Beek-Request-Id: ';
 
 export class PublishError extends Error {
   constructor(message, { status = 400, code = 'publish_error' } = {}) {
@@ -43,6 +45,22 @@ function validUtf8(value) {
   return typeof value === 'string' && Buffer.from(value, 'utf8').toString('utf8') === value;
 }
 
+function assertSafePath(path, label) {
+  if (typeof path !== 'string' || !path || path.startsWith('/') || path.includes('\\') || path.includes('\0')) {
+    throw new PublishError(`${label} has an invalid path.`);
+  }
+  const segments = path.split('/');
+  if (segments.some((segment) => !segment || segment === '.' || segment === '..')) {
+    throw new PublishError(`${label} has an invalid path.`);
+  }
+}
+
+function assertSingleLine(value, label, { max }) {
+  if (typeof value !== 'string' || !value.trim() || value.length > max || CONTROL_CHARS.test(value)) {
+    throw new PublishError(`${label} is invalid.`);
+  }
+}
+
 export function validateOperations(operations, policy) {
   if (!Array.isArray(operations) || operations.length === 0 || operations.length > policy.maxOperations) {
     throw new PublishError(`Publication requires 1–${policy.maxOperations} operations.`);
@@ -71,9 +89,7 @@ export function validateOperations(operations, policy) {
     exactKeys(operation, expected, label);
 
     const path = operation.path;
-    if (typeof path !== 'string' || !path || path.startsWith('/') || path.includes('\\') || path.includes('\0')) {
-      throw new PublishError(`${label} has an invalid path.`);
-    }
+    assertSafePath(path, label);
     if (!policy.allows(path, action)) throw new PublishError(`${label} path is not allowed.`);
     if (paths.has(path)) throw new PublishError(`Duplicate operation path: ${path}`);
     paths.add(path);
@@ -110,12 +126,8 @@ export function validatePublicationInput(input, policy) {
   if (typeof input.resource !== 'string' || !/^[a-z][a-z0-9-]{1,30}$/.test(input.resource)) {
     throw new PublishError('Publication resource is invalid.');
   }
-  if (typeof input.title !== 'string' || input.title.trim().length < 1 || input.title.length > 120) {
-    throw new PublishError('Publication title is invalid.');
-  }
-  if (typeof input.message !== 'string' || input.message.trim().length < 1 || input.message.length > 200) {
-    throw new PublishError('Commit message is invalid.');
-  }
+  assertSingleLine(input.title, 'Publication title', { max: 120 });
+  assertSingleLine(input.message, 'Commit message', { max: 200 });
   return { ...input, operations: validateOperations(input.operations, policy) };
 }
 
@@ -157,6 +169,46 @@ function verifyCurrentTree(operations, tree, policy) {
   }
 }
 
+function isJpegMagic(bytes) {
+  return bytes.length >= 3 && bytes[0] === 0xff && bytes[1] === 0xd8 && bytes[2] === 0xff;
+}
+
+async function assertJpegBlobs(client, operations) {
+  const seen = new Map();
+  for (const operation of operations) {
+    if (!operation.blobSha || !operation.path.endsWith('.jpg')) continue;
+    if (seen.has(operation.blobSha)) {
+      if (!seen.get(operation.blobSha)) {
+        throw new PublishError(`Image blob is not a JPEG: ${operation.path}`, { code: 'invalid_blob' });
+      }
+      continue;
+    }
+    const blob = await client.request(`/git/blobs/${operation.blobSha}`, { allow404: true });
+    if (!blob || blob.encoding !== 'base64' || typeof blob.content !== 'string') {
+      throw new PublishError(`Image blob could not be verified: ${operation.path}`, { status: 400, code: 'invalid_blob' });
+    }
+    const bytes = Buffer.from(blob.content.replace(/\s+/g, ''), 'base64');
+    const ok = isJpegMagic(bytes);
+    seen.set(operation.blobSha, ok);
+    if (!ok) {
+      throw new PublishError(`Image blob is not a JPEG: ${operation.path}`, { code: 'invalid_blob' });
+    }
+  }
+}
+
+async function findPriorPublication(client, requestId) {
+  const marker = `${REQUEST_ID_MARKER}${requestId}`;
+  const commits = await client.request(`/commits?sha=${BASE_BRANCH}&per_page=30`);
+  if (!Array.isArray(commits)) return null;
+  for (const entry of commits) {
+    const message = entry.commit?.message || '';
+    if (message.includes(marker)) {
+      return publicationResult({ requestId }, entry);
+    }
+  }
+  return null;
+}
+
 function publicationResult(input, commit) {
   const { owner, repo } = repository();
   return {
@@ -175,6 +227,9 @@ export async function createPublication(rawInput, {
   const input = validatePublicationInput(rawInput, policy);
   const client = createClient(token, fetchImpl);
 
+  const prior = await findPriorPublication(client, input.requestId);
+  if (prior) return prior;
+
   // The repository commit endpoint includes both the commit and tree SHAs.
   // Using it avoids a separate ref + Git-commit round trip, which matters on
   // latency-limited serverless publication requests.
@@ -184,6 +239,7 @@ export async function createPublication(rawInput, {
   if (!SHA.test(baseSha || '') || !SHA.test(baseTreeSha || '')) throw new GitHubError(502);
   const currentTree = await client.request(`/git/trees/${baseTreeSha}?recursive=1`);
   verifyCurrentTree(input.operations, currentTree, policy);
+  await assertJpegBlobs(client, input.operations);
 
   const entries = [];
   for (const operation of input.operations) {
@@ -206,7 +262,7 @@ export async function createPublication(rawInput, {
   const commit = await client.request('/git/commits', {
     method: 'POST',
     body: {
-      message: `${input.message}\n\nBeek-Request-Id: ${input.requestId}`,
+      message: `${input.message}\n\n${REQUEST_ID_MARKER}${input.requestId}`,
       tree: newTree.sha,
       parents: [baseSha],
     },

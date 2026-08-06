@@ -2,6 +2,16 @@ import { defineCollection, z } from 'astro:content';
 import { glob } from 'astro/loaders';
 import { filmStocks } from '@beek/shared/film-stocks';
 
+// Zod's .url() accepts javascript: and data:; only allow navigable http(s) links.
+const httpUrl = z.string().url().refine((value) => {
+  try {
+    const { protocol } = new URL(value);
+    return protocol === 'https:' || protocol === 'http:';
+  } catch {
+    return false;
+  }
+}, { message: 'URL must use http or https' });
+
 const workCollection = defineCollection({
   loader: glob({ pattern: '**/*.md', base: './src/content/work' }),
   schema: ({ image }) => z.object({
@@ -12,8 +22,8 @@ const workCollection = defineCollection({
     tags: z.array(z.string()).default([]),
     draft: z.boolean().default(false),
     // For projects
-    liveUrl: z.string().url().optional(),
-    repoUrl: z.string().url().optional(),
+    liveUrl: httpUrl.optional(),
+    repoUrl: httpUrl.optional(),
     // For art/photography - cover image
     cover: image().optional(),
     // Gallery images

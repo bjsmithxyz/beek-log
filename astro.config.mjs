@@ -1,6 +1,9 @@
 import { defineConfig } from 'astro/config';
 import netlify from '@astrojs/netlify';
 import sitemap from '@astrojs/sitemap';
+import { unified } from '@astrojs/markdown-remark';
+import rehypeRaw from 'rehype-raw';
+import rehypeSanitize from 'rehype-sanitize';
 
 // https://astro.build/config
 export default defineConfig({
@@ -9,6 +12,14 @@ export default defineConfig({
     // production (on-demand edge transforms); dev still uses local sharp.
     adapter: netlify(),
     integrations: [sitemap()],
+    // unified + sanitize so raw HTML in markdown cannot carry script/event
+    // handlers. rehype-raw must run before rehype-sanitize.
+    markdown: {
+        processor: unified({
+            remarkRehype: { allowDangerousHtml: true },
+            rehypePlugins: [rehypeRaw, rehypeSanitize],
+        }),
+    },
     build: {
         assets: '_assets',
     },

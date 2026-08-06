@@ -62,8 +62,9 @@ outside admin Deploy Preview before reviewing its code for environment access.
    24-hour absolute lifetime.
 5. GitHub access tokens are refreshed before their approximately eight-hour
    expiry without extending that absolute session lifetime.
-6. The GitHub App is installed only on `bjsmithxyz/beek-log` with Contents and
-   Pull requests read/write permissions.
+6. The GitHub App is installed only on `bjsmithxyz/beek-log` with **Contents**
+   read/write. Pull requests permission is not required (publishes commit
+   straight to `main`).
 
 Source: `admin/src/server/auth.mjs`. Tests: `admin/test/auth*.test.mjs`.
 
@@ -85,10 +86,14 @@ admin Origin before parsing their strict schemas.
 The browser never chooses an arbitrary repository path. Travel publishing is
 server-mapped to `src/data/trips.json`; roll publishing is server-mapped to one
 Markdown path and sequential `NNN.jpg` paths. Stale SHA and complete-inventory
-checks prevent overwriting a newer edit or leaving old frames behind. A
-client-generated UUID tags the commit message for retry correlation. Image
-uploads accept no path and remain unreachable dangling blobs until one atomic
-create/update/delete operation set is committed on `main`.
+checks prevent overwriting a newer edit or leaving old frames behind. Path
+segments of `.` / `..` are rejected before the allowlist runs. A
+client-generated UUID tags the commit message; retries with the same ID return
+the prior commit instead of writing twice. Image uploads accept no path, remain
+dangling blobs until linked, and are rate-limited; publish endpoints are also
+rate-limited per session. Before attaching a `.jpg` blob SHA, the publisher
+verifies JPEG magic bytes. Commit titles/messages and roll titles reject
+control characters so trailers cannot be injected into the Git commit message.
 
 Source: `admin/src/server/publisher.mjs`, `request-guards.mjs`, and
 `travel-publish.mjs`. Tests: `admin/test/publisher.test.mjs`,

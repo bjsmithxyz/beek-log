@@ -59,6 +59,7 @@ function rollData(value, sourceSlug) {
   exactKeys(value, ['slug', 'title', 'stock', 'date', 'location', 'draft', 'body', 'frames'], 'Roll');
   if (!SLUG.test(value.slug || '')) throw new PublishError('Roll slug is invalid.');
   if (typeof value.title !== 'string' || !value.title.trim() || value.title.length > 160) throw new PublishError('Roll title is invalid.');
+  if (/[\u0000-\u001f\u007f]/.test(value.title)) throw new PublishError('Roll title is invalid.');
   if (!(value.stock in filmStocks)) throw new PublishError('Film stock is invalid.');
   const parsedDate = typeof value.date === 'string' && /^\d{4}-\d{2}-\d{2}$/.test(value.date)
     ? new Date(`${value.date}T00:00:00Z`)

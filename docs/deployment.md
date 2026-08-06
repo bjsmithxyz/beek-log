@@ -39,10 +39,11 @@ activated.
 `netlify.toml` sets, on all routes:
 
 - **Content-Security-Policy** — `default-src 'self'` with `'unsafe-inline'`
-  allowed for scripts and styles (Astro inlines its theme/view-transition
-  scripts and small stylesheets; the site is fully static with no user input, so
-  the residual XSS surface is negligible). `font-src 'self'` works because fonts
-  are self-hosted.
+  for Astro's theme bootstrap, ClientRouter, and scoped styles (static Netlify
+  headers cannot issue per-request nonces). XSS is contained at the content
+  layer: travel JSON escapes `<`, markdown HTML is rehype-sanitized, and work
+  `liveUrl`/`repoUrl` values must be `http(s)`. `font-src 'self'` works because
+  fonts are self-hosted.
 - **Strict-Transport-Security** — `max-age=31536000; includeSubDomains`.
 - **Permissions-Policy** — camera/microphone/geolocation/browsing-topics denied.
 - **X-Frame-Options**, **X-Content-Type-Options**, **Referrer-Policy**.

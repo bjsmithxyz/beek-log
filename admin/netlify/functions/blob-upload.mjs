@@ -1,11 +1,21 @@
 import { env, githubHeaders, json } from '../../src/server/auth.mjs';
+import { takeRateLimit } from '../../src/server/rate-limit.mjs';
 import { mutationResponse, requireBinaryMutation } from '../../src/server/request-guards.mjs';
 
 const SHA = /^[0-9a-f]{40}$/;
+const UPLOAD_LIMIT = { limit: 30, windowMs: 60_000 };
 
 export default async function blobUpload(request) {
   const context = await requireBinaryMutation(request);
   if (context.response) return context.response;
+  const limited = takeRateLimit(`blob:${context.session.login}`, UPLOAD_LIMIT);
+  if (!limited.ok) {
+    return mutationResponse(json(429, {
+      ok: false,
+      error: 'Too many image uploads; try again shortly.',
+      code: 'rate_limited',
+    }, { 'Retry-After': String(Math.ceil(limited.retryAfterMs / 1000)) }), context);
+  }
   const bytes = context.bytes;
   if (bytes[0] !== 0xff || bytes[1] !== 0xd8 || bytes[2] !== 0xff) {
     return mutationResponse(json(400, { ok: false, error: 'Encoded file is not a JPEG' }), context);

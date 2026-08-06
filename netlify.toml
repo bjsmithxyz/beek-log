@@ -40,8 +40,10 @@
     Referrer-Policy = "strict-origin-when-cross-origin"
     Strict-Transport-Security = "max-age=31536000; includeSubDomains"
     Permissions-Policy = "camera=(), microphone=(), geolocation=(), browsing-topics=()"
-    # 'unsafe-inline' is required for Astro's inline theme/view-transition
-    # scripts and inlined styles; acceptable on a fully static site.
+    # 'unsafe-inline' remains for Astro's theme bootstrap, ClientRouter, and
+    # scoped styles. Nonces are not available on static Netlify headers, so
+    # XSS is contained at the content layer instead: travel JSON escapes `<`,
+    # markdown HTML is rehype-sanitized, and work URLs are http(s)-only.
     Content-Security-Policy = "default-src 'self'; script-src 'self' 'unsafe-inline'; style-src 'self' 'unsafe-inline'; img-src 'self' data: https://*.basemaps.cartocdn.com; font-src 'self'; connect-src 'self'; object-src 'none'; base-uri 'self'; form-action 'self'; frame-ancestors 'none'; upgrade-insecure-requests"
 
 # Hashed build assets are immutable
