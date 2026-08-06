@@ -1,15 +1,13 @@
 [build]
   command = "npm run build"
   publish = "dist"
-  # Every PR must receive its own reviewable Deploy Preview. Comparing only to
-  # Netlify's cached commit can incorrectly cancel a deletion preview when the
-  # resulting tree matches an older cache. Outside Deploy Previews, admin-only
-  # commits may still skip the public build.
-  #
-  # A build hook must always build even though no file changed: which travel
-  # stops are publishable is decided at build time, so the nightly refresh in
-  # .github/workflows/refresh-travel.yml is the only thing that advances it.
-  ignore = 'if [ "$CONTEXT" = "deploy-preview" ]; then exit 1; fi; if [ -n "$INCOMING_HOOK_TITLE" ]; then exit 1; fi; if [ -z "$CACHED_COMMIT_REF" ] || [ -z "$COMMIT_REF" ]; then exit 1; fi; git diff --quiet "$CACHED_COMMIT_REF" "$COMMIT_REF" -- src public shared scripts astro.config.mjs netlify.toml package.json package-lock.json tsconfig.json'
+  # Always build. A path-based skip raced with Netlify's "cancel in-progress on
+  # newer push" behavior: an admin-only commit could cancel a content build and
+  # then skip itself, leaving production stuck on an older commit. Flat
+  # production credits make the extra admin-only rebuilds acceptable. Build
+  # hooks (nightly travel refresh and the Actions safety net) also need a build
+  # even when no files changed — travel publishability is decided at build time.
+  ignore = "exit 1"
 
 [build.environment]
   # Astro 7 requires Node >= 22.12; tests require Node >= 22.18

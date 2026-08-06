@@ -1,15 +1,26 @@
-name: Refresh travel
+name: Deploy public
 
-# Which stops the public travel page may publish is decided at build time —
-# see shared/trip-public.mjs. The browser is deliberately not given the dates it
-# would need to work that out for itself, so nothing advances "here now" or
-# retires a stop from the withheld set except a rebuild.
+# Rebuild the public Netlify site when content or public build inputs land on
+# main, on a nightly schedule (travel "here now" is decided at build time — see
+# shared/trip-public.mjs), or when dispatched manually.
 #
 # Requires a NETLIFY_BUILD_HOOK repository secret: create a build hook for the
 # public site under Site configuration → Build & deploy → Build hooks, and paste
-# its URL. Without the secret this job no-ops rather than failing the schedule.
+# its URL. Without the secret this job no-ops rather than failing.
 
 on:
+  push:
+    branches: [main]
+    paths:
+      - 'src/**'
+      - 'public/**'
+      - 'shared/**'
+      - 'scripts/**'
+      - 'astro.config.mjs'
+      - 'netlify.toml'
+      - 'package.json'
+      - 'package-lock.json'
+      - 'tsconfig.json'
   schedule:
     # 18:10 UTC ≈ 04:10 next day in Australia/Sydney — a quiet hour either way.
     - cron: "10 18 * * *"
@@ -27,14 +38,20 @@ jobs:
       - name: Trigger the Netlify build hook
         env:
           BUILD_HOOK: ${{ secrets.NETLIFY_BUILD_HOOK }}
+          EVENT_NAME: ${{ github.event_name }}
         run: |
           if [ -z "$BUILD_HOOK" ]; then
-            echo "NETLIFY_BUILD_HOOK is not set — skipping. The travel page will" \
+            echo "NETLIFY_BUILD_HOOK is not set — skipping. The public site will" \
                  "stay as fresh as the last deploy until it is configured."
             exit 0
           fi
+          case "$EVENT_NAME" in
+            push) title="main push public rebuild" ;;
+            schedule) title="scheduled travel refresh" ;;
+            *) title="manual public rebuild" ;;
+          esac
           curl --fail --silent --show-error --request POST \
-            --data '{"trigger_title":"scheduled travel refresh"}' \
+            --data "{\"trigger_title\":\"${title}\"}" \
             --header 'Content-Type: application/json' \
             "$BUILD_HOOK"
-          echo "Requested a rebuild."
+          echo "Requested a rebuild (${title})."

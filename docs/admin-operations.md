@@ -34,8 +34,10 @@ Both sites use the same public GitHub repository and `main` branch.
 - Admin site: root base directory, `admin` package directory,
   `admin/netlify.toml`, SSR output in `admin/dist/`, custom functions in
   `admin/netlify/functions/`.
-- Build-ignore commands avoid unrelated production builds; changes to shared
-  workspace configuration rebuild both where necessary.
+- The public site always rebuilds on push. Admin build-ignore skips content-only
+  commits; changes to shared workspace configuration rebuild admin where needed.
+  GitHub Actions also hits the public Netlify build hook when public paths land
+  on `main` (and nightly for travel freshness).
 
 The admin site's environment contains these keys:
 

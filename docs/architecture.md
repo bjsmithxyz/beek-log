@@ -161,8 +161,9 @@ client-side requires giving the client every stop's dates, which is precisely
 what may not be published. Only the day counter stays live, derived from the one
 date the payload keeps — the first published arrival, which the counter plus
 today's date already discloses. `.github/workflows/refresh-travel.yml` rebuilds
-nightly so "here now" cannot drift far, and the `ignore` rule in `netlify.toml`
-exempts build-hook runs, which change no files and would otherwise be cancelled.
+on public-path pushes to `main` and nightly so "here now" cannot drift far; the
+public `ignore` rule always builds so those hooks (and ordinary pushes) are
+never skipped.
 
 When the current stop is tentative, or the journey is between stops, the page
 says "last seen in *place*" — it must never fall through to naming the stop that

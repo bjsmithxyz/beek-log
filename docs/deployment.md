@@ -6,12 +6,13 @@ Two **Netlify** sites watch this repository:
 - admin: repository-root base plus `admin/` package directory, configured by
   `admin/netlify.toml` (the root base is required for npm workspace resolution)
 
-Build-ignore rules keep public content commits from rebuilding the admin and
-admin-only production commits from rebuilding the public site. Every pull
-request still receives a public Deploy Preview: comparing only to Netlify's
-cached commit can otherwise cancel a deletion preview when its resulting tree
-matches an older cache. Changes under `shared/` or the workspace lockfile
-rebuild both.
+Build-ignore on the admin site skips public content commits. The public site
+always builds: a path-based skip could cancel an in-progress content deploy
+when a later admin-only push arrived and then skip itself, leaving production
+stuck. `.github/workflows/refresh-travel.yml` also POSTs the public Netlify
+build hook on main pushes that touch public paths (and nightly for travel
+"here now"), so a missed git webhook still rebuilds. Changes under `shared/`
+or the workspace lockfile rebuild admin as well.
 
 ## Admin deployment
 

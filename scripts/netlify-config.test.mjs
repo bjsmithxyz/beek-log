@@ -26,23 +26,16 @@ function permits(sources, host) {
   });
 }
 
-test('public Deploy Previews are never canceled by the cached-commit build ignore rule', async () => {
+// Path-based production skips raced with Netlify canceling in-progress builds
+// when a newer push arrived: an admin-only commit could cancel a content build
+// then skip itself, leaving production stuck. Always building closes that hole
+// and also keeps nightly / Actions build-hook runs working when no files change.
+test('public builds are never skipped by the ignore rule', async () => {
   const config = await read('../netlify.toml');
   assert.match(
     config,
-    /ignore\s*=\s*'if \[ "\$CONTEXT" = "deploy-preview" \]; then exit 1; fi;/,
-  );
-});
-
-// The travel page's published set is decided at build time, so the nightly
-// build hook is the only thing that advances it. The ignore rule compares file
-// trees and would otherwise cancel that build for changing nothing.
-test('a build-hook run is never canceled by the ignore rule', async () => {
-  const config = await read('../netlify.toml');
-  assert.match(
-    config,
-    /if \[ -n "\$INCOMING_HOOK_TITLE" \]; then exit 1; fi;/,
-    'a scheduled rebuild changes no files — it must bypass the tree comparison',
+    /ignore\s*=\s*"exit 1"/,
+    'public production, previews, and build hooks must always build',
   );
 });
 
