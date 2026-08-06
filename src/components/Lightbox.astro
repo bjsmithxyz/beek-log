@@ -30,9 +30,9 @@
 </div>
 
 <script>
-  // Current page's lightbox controller; the document/window listeners below
-  // delegate to it so they can be registered once instead of stacking on every
-  // client-side navigation.
+  // Current page's lightbox controller; document/window listeners delegate to
+  // it. Each setup aborts the previous one so ClientRouter re-entry does not
+  // stack handlers on chrome that survives a swap.
   let lb: {
     ids: string[];
     isActive: () => boolean;
@@ -41,6 +41,7 @@
     navigate: (dir: number) => void;
     requestClose: () => void;
   } | null = null;
+  let setupAbort: AbortController | null = null;
 
   function onKeydown(e: KeyboardEvent) {
     if (!lb || !lb.isActive()) return;
@@ -69,6 +70,10 @@
   }
 
   function setupLightbox() {
+    setupAbort?.abort();
+    setupAbort = new AbortController();
+    const { signal } = setupAbort;
+
     const lightbox = document.getElementById('lightbox');
     const lightboxImg = document.getElementById('lightbox-img') as HTMLImageElement;
     const lightboxCaption = document.getElementById('lightbox-caption');
@@ -160,42 +165,45 @@
       item.tabIndex = 0;
       item.setAttribute('role', 'button');
       item.setAttribute('aria-haspopup', 'dialog');
-      item.addEventListener('click', () => openAt(index, item));
+      item.addEventListener('click', () => openAt(index, item), { signal });
       item.addEventListener('keydown', (event) => {
         if (event.key !== 'Enter' && event.key !== ' ') return;
         event.preventDefault();
         openAt(index, item);
-      });
+      }, { signal });
     });
 
-    closeBtn.addEventListener('click', requestClose);
+    closeBtn.addEventListener('click', requestClose, { signal });
     prevBtn.addEventListener('click', (e) => {
       e.stopPropagation();
       navigate(-1);
-    });
+    }, { signal });
     nextBtn.addEventListener('click', (e) => {
       e.stopPropagation();
       navigate(1);
-    });
+    }, { signal });
 
     lightbox.addEventListener('click', (e) => {
       if (e.target === lightbox || e.target === document.querySelector('.lightbox-content')) {
         requestClose();
       }
-    });
+    }, { signal });
 
     lb = { ids, isActive, show, hide, navigate, requestClose };
 
-    document.removeEventListener('keydown', onKeydown);
-    document.addEventListener('keydown', onKeydown);
-    window.removeEventListener('popstate', onPopstate);
-    window.addEventListener('popstate', onPopstate);
+    document.addEventListener('keydown', onKeydown, { signal });
+    window.addEventListener('popstate', onPopstate, { signal });
 
     // deep link: open the frame named in the URL hash on initial load
     const initialIdx = ids.indexOf(location.hash.slice(1));
     if (initialIdx >= 0) show(initialIdx);
   }
 
+  // Bind as soon as this module runs. Waiting for astro:page-load alone left
+  // frames dead on cold loads (that event waits on window `load`, i.e. every
+  // thumbnail) and on ClientRouter arrivals (the roll page's script can load
+  // after page-load already fired). Re-run on page-load for roll→roll swaps.
+  setupLightbox();
   document.addEventListener('astro:page-load', setupLightbox);
 </script>
 

@@ -71,14 +71,16 @@ const currentYear = new Date().getFullYear();
 
   function setupThemeToggle() {
     const themeToggle = document.getElementById('theme-toggle');
+    if (!themeToggle || themeToggle.dataset.themeReady === 'true') return;
+    themeToggle.dataset.themeReady = 'true';
     const initialTheme = document.documentElement.getAttribute('data-theme') || 'dark';
     applyTheme(initialTheme);
-    themeToggle?.setAttribute(
+    themeToggle.setAttribute(
       'aria-label',
       initialTheme === 'dark' ? 'Switch to light mode' : 'Switch to dark mode',
     );
 
-    themeToggle?.addEventListener('click', () => {
+    themeToggle.addEventListener('click', () => {
       const currentTheme = document.documentElement.getAttribute('data-theme');
       const nextTheme = currentTheme === 'dark' ? 'light' : 'dark';
       applyTheme(nextTheme);
@@ -96,6 +98,7 @@ const currentYear = new Date().getFullYear();
     applyTheme(theme);
   });
 
+  setupThemeToggle();
   document.addEventListener('astro:page-load', setupThemeToggle);
 </script>
 

@@ -205,6 +205,7 @@ const photoYears = [...new Set(rollItems.map(rollYear))]
   }
 
   document.addEventListener('astro:page-load', setupSiteTree);
+  setupSiteTree();
 </script>
 
 <style>

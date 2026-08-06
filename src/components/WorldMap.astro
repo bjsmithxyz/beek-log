@@ -137,7 +137,8 @@ const tooltipWidth =
 <script>
   function setupMapHover() {
     const svg = document.querySelector('.world-map');
-    if (!svg) return;
+    if (!(svg instanceof SVGElement) || svg.dataset.mapReady === 'true') return;
+    svg.dataset.mapReady = 'true';
 
     // bring a pin to the end of the SVG so its tooltip paints above neighbours
     const lift = (pin: Element) => svg.appendChild(pin);
@@ -197,6 +198,7 @@ const tooltipWidth =
     });
   }
 
+  setupMapHover();
   document.addEventListener('astro:page-load', setupMapHover);
 </script>
 
