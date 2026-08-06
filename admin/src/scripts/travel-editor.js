@@ -102,35 +102,36 @@ function renderStops() {
   stopList.innerHTML = draft.stops.map((stop, index) => `
     <article class="stop-card" data-index="${index}">
       <header class="stop-card-head">
-        <div>
+        <div class="stop-card-id">
           <span class="stop-number">${String(index + 1).padStart(3, '0')}</span>
           <span class="stop-name-preview">${escapeHtml(stop.name || 'unnamed stop')}</span>
         </div>
-        <div class="stop-actions" aria-label="Reorder stop ${index + 1}">
-          <button type="button" data-action="up" aria-label="Move stop ${index + 1} up" ${index === 0 ? 'disabled' : ''}>↑</button>
-          <button type="button" data-action="down" aria-label="Move stop ${index + 1} down" ${index === draft.stops.length - 1 ? 'disabled' : ''}>↓</button>
-          <button type="button" data-action="add-after" aria-label="Add a stop after stop ${index + 1}">+</button>
-          <button class="remove-stop" type="button" data-action="remove" aria-label="Delete stop ${index + 1}" ${draft.stops.length === 1 ? 'disabled' : ''}>×</button>
+        <div class="stop-head-controls">
+          <div class="stop-actions" aria-label="Reorder stop ${index + 1}">
+            <button type="button" data-action="up" aria-label="Move stop ${index + 1} up" ${index === 0 ? 'disabled' : ''}>↑</button>
+            <button type="button" data-action="down" aria-label="Move stop ${index + 1} down" ${index === draft.stops.length - 1 ? 'disabled' : ''}>↓</button>
+            <button type="button" data-action="add-after" aria-label="Add a stop after stop ${index + 1}">+</button>
+            <button class="remove-stop" type="button" data-action="remove" aria-label="Delete stop ${index + 1}" ${draft.stops.length === 1 ? 'disabled' : ''}>×</button>
+          </div>
+          <label class="tentative-field"><input data-field="tentative" type="checkbox" ${stop.tentative ? 'checked' : ''}><span>tentative</span></label>
         </div>
       </header>
       <div class="stop-grid">
-        <label class="name-field"><span>place</span><input data-field="name" maxlength="120" required value="${escapeHtml(stop.name)}"></label>
-        <label><span>country</span><input data-field="country" maxlength="120" required value="${escapeHtml(stop.country)}"></label>
-        <div class="dates">
-          <label><span>arrive</span><input data-field="arrive" type="date" required value="${escapeHtml(stop.arrive)}"></label>
-          <label><span>depart</span><input data-field="depart" type="date" required value="${escapeHtml(stop.depart)}"></label>
+        <div class="stop-fields">
+          <input class="field-place" data-field="name" aria-label="place" placeholder="place" maxlength="120" required value="${escapeHtml(stop.name)}">
+          <input class="field-country" data-field="country" aria-label="country" placeholder="country" maxlength="120" required value="${escapeHtml(stop.country)}">
+          <div class="dates">
+            <label><span>arrive</span><input data-field="arrive" type="date" required value="${escapeHtml(stop.arrive)}"></label>
+            <label><span>depart</span><input data-field="depart" type="date" required value="${escapeHtml(stop.depart)}"></label>
+          </div>
+          <textarea class="field-note" data-field="note" aria-label="note" placeholder="note" maxlength="500">${escapeHtml(stop.note || '')}</textarea>
         </div>
         <div class="derived-field" role="group" aria-label="Resolved location for stop ${index + 1}">
-          <span class="derived-title">location</span>
-          <div class="derived-values">
-            <span class="derived-item"><span class="derived-key">code</span><span class="derived-value" data-derived="cc">${escapeHtml(stop.cc || '—')}</span></span>
-            <span class="derived-item"><span class="derived-key">lat</span><span class="derived-value" data-derived="lat">${formatCoord(stop.lat)}</span></span>
-            <span class="derived-item"><span class="derived-key">lon</span><span class="derived-value" data-derived="lon">${formatCoord(stop.lon)}</span></span>
-          </div>
+          <div class="derived-item"><span class="derived-key">code</span><span class="derived-value" data-derived="cc">${escapeHtml(stop.cc || '—')}</span></div>
+          <div class="derived-item"><span class="derived-key">lat</span><span class="derived-value" data-derived="lat">${formatCoord(stop.lat)}</span></div>
+          <div class="derived-item"><span class="derived-key">lon</span><span class="derived-value" data-derived="lon">${formatCoord(stop.lon)}</span></div>
           <button type="button" class="refresh-geo" data-action="geocode" aria-label="Refresh location data for stop ${index + 1}" title="Refresh code, latitude and longitude from place + country">🌐</button>
         </div>
-        <label class="note-field"><span>note</span><textarea data-field="note" maxlength="500">${escapeHtml(stop.note || '')}</textarea></label>
-        <label class="tentative-field"><input data-field="tentative" type="checkbox" ${stop.tentative ? 'checked' : ''}><span>tentative</span></label>
       </div>
     </article>
   `).join('');
