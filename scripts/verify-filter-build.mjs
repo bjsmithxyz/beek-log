@@ -44,7 +44,10 @@ async function checkPage(relativePath, url, rowSelector, filterAttr, filter) {
   const button = (name) => [...document.querySelectorAll('.filter-btn')]
     .find((element) => element.getAttribute('data-filter') === name);
 
-  await import(`data:text/javascript;base64,${Buffer.from(controller).toString('base64')}`);
+  // Astro emits the same controller source on both directory pages. Give each
+  // data URL a distinct fragment so Node does not reuse the first page's cached
+  // module when this check installs the second page's document globals.
+  await import(`data:text/javascript;base64,${Buffer.from(controller).toString('base64')}#${encodeURIComponent(relativePath)}`);
 
   // The cold-load path: the module has run, astro:page-load has not arrived.
   button(filter).click();
