@@ -13,6 +13,7 @@ export const filmStocks = {
   'kentmere-400': { name: 'Kentmere 400', type: 'bw' },
   'kodak-ultramax-400': { name: 'Kodak Ultramax 400', type: 'color' },
   'kodak-portra-400': { name: 'Kodak Portra 400', type: 'color' },
+  'portra-400': { name: 'Portra 400', type: 'color' },
   'kodak-colorplus-200': { name: 'Kodak ColorPlus 200', type: 'color' },
   '1hundred-800': { name: '1Hundred 800', type: 'color' },
   'kodak-gold-200': { name: 'Kodak Gold 200', type: 'color' },
