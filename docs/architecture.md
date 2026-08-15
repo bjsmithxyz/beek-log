@@ -175,13 +175,27 @@ no itinerary date appears in the built page or any shipped script;
 moving clock while the published set does not.
 
 Three keyboard-operable tabs show stats, route, or the chronological timeline.
-The forward-looking `road-ahead/` tab and its Open-Meteo forecasts were removed
-with the privacy split — both existed only to describe stops not yet reached —
-so the site-wide CSP no longer needs a `connect-src` grant at all, only the
-CARTO tile images. Leaflet is recreated after the route panel becomes visible so
-it always receives real dimensions. Route stop controls link to photo rolls
-whose effective shoot locations match by normalized place name or an 80 km
+The forward-looking `road-ahead/` tab was removed with the privacy split — it
+existed only to describe stops not yet reached — and with it went the live
+Open-Meteo forecasts, so the site-wide CSP needs no `connect-src` grant at all,
+only the CARTO tile images. Leaflet is recreated after the route panel becomes
+visible so it always receives real dimensions. Route stop controls link to photo
+rolls whose effective shoot locations match by normalized place name or an 80 km
 proximity threshold.
+
+**Weather came back without the network.** What a place is typically like in a
+given calendar month follows from the place and the month alone — both of which
+the payload already publishes — so it discloses nothing the split withheld.
+`scripts/fetch-climate.mjs` resolves ten-year monthly normals from Open-Meteo's
+ERA5 archive into `src/data/climate.json` (keyed by tenth-of-a-degree point, so
+the key is no finer than the reanalysis grid); `shared/trip-climate.mjs` looks
+them up and `shared/trip-public.mjs` joins the matching one onto each published
+stop. The browser therefore renders typical highs, lows, rainfall and daylight
+while still making no requests — `verify-travel-clock.mjs` proves it by running
+the page with a `fetch` that throws. Regenerate with `npm run climate` after
+adding stops; a stop with no normal simply renders without weather, and
+`verify-travel-build.mjs` warns rather than fails, so an admin publish is never
+blocked by a stale cache.
 
 `admin/src/pages/travel/` is the only surface in the system that renders exact
 dates, onward legs or tentative stops: it carries an amber privacy notice, a

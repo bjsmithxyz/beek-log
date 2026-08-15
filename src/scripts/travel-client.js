@@ -12,6 +12,7 @@
 import * as L from 'leaflet';
 import 'leaflet/dist/leaflet.css';
 import { continentOf, daysBetween, haversine, isoDate } from '@beek/shared/trip-runtime';
+import { climateExtremes } from '@beek/shared/trip-climate';
 import { escapeHtml } from '@beek/shared/escape-html';
 
 let cleanup = null;
@@ -51,13 +52,21 @@ function setupTravel() {
     : { past: '#33ff66', current: '#66ccff', tile: 'dark_all' };
   const reduceMotion = () => matchMedia('(prefers-reduced-motion: reduce)').matches;
 
+  // Typical daytime high and overnight low for the month this stop's stay began
+  // — a long-run average baked in at build time, never a forecast and never
+  // what the weather actually did while I was there.
+  const typicalTemps = (climate) => `${Math.round(climate.maxC)}° / ${Math.round(climate.minC)}°C`;
+
   // Place, country and the month the stay began. No day, no duration, no note.
   // The stop being lived in right now says "here now" instead of a month.
   function popupFor(stop) {
     const isCurrent = stop.index === currentIndex;
     const tag = isCurrent ? ' · <span class="popup-current">here now</span>' : '';
     const when = isCurrent ? '' : `, ${escapeHtml(stop.month)} ${escapeHtml(stop.year)}`;
-    return `<b>${flag(stop.cc)} ${escapeHtml(stop.name)}</b>${tag}<br><span class="popup-muted">${escapeHtml(stop.country)}${when}</span>`;
+    const climate = stop.climate
+      ? `<br><span class="popup-muted">typically ${typicalTemps(stop.climate)} · ${stop.climate.daylightH.toFixed(1)}h daylight · ${stop.climate.rainMm.toFixed(1)}mm rain/day</span>`
+      : '';
+    return `<b>${flag(stop.cc)} ${escapeHtml(stop.name)}</b>${tag}<br><span class="popup-muted">${escapeHtml(stop.country)}${when}</span>${climate}`;
   }
 
   function markerFor(stop) {
@@ -150,8 +159,13 @@ function setupTravel() {
     const countries = new Set(stops.map((stop) => stop.cc));
     const continents = new Set(stops.map((stop) => continentOf(stop.cc)));
     let totalKm = 0;
+    let longestHop = null;
     for (let index = 1; index < stops.length; index += 1) {
-      totalKm += haversine(stops[index - 1], stops[index]);
+      const km = haversine(stops[index - 1], stops[index]);
+      totalKm += km;
+      // Two published places and the distance between them: geography, not
+      // schedule, so it says nothing the route line does not already draw.
+      if (!longestHop || km > longestHop.km) longestHop = { km, from: stops[index - 1], to: stops[index] };
     }
     const stats = [
       [elapsedDays, 'Days on the road'],
@@ -167,6 +181,9 @@ function setupTravel() {
     get('travel-facts').innerHTML = [
       elapsedDays ? `<span>pace: <b>~${Math.round(totalKm / elapsedDays)} km / day</b></span>` : '',
       continents.size ? `<span>continents: <b>${escapeHtml([...continents].join(' · '))}</b></span>` : '',
+      longestHop
+        ? `<span>longest hop: <b>${flag(longestHop.from.cc)} ${escapeHtml(longestHop.from.name)} → ${flag(longestHop.to.cc)} ${escapeHtml(longestHop.to.name)} · ${Math.round(longestHop.km).toLocaleString('en-GB')} km</b></span>`
+        : '',
     ].join('');
 
     // When the stop being lived in right now is tentative, or the journey is
@@ -182,6 +199,38 @@ function setupTravel() {
     }
   }
 
+  // Degrees are rounded because a tenth of a degree of decade-average air
+  // temperature is noise; rain and daylight keep theirs, where a tenth is the
+  // difference between a drizzle and a monsoon.
+  const CLIMATE_FORMAT = {
+    maxC: (value) => `${Math.round(value)}°C typical high`,
+    minC: (value) => `${Math.round(value)}°C typical low`,
+    rainMm: (value) => `${value.toFixed(1)} mm rain / day`,
+    daylightH: (value) => `${value.toFixed(1)}h of daylight`,
+  };
+
+  // The weather the road-ahead tab used to fetch per upcoming stop, rebuilt for
+  // the stops that actually happened: no forecast, no network, and no date —
+  // just what each published place is normally like in the month I arrived.
+  function renderClimate() {
+    const element = get('travel-climate');
+    if (!element) return;
+    const extremes = climateExtremes(stops);
+    if (!extremes.length) {
+      element.replaceChildren();
+      return;
+    }
+    element.innerHTML = `
+      <h3 class="climate-title">climate/</h3>
+      <p class="climate-note">typical for the month each stay began — ten-year averages from Open-Meteo (ERA5), not what the sky actually did.</p>
+      <div class="climate-rows">${extremes.map(({ label, field, stop, value }) => `
+        <div class="climate-row">
+          <span class="climate-label">${escapeHtml(label)}</span>
+          <span class="climate-value">${escapeHtml(CLIMATE_FORMAT[field](value))}</span>
+          <span class="climate-where">${flag(stop.cc)} ${escapeHtml(stop.name)} · ${escapeHtml(stop.month)}</span>
+        </div>`).join('')}</div>`;
+  }
+
   function timelineRow(stop) {
     const isCurrent = stop.index === currentIndex;
     // A past stop is dated to the month it began; the current one is dated by
@@ -191,8 +240,13 @@ function setupTravel() {
       ? '<span class="timeline-here">here now</span>'
       : `<span class="timeline-month">${escapeHtml(stop.month)}</span>`;
     const comma = isCurrent ? '' : '<span class="timeline-comma">,</span>';
+    // The timeline is the one place every stop is listed, so it doubles as the
+    // per-destination weather list the road-ahead cards used to be.
+    const climate = stop.climate
+      ? `<span class="timeline-climate" title="Typical high and low for that month">${typicalTemps(stop.climate)}</span>`
+      : '';
     return `<div class="timeline-row${isCurrent ? ' current' : ''}">
-      <strong>${flag(stop.cc)} ${escapeHtml(stop.name)}</strong><span>${escapeHtml(stop.country)}${comma}</span>${when}
+      <strong>${flag(stop.cc)} ${escapeHtml(stop.name)}</strong><span>${escapeHtml(stop.country)}${comma}</span>${when}${climate}
     </div>`;
   }
 
@@ -270,6 +324,7 @@ function setupTravel() {
   });
 
   renderStats();
+  renderClimate();
   renderMapStops();
   renderTimeline();
   selectPanel('route');

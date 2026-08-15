@@ -2,6 +2,7 @@
 import BaseLayout from '../../layouts/BaseLayout.astro';
 import PageHeader from '../../components/PageHeader.astro';
 import tripData from '../../data/trips.json';
+import climate from '../../data/climate.json';
 import { assertValidTrip } from '@beek/shared/trip-validation';
 import { publicTrip } from '@beek/shared/trip-public';
 import { getPhotoRolls, byDateDesc } from '../../lib/collections';
@@ -12,8 +13,10 @@ assertValidTrip(tripData);
 
 // Everything below derives from the *published* subset. trips.json itself is
 // never handed to the browser: it holds exact dates, onward legs and tentative
-// stops, none of which this page may disclose.
-const published = publicTrip(tripData);
+// stops, none of which this page may disclose. Climate normals are joined in
+// here rather than fetched in the browser — the page reaches no origin but the
+// map tiles, and the cache only ever answers for a place and month that ship.
+const published = publicTrip(tripData, new Date(), climate);
 const photoRolls = (await getPhotoRolls()).sort(byDateDesc);
 const stopPhotoLinks = buildStopPhotoLinks(published.stops, photoRolls);
 const rollsOnRoute = countRollsOnRoute(stopPhotoLinks);
@@ -55,6 +58,7 @@ const jsonLd = {
         <section id="travel-panel-stats" role="tabpanel" aria-labelledby="travel-tab-stats" data-travel-panel="stats" hidden>
           <div class="travel-stats" id="travel-stats" aria-label="Trip statistics"></div>
           <div class="travel-facts" id="travel-facts"></div>
+          <div class="travel-climate" id="travel-climate"></div>
         </section>
 
         <section id="travel-panel-route" role="tabpanel" aria-labelledby="travel-tab-route" data-travel-panel="route">

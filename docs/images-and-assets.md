@@ -29,6 +29,11 @@ Sharp.
   an ASCII preview so you can eyeball the continents before committing.
 - `node scripts/generate-og-image.mjs` — regenerates `public/og-image.png`, the
   1200×630 social-share card, in the site's terminal aesthetic.
+- `npm run climate` (`scripts/fetch-climate.mjs`) — tops up
+  `src/data/climate.json`, the ten-year monthly weather normals the travel page
+  bakes into its payload. Incremental and resumable: it only fetches points the
+  itinerary needs and the cache lacks, so re-running after adding stops is
+  cheap. `--force` refetches everything.
 
 ## Favicons
 

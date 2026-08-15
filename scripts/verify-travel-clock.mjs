@@ -101,6 +101,17 @@ assert.ok(document.querySelectorAll('#travel-map-stops .map-stop-photos a').leng
 assert.equal(document.querySelector('#travel-more'), null, 'timeline must not have a collapsed-state control');
 assert.equal(document.querySelector('[data-travel-tab="road-ahead"]'), null, 'the road-ahead tab must not exist');
 
+// Weather is back, but baked: this all rendered with a fetch that throws, which
+// is the whole difference from the forecasts the road-ahead tab used to pull.
+assert.ok(
+  document.querySelectorAll('#travel-timeline .timeline-climate').length > 0,
+  'published stops must show the typical weather of the month they began',
+);
+assert.ok(
+  document.querySelector('#travel-climate .climate-row'),
+  'the stats panel must summarise the route climate',
+);
+
 for (const name of ['stats', 'timeline', 'route']) {
   document.querySelector(`[data-travel-tab="${name}"]`)?.click();
   await new Promise((resolve) => setTimeout(resolve, name === 'route' ? 50 : 0));

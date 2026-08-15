@@ -45,6 +45,33 @@ const publishedNames = new Set(published.stops.map((stop) => stop.name));
 const withheld = trip.stops.filter((stop) => !publishedNames.has(stop.name));
 assert.ok(withheld.length > 0, 'expected the committed itinerary to have something to withhold');
 
+// The embedded payload is the single channel through which the itinerary
+// reaches a browser, so its shape is policed field by field rather than only
+// scanned for known secrets. `climate` is the one addition the split allows: a
+// long-run normal for a place and month the payload already carries, joined in
+// at build time from src/data/climate.json so nothing has to be fetched live.
+const embedded = html.match(/<script id="travel-data"[^>]*>([\s\S]*?)<\/script>/);
+assert.ok(embedded, 'the travel payload must be embedded in the page');
+const payload = JSON.parse(embedded[1].replace(/\\u003c/g, '<'));
+
+const PUBLISHABLE_FIELDS = new Set(['name', 'country', 'cc', 'lat', 'lon', 'year', 'month', 'climate']);
+const CLIMATE_FIELDS = new Set(['maxC', 'minC', 'rainMm', 'daylightH']);
+for (const stop of payload.stops) {
+  for (const field of Object.keys(stop)) {
+    assert.ok(PUBLISHABLE_FIELDS.has(field), `the embedded payload carries "${field}", which the public stop shape does not allow`);
+  }
+  for (const field of Object.keys(stop.climate ?? {})) {
+    assert.ok(CLIMATE_FIELDS.has(field), `the embedded climate normal carries "${field}" — normals publish four figures, nothing else`);
+  }
+}
+
+// Missing normals are not a failure: a stop published by the nightly rebuild
+// before anyone regenerated the cache simply renders without weather.
+const missingClimate = payload.stops.filter((stop) => !stop.climate).length;
+if (missingClimate) {
+  console.warn(`travel climate: ${missingClimate} of ${payload.stops.length} published stop(s) have no normal — run \`npm run climate\``);
+}
+
 // Scope: the travel page itself plus every shipped script. Those are the only
 // surfaces the itinerary can reach. Scanning the whole site instead would trip
 // over legitimate content — photo rolls carry ISO dates, and a withheld city is
@@ -87,4 +114,4 @@ for await (const path of surfaces()) {
   }
 }
 
-console.log(`travel privacy guard: ok (${published.stops.length} published, ${withheld.length} withheld)`);
+console.log(`travel privacy guard: ok (${published.stops.length} published, ${withheld.length} withheld, ${payload.stops.length - missingClimate} with climate)`);

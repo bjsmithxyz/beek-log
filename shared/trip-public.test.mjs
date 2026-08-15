@@ -39,6 +39,28 @@ test('no stop carries a date, a note or a tentative flag into the payload', () =
   }
 });
 
+test('the climate normal joins the payload keyed on the place and month it already publishes', () => {
+  const climate = { points: { '13.8,100.5': { 6: { maxC: 32.6, minC: 26.2, rainMm: 4.8, daylightH: 12.9 } } } };
+  const { stops } = publicTrip(trip([BANGKOK, HANOI]), AT_HANOI, climate);
+  assert.deepEqual(
+    Object.keys(stops[0]).sort(),
+    ['cc', 'climate', 'country', 'lat', 'lon', 'month', 'name', 'year'],
+    'weather is the only field the normals may add',
+  );
+  assert.deepEqual(stops[0].climate, { maxC: 32.6, minC: 26.2, rainMm: 4.8, daylightH: 12.9 });
+  assert.equal('climate' in stops[1], false, 'a stop the cache has no normal for ships without one');
+});
+
+test('the climate normal carries no date, and none of the cache around it', () => {
+  const climate = {
+    meta: { window: '2015-01-01/2024-12-31' },
+    points: { '13.8,100.5': { 6: { maxC: 32.6, minC: 26.2, rainMm: 4.8, daylightH: 12.9 }, 7: { maxC: 33.1, minC: 26.4, rainMm: 5.9, daylightH: 12.8 } } },
+  };
+  const { stops } = publicTrip(trip([BANGKOK]), AT_HANOI, climate);
+  assert.doesNotMatch(JSON.stringify(stops), /\d{4}-\d{2}-\d{2}/, 'the cache window must not ride along');
+  assert.doesNotMatch(JSON.stringify(stops), /33\.1/, 'only the month the stay began may ship');
+});
+
 test('the year survives so the timeline can head its sections', () => {
   const { stops } = publicTrip(trip([BANGKOK]), AT_HANOI);
   assert.equal(stops[0].year, '2025');

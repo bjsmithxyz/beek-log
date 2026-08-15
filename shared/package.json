@@ -11,6 +11,7 @@
     "./loc-utils": "./loc-utils.mjs",
     "./roll-markdown": "./roll-markdown.mjs",
     "./slug": "./slug.mjs",
+    "./trip-climate": "./trip-climate.mjs",
     "./trip-public": "./trip-public.mjs",
     "./trip-runtime": "./trip-runtime.mjs",
     "./trip-validation": "./trip-validation.mjs"

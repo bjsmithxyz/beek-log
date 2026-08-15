@@ -2,8 +2,8 @@
 // time; callers supply the browser's current Date on each page load.
 const DAY_MS = 86_400_000;
 
-// Local-calendar ISO date. Defaults to today; callers also pass arbitrary dates
-// (e.g. the climate lookup's same-window-last-year range).
+// Local-calendar ISO date. Defaults to today; callers also pass a fixed clock,
+// which is how the build and the guards pin "now".
 export function isoDate(date = new Date()) {
   return `${date.getFullYear()}-${String(date.getMonth() + 1).padStart(2, '0')}-${String(date.getDate()).padStart(2, '0')}`;
 }

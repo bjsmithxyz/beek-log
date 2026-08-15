@@ -56,6 +56,7 @@ requests.
 | `npm test --workspace @beek/admin` | Admin-focused tests |
 | `npm run build --workspace @beek/admin` | Build the admin site to `admin/dist/` |
 | `node scripts/compress-images.mjs [dir]` | Compress source images in place |
+| `npm run climate` | Fill in `src/data/climate.json` for any newly added stop |
 
 ## Tests
 
