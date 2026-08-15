@@ -738,6 +738,17 @@
       "tentative": false
     },
     {
+      "name": "Groningen",
+      "country": "Netherlands",
+      "cc": "NL",
+      "lat": 53.2190652,
+      "lon": 6.5680077,
+      "arrive": "2026-08-10",
+      "depart": "2026-08-14",
+      "note": "",
+      "tentative": false
+    },
+    {
       "name": "Hamburg",
       "country": "Germany",
       "cc": "DE",
@@ -745,7 +756,7 @@
       "lon": 9.993,
       "arrive": "2026-08-14",
       "depart": "2026-08-17",
-      "tentative": true
+      "tentative": false
     },
     {
       "name": "Copenhagen",
