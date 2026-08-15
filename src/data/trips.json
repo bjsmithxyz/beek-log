@@ -745,7 +745,7 @@
       "lon": 9.993,
       "arrive": "2026-08-14",
       "depart": "2026-08-17",
-      "tentative": true
+      "tentative": false
     },
     {
       "name": "Copenhagen",
