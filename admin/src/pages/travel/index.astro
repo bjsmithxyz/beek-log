@@ -89,9 +89,13 @@ import PageHeader from '../../components/PageHeader.astro';
   .review-actions { display: flex; flex-wrap: wrap; gap: .75rem; }
   .editor-status { min-height: 1.6rem; color: var(--text-muted); font-size: var(--font-size-sm); }
   /* Unpublished changes read as a live, pulsing green box so they are hard to
-     miss before review. */
+     miss before review. It stays block-level and shrink-wrapped rather than
+     inline-block: the box then sits the page header's own --space-6 clear of
+     the description above it (its zero top margin collapses into the header's)
+     and the same distance clear of the stops heading below, instead of hugging
+     that heading the way a .1rem bottom margin did. */
   .editor-status.is-dirty {
-    display: inline-block; margin: .1rem 0; padding: .25rem .6rem;
+    width: fit-content; margin: 0 0 var(--space-6); padding: .25rem .6rem;
     color: var(--accent); border: 1px solid var(--accent);
     animation: status-pulse 1.6s ease-in-out infinite;
   }
