@@ -150,12 +150,13 @@ sitemap.
 `/travel/` is a read-only Astro page backed by `src/data/trips.json`. The shared
 trip validator runs in tests and during the build.
 
-**The public page publishes places, never a schedule.** Exact dates, onward legs
-and tentative stops are withheld. This is enforced where it cannot be worked
-around: `shared/trip-public.mjs` reduces the itinerary at build time and only
-that result is embedded in the page, so `trips.json` never enters the client
-bundle at all. Filtering in the browser would not do — the full itinerary would
-still ship to anyone who opened the JavaScript.
+**The public page publishes places, never a schedule.** Exact dates, notes and
+tentative flags are withheld. Visited stops ship as history; future stops ship
+as a dateless `planned` route on the `route/` tab. This is enforced where it
+cannot be worked around: `shared/trip-public.mjs` reduces the itinerary at build
+time and only that result is embedded in the page, so `trips.json` never enters
+the client bundle at all. Filtering in the browser would not do — the full
+itinerary would still ship to anyone who opened the JavaScript.
 
 The cost is that past/current status is decided at build time rather than by the
 browser. That is a deliberate reversal of the earlier design: computing status
@@ -175,13 +176,14 @@ no itinerary date appears in the built page or any shipped script;
 moving clock while the published set does not.
 
 Three keyboard-operable tabs show stats, route, or the chronological timeline.
-The forward-looking `road-ahead/` tab was removed with the privacy split — it
-existed only to describe stops not yet reached — and with it went the live
+The forward-looking `road-ahead/` tab stayed gone with the privacy split — it
+existed to date and forecast stops not yet reached — and with it went the live
 Open-Meteo forecasts, so the site-wide CSP needs no `connect-src` grant at all,
-only the CARTO tile images. Leaflet is recreated after the route panel becomes
-visible so it always receives real dimensions. Route stop controls link to photo
-rolls whose effective shoot locations match by normalized place name or an 80 km
-proximity threshold.
+only the CARTO tile images. The planned route itself came back on `route/` as a
+dashed amber layer and place chips: names and coordinates, no dates. Leaflet is
+recreated after the route panel becomes visible so it always receives real
+dimensions. Route stop controls link to photo rolls whose effective shoot
+locations match by normalized place name or an 80 km proximity threshold.
 
 **Weather came back without the network.** What a place is typically like in a
 given calendar month follows from the place and the month alone — both of which
@@ -198,7 +200,7 @@ adding stops; a stop with no normal simply renders without weather, and
 blocked by a stale cache.
 
 `admin/src/pages/travel/` is the only surface in the system that renders exact
-dates, onward legs or tentative stops: it carries an amber privacy notice, a
+dates, notes or tentative flags: it carries an amber privacy notice, a
 full-detail map with both travelled and planned layers, and a dated
 `arrive | depart | stop | state` table, all driven by the working draft.
 

@@ -78,6 +78,10 @@ assert.equal(Number(later.day) - Number(early.day), 46, 'elapsed days must track
 // was never given what it would need to decide.
 assert.deepEqual(later.stops, early.stops, 'the published stop list is fixed at build time');
 assert.ok(early.stops.length > 0, 'expected published stops to render');
+assert.ok(
+  document.querySelector('#travel-map-stops .map-stop.planned'),
+  'the route tab must render the planned path',
+);
 assert.equal(later.now, early.now, 'the now/last-seen line is fixed at build time');
 assert.match(early.now || '', /^(now|last seen in):/, 'the page must say either where I am or where I was last');
 

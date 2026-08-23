@@ -1,14 +1,15 @@
 // Public travel page controller.
 //
 // This module deliberately does NOT import trips.json. The itinerary holds
-// exact dates, onward legs and tentative stops; bundling it here would publish
-// all of that to anyone who opened the JS, however little of it we rendered.
+// exact dates, notes and tentative flags; bundling it here would publish all
+// of that to anyone who opened the JS, however little of it we rendered.
 // The page instead embeds a build-time-reduced payload (see
 // shared/trip-public.mjs) and this file may only ever read that.
 //
 // The consequence is that "past" vs "here now" is decided at build time, not in
 // the browser. Only the day counter stays live, derived from the one date the
-// payload carries: the first published arrival.
+// payload carries: the first published arrival. The planned route is places
+// only — this file must not invent dates, weather or "here now" for it.
 import * as L from 'leaflet';
 import 'leaflet/dist/leaflet.css';
 import { continentOf, daysBetween, haversine, isoDate } from '@beek/shared/trip-runtime';
@@ -31,7 +32,7 @@ function setupTravel() {
   }
 
   const get = (id) => root.querySelector(`#${id}`);
-  let payload = { start: null, currentIndex: -1, stops: [], photoLinks: {} };
+  let payload = { start: null, currentIndex: -1, stops: [], planned: [], photoLinks: {} };
   try {
     payload = { ...payload, ...JSON.parse(get('travel-data')?.textContent || '{}') };
   } catch {
@@ -39,6 +40,7 @@ function setupTravel() {
   }
 
   const stops = payload.stops.map((stop, index) => ({ ...stop, index }));
+  const planned = (payload.planned || []).map((stop, index) => ({ ...stop, index }));
   const currentIndex = payload.currentIndex;
   const current = currentIndex >= 0 ? stops[currentIndex] : null;
   const photoLinks = payload.photoLinks || {};
@@ -48,8 +50,8 @@ function setupTravel() {
 
   const isLight = () => document.documentElement.getAttribute('data-theme') === 'light';
   const colours = () => isLight()
-    ? { past: '#008833', current: '#0066aa', tile: 'light_all' }
-    : { past: '#33ff66', current: '#66ccff', tile: 'dark_all' };
+    ? { past: '#008833', current: '#0066aa', future: '#cc7700', tile: 'light_all' }
+    : { past: '#33ff66', current: '#66ccff', future: '#ffaa00', tile: 'dark_all' };
   const reduceMotion = () => matchMedia('(prefers-reduced-motion: reduce)').matches;
 
   // Typical daytime high and overnight low for the month this stop's stay began
@@ -69,6 +71,12 @@ function setupTravel() {
     return `<b>${flag(stop.cc)} ${escapeHtml(stop.name)}</b>${tag}<br><span class="popup-muted">${escapeHtml(stop.country)}${when}</span>${climate}`;
   }
 
+  // Planned stops have no month and no weather — naming when would date the stay.
+  function popupForPlanned(stop) {
+    return `<b>${flag(stop.cc)} ${escapeHtml(stop.name)}</b> · <span class="popup-future">planned</span>`
+      + `<br><span class="popup-muted">${escapeHtml(stop.country)}</span>`;
+  }
+
   function markerFor(stop) {
     const palette = colours();
     const isCurrent = stop.index === currentIndex;
@@ -85,9 +93,23 @@ function setupTravel() {
     return marker;
   }
 
+  function markerForPlanned(stop) {
+    const colour = colours().future;
+    const marker = L.circleMarker([stop.lat, stop.lon], {
+      radius: 4,
+      color: colour,
+      weight: 1.5,
+      fillColor: colour,
+      fillOpacity: 0.22,
+    });
+    marker.bindPopup(popupForPlanned(stop));
+    stop._marker = marker;
+    return marker;
+  }
+
   function renderMap() {
     const mapElement = get('travel-map');
-    if (!mapElement || !stops.length) return;
+    if (!mapElement || (!stops.length && !planned.length)) return;
     if (map) map.remove();
     const palette = colours();
     map = L.map(mapElement, {
@@ -100,23 +122,35 @@ function setupTravel() {
       attribution: '© OpenStreetMap contributors © CARTO', subdomains: 'abcd', maxZoom: 19,
     }).addTo(map);
 
-    // One layer only: everything published has been travelled.
-    const line = stops.map((stop) => [stop.lat, stop.lon]);
-    L.polyline(line, { color: palette.past, weight: 2.5, opacity: 0.88 }).addTo(map);
+    const travelled = stops.map((stop) => [stop.lat, stop.lon]);
+    const lastVisited = travelled.at(-1);
+    const ahead = [
+      ...(lastVisited ? [lastVisited] : []),
+      ...planned.map((stop) => [stop.lat, stop.lon]),
+    ];
+    if (travelled.length > 1) {
+      L.polyline(travelled, { color: palette.past, weight: 2.5, opacity: 0.88 }).addTo(map);
+    }
+    if (ahead.length > 1) {
+      L.polyline(ahead, {
+        color: palette.future, weight: 2.25, opacity: 0.9, dashArray: '5 6', lineCap: 'square',
+      }).addTo(map);
+    }
     const markers = L.layerGroup().addTo(map);
     stops.forEach((stop) => markers.addLayer(markerFor(stop)));
+    planned.forEach((stop) => markers.addLayer(markerForPlanned(stop)));
 
+    const bounds = [...travelled, ...planned.map((stop) => [stop.lat, stop.lon])];
     const renderedMap = map;
     requestAnimationFrame(() => {
       if (map !== renderedMap) return;
       renderedMap.invalidateSize();
-      if (line.length > 1) renderedMap.fitBounds(L.latLngBounds(line).pad(0.05));
-      else renderedMap.setView(line[0], 4);
+      if (bounds.length > 1) renderedMap.fitBounds(L.latLngBounds(bounds).pad(0.05));
+      else if (bounds.length) renderedMap.setView(bounds[0], 4);
     });
   }
 
-  function showStop(index) {
-    const stop = stops[index];
+  function flyToStop(stop) {
     if (!stop || !map) return;
     if (reduceMotion()) map.setView([stop.lat, stop.lon], 6, { animate: false });
     else map.flyTo([stop.lat, stop.lon], 6, { duration: 0.6 });
@@ -124,17 +158,22 @@ function setupTravel() {
     get('travel-map').scrollIntoView({ behavior: 'smooth', block: 'center' });
   }
 
-  function renderMapStops() {
-    get('travel-map-stops').replaceChildren(...stops.map((stop) => {
-      const entry = document.createElement('div');
-      entry.className = 'map-stop-entry';
-      const button = document.createElement('button');
-      button.type = 'button';
-      button.className = `map-stop${stop.index === currentIndex ? ' current' : ''}`;
-      button.textContent = `${flag(stop.cc)} ${stop.name}`;
-      button.addEventListener('click', () => showStop(stop.index), { signal: abortController.signal });
-      entry.append(button);
+  function stopChip(stop, { current = false, planned: isPlannedStop = false } = {}) {
+    const entry = document.createElement('div');
+    entry.className = 'map-stop-entry';
+    const button = document.createElement('button');
+    button.type = 'button';
+    button.className = `map-stop${current ? ' current' : ''}${isPlannedStop ? ' planned' : ''}`;
+    button.textContent = `${flag(stop.cc)} ${stop.name}`;
+    if (isPlannedStop) button.setAttribute('aria-label', `${stop.name}, planned`);
+    button.addEventListener('click', () => flyToStop(stop), { signal: abortController.signal });
+    entry.append(button);
+    return entry;
+  }
 
+  function renderMapStops() {
+    const chips = stops.map((stop) => {
+      const entry = stopChip(stop, { current: stop.index === currentIndex });
       const related = photoLinks[stop.index] || [];
       if (related.length) {
         const links = document.createElement('span');
@@ -150,7 +189,16 @@ function setupTravel() {
         entry.append(links);
       }
       return entry;
-    }));
+    });
+
+    if (planned.length) {
+      const label = document.createElement('span');
+      label.className = 'map-stop-ahead';
+      label.textContent = 'ahead/';
+      chips.push(label, ...planned.map((stop) => stopChip(stop, { planned: true })));
+    }
+
+    get('travel-map-stops').replaceChildren(...chips);
   }
 
   function renderStats() {
@@ -187,7 +235,7 @@ function setupTravel() {
     ].join('');
 
     // When the stop being lived in right now is tentative, or the journey is
-    // between stops, say where I was last — never where I'm going.
+    // between stops, say where I was last — never the next planned place.
     const nowLine = get('travel-now');
     const lastSeen = stops.at(-1);
     if (current) {

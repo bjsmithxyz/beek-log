@@ -1,7 +1,7 @@
 import { test } from 'node:test';
 import assert from 'node:assert/strict';
 import currentTrip from '../src/data/trips.json' with { type: 'json' };
-import { isPublishable, publicTrip } from './trip-public.mjs';
+import { isPlanned, isPublishable, publicTrip } from './trip-public.mjs';
 
 const trip = (stops) => ({ meta: { title: 'travel', subtitle: '' }, stops });
 
@@ -22,9 +22,17 @@ test('a tentative stop is withheld even once it has begun', () => {
   assert.equal(isPublishable({ status: 'past', tentative: true }), false);
 });
 
-test('onward stops are dropped from the payload entirely, not just hidden', () => {
-  const { stops } = publicTrip(trip([BANGKOK, HANOI, LIMA]), AT_HANOI);
+test('a stop that has not begun is planned, tentative or not', () => {
+  assert.equal(isPlanned({ status: 'future' }), true);
+  assert.equal(isPlanned({ status: 'future', tentative: true }), true);
+  assert.equal(isPlanned({ status: 'past' }), false);
+  assert.equal(isPlanned({ status: 'current' }), false);
+});
+
+test('onward stops leave the visited list and appear only as a dateless plan', () => {
+  const { stops, planned } = publicTrip(trip([BANGKOK, HANOI, LIMA]), AT_HANOI);
   assert.deepEqual(stops.map((stop) => stop.name), ['Bangkok', 'Hanoi']);
+  assert.deepEqual(planned.map((stop) => stop.name), ['Lima']);
 });
 
 test('no stop carries a date, a note or a tentative flag into the payload', () => {
@@ -87,6 +95,16 @@ test('start is withheld while the journey is still ahead, rather than dating it'
   const payload = publicTrip(trip([LIMA]), AT_HANOI);
   assert.equal(payload.start, null);
   assert.deepEqual(payload.stops, []);
+  assert.deepEqual(payload.planned.map((stop) => stop.name), ['Lima']);
+});
+
+test('a planned stop is a place only — no date, month, note, weather or tentative flag', () => {
+  const noted = { ...LIMA, note: 'Maybe January.', tentative: true };
+  const climate = { points: { '-12.0,-77.0': { 1: { maxC: 26, minC: 20, rainMm: 0.2, daylightH: 12.6 } } } };
+  const { planned } = publicTrip(trip([BANGKOK, noted]), AT_HANOI, climate);
+  assert.deepEqual(planned, [{
+    name: 'Lima', country: 'Peru', cc: 'PE', lat: -12.0464, lon: -77.0428,
+  }]);
 });
 
 test('the current stop is marked when it is publishable', () => {
@@ -99,6 +117,9 @@ test('a tentative current stop degrades to no current, never to the next stop', 
   const payload = publicTrip(trip([BANGKOK, { ...HANOI, tentative: true }, LIMA]), AT_HANOI);
   assert.equal(payload.currentIndex, -1, 'the page must fall back to "last seen in"');
   assert.deepEqual(payload.stops.map((stop) => stop.name), ['Bangkok']);
+  assert.deepEqual(payload.planned.map((stop) => stop.name), ['Lima']);
+  assert.ok(!payload.stops.some((stop) => stop.name === 'Hanoi'));
+  assert.ok(!payload.planned.some((stop) => stop.name === 'Hanoi'));
 });
 
 test('a gap between stops leaves no current stop', () => {
@@ -108,10 +129,12 @@ test('a gap between stops leaves no current stop', () => {
   assert.deepEqual(payload.stops.map((stop) => stop.name), ['Bangkok', 'Hanoi']);
 });
 
-test('the committed itinerary publishes no future stop under an early clock', () => {
+test('the committed itinerary publishes no future stop as visited under an early clock', () => {
   const payload = publicTrip(currentTrip, new Date(2025, 5, 21, 12));
   assert.equal(payload.stops.length, 1);
   assert.equal(payload.stops[0].name, 'Bangkok');
+  assert.ok(payload.planned.length > 0);
+  assert.ok(!payload.planned.some((stop) => stop.name === 'Bangkok'));
 });
 
 test('the committed itinerary never leaks a date through any stop', () => {
@@ -121,5 +144,10 @@ test('the committed itinerary never leaks a date through any stop', () => {
     JSON.stringify(payload.stops),
     /\d{4}-\d{2}-\d{2}/,
     'no ISO date may appear anywhere in the published stop list',
+  );
+  assert.doesNotMatch(
+    JSON.stringify(payload.planned),
+    /\d{4}-\d{2}-\d{2}/,
+    'no ISO date may appear anywhere in the planned route',
   );
 });

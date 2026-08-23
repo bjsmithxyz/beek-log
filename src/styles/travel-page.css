@@ -211,6 +211,7 @@
 
 .travel-map .leaflet-popup-content b { color: var(--color-text-primary); }
 .travel-map .popup-current { color: var(--color-accent-tertiary); }
+.travel-map .popup-future { color: var(--color-accent-secondary); }
 .travel-map .popup-muted { color: var(--color-text-muted); }
 
 .travel-map-stops {
@@ -230,6 +231,23 @@
 }
 
 .map-stop.current { color: var(--color-accent-tertiary); border-color: var(--color-accent-tertiary); }
+
+.map-stop.planned,
+.map-stop.planned:hover {
+  color: var(--color-accent-secondary);
+  border-color: var(--color-accent-secondary);
+}
+
+.map-stop-ahead {
+  display: flex;
+  flex: none;
+  align-items: center;
+  align-self: stretch;
+  padding: 0 var(--space-1);
+  color: var(--color-accent-secondary);
+  font-size: var(--font-size-xs);
+  letter-spacing: 0.08em;
+}
 
 .map-stop-photos {
   display: flex;

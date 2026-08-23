@@ -3,12 +3,13 @@
 // The contract this enforces changed with the privacy split. It used to be
 // "status must never be prerendered, the browser fills it in" — which only
 // worked because the whole of trips.json was bundled into the client. That
-// bundle published every exact date, onward leg and tentative stop to anyone
-// who opened it.
+// bundle published every exact date, note and tentative flag to anyone who
+// opened it.
 //
 // The contract is now the inverse: the build decides what may be published and
-// nothing else is allowed to reach the browser. Status is therefore baked, and
-// what must be absent is the itinerary itself. See shared/trip-public.mjs.
+// nothing else is allowed to reach the browser. Status is therefore baked.
+// Visited places and the dateless planned route may ship; dates, notes and
+// tentative-already-begun stops must not. See shared/trip-public.mjs.
 import assert from 'node:assert/strict';
 import { readdir, readFile } from 'node:fs/promises';
 import { join } from 'node:path';
@@ -39,11 +40,14 @@ assert.deepEqual(
 
 // --- The privacy contract -------------------------------------------------
 // Nothing the build withheld may appear anywhere in the shipped site: not in
-// the page, not in a JS chunk, not in the embedded payload.
+// the page, not in a JS chunk, not in the embedded payload. Planned places
+// are published on purpose; dates and tentative-already-begun stops are not.
 const published = publicTrip(trip);
-const publishedNames = new Set(published.stops.map((stop) => stop.name));
+const publishedNames = new Set([
+  ...published.stops.map((stop) => stop.name),
+  ...published.planned.map((stop) => stop.name),
+]);
 const withheld = trip.stops.filter((stop) => !publishedNames.has(stop.name));
-assert.ok(withheld.length > 0, 'expected the committed itinerary to have something to withhold');
 
 // The embedded payload is the single channel through which the itinerary
 // reaches a browser, so its shape is policed field by field rather than only
@@ -55,13 +59,20 @@ assert.ok(embedded, 'the travel payload must be embedded in the page');
 const payload = JSON.parse(embedded[1].replace(/\\u003c/g, '<'));
 
 const PUBLISHABLE_FIELDS = new Set(['name', 'country', 'cc', 'lat', 'lon', 'year', 'month', 'climate']);
+const PLANNED_FIELDS = new Set(['name', 'country', 'cc', 'lat', 'lon']);
 const CLIMATE_FIELDS = new Set(['maxC', 'minC', 'rainMm', 'daylightH']);
+assert.ok(Array.isArray(payload.planned), 'the planned route must ship as its own array');
 for (const stop of payload.stops) {
   for (const field of Object.keys(stop)) {
     assert.ok(PUBLISHABLE_FIELDS.has(field), `the embedded payload carries "${field}", which the public stop shape does not allow`);
   }
   for (const field of Object.keys(stop.climate ?? {})) {
     assert.ok(CLIMATE_FIELDS.has(field), `the embedded climate normal carries "${field}" — normals publish four figures, nothing else`);
+  }
+}
+for (const stop of payload.planned) {
+  for (const field of Object.keys(stop)) {
+    assert.ok(PLANNED_FIELDS.has(field), `a planned stop carries "${field}", which would date or qualify the route ahead`);
   }
 }
 
@@ -96,7 +107,7 @@ for await (const path of surfaces()) {
   for (const stop of withheld) {
     assert.ok(
       !contents.includes(stop.name),
-      `${relative} leaks the withheld stop "${stop.name}" — onward and tentative stops must not ship`,
+      `${relative} leaks the withheld stop "${stop.name}" — tentative stops that have already begun must not ship`,
     );
   }
 
@@ -114,4 +125,4 @@ for await (const path of surfaces()) {
   }
 }
 
-console.log(`travel privacy guard: ok (${published.stops.length} published, ${withheld.length} withheld, ${payload.stops.length - missingClimate} with climate)`);
+console.log(`travel privacy guard: ok (${published.stops.length} published, ${published.planned.length} planned, ${withheld.length} withheld, ${payload.stops.length - missingClimate} with climate)`);

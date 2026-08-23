@@ -1,9 +1,9 @@
 // The authenticated view of the itinerary.
 //
-// This is the ONLY surface in the system that renders exact dates, onward legs
-// or tentative stops. bjsmith.xyz publishes places and nothing else — see
-// shared/trip-public.mjs for what the public build is allowed to keep, and
-// scripts/verify-travel-build.mjs for the guard that holds it to that.
+// This is the ONLY surface in the system that renders exact dates, notes or
+// tentative flags. bjsmith.xyz publishes visited places and a dateless planned
+// route — see shared/trip-public.mjs for what the public build is allowed to
+// keep, and scripts/verify-travel-build.mjs for the guard that holds it to that.
 import L from 'leaflet';
 import 'leaflet/dist/leaflet.css';
 import { computeTrip, daysBetween, isoDate } from '@beek/shared/trip-runtime';

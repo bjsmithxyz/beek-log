@@ -1,10 +1,16 @@
 // The public travel payload.
 //
-// bjsmith.xyz publishes places, never a schedule. A stop's dates, note, onward
-// legs and tentative plans must not reach the browser *at all* — so the
-// reduction happens here, at build time, and only the result is embedded in the
-// page. Filtering in the client would not achieve this: the bundle would still
-// carry the whole itinerary for anyone who opened it.
+// bjsmith.xyz publishes places, never a schedule. A stop's dates, note and
+// tentative flag must not reach the browser *at all* — so the reduction happens
+// here, at build time, and only the result is embedded in the page. Filtering
+// in the client would not achieve this: the bundle would still carry the whole
+// itinerary for anyone who opened it.
+//
+// Visited stops (begun, and not tentative) ship as `stops` with a coarse
+// month/year. Future stops ship separately as `planned` — place and coordinates
+// only — so the route tab can draw the road ahead without dating it. Tentative
+// stops that have already begun stay withheld: they are neither history nor
+// a plan.
 //
 // One date does survive: the arrival of the first published stop. The public
 // "day N" counter is deliberately live, and N plus today's date already gives
@@ -17,9 +23,24 @@ const MONTHS = [
   'July', 'August', 'September', 'October', 'November', 'December',
 ];
 
-/** A stop may be published once it has begun, and only if it is not tentative. */
+/** A visited stop may be published once it has begun, and only if it is not tentative. */
 export function isPublishable(stop) {
   return stop.status !== 'future' && stop.tentative !== true;
+}
+
+/** The road ahead: any stop that has not begun, tentative or not. */
+export function isPlanned(stop) {
+  return stop.status === 'future';
+}
+
+function placeFields(stop) {
+  return {
+    name: stop.name,
+    country: stop.country,
+    cc: stop.cc,
+    lat: stop.lat,
+    lon: stop.lon,
+  };
 }
 
 /**
@@ -29,11 +50,14 @@ export function isPublishable(stop) {
  *
  * `climate` is the optional normals cache (src/data/climate.json). It is looked
  * up here rather than in the page because this is the module that decides what
- * may ship, and a normal is only publishable for a stop that is: keyed on the
- * place and the month, both of which the payload already carries.
+ * may ship, and a normal is only publishable for a visited stop that is keyed
+ * on the place and the month, both of which `stops` already carries. Planned
+ * stops have no month, so they get no weather.
  */
 export function publicTrip(tripData, now = new Date(), climate = null) {
-  const published = computeTrip(tripData.stops, now).filter(isPublishable);
+  const computed = computeTrip(tripData.stops, now);
+  const published = computed.filter(isPublishable);
+  const planned = computed.filter(isPlanned);
 
   // Only a published stop can be "here now". When the current stop is tentative,
   // or the journey is between stops, the page must fall back to "last seen in"
@@ -50,11 +74,7 @@ export function publicTrip(tripData, now = new Date(), climate = null) {
       // omitted entirely when the cache has nothing, never faked.
       const normal = climateNormal(climate, stop.lat, stop.lon, month);
       return {
-        name: stop.name,
-        country: stop.country,
-        cc: stop.cc,
-        lat: stop.lat,
-        lon: stop.lon,
+        ...placeFields(stop),
         // Coarse enough to head a timeline section without dating the stay.
         year: stop.arrive.slice(0, 4),
         // Same bargain one notch finer: the month a stay began, as a name rather
@@ -64,5 +84,6 @@ export function publicTrip(tripData, now = new Date(), climate = null) {
         ...(normal ? { climate: normal } : {}),
       };
     }),
+    planned: planned.map(placeFields),
   };
 }
