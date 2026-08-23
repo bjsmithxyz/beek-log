@@ -755,7 +755,7 @@
       "lat": 53.5507,
       "lon": 9.993,
       "arrive": "2026-08-14",
-      "depart": "2026-08-17",
+      "depart": "2026-08-18",
       "tentative": false
     },
     {
@@ -764,9 +764,9 @@
       "cc": "DK",
       "lat": 55.6761,
       "lon": 12.5683,
-      "arrive": "2026-08-17",
-      "depart": "2026-08-20",
-      "tentative": true
+      "arrive": "2026-08-18",
+      "depart": "2026-08-24",
+      "tentative": false
     },
     {
       "name": "Gothenburg",
@@ -774,9 +774,9 @@
       "cc": "SE",
       "lat": 57.7089,
       "lon": 11.9746,
-      "arrive": "2026-08-20",
-      "depart": "2026-08-23",
-      "tentative": true
+      "arrive": "2026-08-24",
+      "depart": "2026-08-29",
+      "tentative": false
     },
     {
       "name": "Stockholm",
