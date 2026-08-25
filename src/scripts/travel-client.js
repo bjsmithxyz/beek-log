@@ -7,9 +7,10 @@
 // shared/trip-public.mjs) and this file may only ever read that.
 //
 // The consequence is that "past" vs "here now" is decided at build time, not in
-// the browser. Only the day counter stays live, derived from the one date the
-// payload carries: the first published arrival. The planned route is places
-// only — this file must not invent dates, weather or "here now" for it.
+// the browser. Completed stops may carry their exact dates; the current stop
+// and planned route do not. Only the day counter stays live, derived from the
+// first published arrival, and this file must not invent dates, weather or
+// "here now" for the route ahead.
 import * as L from 'leaflet';
 import 'leaflet/dist/leaflet.css';
 import { continentOf, daysBetween, haversine, isoDate } from '@beek/shared/trip-runtime';
@@ -59,12 +60,29 @@ function setupTravel() {
   // what the weather actually did while I was there.
   const typicalTemps = (climate) => `${Math.round(climate.maxC)}° / ${Math.round(climate.minC)}°C`;
 
-  // Place, country and the month the stay began. No day, no duration, no note.
-  // The stop being lived in right now says "here now" instead of a month.
+  const MONTH_NAMES = [
+    'January', 'February', 'March', 'April', 'May', 'June',
+    'July', 'August', 'September', 'October', 'November', 'December',
+  ];
+
+  function formatExactDate(value) {
+    const [year, month, day] = String(value || '').split('-').map(Number);
+    if (!year || !month || !day) return '';
+    return `${day} ${MONTH_NAMES[month - 1]} ${year}`;
+  }
+
+  function exactDateRange(stop) {
+    if (!stop.arrive || !stop.depart) return '';
+    return `${formatExactDate(stop.arrive)} → ${formatExactDate(stop.depart)}`;
+  }
+
+  // Past stops may show their exact stay; the stop being lived in right now
+  // says "here now" instead of publishing its open-ended schedule.
   function popupFor(stop) {
     const isCurrent = stop.index === currentIndex;
     const tag = isCurrent ? ' · <span class="popup-current">here now</span>' : '';
-    const when = isCurrent ? '' : `, ${escapeHtml(stop.month)} ${escapeHtml(stop.year)}`;
+    const exact = exactDateRange(stop);
+    const when = isCurrent ? '' : `, ${escapeHtml(exact || `${stop.month} ${stop.year}`)}`;
     const climate = stop.climate
       ? `<br><span class="popup-muted">typically ${typicalTemps(stop.climate)} · ${stop.climate.daylightH.toFixed(1)}h daylight · ${stop.climate.rainMm.toFixed(1)}mm rain/day</span>`
       : '';
@@ -281,19 +299,22 @@ function setupTravel() {
 
   function timelineRow(stop) {
     const isCurrent = stop.index === currentIndex;
-    // A past stop is dated to the month it began; the current one is dated by
-    // "here now" instead, so the stay in progress stays open-ended. The comma
-    // belongs to the pair, so it is only drawn when a month follows it.
+    // Past stops carry exact dates; the current one says "here now" instead,
+    // so the stay in progress stays open-ended. The comma belongs to the
+    // country/date pair and is only drawn when a date follows it.
+    const exact = exactDateRange(stop);
     const when = isCurrent
       ? '<span class="timeline-here">here now</span>'
-      : `<span class="timeline-month">${escapeHtml(stop.month)}</span>`;
+      : exact
+        ? `<span class="timeline-dates">${escapeHtml(exact)}</span>`
+        : `<span class="timeline-month">${escapeHtml(stop.month)}</span>`;
     const comma = isCurrent ? '' : '<span class="timeline-comma">,</span>';
     // The timeline is the one place every stop is listed, so it doubles as the
     // per-destination weather list the road-ahead cards used to be.
     const climate = stop.climate
       ? `<span class="timeline-climate" title="Typical high and low for that month">${typicalTemps(stop.climate)}</span>`
       : '';
-    return `<div class="timeline-row${isCurrent ? ' current' : ''}">
+    return `<div class="timeline-row${isCurrent ? ' current' : ''}${exact ? ' dated' : ''}">
       <strong>${flag(stop.cc)} ${escapeHtml(stop.name)}</strong><span>${escapeHtml(stop.country)}${comma}</span>${when}${climate}
     </div>`;
   }

@@ -1,6 +1,14 @@
 import { test } from 'node:test';
 import assert from 'node:assert/strict';
-import { addStop, cloneTrip, moveStop, removeStop, tripSummary, tripsEqual } from '../src/lib/travel-editor-state.mjs';
+import {
+  addStop,
+  cloneTrip,
+  moveStop,
+  pushTentativeFutureDates,
+  removeStop,
+  tripSummary,
+  tripsEqual,
+} from '../src/lib/travel-editor-state.mjs';
 
 const source = {
   meta: { title: 'Trip', subtitle: '' },
@@ -36,4 +44,28 @@ test('summary reports route bounds and tentative stops', () => {
   assert.deepEqual(tripSummary(source), {
     stops: 2, firstDate: '2025-01-01', lastDate: '2025-01-03', tentative: 1,
   });
+});
+
+test('extending the current stop pushes later tentative dates by the same number of days', () => {
+  const draft = {
+    meta: { title: 'Trip', subtitle: '' },
+    stops: [
+      { name: 'Current', arrive: '2026-08-20', depart: '2026-08-29' },
+      { name: 'Tentative A', arrive: '2026-08-29', depart: '2026-09-02', tentative: true },
+      { name: 'Fixed', arrive: '2026-09-02', depart: '2026-09-04', tentative: false },
+      { name: 'Tentative B', arrive: '2026-09-04', depart: '2026-09-08', tentative: true },
+    ],
+  };
+
+  assert.equal(pushTentativeFutureDates(draft, 0, '2026-08-29', '2026-08-31', '2026-08-25'), 2);
+  assert.equal(draft.stops[1].arrive, '2026-08-31');
+  assert.equal(draft.stops[1].depart, '2026-09-04');
+  assert.equal(draft.stops[2].arrive, '2026-09-02', 'fixed future stays do not move');
+  assert.equal(draft.stops[3].arrive, '2026-09-06');
+});
+
+test('date pushing ignores past stops, non-extensions and non-tentative stops', () => {
+  const draft = cloneTrip(source);
+  assert.equal(pushTentativeFutureDates(draft, 0, '2025-01-02', '2025-01-03', '2026-08-25'), 0);
+  assert.equal(draft.stops[1].arrive, '2025-01-02');
 });

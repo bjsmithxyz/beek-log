@@ -12,16 +12,17 @@ import '../../styles/travel-page.css';
 assertValidTrip(tripData);
 
 // Everything below derives from the *published* subset. trips.json itself is
-// never handed to the browser: it holds exact dates, notes and tentative
-// flags, none of which this page may disclose. Climate normals are joined in
-// here rather than fetched in the browser — the page reaches no origin but the
-// map tiles, and the cache only ever answers for a visited place and month.
+// never handed to the browser: it holds the live/future schedule, notes and
+// tentative flags. Only completed non-tentative stays may carry exact dates.
+// Climate normals are joined in here rather than fetched in the browser — the
+// page reaches no origin but the map tiles, and the cache only ever answers for
+// a visited place and month.
 const published = publicTrip(tripData, new Date(), climate);
 const photoRolls = (await getPhotoRolls()).sort(byDateDesc);
 const stopPhotoLinks = buildStopPhotoLinks(published.stops, photoRolls);
 const rollsOnRoute = countRollsOnRoute(stopPhotoLinks);
 
-const description = "Places I've been, and the route ahead — no dates.";
+const description = "Places I've been, with exact dates for completed stays, and the route ahead.";
 const jsonLd = {
   '@type': 'CreativeWork',
   name: tripData.meta.title,

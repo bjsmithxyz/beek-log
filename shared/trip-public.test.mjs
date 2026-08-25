@@ -35,16 +35,19 @@ test('onward stops leave the visited list and appear only as a dateless plan', (
   assert.deepEqual(planned.map((stop) => stop.name), ['Lima']);
 });
 
-test('no stop carries a date, a note or a tentative flag into the payload', () => {
+test('only completed stays carry exact dates; notes and tentative flags stay private', () => {
   const noted = { ...BANGKOK, note: 'First stop, 3 days in Bangkok.' };
   const { stops } = publicTrip(trip([noted, HANOI]), AT_HANOI);
-  for (const stop of stops) {
-    assert.deepEqual(
-      Object.keys(stop).sort(),
-      ['cc', 'country', 'lat', 'lon', 'month', 'name', 'year'],
-      'the public stop shape is a closed set — a new field here is a disclosure',
-    );
-  }
+  assert.deepEqual(Object.keys(stops[0]).sort(), [
+    'arrive', 'cc', 'country', 'depart', 'lat', 'lon', 'month', 'name', 'year',
+  ]);
+  assert.equal(stops[0].arrive, BANGKOK.arrive);
+  assert.equal(stops[0].depart, BANGKOK.depart);
+  assert.deepEqual(
+    Object.keys(stops[1]).sort(),
+    ['cc', 'country', 'lat', 'lon', 'month', 'name', 'year'],
+    'the current stop must not disclose its open-ended schedule',
+  );
 });
 
 test('the climate normal joins the payload keyed on the place and month it already publishes', () => {
@@ -52,20 +55,20 @@ test('the climate normal joins the payload keyed on the place and month it alrea
   const { stops } = publicTrip(trip([BANGKOK, HANOI]), AT_HANOI, climate);
   assert.deepEqual(
     Object.keys(stops[0]).sort(),
-    ['cc', 'climate', 'country', 'lat', 'lon', 'month', 'name', 'year'],
+    ['arrive', 'cc', 'climate', 'country', 'depart', 'lat', 'lon', 'month', 'name', 'year'],
     'weather is the only field the normals may add',
   );
   assert.deepEqual(stops[0].climate, { maxC: 32.6, minC: 26.2, rainMm: 4.8, daylightH: 12.9 });
   assert.equal('climate' in stops[1], false, 'a stop the cache has no normal for ships without one');
 });
 
-test('the climate normal carries no date, and none of the cache around it', () => {
+test('the climate normal carries no cache metadata', () => {
   const climate = {
     meta: { window: '2015-01-01/2024-12-31' },
     points: { '13.8,100.5': { 6: { maxC: 32.6, minC: 26.2, rainMm: 4.8, daylightH: 12.9 }, 7: { maxC: 33.1, minC: 26.4, rainMm: 5.9, daylightH: 12.8 } } },
   };
   const { stops } = publicTrip(trip([BANGKOK]), AT_HANOI, climate);
-  assert.doesNotMatch(JSON.stringify(stops), /\d{4}-\d{2}-\d{2}/, 'the cache window must not ride along');
+  assert.doesNotMatch(JSON.stringify(stops), /2015-01-01|2024-12-31/, 'the cache window must not ride along');
   assert.doesNotMatch(JSON.stringify(stops), /33\.1/, 'only the month the stay began may ship');
 });
 
@@ -74,10 +77,11 @@ test('the year survives so the timeline can head its sections', () => {
   assert.equal(stops[0].year, '2025');
 });
 
-test('the month survives as a name, never as a fragment of the arrival date', () => {
+test('the month survives as a name alongside dates for a completed stay', () => {
   const { stops } = publicTrip(trip([BANGKOK]), AT_HANOI);
   assert.equal(stops[0].month, 'June');
-  assert.doesNotMatch(JSON.stringify(stops[0]), /06/, 'the numeric month must not ship');
+  assert.equal(stops[0].arrive, '2025-06-20');
+  assert.equal(stops[0].depart, '2025-06-23');
 });
 
 test('every month in the committed itinerary resolves to a name', () => {
@@ -137,14 +141,16 @@ test('the committed itinerary publishes no future stop as visited under an early
   assert.ok(!payload.planned.some((stop) => stop.name === 'Bangkok'));
 });
 
-test('the committed itinerary never leaks a date through any stop', () => {
-  const payload = publicTrip(currentTrip, new Date(2026, 7, 2, 12));
+test('the committed itinerary dates past stops but never the current or planned route', () => {
+  const now = new Date(2026, 7, 2, 12);
+  const payload = publicTrip(currentTrip, now);
   assert.ok(payload.stops.length > 1);
-  assert.doesNotMatch(
-    JSON.stringify(payload.stops),
-    /\d{4}-\d{2}-\d{2}/,
-    'no ISO date may appear anywhere in the published stop list',
-  );
+  const dated = payload.stops.filter((stop) => stop.arrive && stop.depart);
+  assert.ok(dated.length > 0, 'expected completed stops to carry exact dates');
+  assert.ok(payload.stops.some((stop) => !stop.arrive), 'expected a current stop without exact dates');
+  for (const stop of payload.stops.filter((entry) => !entry.arrive)) {
+    assert.equal('depart' in stop, false);
+  }
   assert.doesNotMatch(
     JSON.stringify(payload.planned),
     /\d{4}-\d{2}-\d{2}/,

@@ -8,13 +8,14 @@
 //
 // The contract is now the inverse: the build decides what may be published and
 // nothing else is allowed to reach the browser. Status is therefore baked.
-// Visited places and the dateless planned route may ship; dates, notes and
+// Visited places and completed dates may ship; live/future dates, notes and
 // tentative-already-begun stops must not. See shared/trip-public.mjs.
 import assert from 'node:assert/strict';
 import { readdir, readFile } from 'node:fs/promises';
 import { join } from 'node:path';
 import trip from '../src/data/trips.json' with { type: 'json' };
 import { publicTrip } from '@beek/shared/trip-public';
+import { computeTrip } from '@beek/shared/trip-runtime';
 
 const dist = new URL('../dist/', import.meta.url).pathname;
 const html = await readFile(join(dist, 'travel/index.html'), 'utf8');
@@ -41,8 +42,15 @@ assert.deepEqual(
 // --- The privacy contract -------------------------------------------------
 // Nothing the build withheld may appear anywhere in the shipped site: not in
 // the page, not in a JS chunk, not in the embedded payload. Planned places
-// are published on purpose; dates and tentative-already-begun stops are not.
+// are published on purpose; live/future dates and tentative-already-begun stops are not.
 const published = publicTrip(trip);
+const computed = computeTrip(trip.stops);
+const publicDates = new Set([
+  published.start,
+  ...computed
+    .filter((stop) => stop.status === 'past' && stop.tentative !== true)
+    .flatMap((stop) => [stop.arrive, stop.depart]),
+].filter(Boolean));
 const publishedNames = new Set([
   ...published.stops.map((stop) => stop.name),
   ...published.planned.map((stop) => stop.name),
@@ -58,7 +66,7 @@ const embedded = html.match(/<script id="travel-data"[^>]*>([\s\S]*?)<\/script>/
 assert.ok(embedded, 'the travel payload must be embedded in the page');
 const payload = JSON.parse(embedded[1].replace(/\\u003c/g, '<'));
 
-const PUBLISHABLE_FIELDS = new Set(['name', 'country', 'cc', 'lat', 'lon', 'year', 'month', 'climate']);
+const PUBLISHABLE_FIELDS = new Set(['name', 'country', 'cc', 'lat', 'lon', 'year', 'month', 'arrive', 'depart', 'climate']);
 const PLANNED_FIELDS = new Set(['name', 'country', 'cc', 'lat', 'lon']);
 const CLIMATE_FIELDS = new Set(['maxC', 'minC', 'rainMm', 'daylightH']);
 assert.ok(Array.isArray(payload.planned), 'the planned route must ship as its own array');
@@ -66,6 +74,10 @@ for (const stop of payload.stops) {
   for (const field of Object.keys(stop)) {
     assert.ok(PUBLISHABLE_FIELDS.has(field), `the embedded payload carries "${field}", which the public stop shape does not allow`);
   }
+  const source = computed.find((entry) => entry.name === stop.name);
+  const mayCarryExactDates = source?.status === 'past' && source.tentative !== true;
+  assert.equal('arrive' in stop, mayCarryExactDates, `${stop.name} must only carry dates after a completed stay`);
+  assert.equal('depart' in stop, mayCarryExactDates, `${stop.name} must only carry departure after a completed stay`);
   for (const field of Object.keys(stop.climate ?? {})) {
     assert.ok(CLIMATE_FIELDS.has(field), `the embedded climate normal carries "${field}" — normals publish four figures, nothing else`);
   }
@@ -111,15 +123,15 @@ for await (const path of surfaces()) {
     );
   }
 
-  // Every stop date in the itinerary, published or not. The reduced payload
-  // keeps one: the first published arrival, which the live day counter needs
-  // and which N-plus-today already discloses.
+  // Completed non-tentative dates are intentionally public. Every other
+  // itinerary date remains private, apart from the first published arrival
+  // which the live day counter needs and which N-plus-today already discloses.
   for (const stop of trip.stops) {
     for (const date of [stop.arrive, stop.depart]) {
-      if (date === published.start) continue;
+      if (publicDates.has(date)) continue;
       assert.ok(
         !contents.includes(date),
-        `${relative} leaks the itinerary date ${date} — the public site publishes places, not a schedule`,
+        `${relative} leaks the live/future itinerary date ${date}`,
       );
     }
   }

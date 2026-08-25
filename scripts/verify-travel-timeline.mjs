@@ -1,9 +1,9 @@
 // Executes the built travel controller in a DOM runtime to check the timeline.
 //
 // The timeline groups stops into one disclosure per year, open by default, and
-// dates each past stop to the month it began. The current stop is dated by
-// "here now" instead, so the stay in progress stays open-ended — and carries no
-// trailing comma, because the comma belongs to the country/month pair.
+// dates each completed stop exactly. The current stop is dated by "here now"
+// instead, so the stay in progress stays open-ended — and carries no trailing
+// comma, because the comma belongs to the country/date pair.
 import assert from 'node:assert/strict';
 import { readFile } from 'node:fs/promises';
 import { JSDOM } from 'jsdom';
@@ -69,11 +69,20 @@ for (const month of months) {
 }
 
 const past = rows.filter((row) => !row.classList.contains('current'));
+const MONTHS = ['January', 'February', 'March', 'April', 'May', 'June', 'July', 'August', 'September', 'October', 'November', 'December'];
+const readableDate = (value) => {
+  const [year, month, day] = value.split('-').map(Number);
+  return `${day} ${MONTHS[month - 1]} ${year}`;
+};
 assert.ok(past.length > 0, 'expected at least one past stop');
-for (const row of past) {
-  assert.ok(row.querySelector('.timeline-month'), 'a past stop must carry its month');
+for (const [index, row] of rows.entries()) {
+  const stop = published.stops[index];
+  if (row.classList.contains('current')) continue;
+  assert.ok(row.querySelector('.timeline-dates'), 'a past stop must carry exact dates');
   assert.ok(row.querySelector('.timeline-comma'), 'the country must be followed by a comma');
-  assert.match(row.textContent, /,\s*\S/, 'the comma must separate country from month');
+  assert.match(row.textContent, /,\s*\S/, 'the comma must separate country from dates');
+  assert.ok(row.textContent.includes(readableDate(stop.arrive)), 'the exact arrival date must be visible');
+  assert.ok(row.textContent.includes(readableDate(stop.depart)), 'the exact departure date must be visible');
 }
 
 for (const row of rows.filter((row) => row.classList.contains('current'))) {

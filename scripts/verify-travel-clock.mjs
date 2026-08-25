@@ -85,9 +85,9 @@ assert.ok(
 assert.equal(later.now, early.now, 'the now/last-seen line is fixed at build time');
 assert.match(early.now || '', /^(now|last seen in):/, 'the page must say either where I am or where I was last');
 
-// No date may appear in anything the page renders. The embedded payload is
-// excluded here — it legitimately carries the first published arrival, and
-// verify-travel-build.mjs is what polices its contents.
+// No live or future schedule may appear in anything the page renders. Past
+// exact dates are intentionally visible; the embedded payload is excluded here
+// because verify-travel-build.mjs polices its field-level privacy contract.
 const visible = document.querySelector('[data-travel-page]')?.cloneNode(true);
 visible?.querySelectorAll('script').forEach((node) => node.remove());
 const rendered = visible?.textContent || '';

@@ -6,15 +6,16 @@
 // in the client would not achieve this: the bundle would still carry the whole
 // itinerary for anyone who opened it.
 //
-// Visited stops (begun, and not tentative) ship as `stops` with a coarse
+// Visited stops (begun, and not tentative) ship as `stops`. Past stops carry
+// their exact arrival and departure dates; the current stop keeps only a coarse
 // month/year. Future stops ship separately as `planned` — place and coordinates
 // only — so the route tab can draw the road ahead without dating it. Tentative
 // stops that have already begun stay withheld: they are neither history nor
 // a plan.
 //
-// One date does survive: the arrival of the first published stop. The public
-// "day N" counter is deliberately live, and N plus today's date already gives
-// that day away, so withholding it would buy nothing.
+// One date does survive for a current-only journey: the arrival of the first
+// published stop. The public "day N" counter is deliberately live, and N plus
+// today's date already gives that day away, so withholding it would buy nothing.
 import { computeTrip } from './trip-runtime.mjs';
 import { climateNormal } from './trip-climate.mjs';
 
@@ -77,10 +78,11 @@ export function publicTrip(tripData, now = new Date(), climate = null) {
         ...placeFields(stop),
         // Coarse enough to head a timeline section without dating the stay.
         year: stop.arrive.slice(0, 4),
-        // Same bargain one notch finer: the month a stay began, as a name rather
-        // than a number, so no fragment of an ISO date can ship. A day would
-        // start to reconstruct the schedule; a month does not.
+        // The month remains useful for climate labels. Exact dates are only
+        // added after a stay is over; publishing the current stop's departure
+        // would reveal the live itinerary.
         month: MONTHS[month - 1],
+        ...(stop.status === 'past' ? { arrive: stop.arrive, depart: stop.depart } : {}),
         ...(normal ? { climate: normal } : {}),
       };
     }),

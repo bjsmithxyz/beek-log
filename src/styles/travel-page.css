@@ -330,6 +330,7 @@
 .timeline-row > span { margin-left: var(--space-2); color: var(--color-text-muted); font-size: var(--font-size-xs); }
 .timeline-row .timeline-here { color: var(--color-accent-tertiary); }
 .timeline-row .timeline-month { color: var(--color-text-secondary); letter-spacing: 0.08em; }
+.timeline-row .timeline-dates { color: var(--color-text-secondary); font-variant-numeric: tabular-nums; }
 
 /* Typical high/low for that month, pushed to the end of the row so the stop
    names stay the column you scan. */

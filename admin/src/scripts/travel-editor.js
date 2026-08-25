@@ -4,6 +4,7 @@ import {
   addStop,
   cloneTrip,
   moveStop,
+  pushTentativeFutureDates,
   removeStop,
   tripSummary,
   tripsEqual,
@@ -149,6 +150,19 @@ function updateDerived(index) {
   card.querySelector('[data-derived="lon"]').textContent = formatCoord(stop.lon);
 }
 
+function syncDateInputs() {
+  draft.stops.forEach((stop, index) => {
+    const card = stopList.querySelector(`[data-index="${index}"]`);
+    card?.querySelector('[data-field="arrive"]')?.setAttribute('value', stop.arrive || '');
+    card?.querySelector('[data-field="depart"]')?.setAttribute('value', stop.depart || '');
+    // Date inputs use their live value property, not only the HTML attribute.
+    const arrive = card?.querySelector('[data-field="arrive"]');
+    const depart = card?.querySelector('[data-field="depart"]');
+    if (arrive) arrive.value = stop.arrive || '';
+    if (depart) depart.value = stop.depart || '';
+  });
+}
+
 async function geocodeStop(index) {
   const stop = draft?.stops[index];
   if (!stop) return;
@@ -176,10 +190,10 @@ async function geocodeStop(index) {
   }
 }
 
-function updateDirtyState() {
+function updateDirtyState(message = null) {
   const dirty = original && !tripsEqual(original, draft);
   reviewButton.disabled = !dirty || publishing;
-  setStatus(dirty ? 'Unpublished changes.' : '');
+  setStatus(dirty ? (message || 'Unpublished changes.') : '');
   statusNode.classList.toggle('is-dirty', Boolean(dirty));
   reviewPanel.hidden = true;
   setErrors([]);
@@ -240,11 +254,17 @@ stopList.addEventListener('input', (event) => {
   let value = input.value;
   if (input.type === 'number') value = input.value === '' ? Number.NaN : Number(input.value);
   if (input.type === 'checkbox') value = input.checked;
+  const previousValue = draft.stops[index][field];
   draft.stops[index][field] = value;
+  let moved = 0;
+  if (field === 'depart' && value > previousValue) {
+    moved = pushTentativeFutureDates(draft, index, previousValue, value);
+    if (moved) syncDateInputs();
+  }
   const preview = input.closest('.stop-card')?.querySelector('.stop-name-preview');
   if (field === 'name' && preview) preview.textContent = value || 'unnamed stop';
   if (field === 'name' || field === 'country') scheduleGeocode(index);
-  updateDirtyState();
+  updateDirtyState(moved ? `Unpublished changes; moved ${moved} tentative future stop${moved === 1 ? '' : 's'} forward.` : null);
   refreshOverview();
 });
 
