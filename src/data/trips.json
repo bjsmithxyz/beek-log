@@ -775,7 +775,7 @@
       "lat": 57.7089,
       "lon": 11.9746,
       "arrive": "2026-08-24",
-      "depart": "2026-08-29",
+      "depart": "2026-08-27",
       "tentative": false
     },
     {
@@ -784,9 +784,9 @@
       "cc": "SE",
       "lat": 59.3293,
       "lon": 18.0686,
-      "arrive": "2026-08-23",
-      "depart": "2026-08-28",
-      "note": "Ferry to Finland",
+      "arrive": "2026-08-27",
+      "depart": "2026-08-31",
+      "note": "Ferry to Finland.",
       "tentative": true
     },
     {
@@ -795,8 +795,8 @@
       "cc": "FI",
       "lat": 60.4518,
       "lon": 22.2666,
-      "arrive": "2026-08-28",
-      "depart": "2026-09-01",
+      "arrive": "2026-08-31",
+      "depart": "2026-09-02",
       "note": "Archipelago Trail bike trip (Pieni Rengastie loop) via Carfield Bike Rental",
       "tentative": true
     },
