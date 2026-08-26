@@ -4,27 +4,40 @@ import FilmStrip from '../../components/FilmStrip.astro';
 import Lightbox from '../../components/Lightbox.astro';
 import { render, type CollectionEntry } from 'astro:content';
 import { getFilmStock } from '@beek/shared/film-stocks';
-import { getPhotoRolls } from '../../lib/collections';
+import { getPhotoRolls, byDateDesc } from '../../lib/collections';
 import { formatLongDate, formatFilmEdgeDate } from '../../lib/dates';
 
 export async function getStaticPaths() {
-  const rolls = await getPhotoRolls();
-  return rolls.map(entry => ({
+  const rolls = (await getPhotoRolls()).sort(byDateDesc);
+  return rolls.map((entry, index) => ({
     params: { roll: entry.id },
-    props: { entry },
+    props: {
+      entry,
+      rollNumber: index + 1,
+      totalRolls: rolls.length,
+      newer: rolls[index - 1],
+      older: rolls[index + 1],
+    },
   }));
 }
 
 interface Props {
   entry: CollectionEntry<'photos'>;
+  rollNumber: number;
+  totalRolls: number;
+  newer?: CollectionEntry<'photos'>;
+  older?: CollectionEntry<'photos'>;
 }
 
 const FRAMES_PER_STRIP = 6;
 
-const { entry } = Astro.props;
+const { entry, rollNumber, totalRolls, newer, older } = Astro.props;
 const { Content } = await render(entry);
 const { title, stock, date, location, photos } = entry.data;
 const film = getFilmStock(stock);
+const hasNotes = Boolean(entry.body?.trim());
+const paddedRollNumber = String(rollNumber).padStart(2, '0');
+const paddedTotalRolls = String(totalRolls).padStart(2, '0');
 
 const formattedDate = formatLongDate(date);
 const shortDate = formatFilmEdgeDate(date);
@@ -64,34 +77,70 @@ const jsonLd = {
 >
   <article class="roll-detail">
     <div class="container">
-      <header class="article-header">
-        <span class="stock-tag" data-type={film.type}>[{film.name}]</span>
-        <h1 class="title">{title}</h1>
+      <header class="roll-hero">
+        <div class="roll-hero-main">
+          <a class="archive-link" href="/photos/">← all rolls</a>
+          <span class="roll-kicker">ROLL {paddedRollNumber} / {paddedTotalRolls} · CONTACT SHEET</span>
+          <h1 class="title">{title}</h1>
 
-        <div class="meta">
-          <time datetime={date.toISOString()}>{formattedDate}</time>
-          <span class="meta-sep" aria-hidden="true">·</span>
-          <span class="location">{location.name}</span>
-          <span class="meta-sep" aria-hidden="true">·</span>
-          <span class="frames-count">{photos.length} frames</span>
+          <div class="meta">
+            <time datetime={date.toISOString()}>{formattedDate}</time>
+            <span class="meta-sep" aria-hidden="true">·</span>
+            <span class="location">{location.name}</span>
+          </div>
         </div>
+
+        <aside class="roll-specs" aria-label="Roll details">
+          <div class="spec-row">
+            <span>stock</span>
+            <strong class="stock-tag" data-type={film.type}>[{film.name}]</strong>
+          </div>
+          <div class="spec-row">
+            <span>frames</span>
+            <strong>{photos.length}</strong>
+          </div>
+
+        </aside>
       </header>
 
-      <div class="content prose">
-        <Content />
-      </div>
+      {hasNotes && (
+        <div class="notes-block">
+          <span class="notes-label">notes/</span>
+          <div class="content prose">
+            <Content />
+          </div>
+        </div>
+      )}
 
-      <div class="contact-sheet" role="region" aria-label="Contact sheet">
+      <div class="contact-sheet" role="region" aria-label={`Contact sheet for ${title}`}>
         {strips.map((strip, i) => (
           <FilmStrip
             photos={strip}
             stockName={film.name}
             stockType={film.type}
             startFrame={i * FRAMES_PER_STRIP + 1}
+            stripNumber={i + 1}
+            stripTotal={strips.length}
             shortDate={shortDate}
           />
         ))}
       </div>
+
+      <nav class="roll-nav" aria-label="Browse rolls">
+        {newer ? (
+          <a class="roll-nav-link roll-nav-newer" href={`/photos/${newer.id}/`}>
+            <span>← newer roll</span>
+            <strong>{newer.data.title}</strong>
+          </a>
+        ) : <span></span>}
+        <a class="roll-nav-index archive-button" href="/photos/">↩ back to archive</a>
+        {older ? (
+          <a class="roll-nav-link roll-nav-older" href={`/photos/${older.id}/`}>
+            <span>older roll →</span>
+            <strong>{older.data.title}</strong>
+          </a>
+        ) : <span></span>}
+      </nav>
     </div>
   </article>
 
@@ -103,16 +152,49 @@ const jsonLd = {
     padding: var(--page-content-top) 0 var(--space-16);
   }
 
-  .stock-tag {
+  .roll-hero {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr) minmax(260px, 0.64fr);
+    gap: clamp(var(--space-6), 8vw, var(--space-10));
+    align-items: end;
+    padding: var(--space-6) 0 var(--space-8);
+  }
+
+  .roll-hero-main {
+    min-width: 0;
+  }
+
+  .archive-link {
     display: inline-block;
+    margin-bottom: var(--space-8);
+    color: var(--color-text-muted);
     font-size: var(--font-size-sm);
-    font-weight: var(--font-weight-medium);
+  }
+
+  .archive-link:hover {
+    color: var(--color-accent-primary);
+  }
+
+  .roll-kicker,
+  .notes-label {
+    display: block;
     color: var(--color-accent-secondary);
+    font-size: var(--font-size-xs);
+    font-weight: var(--font-weight-medium);
+    letter-spacing: 0.14em;
+  }
+
+  .roll-kicker {
     margin-bottom: var(--space-3);
   }
 
-  .stock-tag[data-type='bw'] {
-    color: var(--color-text-secondary);
+  .title {
+    max-width: 18ch;
+    margin-bottom: var(--space-4);
+    font-size: clamp(2rem, 5vw, 4rem);
+    font-weight: var(--font-weight-bold);
+    letter-spacing: -0.06em;
+    line-height: 1;
   }
 
   .meta {
@@ -128,7 +210,158 @@ const jsonLd = {
     font-variant-numeric: tabular-nums;
   }
 
-  .content {
-    margin-bottom: var(--space-8);
+  .roll-specs {
+    padding: var(--space-4);
+    background: var(--color-bg-secondary);
+    border: 1px solid var(--color-border-strong);
+    box-shadow: 5px 5px 0 var(--color-border);
+  }
+
+  .spec-row {
+    display: flex;
+    align-items: baseline;
+    justify-content: space-between;
+    gap: var(--space-4);
+    padding: var(--space-2) 0;
+    border-bottom: 1px solid var(--color-border);
+    font-size: var(--font-size-sm);
+  }
+
+  .spec-row > span {
+    color: var(--color-text-muted);
+  }
+
+  .spec-row strong {
+    color: var(--color-text-primary);
+    font-weight: var(--font-weight-medium);
+    text-align: right;
+  }
+
+  .roll-specs .stock-tag {
+    margin: 0;
+    color: var(--color-accent-secondary);
+  }
+
+  .roll-specs .stock-tag[data-type='bw'] {
+    color: var(--color-text-secondary);
+  }
+
+  .notes-block {
+    display: grid;
+    grid-template-columns: 5rem minmax(0, 1fr);
+    gap: var(--space-5);
+    max-width: var(--container-narrow);
+    margin: var(--space-8) auto var(--space-10);
+    padding: var(--space-4) 0 var(--space-2);
+    border-top: 1px solid var(--color-border);
+  }
+
+  .notes-label {
+    padding-top: 0.3rem;
+  }
+
+  .notes-block .content {
+    margin: 0;
+  }
+
+  .contact-sheet {
+    margin-top: var(--space-4);
+  }
+
+  .roll-nav {
+    display: grid;
+    grid-template-columns: 1fr auto 1fr;
+    gap: var(--space-4);
+    align-items: center;
+    margin-top: var(--space-10);
+    padding-top: var(--space-5);
+    border-top: 1px solid var(--color-border);
+  }
+
+  .roll-nav-link {
+    display: flex;
+    flex-direction: column;
+    gap: var(--space-1);
+    min-width: 0;
+    padding: var(--space-3);
+    background: var(--color-bg-secondary);
+    border: 1px solid var(--color-border);
+    transition: border-color var(--transition-fast), background var(--transition-fast);
+  }
+
+  .roll-nav-link:hover {
+    background: var(--color-bg-tertiary);
+    border-color: var(--color-accent-primary);
+  }
+
+  .roll-nav-link span {
+    color: var(--color-accent-secondary);
+    font-size: var(--font-size-xs);
+  }
+
+  .roll-nav-link strong {
+    overflow: hidden;
+    color: var(--color-text-primary);
+    font-size: var(--font-size-sm);
+    font-weight: var(--font-weight-medium);
+    text-overflow: ellipsis;
+    white-space: nowrap;
+  }
+
+  .roll-nav-older {
+    text-align: right;
+  }
+
+  .roll-nav-index {
+    color: var(--color-text-primary);
+    font-size: var(--font-size-xs);
+    white-space: nowrap;
+  }
+
+  .archive-button {
+    display: inline-flex;
+    align-items: center;
+    min-height: 42px;
+    padding: var(--space-2) var(--space-3);
+    background: var(--color-bg-secondary);
+    border: 1px solid var(--color-border-strong);
+    transition: color var(--transition-fast), background var(--transition-fast), border-color var(--transition-fast);
+  }
+
+  .archive-button:hover {
+    color: var(--color-bg-primary);
+    background: var(--color-accent-primary);
+    border-color: var(--color-accent-primary);
+  }
+
+  @media (max-width: 768px) {
+    .roll-hero {
+      grid-template-columns: 1fr;
+      gap: var(--space-6);
+    }
+
+    .archive-link {
+      margin-bottom: var(--space-6);
+    }
+
+    .roll-specs {
+      box-shadow: 4px 4px 0 var(--color-border);
+    }
+
+    .notes-block {
+      grid-template-columns: 1fr;
+      gap: var(--space-2);
+      margin-top: var(--space-6);
+    }
+
+    .roll-nav {
+      grid-template-columns: 1fr 1fr;
+    }
+
+    .roll-nav-index {
+      grid-column: 1 / -1;
+      grid-row: 1;
+      justify-self: center;
+    }
   }
 </style>

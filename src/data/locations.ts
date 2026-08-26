@@ -51,19 +51,24 @@ interface PinRoll extends RollLike {
   id: string;
 }
 
-// One pin per primary: group every roll's effective locations by region name
-// (falling back to the place name). The pin sits at the region (or the place if
-// none); `members` lists the distinct secondary places for the tooltip.
-export function aggregatePins(rolls: PinRoll[]): Pin[] {
+// By default pins are grouped by region for compact country-level summaries.
+// The map opts into exact locations so a country centroid is never shown as if
+// it were the place where a frame was made.
+export function aggregatePins(rolls: PinRoll[], options: { groupByRegion?: boolean } = {}): Pin[] {
+  const groupByRegion = options.groupByRegion ?? true;
   const groups = new Map<string, {
     slug: string; slugs: Set<string>; label: string; lat: number; lng: number;
     count: number; places: Map<string, number>;
   }>();
   for (const roll of rolls) {
     for (const loc of effectiveLocations(roll)) {
-      const region = loc.region;
+      const region = groupByRegion ? loc.region : undefined;
       const label = region ? region.name : loc.name;
-      const key = label.toLowerCase();
+      // Include coordinates in exact-location keys: two places with the same
+      // name should not silently collapse into one map point.
+      const key = groupByRegion
+        ? label.toLowerCase()
+        : `${loc.name.toLowerCase()}|${loc.lat.toFixed(4)}|${loc.lng.toFixed(4)}`;
       let g = groups.get(key);
       if (!g) {
         g = {
@@ -79,7 +84,8 @@ export function aggregatePins(rolls: PinRoll[]): Pin[] {
       }
       g.slugs.add(roll.id);
       g.count += loc.count;
-      g.places.set(loc.name, (g.places.get(loc.name) ?? 0) + loc.count);
+      const member = groupByRegion ? loc.name : loc.region?.name;
+      if (member) g.places.set(member, (g.places.get(member) ?? 0) + loc.count);
     }
   }
   return [...groups.values()].map((g) => {

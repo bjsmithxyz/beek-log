@@ -1,6 +1,6 @@
 ---
 // Dot-matrix world map in the site's terminal aesthetic. The land mask is a
-// precomputed 240x120 grid (see scripts/generate-world-dots.mjs); shoot
+// precomputed 240x120 grid (see scripts/generate-world-dots.mjs); exact shoot
 // locations are plotted with an equirectangular projection. Pins are anchors
 // that jump to the roll list below; a small script cross-highlights each pin
 // with its roll row on hover and lifts the hovered pin above its neighbours.
@@ -24,7 +24,7 @@ const GRID_ROWS = grid.length;
 const GRID_COLS = grid[0].length;
 const cellW = COLS / GRID_COLS;
 const cellH = ROWS / GRID_ROWS;
-const dotR = +(cellW * 0.4).toFixed(2);
+const dotR = +(cellW * 0.28).toFixed(2);
 
 // The land mask is ~18k dots; one <circle> each made the page megabytes of
 // HTML and a very heavy DOM. Instead, each row's consecutive land cells become
@@ -60,16 +60,17 @@ const project = (lat: number, lng: number) => ({
 // is ~2.6x narrower on mobile than desktop, so these are tuned up for mobile
 // legibility; desktop tooltips render larger but they're transient hover popups.
 const TT = {
-  fontSize: 6, // title line: "Label — N frames"
-  subSize: 4.6, // sub-region lines
-  padX: 2.6, // left/right inner padding
-  padTop: 2.4,
-  padBottom: 2.2,
-  titleGap: 2.2, // title baseline to first sub-region
-  lineH: 5.2, // per sub-region line height
+  fontSize: 5.2, // title line: "Label — N frames"
+  subSize: 4, // sub-region lines
+  padX: 2.3, // left/right inner padding
+  padTop: 2.1,
+  padBottom: 2,
+  titleGap: 1.9, // title baseline to first sub-region
+  lineH: 4.6, // per sub-region line height
 };
 
 const titleFor = (p: Pin) => `${p.label} — ${p.count} ${p.count === 1 ? 'frame' : 'frames'}`;
+const radiusFor = (p: Pin) => +(0.525 + Math.min(0.575, Math.log2(p.count + 1) * 0.16)).toFixed(2);
 
 const tooltipWidth =
   Math.max(
@@ -84,12 +85,23 @@ const tooltipWidth =
   TT.padX * 2;
 ---
 
-<svg
-  viewBox="0 0 240 120"
-  class="world-map"
-  role="img"
-  aria-label={`Map of shoot locations: ${pins.map((p) => p.label).join(', ')}`}
->
+<div class="map-shell">
+  <div class="map-toolbar">
+    <span class="map-key"><i aria-hidden="true"></i>{pins.length} {pins.length === 1 ? 'location' : 'locations'}</span>
+    <span class="map-help">hover to inspect · click to jump to rolls</span>
+  </div>
+
+  <svg
+    viewBox="0 0 240 120"
+    class="world-map"
+    role="img"
+    aria-label={`Map of shoot locations: ${pins.map((p) => p.label).join(', ')}`}
+  >
+  <defs>
+    <filter id="pin-halo-blur" x="-100%" y="-100%" width="300%" height="300%">
+      <feGaussianBlur stdDeviation="1.8" />
+    </filter>
+  </defs>
   <path class="dots" d={dotPath} stroke-width={dotR * 2} stroke-dasharray={dashArray} />
 
   {pins.map((p) => {
@@ -105,9 +117,11 @@ const tooltipWidth =
     const rectY = Math.max(1, y - 3 - rectH);
     const cx = rectX + width / 2;
     return (
-      <a href={`#roll-${p.slug}`} class="pin-link" aria-label={title} data-slugs={p.slugs.join(' ')}>
-        <circle cx={x} cy={y} r="3.4" class="pin-halo" />
-        <circle cx={x} cy={y} r="1" class="pin" />
+      <a href={`#roll-${p.slug}`} class="pin-link" aria-label={`Open rolls from ${title}`} data-slugs={p.slugs.join(' ')}>
+        <title>{title}</title>
+        <circle cx={x} cy={y} r={radiusFor(p)} class="pin-hit" />
+        <circle cx={x} cy={y} r={radiusFor(p) + 2.2} class="pin-halo" />
+        <circle cx={x} cy={y} r={radiusFor(p)} class="pin" />
         <g class="tooltip" aria-hidden="true" data-cx={cx} data-y={rectY} data-h={rectH} data-w={width}>
           <rect x={rectX} y={rectY} width={width} height={rectH} rx="0.8" class="tooltip-box" />
           <text
@@ -132,7 +146,12 @@ const tooltipWidth =
       </a>
     );
   })}
-</svg>
+  </svg>
+
+  <div class="map-footnote">
+    <span><b>●</b> hover a pin for roll details</span>
+  </div>
+</div>
 
 <script>
   function setupMapHover() {
@@ -203,47 +222,112 @@ const tooltipWidth =
 </script>
 
 <style>
+  .map-shell {
+    background: var(--color-bg-secondary);
+    border: 1px solid var(--color-border);
+  }
+
+  .map-toolbar,
+  .map-footnote {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: var(--space-4);
+    padding: var(--space-2) var(--space-3);
+    color: var(--color-text-muted);
+    font-size: var(--font-size-xs);
+  }
+
+  .map-toolbar {
+    min-height: 38px;
+    background: var(--color-bg-tertiary);
+    border-bottom: 1px solid var(--color-border);
+  }
+
+  .map-key {
+    display: inline-flex;
+    align-items: center;
+    gap: var(--space-2);
+    color: var(--color-text-primary);
+  }
+
+  .map-key i {
+    display: block;
+    width: 7px;
+    height: 7px;
+    background: var(--color-accent-primary);
+    border-radius: 50%;
+    box-shadow: 0 0 0 3px color-mix(in srgb, var(--color-accent-primary) 20%, transparent);
+  }
+
+  .map-help {
+    color: var(--color-text-muted);
+    text-align: right;
+  }
+
   .world-map {
     width: 100%;
     height: auto;
     display: block;
-    border: 1px solid var(--color-border);
     background: var(--color-bg-secondary);
-    padding: var(--space-2);
+    padding: var(--space-3);
+  }
+
+  .map-footnote {
+    border-top: 1px solid var(--color-border);
+  }
+
+  .map-footnote b {
+    color: var(--color-accent-primary);
   }
 
   .dots {
     fill: none;
     stroke: var(--color-border-strong);
     stroke-linecap: round;
+    opacity: 0.82;
+  }
+
+  .pin-hit {
+    fill: transparent;
+    pointer-events: all;
   }
 
   .pin {
     fill: var(--color-accent-primary);
-    transition: filter 0.12s ease;
+    stroke: var(--color-bg-primary);
+    stroke-width: 0.45;
+    transition: filter 0.12s ease, transform 0.12s ease;
+    transform-box: fill-box;
+    transform-origin: center;
   }
 
   .pin-halo {
     fill: var(--color-accent-primary);
     opacity: 0;
-    transition: opacity 0.12s ease;
+    pointer-events: none;
+    filter: url(#pin-halo-blur);
+    transition: opacity 0.12s ease, transform 0.12s ease;
+    transform-box: fill-box;
+    transform-origin: center;
   }
 
   .pin-link {
     cursor: pointer;
   }
 
-  /* hover/focus the pin directly, or .is-active set by the row-hover script */
   .pin-link:hover .pin-halo,
   .pin-link:focus .pin-halo,
   .pin-link.is-active .pin-halo {
-    opacity: 0.3;
+    opacity: 0.36;
+    transform: scale(1.3);
   }
 
   .pin-link:hover .pin,
   .pin-link:focus .pin,
   .pin-link.is-active .pin {
     filter: brightness(0.82);
+    transform: scale(1.18);
   }
 
   .tooltip {
@@ -260,17 +344,39 @@ const tooltipWidth =
 
   .tooltip-box {
     fill: var(--color-bg-primary);
-    stroke: var(--color-border-strong);
-    stroke-width: 0.3;
+    stroke: var(--color-accent-secondary);
+    stroke-width: 0.45;
+    filter: drop-shadow(1px 1px 0 var(--color-border-strong));
+  }
+
+  .tooltip-text,
+  .tooltip-sub {
+    font-family: var(--font-family);
   }
 
   .tooltip-text {
     fill: var(--color-text-primary);
-    font-family: monospace;
+    font-weight: 500;
   }
 
   .tooltip-sub {
-    fill: var(--color-text-muted);
-    font-family: monospace;
+    fill: var(--color-text-secondary);
+  }
+
+  @media (max-width: 520px) {
+    .map-toolbar,
+    .map-footnote {
+      align-items: flex-start;
+      flex-direction: column;
+      gap: var(--space-1);
+    }
+
+    .map-help {
+      text-align: left;
+    }
+
+    .world-map {
+      padding: var(--space-2);
+    }
   }
 </style>

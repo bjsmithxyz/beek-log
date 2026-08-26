@@ -26,6 +26,7 @@
     <div class="lightbox-loading" aria-hidden="true">loading…</div>
     <p id="lightbox-caption"></p>
     <p id="lightbox-meta"></p>
+    <p id="lightbox-count" aria-live="polite"></p>
   </div>
 </div>
 
@@ -78,12 +79,13 @@
     const lightboxImg = document.getElementById('lightbox-img') as HTMLImageElement;
     const lightboxCaption = document.getElementById('lightbox-caption');
     const lightboxMeta = document.getElementById('lightbox-meta');
+    const lightboxCount = document.getElementById('lightbox-count');
     const closeBtn = document.querySelector('.lightbox-close');
     const prevBtn = document.querySelector('.lightbox-prev');
     const nextBtn = document.querySelector('.lightbox-next');
     const galleryItems = document.querySelectorAll('[data-lightbox]') as NodeListOf<HTMLImageElement>;
 
-    if (!lightbox || !lightboxImg || !lightboxCaption || !lightboxMeta || !closeBtn || !prevBtn || !nextBtn) {
+    if (!lightbox || !lightboxImg || !lightboxCaption || !lightboxMeta || !lightboxCount || !closeBtn || !prevBtn || !nextBtn) {
       lb = null;
       return;
     }
@@ -111,6 +113,16 @@
       lightboxImg.alt = item.alt;
       lightboxCaption.textContent = item.dataset.caption || item.alt.split(' - ')[0] || '';
       lightboxMeta.textContent = item.dataset.meta ?? '';
+      lightboxCount.textContent = `${String(currentIndex + 1).padStart(2, '0')} / ${String(galleryItems.length).padStart(2, '0')}`;
+
+      // Warm the next and previous full-size frames while the current exposure is read.
+      [-1, 1].forEach((direction) => {
+        const adjacent = galleryItems[(currentIndex + direction + galleryItems.length) % galleryItems.length];
+        if (adjacent) {
+          const preload = new window.Image();
+          preload.src = adjacent.dataset.full || adjacent.src;
+        }
+      });
     };
 
     const show = (index: number) => {
@@ -183,6 +195,15 @@
       navigate(1);
     }, { signal });
 
+    let touchStartX = 0;
+    lightbox.addEventListener('touchstart', (event) => {
+      touchStartX = event.changedTouches[0]?.screenX ?? 0;
+    }, { signal, passive: true });
+    lightbox.addEventListener('touchend', (event) => {
+      const delta = (event.changedTouches[0]?.screenX ?? 0) - touchStartX;
+      if (Math.abs(delta) > 50) navigate(delta < 0 ? 1 : -1);
+    }, { signal, passive: true });
+
     lightbox.addEventListener('click', (e) => {
       if (e.target === lightbox || e.target === document.querySelector('.lightbox-content')) {
         requestClose();
@@ -214,6 +235,7 @@
     z-index: 10000;
     background: rgba(0, 0, 0, 0.95);
     backdrop-filter: blur(12px);
+    touch-action: pan-y;
     display: flex;
     align-items: center;
     justify-content: center;
@@ -295,6 +317,12 @@
     font-size: var(--font-size-xs);
     color: #999999;
     letter-spacing: 0.15em;
+  }
+
+  .lightbox-content #lightbox-count {
+    color: var(--color-accent-primary);
+    font-size: var(--font-size-xs);
+    letter-spacing: 0.16em;
   }
 
   .lightbox-content #lightbox-meta:empty {

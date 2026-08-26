@@ -17,10 +17,20 @@ interface Props {
   stockName: string;
   stockType: 'color' | 'bw';
   startFrame?: number;
+  stripNumber?: number;
+  stripTotal?: number;
   shortDate: string;
 }
 
-const { photos, stockName, stockType, startFrame = 1, shortDate } = Astro.props;
+const {
+  photos,
+  stockName,
+  stockType,
+  startFrame = 1,
+  stripNumber = 1,
+  stripTotal = 1,
+  shortDate,
+} = Astro.props;
 
 // colour negative edge print is orange; B&W rebate text is grey
 const edgeColor = stockType === 'bw' ? 'var(--color-text-secondary)' : 'var(--color-accent-secondary)';
@@ -30,14 +40,19 @@ const fullImages = await Promise.all(
 );
 ---
 
-<div class="film-strip" style={`--edge-color: ${edgeColor}`}>
+<section
+  class="film-strip"
+  style={`--edge-color: ${edgeColor}`}
+  aria-label={`Frames ${startFrame} through ${startFrame + photos.length - 1}`}
+>
   <div class="sprockets" aria-hidden="true"></div>
   <div class="edge-markings" aria-hidden="true">
+    <span class="strip-index">{String(stripNumber).padStart(2, '0')} / {String(stripTotal).padStart(2, '0')}</span>
     <span class="stock-name">{stockName.toUpperCase()}</span>
     <span class="arrows">▸▸</span>
     <span class="frame-range">{startFrame}–{startFrame + photos.length - 1}</span>
   </div>
-  <div class="frames">
+  <div class="frames" tabindex="0" aria-label="Frames; scroll horizontally to see all exposures">
     {photos.map((p, i) => (
       <figure class="frame">
         <Image
@@ -51,17 +66,16 @@ const fullImages = await Promise.all(
           data-lightbox-id={`frame-${startFrame + i}`}
           data-full={fullImages[i].src}
           data-caption={p.caption ?? p.alt}
-          data-meta={`${stockName.toUpperCase()} · ${startFrame + i}A · ${shortDate} · ${photos[i].locName.toUpperCase()}`}
+          data-meta={`${stockName.toUpperCase()} · ${startFrame + i} · ${shortDate} · ${photos[i].locName.toUpperCase()}`}
         />
         <figcaption class="frame-no">
           <span>{startFrame + i}</span>
-          <span>{startFrame + i}A</span>
         </figcaption>
       </figure>
     ))}
   </div>
   <div class="sprockets" aria-hidden="true"></div>
-</div>
+</section>
 
 <style>
   .film-strip {
@@ -69,6 +83,10 @@ const fullImages = await Promise.all(
     border: 1px solid var(--color-border);
     padding: 3px 0;
     margin-bottom: var(--space-4);
+  }
+
+  .film-strip:last-child {
+    margin-bottom: 0;
   }
 
   .sprockets {
@@ -94,6 +112,11 @@ const fullImages = await Promise.all(
     overflow: hidden;
   }
 
+  .strip-index {
+    color: var(--color-text-secondary);
+    letter-spacing: 0.1em;
+  }
+
   .frame-range {
     margin-left: auto;
   }
@@ -103,6 +126,7 @@ const fullImages = await Promise.all(
     gap: 6px;
     padding: 2px 10px 6px;
     overflow-x: auto;
+    scroll-snap-type: x proximity;
     /* Firefox: thin, square, themed */
     scrollbar-width: thin;
     scrollbar-color: var(--color-border-strong) transparent;
@@ -128,7 +152,8 @@ const fullImages = await Promise.all(
 
   .frame {
     margin: 0;
-    flex: 0 0 clamp(130px, 18vw, 200px);
+    flex: 0 0 clamp(130px, 16vw, 180px);
+    scroll-snap-align: start;
   }
 
   .frame-img {
@@ -139,6 +164,18 @@ const fullImages = await Promise.all(
     object-fit: cover;
     cursor: pointer;
     border: 1px solid #000;
+    transition: transform var(--transition-fast), filter var(--transition-fast), border-color var(--transition-fast);
+  }
+
+  .frame-img:hover {
+    border-color: var(--edge-color);
+    filter: saturate(1.15) contrast(1.04);
+    transform: translateY(-2px);
+  }
+
+  .frames:focus-visible {
+    outline: 1px solid var(--color-accent-primary);
+    outline-offset: -1px;
   }
 
   .frame-no {

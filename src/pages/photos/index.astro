@@ -7,6 +7,7 @@ import FilterBar from '../../components/FilterBar.astro';
 import { getFilmStock } from '@beek/shared/film-stocks';
 import DirListHeader from '../../components/DirListHeader.astro';
 import { getPhotoRolls, byDateDesc } from '../../lib/collections';
+import { formatListDate } from '../../lib/dates';
 import { aggregatePins } from '../../data/locations';
 
 const sortedRolls = (await getPhotoRolls()).sort(byDateDesc);
@@ -14,11 +15,39 @@ const sortedRolls = (await getPhotoRolls()).sort(byDateDesc);
 const totalFrames = sortedRolls.reduce((sum, r) => sum + r.data.photos.length, 0);
 const years = [...new Set(sortedRolls.map((r) => r.data.date.getFullYear().toString()))];
 
-const pins = aggregatePins(sortedRolls);
+// Plot each effective shoot location, not the broad country/region centroid.
+const pins = aggregatePins(sortedRolls, { groupByRegion: false });
 const latestRoll = sortedRolls[0];
 const latestPhoto = latestRoll?.data.photos[0];
 const latestFilm = latestRoll ? getFilmStock(latestRoll.data.stock) : null;
 const stockCount = new Set(sortedRolls.map((roll) => roll.data.stock)).size;
+const stockSummary = [...sortedRolls.reduce((counts, roll) => {
+  counts.set(roll.data.stock, (counts.get(roll.data.stock) ?? 0) + 1);
+  return counts;
+}, new Map<string, number>())]
+  .map(([slug, count]) => ({ film: getFilmStock(slug), count }))
+  .sort((a, b) => b.count - a.count || a.film.name.localeCompare(b.film.name));
+const maxStockRolls = stockSummary[0]?.count ?? 1;
+const framesByYear = sortedRolls.reduce((counts, roll) => {
+  const year = roll.data.date.getFullYear().toString();
+  counts.set(year, (counts.get(year) ?? 0) + roll.data.photos.length);
+  return counts;
+}, new Map<string, number>());
+const yearSummary = years.map((year) => ({
+  year,
+  rolls: sortedRolls.filter((roll) => roll.data.date.getFullYear().toString() === year).length,
+  frames: framesByYear.get(year) ?? 0,
+}));
+const locationSummary = [...pins.reduce((locations, pin) => {
+  const key = pin.label.toLowerCase();
+  const current = locations.get(key);
+  if (current) current.count += pin.count;
+  else locations.set(key, { label: pin.label, count: pin.count });
+  return locations;
+}, new Map<string, { label: string; count: number }>()).values()]
+  .sort((a, b) => b.count - a.count || a.label.localeCompare(b.label));
+const maxYearFrames = Math.max(...yearSummary.map((item) => item.frames), 1);
+const maxLocationFrames = locationSummary[0]?.count ?? 1;
 const LIST_COLS = '5.5rem 12rem 6.5rem 1fr 11rem 1.5rem';
 ---
 
@@ -42,7 +71,7 @@ const LIST_COLS = '5.5rem 12rem 6.5rem 1fr 11rem 1.5rem';
               </a>
             )}
             <button class="hero-action hero-action-quiet" type="button" data-surprise>
-              shuffle a roll <span aria-hidden="true">⤨</span>
+              shuffle roll <span aria-hidden="true">⤨</span>
             </button>
           </div>
         </div>
@@ -60,17 +89,95 @@ const LIST_COLS = '5.5rem 12rem 6.5rem 1fr 11rem 1.5rem';
               <span><b>latest exposure</b> / {latestFilm.name}</span>
               <span>{latestRoll.data.title}</span>
             </span>
-            <span class="hero-frame-corner" aria-hidden="true">01A</span>
+            <span class="hero-frame-corner" aria-hidden="true">01</span>
           </a>
         )}
       </header>
 
       <div class="archive-stats" aria-label="Archive statistics">
-        <div><strong>{sortedRolls.length}</strong><span>rolls developed</span></div>
-        <div><strong>{totalFrames}</strong><span>frames</span></div>
-        <div><strong>{pins.length}</strong><span>places found</span></div>
-        <div><strong>{stockCount}</strong><span>film stocks</span></div>
+        <button class="stat-card" type="button" data-insight="rolls" aria-expanded="false" aria-controls="archive-breakdown">
+          <strong>{sortedRolls.length}</strong>
+          <span>rolls</span>
+          <span class="stat-action">breakdown ↓</span>
+        </button>
+        <button class="stat-card" type="button" data-insight="frames" aria-expanded="false" aria-controls="archive-breakdown">
+          <strong>{totalFrames}</strong>
+          <span>frames</span>
+          <span class="stat-action">breakdown ↓</span>
+        </button>
+        <button class="stat-card" type="button" data-insight="locations" aria-expanded="false" aria-controls="archive-breakdown">
+          <strong>{pins.length}</strong>
+          <span>locations</span>
+          <span class="stat-action">breakdown ↓</span>
+        </button>
+        <button class="stat-card" type="button" data-insight="stocks" aria-expanded="false" aria-controls="archive-breakdown">
+          <strong>{stockCount}</strong>
+          <span>film stocks</span>
+          <span class="stat-action">breakdown ↓</span>
+        </button>
       </div>
+
+      <section class="archive-breakdown" id="archive-breakdown" aria-labelledby="archive-breakdown-heading" hidden>
+        <div class="breakdown-heading">
+          <div>
+            <span class="breakdown-kicker">ARCHIVE BREAKDOWN</span>
+            <h2 id="archive-breakdown-heading">film stocks</h2>
+          </div>
+          <button class="breakdown-close" type="button" data-insight-close>[close]</button>
+        </div>
+        <div class="breakdown-body" data-breakdown-body></div>
+      </section>
+
+      <template data-insight-template="stocks">
+        <ul class="insight-list">
+          {stockSummary.map(({ film, count }) => (
+            <li>
+              <span class="insight-name" data-type={film.type}>[{film.name}]</span>
+              <span class="insight-bar" aria-hidden="true"><i style={`width: ${(count / maxStockRolls) * 100}%`}></i></span>
+              <strong>{count}</strong>
+              <span class="insight-count">{count === 1 ? 'roll' : 'rolls'}</span>
+            </li>
+          ))}
+        </ul>
+      </template>
+
+      <template data-insight-template="locations">
+        <ul class="insight-list">
+          {locationSummary.map((pin) => (
+            <li>
+              <span class="insight-name">{pin.label}</span>
+              <span class="insight-bar" aria-hidden="true"><i style={`width: ${(pin.count / maxLocationFrames) * 100}%`}></i></span>
+              <strong>{pin.count}</strong>
+              <span class="insight-count">{pin.count === 1 ? 'frame' : 'frames'}</span>
+            </li>
+          ))}
+        </ul>
+      </template>
+
+      <template data-insight-template="frames">
+        <ul class="insight-list">
+          {yearSummary.map(({ year, frames }) => (
+            <li>
+              <span class="insight-name">{year}</span>
+              <span class="insight-bar" aria-hidden="true"><i style={`width: ${(frames / maxYearFrames) * 100}%`}></i></span>
+              <strong>{frames}</strong>
+              <span class="insight-count">frames</span>
+            </li>
+          ))}
+        </ul>
+      </template>
+
+      <template data-insight-template="rolls">
+        <ul class="insight-list roll-insight-list">
+          {yearSummary.map(({ year, rolls, frames }) => (
+            <li>
+              <span class="insight-name">{year}</span>
+              <span class="insight-detail">{rolls} {rolls === 1 ? 'roll' : 'rolls'} · {frames} frames</span>
+              <button type="button" class="insight-jump" data-year-jump={year}>view year →</button>
+            </li>
+          ))}
+        </ul>
+      </template>
 
       {pins.length > 0 && (
         <section class="map-section" aria-labelledby="map-heading">
@@ -88,7 +195,6 @@ const LIST_COLS = '5.5rem 12rem 6.5rem 1fr 11rem 1.5rem';
         <div class="section-heading rolls-heading">
           <div>
             <h2 id="rolls-heading" class="section-label">rolls/</h2>
-            <p class="section-note">Newest first · click a frame to enter the roll.</p>
           </div>
           <span class="section-index" aria-hidden="true">02</span>
         </div>
@@ -106,7 +212,6 @@ const LIST_COLS = '5.5rem 12rem 6.5rem 1fr 11rem 1.5rem';
             <button type="button" class="filter-btn view-btn active" data-view="rows" aria-pressed="true">[rows]</button>
             <button type="button" class="filter-btn view-btn" data-view="grid" aria-pressed="false">[contact sheet]</button>
           </div>
-          <span class="shuffle-status" data-shuffle-status aria-live="polite"></span>
         </div>
 
         <DirListHeader
@@ -134,8 +239,59 @@ const LIST_COLS = '5.5rem 12rem 6.5rem 1fr 11rem 1.5rem';
       list.dataset.archiveReady = 'true';
 
       const viewButtons = document.querySelectorAll<HTMLButtonElement>('[data-view]');
+      const listHeader = list.previousElementSibling;
+      const insightButtons = document.querySelectorAll<HTMLButtonElement>('[data-insight]');
+      const insightPanel = document.getElementById('archive-breakdown');
+      const insightHeading = document.getElementById('archive-breakdown-heading');
+      const insightBody = document.querySelector<HTMLElement>('[data-breakdown-body]');
+      const insightClose = document.querySelector<HTMLButtonElement>('[data-insight-close]');
+      const insightTitles: Record<string, string> = {
+        rolls: 'rolls by year',
+        frames: 'frames by year',
+        locations: 'frames by location',
+        stocks: 'film stocks',
+      };
+      let openInsight = '';
+      const closeInsight = () => {
+        if (!insightPanel) return;
+        openInsight = '';
+        insightPanel.hidden = true;
+        insightPanel.classList.remove('is-open');
+        insightButtons.forEach((button) => button.setAttribute('aria-expanded', 'false'));
+      };
+      const showInsight = (key: string) => {
+        if (!insightPanel || !insightHeading || !insightBody) return;
+        const template = document.querySelector<HTMLTemplateElement>(`[data-insight-template="${key}"]`);
+        if (!template) return;
+        openInsight = key;
+        insightHeading.textContent = insightTitles[key] || key;
+        insightBody.replaceChildren(template.content.cloneNode(true));
+        insightPanel.hidden = false;
+        insightPanel.classList.remove('is-open');
+        requestAnimationFrame(() => insightPanel.classList.add('is-open'));
+        insightButtons.forEach((button) => button.setAttribute('aria-expanded', String(button.dataset.insight === key)));
+      };
+      insightButtons.forEach((button) => button.addEventListener('click', () => {
+        if (openInsight === button.dataset.insight) closeInsight();
+        else showInsight(button.dataset.insight || '');
+      }));
+      insightClose?.addEventListener('click', closeInsight);
+      insightBody?.addEventListener('click', (event) => {
+        const target = event.target as Element;
+        const jump = target.closest<HTMLButtonElement>('[data-year-jump]');
+        if (!jump) return;
+        const year = jump.dataset.yearJump;
+        document.querySelector<HTMLButtonElement>(`.filter-btn[data-filter="${year}"]`)?.click();
+        closeInsight();
+        requestAnimationFrame(() => {
+          document.querySelector<HTMLElement>(`.roll-row[data-year="${year}"]`)
+            ?.scrollIntoView({ behavior: 'smooth', block: 'start' });
+        });
+      });
+
       const setView = (view: string) => {
         list.classList.toggle('is-grid', view === 'grid');
+        listHeader?.classList.toggle('is-hidden', view === 'grid');
         viewButtons.forEach((button) => {
           const active = button.dataset.view === view;
           button.classList.toggle('active', active);
@@ -154,12 +310,7 @@ const LIST_COLS = '5.5rem 12rem 6.5rem 1fr 11rem 1.5rem';
           .filter((row) => row.style.display !== 'none');
         const row = rows[Math.floor(Math.random() * rows.length)];
         if (!row) return;
-        row.scrollIntoView({ behavior: 'smooth', block: 'center' });
-        row.classList.remove('is-surprise');
-        requestAnimationFrame(() => row.classList.add('is-surprise'));
-        window.setTimeout(() => row.classList.remove('is-surprise'), 1100);
-        const status = document.querySelector<HTMLElement>('[data-shuffle-status]');
-        if (status) status.textContent = `found: ${row.dataset.slug}`;
+        row.click();
       });
     }
 
@@ -305,11 +456,11 @@ const LIST_COLS = '5.5rem 12rem 6.5rem 1fr 11rem 1.5rem';
   .archive-stats {
     display: grid;
     grid-template-columns: repeat(4, 1fr);
-    margin: var(--space-8) 0 var(--space-10);
+    margin: var(--space-8) 0 var(--space-4);
     border: 1px solid var(--color-border);
   }
 
-  .archive-stats div {
+  .archive-stats > * {
     display: flex;
     flex-direction: column;
     gap: var(--space-1);
@@ -318,8 +469,25 @@ const LIST_COLS = '5.5rem 12rem 6.5rem 1fr 11rem 1.5rem';
     border-right: 1px solid var(--color-border);
   }
 
-  .archive-stats div:last-child {
+  .archive-stats > :last-child {
     border-right: 0;
+  }
+
+  .archive-stats .stat-card {
+    color: inherit;
+    font: inherit;
+    text-align: left;
+    background: transparent;
+    border-top: 0;
+    border-bottom: 0;
+    border-left: 0;
+    cursor: pointer;
+    transition: background var(--transition-fast);
+  }
+
+  .archive-stats .stat-card:hover,
+  .archive-stats .stat-card[aria-expanded='true'] {
+    background: var(--color-bg-tertiary);
   }
 
   .archive-stats strong {
@@ -333,6 +501,147 @@ const LIST_COLS = '5.5rem 12rem 6.5rem 1fr 11rem 1.5rem';
     color: var(--color-text-muted);
     font-size: var(--font-size-xs);
     letter-spacing: 0.04em;
+  }
+
+  .stat-action {
+    margin-top: auto;
+    color: var(--color-accent-secondary) !important;
+    font-size: 0.6rem !important;
+  }
+
+  .archive-breakdown {
+    margin-bottom: var(--space-10);
+    padding: var(--space-4);
+    background: var(--color-bg-secondary);
+    border: 1px solid var(--color-accent-secondary);
+    box-shadow: 4px 4px 0 var(--color-border);
+    animation: breakdown-reveal var(--transition-slow) both;
+  }
+
+  .archive-breakdown[hidden] {
+    display: none;
+  }
+
+  .breakdown-heading {
+    display: flex;
+    align-items: start;
+    justify-content: space-between;
+    gap: var(--space-4);
+    margin-bottom: var(--space-4);
+  }
+
+  .breakdown-kicker {
+    display: block;
+    margin-bottom: var(--space-1);
+    color: var(--color-accent-secondary) !important;
+    font-size: var(--font-size-xs) !important;
+    letter-spacing: 0.14em;
+  }
+
+  .archive-breakdown h2 {
+    font-size: var(--font-size-xl);
+    font-weight: var(--font-weight-medium);
+  }
+
+  .breakdown-close,
+  .insight-jump {
+    padding: var(--space-2) var(--space-3);
+    color: var(--color-text-secondary);
+    background: transparent;
+    border: 1px solid var(--color-border);
+    font: inherit;
+    font-size: var(--font-size-xs);
+    cursor: pointer;
+  }
+
+  .breakdown-close:hover,
+  .insight-jump:hover {
+    color: var(--color-bg-primary);
+    background: var(--color-accent-secondary);
+    border-color: var(--color-accent-secondary);
+  }
+
+  .insight-list {
+    display: flex;
+    flex-direction: column;
+    gap: var(--space-2);
+    max-height: 23rem;
+    margin: 0;
+    padding: 0;
+    overflow-y: auto;
+    list-style: none;
+    scrollbar-color: var(--color-border-strong) transparent;
+    scrollbar-width: thin;
+  }
+
+  .insight-list li {
+    display: grid;
+    grid-template-columns: minmax(150px, 1fr) minmax(90px, 2.2fr) auto auto;
+    gap: var(--space-3);
+    align-items: center;
+    min-height: 30px;
+    color: var(--color-text-secondary);
+    font-size: var(--font-size-xs);
+  }
+
+  .insight-name {
+    overflow: hidden;
+    color: var(--color-accent-secondary) !important;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+  }
+
+  .insight-name[data-type='bw'] {
+    color: var(--color-text-secondary) !important;
+  }
+
+  .insight-bar {
+    display: block;
+    height: 7px;
+    background: var(--color-bg-tertiary);
+    border: 1px solid var(--color-border);
+  }
+
+  .insight-bar i {
+    display: block;
+    height: 100%;
+    background: var(--color-accent-secondary);
+  }
+
+  .insight-list li strong {
+    color: var(--color-text-primary);
+    font-size: var(--font-size-base);
+    font-weight: var(--font-weight-medium);
+  }
+
+  .insight-count {
+    min-width: 2.5rem;
+    color: var(--color-text-muted) !important;
+    text-align: right;
+  }
+
+  .roll-insight-list li {
+    grid-template-columns: 5rem 1fr auto;
+  }
+
+  .insight-detail {
+    color: var(--color-text-secondary);
+  }
+
+  .insight-jump {
+    padding: var(--space-1) var(--space-2);
+    color: var(--color-accent-primary);
+    border-color: var(--color-border);
+  }
+
+  @keyframes breakdown-reveal {
+    from { opacity: 0; transform: translateY(-6px); }
+    to { opacity: 1; transform: translateY(0); }
+  }
+
+  .archive-breakdown[hidden] + .map-section,
+  .archive-breakdown[hidden] + .rolls-section {
+    margin-top: var(--space-6);
   }
 
   .map-section {
@@ -402,11 +711,8 @@ const LIST_COLS = '5.5rem 12rem 6.5rem 1fr 11rem 1.5rem';
     padding: var(--space-2);
   }
 
-  .shuffle-status {
-    min-width: 11rem;
-    color: var(--color-accent-secondary);
-    font-size: var(--font-size-xs);
-    text-align: right;
+  :global(.list-header.is-hidden) {
+    display: none;
   }
 
   :global(.dir-list.is-grid) {
@@ -457,15 +763,6 @@ const LIST_COLS = '5.5rem 12rem 6.5rem 1fr 11rem 1.5rem';
     background: rgba(12, 12, 12, 0.78);
   }
 
-  :global(.roll-row.is-surprise) {
-    animation: found-roll 1.1s ease;
-  }
-
-  @keyframes found-roll {
-    0%, 100% { border-color: var(--color-border); box-shadow: none; }
-    35% { border-color: var(--color-accent-primary); box-shadow: 5px 5px 0 var(--color-accent-primary); }
-  }
-
   @media (max-width: 768px) {
     .archive-hero {
       grid-template-columns: 1fr;
@@ -483,21 +780,26 @@ const LIST_COLS = '5.5rem 12rem 6.5rem 1fr 11rem 1.5rem';
       margin: var(--space-6) 0 var(--space-8);
     }
 
-    .archive-stats div:nth-child(2) {
+    .archive-stats > :nth-child(2) {
       border-right: 0;
     }
 
-    .archive-stats div:nth-child(-n + 2) {
+    .archive-stats > :nth-child(-n + 2) {
       border-bottom: 1px solid var(--color-border);
+    }
+
+    .insight-list li {
+      grid-template-columns: minmax(120px, 1fr) minmax(60px, 1.5fr) auto auto;
+      gap: var(--space-2);
+    }
+
+    .roll-insight-list li {
+      grid-template-columns: 4rem 1fr auto;
     }
 
     .view-tools {
       width: 100%;
       margin-left: 0;
-    }
-
-    .shuffle-status {
-      display: none;
     }
 
     :global(.dir-list.is-grid) {

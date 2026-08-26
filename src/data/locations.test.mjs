@@ -57,6 +57,18 @@ test('aggregatePins groups by region: one pin at the region with a member breakd
   assert.deepEqual(pins[0].members.sort(), ['Da Nang', 'Hoi An']);
 });
 
+test('aggregatePins can plot exact locations instead of region centroids', () => {
+  const rolls = [{ id: 'r1', data: { location: hoiAn, photos: [{}, { location: daNang }] } }];
+  const pins = aggregatePins(rolls, { groupByRegion: false });
+  assert.deepEqual(
+    pins.map(({ label, lat, lng, count, members }) => ({ label, lat, lng, count, members })),
+    [
+      { label: 'Hoi An', lat: 15.8801, lng: 108.338, count: 1, members: ['Vietnam'] },
+      { label: 'Da Nang', lat: 16.054, lng: 108.202, count: 1, members: ['Vietnam'] },
+    ],
+  );
+});
+
 test('aggregatePins keeps region-less locations standalone with no members', () => {
   const pins = aggregatePins([{ id: 'r2', data: { location: cn, photos: [{}] } }]);
   assert.deepEqual(pins, [{ slug: 'r2', slugs: ['r2'], label: 'Shenzhen, China', lat: 22.5, lng: 114.05, count: 1, members: [] }]);
