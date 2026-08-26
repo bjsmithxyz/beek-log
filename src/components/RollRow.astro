@@ -1,5 +1,6 @@
 ---
 import type { CollectionEntry } from 'astro:content';
+import { Image } from 'astro:assets';
 import { getFilmStock } from '@beek/shared/film-stocks';
 import { effectiveLocations } from '../data/locations';
 import { formatListDate } from '../lib/dates';
@@ -9,8 +10,9 @@ interface Props {
 }
 
 const { roll } = Astro.props;
-const { title, stock, date, location } = roll.data;
+const { title, stock, date, location, photos } = roll.data;
 const film = getFilmStock(stock);
+const preview = photos[0];
 const locCount = effectiveLocations(roll).length;
 const locLabel = locCount > 1 ? `${location.name} +${locCount - 1}` : location.name;
 
@@ -25,6 +27,16 @@ const year = date.getFullYear().toString();
   data-year={year}
   data-slug={roll.id}
 >
+  <span class="row-preview">
+    <Image
+      src={preview.src}
+      alt={preview.alt || `${title} — first frame`}
+      width={180}
+      height={120}
+      loading="lazy"
+    />
+    <span class="preview-index" aria-hidden="true">01</span>
+  </span>
   <span class="row-stock" data-type={film.type}>[{film.name}]</span>
   <span class="row-date">{formattedDate}</span>
   <span class="row-title">{title}</span>
@@ -34,8 +46,42 @@ const year = date.getFullYear().toString();
 
 <style>
   .roll-row {
-    --dir-cols: 12rem 6.5rem 1fr 11rem 1.5rem;
+    --dir-cols: 5.5rem 12rem 6.5rem 1fr 11rem 1.5rem;
+    position: relative;
     scroll-margin-top: var(--space-16);
+  }
+
+  .row-preview {
+    position: relative;
+    display: block;
+    width: 4.75rem;
+    height: 3.15rem;
+    overflow: hidden;
+    background: var(--color-bg-tertiary);
+    border: 1px solid var(--color-border);
+  }
+
+  .row-preview img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    transition: transform var(--transition-base), filter var(--transition-base);
+  }
+
+  .dir-row:hover .row-preview img {
+    transform: scale(1.08);
+    filter: saturate(1.12);
+  }
+
+  .preview-index {
+    position: absolute;
+    right: 2px;
+    bottom: 1px;
+    padding: 0 2px;
+    color: var(--color-accent-secondary);
+    background: rgba(12, 12, 12, 0.78);
+    font-size: 0.55rem;
+    line-height: 1.2;
   }
 
   /* map pin jump target */
@@ -79,22 +125,38 @@ const year = date.getFullYear().toString();
 
   @media (max-width: 768px) {
     .roll-row {
-      grid-template-columns: 1fr auto;
+      grid-template-columns: 4.5rem 1fr auto;
       grid-template-rows: auto auto auto;
       gap: var(--space-1) var(--space-3);
     }
 
+    .row-preview,
     .row-stock,
     .row-date {
       grid-row: 1;
     }
 
+    .row-preview {
+      grid-row: 1 / span 2;
+      align-self: start;
+      width: 4.25rem;
+      height: 2.85rem;
+      grid-column: 1;
+      margin-right: var(--space-1);
+    }
+
+    .row-stock {
+      grid-column: 2;
+    }
+
     .row-date {
+      grid-column: 3;
       justify-self: end;
     }
 
     .row-title {
-      grid-column: 1 / -1;
+      grid-column: 2;
+      grid-row: 2;
     }
 
     .row-location {

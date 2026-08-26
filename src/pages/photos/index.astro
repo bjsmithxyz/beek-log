@@ -1,9 +1,10 @@
 ---
 import BaseLayout from '../../layouts/BaseLayout.astro';
+import { Image } from 'astro:assets';
 import RollRow from '../../components/RollRow.astro';
 import WorldMap from '../../components/WorldMap.astro';
-import PageHeader from '../../components/PageHeader.astro';
 import FilterBar from '../../components/FilterBar.astro';
+import { getFilmStock } from '@beek/shared/film-stocks';
 import DirListHeader from '../../components/DirListHeader.astro';
 import { getPhotoRolls, byDateDesc } from '../../lib/collections';
 import { aggregatePins } from '../../data/locations';
@@ -14,8 +15,11 @@ const totalFrames = sortedRolls.reduce((sum, r) => sum + r.data.photos.length, 0
 const years = [...new Set(sortedRolls.map((r) => r.data.date.getFullYear().toString()))];
 
 const pins = aggregatePins(sortedRolls);
-
-const LIST_COLS = '12rem 6.5rem 1fr 11rem 1.5rem';
+const latestRoll = sortedRolls[0];
+const latestPhoto = latestRoll?.data.photos[0];
+const latestFilm = latestRoll ? getFilmStock(latestRoll.data.stock) : null;
+const stockCount = new Set(sortedRolls.map((roll) => roll.data.stock)).size;
+const LIST_COLS = '5.5rem 12rem 6.5rem 1fr 11rem 1.5rem';
 ---
 
 <BaseLayout
@@ -28,44 +32,140 @@ const LIST_COLS = '12rem 6.5rem 1fr 11rem 1.5rem';
 >
   <section class="photos-page">
     <div class="container">
-      <PageHeader
-        title="photos/"
-        description={`${sortedRolls.length} ${sortedRolls.length === 1 ? 'roll' : 'rolls'} — ${totalFrames} frames · ${pins.length} ${pins.length === 1 ? 'location' : 'locations'}`}
-      />
-
-      {pins.length > 0 && (
-        <div class="map-section">
-          <h2 class="section-label">map/</h2>
-          <WorldMap pins={pins} />
+      <header class="archive-hero">
+        <div class="hero-copy">
+          <h1 class="page-title">photos/</h1>
+          <div class="hero-actions">
+            {latestRoll && (
+              <a class="hero-action hero-action-primary" href={`/photos/${latestRoll.id}/`}>
+                open latest roll <span aria-hidden="true">↗</span>
+              </a>
+            )}
+            <button class="hero-action hero-action-quiet" type="button" data-surprise>
+              shuffle a roll <span aria-hidden="true">⤨</span>
+            </button>
+          </div>
         </div>
-      )}
 
-      <h2 class="section-label rolls-label">rolls/</h2>
+        {latestRoll && latestPhoto && latestFilm && (
+          <a class="hero-frame" href={`/photos/${latestRoll.id}/`} aria-label={`Open latest roll: ${latestRoll.data.title}`}>
+            <Image
+              src={latestPhoto.src}
+              alt={latestPhoto.alt || latestRoll.data.title}
+              width={720}
+              height={480}
+              loading="eager"
+            />
+            <span class="hero-frame-label">
+              <span><b>latest exposure</b> / {latestFilm.name}</span>
+              <span>{latestRoll.data.title}</span>
+            </span>
+            <span class="hero-frame-corner" aria-hidden="true">01A</span>
+          </a>
+        )}
+      </header>
 
-      {years.length > 1 && (
-        <FilterBar
-          options={years}
-          rowSelector=".roll-row[data-year]"
-          filterAttr="data-year"
-        />
-      )}
-
-      <DirListHeader
-        columns={['film', 'date', 'roll', 'location', '']}
-        cols={LIST_COLS}
-      />
-
-      <div class="dir-list" id="roll-list" style={`--dir-cols: ${LIST_COLS}`}>
-        {sortedRolls.map((roll) => (
-          <RollRow roll={roll} />
-        ))}
+      <div class="archive-stats" aria-label="Archive statistics">
+        <div><strong>{sortedRolls.length}</strong><span>rolls developed</span></div>
+        <div><strong>{totalFrames}</strong><span>frames</span></div>
+        <div><strong>{pins.length}</strong><span>places found</span></div>
+        <div><strong>{stockCount}</strong><span>film stocks</span></div>
       </div>
 
-      {sortedRolls.length === 0 && (
-        <p class="empty-state">// no rolls yet — film's still at the lab</p>
+      {pins.length > 0 && (
+        <section class="map-section" aria-labelledby="map-heading">
+          <div class="section-heading">
+            <div>
+              <h2 id="map-heading" class="section-label">map/</h2>
+            </div>
+            <span class="section-index" aria-hidden="true">01</span>
+          </div>
+          <WorldMap pins={pins} />
+        </section>
       )}
+
+      <section class="rolls-section" aria-labelledby="rolls-heading">
+        <div class="section-heading rolls-heading">
+          <div>
+            <h2 id="rolls-heading" class="section-label">rolls/</h2>
+            <p class="section-note">Newest first · click a frame to enter the roll.</p>
+          </div>
+          <span class="section-index" aria-hidden="true">02</span>
+        </div>
+
+        <div class="roll-tools">
+          {years.length > 1 && (
+            <FilterBar
+              options={years}
+              rowSelector=".roll-row[data-year]"
+              filterAttr="data-year"
+            />
+          )}
+          <div class="view-tools" aria-label="Archive view options">
+            <span class="view-label">view</span>
+            <button type="button" class="filter-btn view-btn active" data-view="rows" aria-pressed="true">[rows]</button>
+            <button type="button" class="filter-btn view-btn" data-view="grid" aria-pressed="false">[contact sheet]</button>
+          </div>
+          <span class="shuffle-status" data-shuffle-status aria-live="polite"></span>
+        </div>
+
+        <DirListHeader
+          columns={['preview', 'film', 'date', 'roll', 'location', '']}
+          cols={LIST_COLS}
+        />
+
+        <div class="dir-list" id="roll-list" style={`--dir-cols: ${LIST_COLS}`}>
+          {sortedRolls.map((roll) => (
+            <RollRow roll={roll} />
+          ))}
+        </div>
+
+        {sortedRolls.length === 0 && (
+          <p class="empty-state">// no rolls yet — film's still at the lab</p>
+        )}
+      </section>
     </div>
   </section>
+
+  <script>
+    function setupArchiveControls() {
+      const list = document.getElementById('roll-list');
+      if (!list || list.dataset.archiveReady === 'true') return;
+      list.dataset.archiveReady = 'true';
+
+      const viewButtons = document.querySelectorAll<HTMLButtonElement>('[data-view]');
+      const setView = (view: string) => {
+        list.classList.toggle('is-grid', view === 'grid');
+        viewButtons.forEach((button) => {
+          const active = button.dataset.view === view;
+          button.classList.toggle('active', active);
+          button.setAttribute('aria-pressed', String(active));
+        });
+        try { localStorage.setItem('photo-view', view); } catch { /* storage can be blocked */ }
+      };
+
+      let savedView = 'rows';
+      try { savedView = localStorage.getItem('photo-view') || 'rows'; } catch { /* storage can be blocked */ }
+      setView(savedView === 'grid' ? 'grid' : 'rows');
+      viewButtons.forEach((button) => button.addEventListener('click', () => setView(button.dataset.view || 'rows')));
+
+      document.querySelector<HTMLButtonElement>('[data-surprise]')?.addEventListener('click', () => {
+        const rows = [...list.querySelectorAll<HTMLElement>('.roll-row')]
+          .filter((row) => row.style.display !== 'none');
+        const row = rows[Math.floor(Math.random() * rows.length)];
+        if (!row) return;
+        row.scrollIntoView({ behavior: 'smooth', block: 'center' });
+        row.classList.remove('is-surprise');
+        requestAnimationFrame(() => row.classList.add('is-surprise'));
+        window.setTimeout(() => row.classList.remove('is-surprise'), 1100);
+        const status = document.querySelector<HTMLElement>('[data-shuffle-status]');
+        if (status) status.textContent = `found: ${row.dataset.slug}`;
+      });
+    }
+
+    setupArchiveControls();
+    document.addEventListener('astro:page-load', setupArchiveControls);
+  </script>
 </BaseLayout>
 
 <style>
@@ -73,19 +173,361 @@ const LIST_COLS = '12rem 6.5rem 1fr 11rem 1.5rem';
     padding: var(--page-content-top) 0 var(--space-16);
   }
 
-  .map-section {
-    margin-bottom: var(--space-6);
+  .archive-hero {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr) minmax(300px, 0.92fr);
+    gap: clamp(var(--space-6), 8vw, var(--space-10));
+    align-items: center;
+    min-height: 390px;
+    padding: var(--space-6) 0 var(--space-10);
+    border-bottom: 1px solid var(--color-border);
   }
 
-  .section-label {
-    font-size: var(--font-size-base);
-    color: var(--color-text-muted);
-    margin-bottom: var(--space-3);
+  .hero-copy {
+    max-width: 32rem;
+  }
+
+  .hero-copy .page-title {
+    font-size: clamp(2.5rem, 6vw, 4rem);
+    letter-spacing: -0.08em;
+    line-height: 0.95;
+    margin-bottom: var(--space-5);
+  }
+
+  .hero-actions {
+    display: flex;
+    flex-wrap: wrap;
+    gap: var(--space-3);
+  }
+
+  .hero-action {
+    display: inline-flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: var(--space-5);
+    min-height: 44px;
+    padding: var(--space-3) var(--space-4);
+    border: 1px solid var(--color-border-strong);
+    font: inherit;
+    font-size: var(--font-size-sm);
+    cursor: pointer;
+    transition: transform var(--transition-fast), background var(--transition-fast), color var(--transition-fast);
+  }
+
+  .hero-action:hover {
+    color: var(--color-bg-primary);
+    background: var(--color-accent-primary);
+    border-color: var(--color-accent-primary);
+    transform: translate(-2px, -2px);
+    box-shadow: var(--shadow-hard-accent);
+  }
+
+  .hero-action-primary {
+    color: var(--color-bg-primary);
+    background: var(--color-accent-primary);
+    border-color: var(--color-accent-primary);
+  }
+
+  .hero-action-primary:hover {
+    color: var(--color-bg-primary);
+  }
+
+  .hero-action-quiet {
+    color: var(--color-text-primary);
+    background: var(--color-bg-secondary);
+  }
+
+  .hero-frame {
+    position: relative;
+    display: block;
+    aspect-ratio: 3 / 2;
+    overflow: hidden;
+    padding: 7px;
+    background: #161412;
+    border: 1px solid var(--color-border-strong);
+    box-shadow: 8px 8px 0 var(--color-border);
+    transform: rotate(1.2deg);
+    transition: transform var(--transition-base), box-shadow var(--transition-base);
+  }
+
+  .hero-frame:hover {
+    color: var(--color-text-primary);
+    transform: rotate(0) translate(-2px, -2px);
+    box-shadow: 10px 10px 0 var(--color-accent-secondary);
+  }
+
+  .hero-frame :global(img) {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    border: 1px solid #000;
+  }
+
+  .hero-frame-label {
+    position: absolute;
+    right: 7px;
+    bottom: 7px;
+    left: 7px;
+    display: flex;
+    justify-content: space-between;
+    gap: var(--space-3);
+    padding: var(--space-2) var(--space-3);
+    color: var(--color-text-primary);
+    background: rgba(12, 12, 12, 0.88);
+    border-top: 1px solid var(--color-accent-secondary);
+    font-size: var(--font-size-xs);
+  }
+
+  .hero-frame-label span:last-child {
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+    color: var(--color-text-secondary);
+    text-align: right;
+  }
+
+  .hero-frame-label b {
+    color: var(--color-accent-secondary);
     font-weight: var(--font-weight-medium);
   }
 
-  /* Only labelled because this page has two sections; /work/ stays unlabelled. */
-  .rolls-label {
-    margin-top: var(--space-6);
+  .hero-frame-corner {
+    position: absolute;
+    top: 14px;
+    right: 14px;
+    padding: 2px 4px;
+    color: var(--color-accent-secondary);
+    background: rgba(12, 12, 12, 0.78);
+    font-size: var(--font-size-xs);
+    letter-spacing: 0.1em;
+  }
+
+  .archive-stats {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    margin: var(--space-8) 0 var(--space-10);
+    border: 1px solid var(--color-border);
+  }
+
+  .archive-stats div {
+    display: flex;
+    flex-direction: column;
+    gap: var(--space-1);
+    min-height: 82px;
+    padding: var(--space-3) var(--space-4);
+    border-right: 1px solid var(--color-border);
+  }
+
+  .archive-stats div:last-child {
+    border-right: 0;
+  }
+
+  .archive-stats strong {
+    color: var(--color-accent-primary);
+    font-size: var(--font-size-2xl);
+    font-weight: var(--font-weight-medium);
+    line-height: 1;
+  }
+
+  .archive-stats span {
+    color: var(--color-text-muted);
+    font-size: var(--font-size-xs);
+    letter-spacing: 0.04em;
+  }
+
+  .map-section {
+    margin-bottom: var(--space-10);
+  }
+
+  .section-heading {
+    display: flex;
+    align-items: flex-start;
+    justify-content: space-between;
+    margin-bottom: var(--space-3);
+  }
+
+  .section-label {
+    margin-bottom: var(--space-1);
+    color: var(--color-text-muted);
+    font-size: var(--font-size-base);
+    font-weight: var(--font-weight-medium);
+  }
+
+  .section-note {
+    margin: 0;
+    color: var(--color-text-muted);
+    font-size: var(--font-size-xs);
+  }
+
+  .section-index {
+    color: var(--color-accent-secondary);
+    font-size: var(--font-size-xs);
+    letter-spacing: 0.12em;
+  }
+
+  .rolls-section {
+    scroll-margin-top: var(--space-5);
+  }
+
+  .rolls-heading {
+    margin-top: var(--space-2);
+  }
+
+  .roll-tools {
+    display: flex;
+    align-items: center;
+    flex-wrap: wrap;
+    gap: var(--space-4);
+    min-height: 44px;
+    margin-bottom: var(--space-4);
+  }
+
+  .roll-tools :global(.filters) {
+    margin: 0;
+  }
+
+  .view-tools {
+    display: flex;
+    align-items: center;
+    gap: var(--space-2);
+    margin-left: auto;
+  }
+
+  .view-label {
+    color: var(--color-text-muted);
+    font-size: var(--font-size-xs);
+  }
+
+  .view-btn {
+    padding: var(--space-2);
+  }
+
+  .shuffle-status {
+    min-width: 11rem;
+    color: var(--color-accent-secondary);
+    font-size: var(--font-size-xs);
+    text-align: right;
+  }
+
+  :global(.dir-list.is-grid) {
+    display: grid;
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+    gap: var(--space-3);
+  }
+
+  :global(.dir-list.is-grid .roll-row) {
+    display: flex;
+    flex-direction: column;
+    align-items: stretch;
+    gap: var(--space-2);
+    min-width: 0;
+    margin: 0;
+    padding: var(--space-3);
+  }
+
+  :global(.dir-list.is-grid .roll-row .row-preview) {
+    width: 100%;
+    height: auto;
+    aspect-ratio: 3 / 2;
+    margin: calc(var(--space-3) * -1) calc(var(--space-3) * -1) var(--space-2);
+    width: calc(100% + var(--space-3) * 2);
+  }
+
+  :global(.dir-list.is-grid .roll-row .row-preview img) {
+    width: 100%;
+    height: 100%;
+  }
+
+  :global(.dir-list.is-grid .row-title) {
+    overflow: visible;
+    white-space: normal;
+    line-height: var(--line-height-tight);
+  }
+
+  :global(.dir-list.is-grid .row-location) {
+    margin-top: auto;
+  }
+
+  :global(.dir-list.is-grid .row-arrow) {
+    position: absolute;
+    top: var(--space-3);
+    right: var(--space-3);
+    padding: var(--space-1) var(--space-2);
+    color: var(--color-text-primary);
+    background: rgba(12, 12, 12, 0.78);
+  }
+
+  :global(.roll-row.is-surprise) {
+    animation: found-roll 1.1s ease;
+  }
+
+  @keyframes found-roll {
+    0%, 100% { border-color: var(--color-border); box-shadow: none; }
+    35% { border-color: var(--color-accent-primary); box-shadow: 5px 5px 0 var(--color-accent-primary); }
+  }
+
+  @media (max-width: 768px) {
+    .archive-hero {
+      grid-template-columns: 1fr;
+      gap: var(--space-8);
+      padding-bottom: var(--space-8);
+    }
+
+    .hero-frame {
+      width: calc(100% - 8px);
+      margin-left: 2px;
+    }
+
+    .archive-stats {
+      grid-template-columns: repeat(2, 1fr);
+      margin: var(--space-6) 0 var(--space-8);
+    }
+
+    .archive-stats div:nth-child(2) {
+      border-right: 0;
+    }
+
+    .archive-stats div:nth-child(-n + 2) {
+      border-bottom: 1px solid var(--color-border);
+    }
+
+    .view-tools {
+      width: 100%;
+      margin-left: 0;
+    }
+
+    .shuffle-status {
+      display: none;
+    }
+
+    :global(.dir-list.is-grid) {
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+      gap: var(--space-2);
+    }
+
+    :global(.dir-list.is-grid .roll-row) {
+      padding: var(--space-2);
+    }
+
+    :global(.dir-list.is-grid .roll-row .row-preview) {
+      margin: calc(var(--space-2) * -1) calc(var(--space-2) * -1) var(--space-2);
+      width: calc(100% + var(--space-2) * 2);
+    }
+  }
+
+  @media (max-width: 420px) {
+    .hero-frame-label {
+      display: block;
+    }
+
+    .hero-frame-label span:last-child {
+      display: block;
+      margin-top: 2px;
+      text-align: left;
+    }
+
+    :global(.dir-list.is-grid) {
+      grid-template-columns: 1fr;
+    }
   }
 </style>

@@ -13,13 +13,15 @@ const { options, rowSelector, filterAttr } = Astro.props;
 {options.length > 0 && (
   <div
     class="filters"
+    role="group"
+    aria-label="Filter entries"
     data-dir-filters
     data-row-selector={rowSelector}
     data-filter-attr={filterAttr}
   >
-    <button type="button" class="filter-btn active" data-filter="all">[all]</button>
+    <button type="button" class="filter-btn active" data-filter="all" aria-pressed="true">[all]</button>
     {options.map((opt) => (
-      <button type="button" class="filter-btn" data-filter={opt}>[{opt}]</button>
+      <button type="button" class="filter-btn" data-filter={opt} aria-pressed="false">[{opt}]</button>
     ))}
   </div>
 )}
@@ -38,14 +40,20 @@ const { options, rowSelector, filterAttr } = Astro.props;
 
       filterBtns.forEach((btn) => {
         btn.addEventListener('click', () => {
-          filterBtns.forEach((b) => b.classList.remove('active'));
+          filterBtns.forEach((b) => {
+            b.classList.remove('active');
+            b.setAttribute('aria-pressed', 'false');
+          });
           btn.classList.add('active');
+          btn.setAttribute('aria-pressed', 'true');
 
           const filter = btn.getAttribute('data-filter');
           rows.forEach((row) => {
             const value = row.getAttribute(filterAttr);
             const isMatch = filter === 'all' || value === filter;
-            (row as HTMLElement).style.display = isMatch ? 'grid' : 'none';
+            const element = row as HTMLElement;
+            if (isMatch) element.style.removeProperty('display');
+            else element.style.display = 'none';
           });
         });
       });
