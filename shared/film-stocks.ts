@@ -26,6 +26,7 @@ export const filmStocks = {
   'lucky-200': { name: 'Lucky 200', type: 'color' },
   'fotometa-escura-400': { name: 'Fotometa x Escura 400', type: 'color' },
   'kodak-tri-x-400': { name: 'Kodak Tri-X 400', type: 'bw' },
+  'turista-100': { name: 'Turista 100', type: 'color' },
 } satisfies Record<string, FilmStock>;
 
 export type FilmStockSlug = keyof typeof filmStocks;
