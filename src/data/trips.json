@@ -787,7 +787,7 @@
       "arrive": "2026-08-27",
       "depart": "2026-08-31",
       "note": "Ferry to Finland.",
-      "tentative": true
+      "tentative": false
     },
     {
       "name": "Turku",
