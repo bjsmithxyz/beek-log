@@ -53,36 +53,31 @@ const project = (lat: number, lng: number) => ({
   y: +(((90 - lat) / 180) * ROWS).toFixed(1),
 });
 
-// Tooltip geometry, in viewBox units. Monospace advance ≈ 0.6em. Every box gets
-// the same width — the widest line across all pins — so tooltips are uniform;
+// Tooltip geometry, in viewBox units. Monospace advance ≈ 0.6em. Each box is
+// sized to its own text (not a shared max width) so the border hugs the label;
 // the title sits on top with each sub-region stacked on its own line below.
-// Sizes are in viewBox units, so on-screen text scales with map width. The map
-// is ~2.6x narrower on mobile than desktop, so these are tuned up for mobile
-// legibility; desktop tooltips render larger but they're transient hover popups.
+// Sizes are in viewBox units, so on-screen text scales with map width. When the
+// map is zoomed the tooltip group is counter-scaled in script so it keeps its
+// native on-screen size regardless of zoom level.
 const TT = {
-  fontSize: 5.2, // title line: "Label — N frames"
-  subSize: 4, // sub-region lines
-  padX: 2.3, // left/right inner padding
-  padTop: 2.1,
-  padBottom: 2,
-  titleGap: 1.9, // title baseline to first sub-region
-  lineH: 4.6, // per sub-region line height
+  fontSize: 4, // title line: "Label — N frames"
+  subSize: 3.2, // sub-region lines
+  padX: 1.6, // left/right inner padding
+  padTop: 1.5,
+  padBottom: 1.4,
+  titleGap: 1.2, // title baseline to first sub-region
+  lineH: 3.6, // per sub-region line height
 };
 
 const titleFor = (p: Pin) => `${p.label} — ${p.count} ${p.count === 1 ? 'frame' : 'frames'}`;
 const radiusFor = (p: Pin) => +(0.525 + Math.min(0.575, Math.log2(p.count + 1) * 0.16)).toFixed(2);
 
-const tooltipWidth =
-  Math.max(
-    ...pins.map((p) =>
-      Math.max(
-        titleFor(p).length * TT.fontSize * 0.6,
-        // sub-region lines carry a "· " bullet prefix (+2 chars)
-        ...p.members.map((m) => (m.length + 2) * TT.subSize * 0.6)
-      )
-    )
-  ) +
-  TT.padX * 2;
+// Width matched to this pin's widest line (sub-region lines carry a "· " prefix).
+const widthFor = (p: Pin) =>
+  +(Math.max(
+    titleFor(p).length * TT.fontSize * 0.6,
+    ...p.members.map((m) => (m.length + 2) * TT.subSize * 0.6)
+  ) + TT.padX * 2).toFixed(2);
 ---
 
 <div class="map-shell">
@@ -108,7 +103,7 @@ const tooltipWidth =
   {pins.map((p) => {
     const { x, y } = project(p.lat, p.lng);
     const title = titleFor(p);
-    const width = tooltipWidth;
+    const width = widthFor(p);
     const rectH =
       TT.padTop +
       TT.fontSize +
@@ -123,7 +118,7 @@ const tooltipWidth =
         <circle cx={x} cy={y} r={radiusFor(p)} class="pin-hit" />
         <circle cx={x} cy={y} r={radiusFor(p) + 2.2} class="pin-halo" />
         <circle cx={x} cy={y} r={radiusFor(p)} class="pin" />
-        <g class="tooltip" aria-hidden="true" data-cx={cx} data-y={rectY} data-h={rectH} data-w={width}>
+        <g class="tooltip" aria-hidden="true" data-cx={cx} data-y={rectY} data-h={rectH} data-w={width} data-px={x} data-py={y}>
           <rect x={rectX} y={rectY} width={width} height={rectH} rx="0.8" class="tooltip-box" />
           <text
             x={rectX + TT.padX}
@@ -177,24 +172,42 @@ const tooltipWidth =
 
     // A single roll can light up several nearby pins at once (e.g. a trip across
     // Thailand + Vietnam). Their tooltips are each centred on their own pin and
-    // would overlap, so nudge colliding boxes downward into a clean stack.
+    // would overlap, so nudge colliding boxes downward into a clean stack. Each
+    // box is also counter-scaled around its pin by k = viewBox / 240 so it holds
+    // its native on-screen size no matter how far the map is zoomed in.
     const num = (el: Element, k: string) => +((el as HTMLElement).dataset[k] || 0);
     const relayoutTooltips = () => {
+      const k = (svg.viewBox.baseVal.width || 240) / 240;
       const all = svg.querySelectorAll<SVGGElement>('.tooltip');
       all.forEach((t) => t.removeAttribute('transform'));
+      // Geometry after counter-scaling around the pin, in viewBox units.
       const boxes = [...svg.querySelectorAll<SVGGElement>('.pin-link.is-active .tooltip')]
-        .map((el) => ({ el, cx: num(el, 'cx'), y: num(el, 'y'), h: num(el, 'h'), w: num(el, 'w') }))
-        .sort((a, b) => a.y - b.y); // topmost first; later boxes cascade below
-      const gap = 1;
-      const placed: typeof boxes = [];
+        .map((el) => {
+          const px = num(el, 'px');
+          const py = num(el, 'py');
+          return {
+            el, px, py,
+            top: py + (num(el, 'y') - py) * k,
+            cx: px + (num(el, 'cx') - px) * k,
+            w: num(el, 'w') * k,
+            h: num(el, 'h') * k,
+          };
+        })
+        .sort((a, b) => a.top - b.top); // topmost first; later boxes cascade below
+      const gap = k;
+      const placed: typeof boxes[number][] = [];
       for (const b of boxes) {
-        let y = b.y;
+        let top = b.top;
         for (const p of placed) {
           const overlapX = Math.abs(b.cx - p.cx) < (b.w + p.w) / 2;
-          if (overlapX && y < p.y + p.h + gap && y + b.h > p.y) y = p.y + p.h + gap;
+          if (overlapX && top < p.top + p.h + gap && top + b.h > p.top) top = p.top + p.h + gap;
         }
-        if (y !== b.y) b.el.setAttribute('transform', `translate(0 ${(y - b.y).toFixed(2)})`);
-        placed.push({ ...b, y });
+        const dy = top - b.top;
+        b.el.setAttribute(
+          'transform',
+          `translate(0 ${dy.toFixed(2)}) translate(${b.px} ${b.py}) scale(${k.toFixed(4)}) translate(${(-b.px).toFixed(2)} ${(-b.py).toFixed(2)})`
+        );
+        placed.push({ ...b, top });
       }
     };
 
@@ -255,6 +268,8 @@ const tooltipWidth =
       // only swallow touch gestures once zoomed, so the page still scrolls past
       // the map at its default extent
       (svg as SVGElement & { style: CSSStyleDeclaration }).style.touchAction = zoomed ? 'none' : '';
+      // keep any open tooltip at native size as the viewBox changes
+      relayoutTooltips();
     };
     const clampPan = () => {
       vb.x = Math.min(FULL.w - vb.w, Math.max(0, vb.x));

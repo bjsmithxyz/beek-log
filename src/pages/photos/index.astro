@@ -66,8 +66,8 @@ const LIST_COLS = '5.5rem 12rem 6.5rem 1fr 11rem 1.5rem';
           <h1 class="page-title">photos/</h1>
           <div class="hero-actions">
             {latestRoll && (
-              <a class="hero-action hero-action-primary" href={`/photos/${latestRoll.id}/`}>
-                open latest roll <span aria-hidden="true">↗</span>
+              <a class="hero-action hero-action-quiet" href={`/photos/${latestRoll.id}/`}>
+                latest roll <span aria-hidden="true">↗</span>
               </a>
             )}
           </div>
@@ -308,7 +308,7 @@ const LIST_COLS = '5.5rem 12rem 6.5rem 1fr 11rem 1.5rem';
     display: grid;
     grid-template-columns: minmax(0, 1fr) minmax(300px, 0.92fr);
     gap: clamp(var(--space-6), 8vw, var(--space-10));
-    align-items: center;
+    align-items: start;
     min-height: 390px;
     padding: var(--space-6) 0 var(--space-8);
   }
@@ -350,16 +350,6 @@ const LIST_COLS = '5.5rem 12rem 6.5rem 1fr 11rem 1.5rem';
     border-color: var(--color-accent-primary);
     transform: translate(-2px, -2px);
     box-shadow: var(--shadow-hard-accent);
-  }
-
-  .hero-action-primary {
-    color: var(--color-bg-primary);
-    background: var(--color-accent-primary);
-    border-color: var(--color-accent-primary);
-  }
-
-  .hero-action-primary:hover {
-    color: var(--color-bg-primary);
   }
 
   .hero-action-quiet {
