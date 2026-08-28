@@ -156,7 +156,7 @@ const jsonLd = {
     display: grid;
     grid-template-columns: minmax(0, 1fr) minmax(260px, 0.64fr);
     gap: clamp(var(--space-6), 8vw, var(--space-10));
-    align-items: end;
+    align-items: start;
     padding: var(--space-6) 0 var(--space-8);
   }
 
@@ -191,7 +191,7 @@ const jsonLd = {
   .title {
     max-width: 18ch;
     margin-bottom: var(--space-4);
-    font-size: clamp(2rem, 5vw, 4rem);
+    font-size: clamp(1.625rem, 4.6vw, 3.625rem);
     font-weight: var(--font-weight-bold);
     letter-spacing: -0.06em;
     line-height: 1;
@@ -211,10 +211,20 @@ const jsonLd = {
   }
 
   .roll-specs {
+    /* start of the box aligns with the title text, clearing the back-link
+       and roll kicker stacked above the title in the left column */
+    margin-top: 6.25rem;
     padding: var(--space-4);
     background: var(--color-bg-secondary);
     border: 1px solid var(--color-border-strong);
     box-shadow: 5px 5px 0 var(--color-border);
+    transition: transform var(--transition-base), box-shadow var(--transition-base), border-color var(--transition-base);
+  }
+
+  .roll-specs:hover {
+    transform: translate(-3px, -3px);
+    border-color: var(--color-accent-secondary);
+    box-shadow: 8px 8px 0 var(--color-accent-secondary);
   }
 
   .spec-row {
@@ -345,6 +355,7 @@ const jsonLd = {
     }
 
     .roll-specs {
+      margin-top: 0;
       box-shadow: 4px 4px 0 var(--color-border);
     }
 

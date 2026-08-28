@@ -422,6 +422,7 @@ const LIST_COLS = '5.5rem 12rem 6.5rem 1fr 11rem 1.5rem';
   .archive-stats {
     display: grid;
     grid-template-columns: repeat(4, 1fr);
+    gap: var(--space-3);
     margin: var(--space-4) 0;
   }
 
@@ -438,14 +439,15 @@ const LIST_COLS = '5.5rem 12rem 6.5rem 1fr 11rem 1.5rem';
     font: inherit;
     text-align: left;
     background: transparent;
-    border: 0;
+    border: 1px solid var(--color-border);
     cursor: pointer;
-    transition: background var(--transition-fast);
+    transition: background var(--transition-fast), border-color var(--transition-fast);
   }
 
   .archive-stats .stat-card:hover,
   .archive-stats .stat-card[aria-expanded='true'] {
     background: var(--color-bg-tertiary);
+    border-color: var(--color-accent-secondary);
   }
 
   .archive-stats strong {
