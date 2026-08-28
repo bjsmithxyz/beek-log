@@ -136,7 +136,7 @@ function setupTravel() {
       zoomSnap: 0.25,
       zoomDelta: 0.5,
     }).setView([25, 40], 2);
-    L.tileLayer(`https://{s}.basemaps.cartocdn.com/${palette.tile}/{z}/{x}/{y}{r}.png`, {
+    L.tileLayer(`https://{s}.basemaps.cartocdn.com/${palette.tile}/{z}/{x}/{y}{r}.png?key=cb1_2hoi_1_b8b3b9742f2144629a3d27a1`, {
       attribution: '© OpenStreetMap contributors © CARTO', subdomains: 'abcd', maxZoom: 19,
     }).addTo(map);
 
