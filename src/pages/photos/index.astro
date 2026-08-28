@@ -124,7 +124,6 @@ const LIST_COLS = '5.5rem 12rem 6.5rem 1fr 11rem 1.5rem';
               <span class="insight-name" data-type={film.type}>[{film.name}]</span>
               <span class="insight-bar" aria-hidden="true"><i style={`width: ${(count / maxStockRolls) * 100}%`}></i></span>
               <strong>{count}</strong>
-              <span class="insight-count">{count === 1 ? 'roll' : 'rolls'}</span>
             </li>
           ))}
         </ul>
@@ -137,7 +136,6 @@ const LIST_COLS = '5.5rem 12rem 6.5rem 1fr 11rem 1.5rem';
               <span class="insight-name">{pin.label}</span>
               <span class="insight-bar" aria-hidden="true"><i style={`width: ${(pin.count / maxLocationFrames) * 100}%`}></i></span>
               <strong>{pin.count}</strong>
-              <span class="insight-count">{pin.count === 1 ? 'frame' : 'frames'}</span>
             </li>
           ))}
         </ul>
@@ -150,7 +148,6 @@ const LIST_COLS = '5.5rem 12rem 6.5rem 1fr 11rem 1.5rem';
               <span class="insight-name">{year}</span>
               <span class="insight-bar" aria-hidden="true"><i style={`width: ${(frames / maxYearFrames) * 100}%`}></i></span>
               <strong>{frames}</strong>
-              <span class="insight-count">frames</span>
             </li>
           ))}
         </ul>
@@ -534,7 +531,7 @@ const LIST_COLS = '5.5rem 12rem 6.5rem 1fr 11rem 1.5rem';
 
   .insight-list li {
     display: grid;
-    grid-template-columns: minmax(150px, 1fr) minmax(90px, 2.2fr) auto auto;
+    grid-template-columns: minmax(150px, 1fr) minmax(90px, 2.2fr) auto;
     gap: var(--space-3);
     align-items: center;
     min-height: 30px;
@@ -570,11 +567,6 @@ const LIST_COLS = '5.5rem 12rem 6.5rem 1fr 11rem 1.5rem';
     color: var(--color-text-primary);
     font-size: var(--font-size-base);
     font-weight: var(--font-weight-medium);
-  }
-
-  .insight-count {
-    min-width: 2.5rem;
-    color: var(--color-text-muted) !important;
     text-align: right;
   }
 
@@ -734,7 +726,7 @@ const LIST_COLS = '5.5rem 12rem 6.5rem 1fr 11rem 1.5rem';
     }
 
     .insight-list li {
-      grid-template-columns: minmax(120px, 1fr) minmax(60px, 1.5fr) auto auto;
+      grid-template-columns: minmax(120px, 1fr) minmax(60px, 1.5fr) auto;
       gap: var(--space-2);
     }
 
