@@ -70,9 +70,6 @@ const LIST_COLS = '5.5rem 12rem 6.5rem 1fr 11rem 1.5rem';
                 open latest roll <span aria-hidden="true">↗</span>
               </a>
             )}
-            <button class="hero-action hero-action-quiet" type="button" data-surprise>
-              shuffle roll <span aria-hidden="true">⤨</span>
-            </button>
           </div>
         </div>
 
@@ -97,23 +94,19 @@ const LIST_COLS = '5.5rem 12rem 6.5rem 1fr 11rem 1.5rem';
       <div class="archive-stats" aria-label="Archive statistics">
         <button class="stat-card" type="button" data-insight="rolls" aria-expanded="false" aria-controls="archive-breakdown">
           <strong>{sortedRolls.length}</strong>
-          <span>rolls</span>
-          <span class="stat-action">breakdown ↓</span>
+          <span class="stat-label">rolls <span class="stat-arrow" aria-hidden="true">↓</span></span>
         </button>
         <button class="stat-card" type="button" data-insight="frames" aria-expanded="false" aria-controls="archive-breakdown">
           <strong>{totalFrames}</strong>
-          <span>frames</span>
-          <span class="stat-action">breakdown ↓</span>
+          <span class="stat-label">frames <span class="stat-arrow" aria-hidden="true">↓</span></span>
         </button>
         <button class="stat-card" type="button" data-insight="locations" aria-expanded="false" aria-controls="archive-breakdown">
           <strong>{pins.length}</strong>
-          <span>locations</span>
-          <span class="stat-action">breakdown ↓</span>
+          <span class="stat-label">locations <span class="stat-arrow" aria-hidden="true">↓</span></span>
         </button>
         <button class="stat-card" type="button" data-insight="stocks" aria-expanded="false" aria-controls="archive-breakdown">
           <strong>{stockCount}</strong>
-          <span>film stocks</span>
-          <span class="stat-action">breakdown ↓</span>
+          <span class="stat-label">film stocks <span class="stat-arrow" aria-hidden="true">↓</span></span>
         </button>
       </div>
 
@@ -304,14 +297,6 @@ const LIST_COLS = '5.5rem 12rem 6.5rem 1fr 11rem 1.5rem';
       try { savedView = localStorage.getItem('photo-view') || 'rows'; } catch { /* storage can be blocked */ }
       setView(savedView === 'grid' ? 'grid' : 'rows');
       viewButtons.forEach((button) => button.addEventListener('click', () => setView(button.dataset.view || 'rows')));
-
-      document.querySelector<HTMLButtonElement>('[data-surprise]')?.addEventListener('click', () => {
-        const rows = [...list.querySelectorAll<HTMLElement>('.roll-row')]
-          .filter((row) => row.style.display !== 'none');
-        const row = rows[Math.floor(Math.random() * rows.length)];
-        if (!row) return;
-        row.click();
-      });
     }
 
     setupArchiveControls();
@@ -503,10 +488,21 @@ const LIST_COLS = '5.5rem 12rem 6.5rem 1fr 11rem 1.5rem';
     letter-spacing: 0.04em;
   }
 
-  .stat-action {
+  .stat-label {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: var(--space-2);
     margin-top: auto;
+  }
+
+  .stat-arrow {
     color: var(--color-accent-secondary) !important;
-    font-size: 0.6rem !important;
+    transition: transform var(--transition-fast);
+  }
+
+  .stat-card[aria-expanded='true'] .stat-arrow {
+    transform: rotate(180deg);
   }
 
   .archive-breakdown {

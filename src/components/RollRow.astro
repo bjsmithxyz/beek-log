@@ -84,14 +84,27 @@ const year = date.getFullYear().toString();
     line-height: 1.2;
   }
 
-  /* map pin jump target */
-  .roll-row:target {
+  /* map pin jump target — lift above following rows so the offset accent
+     shadow isn't clipped by the next row painting over it */
+  .roll-row:target,
+  .roll-row.is-pin-jumped {
+    position: relative;
+    z-index: 3;
     border-color: var(--color-accent-primary);
     box-shadow: var(--shadow-hard-accent);
   }
 
+  /* persistent highlight after jumping from a map pin, until the user
+     clicks the row or clicks away */
+  .roll-row.is-pin-jumped {
+    outline: 1px solid var(--color-accent-primary);
+    transition: box-shadow var(--transition-base), border-color var(--transition-base), outline-color var(--transition-base);
+  }
+
   /* highlighted from hovering its pin on the map */
   .roll-row.is-pin-active {
+    position: relative;
+    z-index: 3;
     border-color: var(--color-accent-primary);
     outline: 1px solid var(--color-accent-primary);
   }

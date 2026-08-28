@@ -88,9 +88,10 @@ const tooltipWidth =
 <div class="map-shell">
   <div class="map-toolbar">
     <span class="map-key"><i aria-hidden="true"></i>{pins.length} {pins.length === 1 ? 'location' : 'locations'}</span>
-    <span class="map-help">hover to inspect · click to jump to rolls</span>
+    <span class="map-help">scroll or ± to zoom · drag to pan · click a pin to jump</span>
   </div>
 
+  <div class="map-viewport">
   <svg
     viewBox="0 0 240 120"
     class="world-map"
@@ -148,6 +149,13 @@ const tooltipWidth =
   })}
   </svg>
 
+    <div class="map-zoom" role="group" aria-label="Zoom map">
+      <button type="button" class="map-zoom-btn" data-zoom="in" aria-label="Zoom in">+</button>
+      <button type="button" class="map-zoom-btn" data-zoom="out" aria-label="Zoom out">−</button>
+      <button type="button" class="map-zoom-btn" data-zoom="reset" aria-label="Reset zoom">⤢</button>
+    </div>
+  </div>
+
   <div class="map-footnote">
     <span><b>●</b> hover a pin for roll details</span>
   </div>
@@ -198,6 +206,23 @@ const tooltipWidth =
         .map((s) => document.getElementById(`roll-${s}`))
         .filter((r): r is HTMLElement => !!r);
 
+    // Persistent highlight left on the target rows after a pin is clicked, so
+    // the jumped-to roll stays lit until the visitor clicks it or clicks away.
+    let jumped: HTMLElement[] = [];
+    const clearJumped = () => {
+      jumped.forEach((r) => r.classList.remove('is-pin-jumped'));
+      jumped = [];
+      document.removeEventListener('pointerdown', onAwayClick, true);
+    };
+    const onAwayClick = () => clearJumped();
+    const markJumped = (rows: HTMLElement[]) => {
+      clearJumped();
+      jumped = rows;
+      rows.forEach((r) => r.classList.add('is-pin-jumped'));
+      // arm the dismiss listener after this click settles so it doesn't clear itself
+      setTimeout(() => document.addEventListener('pointerdown', onAwayClick, true), 0);
+    };
+
     svg.querySelectorAll<HTMLElement>('.pin-link').forEach((pin) => {
       const rows = rowsForPin(pin);
       const on = () => { setPin(pin, true); rows.forEach((r) => r.classList.add('is-pin-active')); relayoutTooltips(); };
@@ -206,6 +231,7 @@ const tooltipWidth =
       pin.addEventListener('mouseleave', off);
       pin.addEventListener('focus', on);
       pin.addEventListener('blur', off);
+      pin.addEventListener('click', () => { if (rows.length) markJumped(rows); });
     });
 
     document.querySelectorAll<HTMLElement>('.roll-row[data-slug]').forEach((row) => {
@@ -215,6 +241,114 @@ const tooltipWidth =
       row.addEventListener('mouseenter', () => { pins.forEach((p) => setPin(p, true)); relayoutTooltips(); });
       row.addEventListener('mouseleave', () => { pins.forEach((p) => setPin(p, false)); relayoutTooltips(); });
     });
+
+    // --- Pan + zoom -------------------------------------------------------
+    // Some shoot locations sit almost on top of each other; let visitors zoom
+    // and pan by driving the SVG viewBox (wheel / drag / pinch / buttons).
+    const FULL = { x: 0, y: 0, w: 240, h: 120 };
+    const MIN_W = 30; // deepest zoom (240 / 30 = 8x)
+    const vb = { ...FULL };
+    const apply = () => {
+      svg.setAttribute('viewBox', `${+vb.x.toFixed(2)} ${+vb.y.toFixed(2)} ${+vb.w.toFixed(2)} ${+vb.h.toFixed(2)}`);
+      const zoomed = vb.w < FULL.w - 0.01;
+      svg.classList.toggle('is-zoomed', zoomed);
+      // only swallow touch gestures once zoomed, so the page still scrolls past
+      // the map at its default extent
+      (svg as SVGElement & { style: CSSStyleDeclaration }).style.touchAction = zoomed ? 'none' : '';
+    };
+    const clampPan = () => {
+      vb.x = Math.min(FULL.w - vb.w, Math.max(0, vb.x));
+      vb.y = Math.min(FULL.h - vb.h, Math.max(0, vb.y));
+    };
+    const toVB = (clientX: number, clientY: number) => {
+      const rect = svg.getBoundingClientRect();
+      return {
+        x: vb.x + ((clientX - rect.left) / rect.width) * vb.w,
+        y: vb.y + ((clientY - rect.top) / rect.height) * vb.h,
+      };
+    };
+    const zoomAt = (factor: number, fx: number, fy: number) => {
+      const w = Math.min(FULL.w, Math.max(MIN_W, vb.w * factor));
+      const h = w / 2;
+      vb.x = fx - (fx - vb.x) * (w / vb.w);
+      vb.y = fy - (fy - vb.y) * (h / vb.h);
+      vb.w = w;
+      vb.h = h;
+      clampPan();
+      apply();
+    };
+    const zoomCenter = (factor: number) => zoomAt(factor, vb.x + vb.w / 2, vb.y + vb.h / 2);
+
+    svg.addEventListener('wheel', (event) => {
+      event.preventDefault();
+      const { x, y } = toVB(event.clientX, event.clientY);
+      zoomAt(event.deltaY > 0 ? 1.2 : 1 / 1.2, x, y);
+    }, { passive: false });
+
+    document.querySelectorAll<HTMLButtonElement>('.map-zoom-btn').forEach((btn) => {
+      btn.addEventListener('click', () => {
+        const kind = btn.dataset.zoom;
+        if (kind === 'in') zoomCenter(1 / 1.5);
+        else if (kind === 'out') zoomCenter(1.5);
+        else { Object.assign(vb, FULL); apply(); }
+      });
+    });
+
+    // Drag to pan; pinch (two pointers) to zoom. A pin click that turns into a
+    // drag is suppressed via the `moved` flag + a capture-phase click guard.
+    const pointers = new Map<number, { x: number; y: number }>();
+    let start: { x: number; y: number; vbx: number; vby: number } | null = null;
+    let pinchDist = 0;
+    let moved = false;
+    svg.addEventListener('pointerdown', (event) => {
+      pointers.set(event.pointerId, { x: event.clientX, y: event.clientY });
+      moved = false;
+      if (pointers.size === 1) {
+        start = { x: event.clientX, y: event.clientY, vbx: vb.x, vby: vb.y };
+      } else if (pointers.size === 2) {
+        const [a, b] = [...pointers.values()];
+        pinchDist = Math.hypot(a.x - b.x, a.y - b.y);
+      }
+      svg.setPointerCapture(event.pointerId);
+    });
+    svg.addEventListener('pointermove', (event) => {
+      if (!pointers.has(event.pointerId)) return;
+      pointers.set(event.pointerId, { x: event.clientX, y: event.clientY });
+      const rect = svg.getBoundingClientRect();
+      if (pointers.size >= 2) {
+        const [a, b] = [...pointers.values()];
+        const dist = Math.hypot(a.x - b.x, a.y - b.y);
+        if (pinchDist > 0 && dist > 0) {
+          const mid = toVB((a.x + b.x) / 2, (a.y + b.y) / 2);
+          zoomAt(pinchDist / dist, mid.x, mid.y);
+        }
+        pinchDist = dist;
+        moved = true;
+      } else if (start && vb.w < FULL.w) {
+        const dx = ((event.clientX - start.x) / rect.width) * vb.w;
+        const dy = ((event.clientY - start.y) / rect.height) * vb.h;
+        if (Math.abs(event.clientX - start.x) > 3 || Math.abs(event.clientY - start.y) > 3) moved = true;
+        vb.x = start.vbx - dx;
+        vb.y = start.vby - dy;
+        clampPan();
+        apply();
+      }
+    });
+    const endPointer = (event: PointerEvent) => {
+      pointers.delete(event.pointerId);
+      if (pointers.size < 2) pinchDist = 0;
+      if (pointers.size === 0) start = null;
+      try { svg.releasePointerCapture(event.pointerId); } catch { /* not captured */ }
+    };
+    svg.addEventListener('pointerup', endPointer);
+    svg.addEventListener('pointercancel', endPointer);
+    // suppress the pin's navigation + highlight when the gesture was a drag
+    svg.addEventListener('click', (event) => {
+      if (!moved) return;
+      event.preventDefault();
+      event.stopPropagation();
+      moved = false;
+    }, true);
   }
 
   setupMapHover();
@@ -265,12 +399,57 @@ const tooltipWidth =
     text-align: right;
   }
 
+  .map-viewport {
+    position: relative;
+  }
+
   .world-map {
     width: 100%;
     height: auto;
     display: block;
     background: var(--color-bg-secondary);
     padding: var(--space-3);
+    touch-action: pan-y;
+  }
+
+  .world-map.is-zoomed {
+    cursor: grab;
+  }
+
+  .world-map.is-zoomed:active {
+    cursor: grabbing;
+  }
+
+  .map-zoom {
+    position: absolute;
+    top: var(--space-2);
+    right: var(--space-2);
+    display: flex;
+    flex-direction: column;
+    gap: 2px;
+  }
+
+  .map-zoom-btn {
+    width: 28px;
+    height: 28px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 0;
+    color: var(--color-text-primary);
+    background: var(--color-bg-primary);
+    border: 1px solid var(--color-border-strong);
+    font: inherit;
+    font-size: var(--font-size-base);
+    line-height: 1;
+    cursor: pointer;
+    transition: color var(--transition-fast), background var(--transition-fast), border-color var(--transition-fast);
+  }
+
+  .map-zoom-btn:hover {
+    color: var(--color-bg-primary);
+    background: var(--color-accent-primary);
+    border-color: var(--color-accent-primary);
   }
 
   .map-footnote {
