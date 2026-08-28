@@ -112,11 +112,7 @@ const LIST_COLS = '5.5rem 12rem 6.5rem 1fr 11rem 1.5rem';
 
       <section class="archive-breakdown" id="archive-breakdown" aria-labelledby="archive-breakdown-heading" hidden>
         <div class="breakdown-heading">
-          <div>
-            <span class="breakdown-kicker">ARCHIVE BREAKDOWN</span>
-            <h2 id="archive-breakdown-heading">film stocks</h2>
-          </div>
-          <button class="breakdown-close" type="button" data-insight-close>[close]</button>
+          <h2 id="archive-breakdown-heading">film stocks</h2>
         </div>
         <div class="breakdown-body" data-breakdown-body></div>
       </section>
@@ -315,8 +311,7 @@ const LIST_COLS = '5.5rem 12rem 6.5rem 1fr 11rem 1.5rem';
     gap: clamp(var(--space-6), 8vw, var(--space-10));
     align-items: center;
     min-height: 390px;
-    padding: var(--space-6) 0 var(--space-10);
-    border-bottom: 1px solid var(--color-border);
+    padding: var(--space-6) 0 var(--space-8);
   }
 
   .hero-copy {
@@ -327,7 +322,7 @@ const LIST_COLS = '5.5rem 12rem 6.5rem 1fr 11rem 1.5rem';
     font-size: clamp(2.5rem, 6vw, 4rem);
     letter-spacing: -0.08em;
     line-height: 0.95;
-    margin-bottom: var(--space-5);
+    margin-bottom: var(--space-6);
   }
 
   .hero-actions {
@@ -441,8 +436,7 @@ const LIST_COLS = '5.5rem 12rem 6.5rem 1fr 11rem 1.5rem';
   .archive-stats {
     display: grid;
     grid-template-columns: repeat(4, 1fr);
-    margin: var(--space-8) 0 var(--space-4);
-    border: 1px solid var(--color-border);
+    margin: var(--space-4) 0;
   }
 
   .archive-stats > * {
@@ -451,11 +445,6 @@ const LIST_COLS = '5.5rem 12rem 6.5rem 1fr 11rem 1.5rem';
     gap: var(--space-1);
     min-height: 82px;
     padding: var(--space-3) var(--space-4);
-    border-right: 1px solid var(--color-border);
-  }
-
-  .archive-stats > :last-child {
-    border-right: 0;
   }
 
   .archive-stats .stat-card {
@@ -463,9 +452,7 @@ const LIST_COLS = '5.5rem 12rem 6.5rem 1fr 11rem 1.5rem';
     font: inherit;
     text-align: left;
     background: transparent;
-    border-top: 0;
-    border-bottom: 0;
-    border-left: 0;
+    border: 0;
     cursor: pointer;
     transition: background var(--transition-fast);
   }
@@ -519,19 +506,7 @@ const LIST_COLS = '5.5rem 12rem 6.5rem 1fr 11rem 1.5rem';
   }
 
   .breakdown-heading {
-    display: flex;
-    align-items: start;
-    justify-content: space-between;
-    gap: var(--space-4);
     margin-bottom: var(--space-4);
-  }
-
-  .breakdown-kicker {
-    display: block;
-    margin-bottom: var(--space-1);
-    color: var(--color-accent-secondary) !important;
-    font-size: var(--font-size-xs) !important;
-    letter-spacing: 0.14em;
   }
 
   .archive-breakdown h2 {
@@ -539,7 +514,6 @@ const LIST_COLS = '5.5rem 12rem 6.5rem 1fr 11rem 1.5rem';
     font-weight: var(--font-weight-medium);
   }
 
-  .breakdown-close,
   .insight-jump {
     padding: var(--space-2) var(--space-3);
     color: var(--color-text-secondary);
@@ -550,7 +524,6 @@ const LIST_COLS = '5.5rem 12rem 6.5rem 1fr 11rem 1.5rem';
     cursor: pointer;
   }
 
-  .breakdown-close:hover,
   .insight-jump:hover {
     color: var(--color-bg-primary);
     background: var(--color-accent-secondary);
@@ -773,15 +746,7 @@ const LIST_COLS = '5.5rem 12rem 6.5rem 1fr 11rem 1.5rem';
 
     .archive-stats {
       grid-template-columns: repeat(2, 1fr);
-      margin: var(--space-6) 0 var(--space-8);
-    }
-
-    .archive-stats > :nth-child(2) {
-      border-right: 0;
-    }
-
-    .archive-stats > :nth-child(-n + 2) {
-      border-bottom: 1px solid var(--color-border);
+      margin: var(--space-4) 0 var(--space-6);
     }
 
     .insight-list li {
