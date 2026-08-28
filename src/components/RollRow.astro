@@ -31,8 +31,10 @@ const year = date.getFullYear().toString();
     <Image
       src={preview.src}
       alt={preview.alt || `${title} — first frame`}
-      width={180}
-      height={120}
+      widths={[180, 320, 480, 640, 768]}
+      sizes="(max-width: 420px) 92vw, (max-width: 768px) 45vw, 19rem"
+      width={768}
+      height={512}
       loading="lazy"
     />
     <span class="preview-index" aria-hidden="true">01</span>
