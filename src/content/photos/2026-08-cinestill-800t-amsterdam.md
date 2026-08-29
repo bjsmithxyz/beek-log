@@ -79,8 +79,6 @@ photos:
     alt: ""
   - src: ../../assets/photos/2026-08-cinestill-800t-amsterdam/034.jpg
     alt: ""
-  - src: ../../assets/photos/2026-08-cinestill-800t-amsterdam/035.jpg
-    alt: ""
 ---
 
 
