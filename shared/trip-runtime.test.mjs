@@ -1,7 +1,9 @@
 import { test } from 'node:test';
 import assert from 'node:assert/strict';
 import currentTrip from '../src/data/trips.json' with { type: 'json' };
-import { computeTrip, daysBetween, haversine, isoDate, statusOf } from './trip-runtime.mjs';
+import {
+  computeTrip, daysBetween, flagOf, haversine, isoDate, monthsWeeksBetween, statusOf,
+} from './trip-runtime.mjs';
 
 const stop = { name: 'Bangkok', arrive: '2025-06-20', depart: '2025-06-23', lat: 13.7563, lon: 100.5018 };
 
@@ -40,4 +42,26 @@ test('the same committed itinerary changes current stop under two clocks', () =>
   const later = computeTrip(currentTrip.stops, new Date(2026, 7, 2, 12));
   assert.equal(early.find((entry) => entry.status === 'current')?.name, 'Bangkok');
   assert.equal(later.find((entry) => entry.status === 'current')?.name, 'Amsterdam');
+});
+
+test('flagOf renders a country code as a regional-indicator flag emoji', () => {
+  assert.equal(flagOf('TH'), '🇹🇭');
+  assert.equal(flagOf('th'), '🇹🇭');
+});
+
+test('flagOf returns nothing for a missing or malformed code', () => {
+  assert.equal(flagOf(''), '');
+  assert.equal(flagOf(undefined), '');
+});
+
+test('monthsWeeksBetween counts whole calendar months, then whole remaining weeks', () => {
+  assert.deepEqual(monthsWeeksBetween('2025-06-20', '2025-06-20'), { months: 0, weeks: 0 });
+  assert.deepEqual(monthsWeeksBetween('2025-06-20', '2025-06-27'), { months: 0, weeks: 1 });
+  assert.deepEqual(monthsWeeksBetween('2025-06-20', '2025-08-20'), { months: 2, weeks: 0 });
+  assert.deepEqual(monthsWeeksBetween('2025-06-20', '2025-08-25'), { months: 2, weeks: 0 });
+  assert.deepEqual(monthsWeeksBetween('2025-06-20', '2025-09-03'), { months: 2, weeks: 2 });
+});
+
+test('monthsWeeksBetween does not overshoot when the start day does not exist in the anchor month', () => {
+  assert.deepEqual(monthsWeeksBetween('2025-01-31', '2025-03-02'), { months: 1, weeks: 0 });
 });

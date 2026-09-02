@@ -13,16 +13,15 @@
 // "here now" for the route ahead.
 import * as L from 'leaflet';
 import 'leaflet/dist/leaflet.css';
-import { continentOf, daysBetween, haversine, isoDate } from '@beek/shared/trip-runtime';
+import {
+  continentOf, daysBetween, flagOf, haversine, isoDate, monthsWeeksBetween,
+} from '@beek/shared/trip-runtime';
 import { climateExtremes } from '@beek/shared/trip-climate';
 import { escapeHtml } from '@beek/shared/escape-html';
 
 let cleanup = null;
 
-const flag = (code) => String(code || '')
-  .toUpperCase()
-  .replace(/[^A-Z]/g, '')
-  .replace(/./g, (character) => String.fromCodePoint(127397 + character.charCodeAt(0)));
+const flag = flagOf;
 
 function setupTravel() {
   cleanup?.();
@@ -43,7 +42,6 @@ function setupTravel() {
   const stops = payload.stops.map((stop, index) => ({ ...stop, index }));
   const planned = (payload.planned || []).map((stop, index) => ({ ...stop, index }));
   const currentIndex = payload.currentIndex;
-  const current = currentIndex >= 0 ? stops[currentIndex] : null;
   const photoLinks = payload.photoLinks || {};
   const today = isoDate(new Date());
   const abortController = new AbortController();
@@ -233,13 +231,14 @@ function setupTravel() {
       // schedule, so it says nothing the route line does not already draw.
       if (!longestHop || km > longestHop.km) longestHop = { km, from: stops[index - 1], to: stops[index] };
     }
+    const { months, weeks } = payload.start ? monthsWeeksBetween(payload.start, today) : { months: 0, weeks: 0 };
     const stats = [
       [elapsedDays, 'Days on the road'],
+      [`${months}mo ${weeks}wk`, 'Months + weeks travelled'],
       [countries.size, 'Countries & territories'],
       [stops.length, 'Stops so far'],
       [`${(totalKm / 1000).toFixed(1)}k`, 'Kilometres travelled'],
       [continents.size, 'Continents'],
-      [payload.rollsOnRoute ?? 0, 'Rolls along the way'],
     ];
     get('travel-stats').innerHTML = stats.map(([number, label], index) => `
       <div class="travel-stat"><strong${index === 0 ? ' id="travel-day"' : ''}>${escapeHtml(number)}</strong><span>${escapeHtml(label)}</span></div>
@@ -251,18 +250,6 @@ function setupTravel() {
         ? `<span>longest hop: <b>${flag(longestHop.from.cc)} ${escapeHtml(longestHop.from.name)} → ${flag(longestHop.to.cc)} ${escapeHtml(longestHop.to.name)} · ${Math.round(longestHop.km).toLocaleString('en-GB')} km</b></span>`
         : '',
     ].join('');
-
-    // When the stop being lived in right now is tentative, or the journey is
-    // between stops, say where I was last — never the next planned place.
-    const nowLine = get('travel-now');
-    const lastSeen = stops.at(-1);
-    if (current) {
-      nowLine.innerHTML = `now: <b>${flag(current.cc)} ${escapeHtml(current.name)}, ${escapeHtml(current.country)}</b>`;
-    } else if (lastSeen) {
-      nowLine.innerHTML = `last seen in: <b>${flag(lastSeen.cc)} ${escapeHtml(lastSeen.name)}, ${escapeHtml(lastSeen.country)}</b>`;
-    } else {
-      nowLine.textContent = '// no stops published yet';
-    }
   }
 
   // Degrees are rounded because a tenth of a degree of decade-average air
@@ -396,7 +383,7 @@ function setupTravel() {
   renderClimate();
   renderMapStops();
   renderTimeline();
-  selectPanel('route');
+  selectPanel('stats');
 
   const themeObserver = new MutationObserver(() => {
     if (!get('travel-panel-route').hidden) renderMap();

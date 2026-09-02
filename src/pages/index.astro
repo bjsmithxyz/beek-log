@@ -2,9 +2,15 @@
 import BaseLayout from '../layouts/BaseLayout.astro';
 import SiteTree from '../components/SiteTree.astro';
 import { getWorkEntries, getPhotoRolls, byDateDesc } from '../lib/collections';
+import tripData from '../data/trips.json';
+import climate from '../data/climate.json';
+import { assertValidTrip } from '@beek/shared/trip-validation';
+import { publicTrip } from '@beek/shared/trip-public';
+import { flagOf } from '@beek/shared/trip-runtime';
 
 const allWork = (await getWorkEntries()).sort(byDateDesc);
 const allRolls = (await getPhotoRolls()).sort(byDateDesc);
+const latestRoll = allRolls[0] ?? null;
 const workTreeItems = allWork.map((entry) => ({
   label: `${entry.id}.md`,
   href: `/work/${entry.id}/`,
@@ -15,11 +21,38 @@ const rollTreeItems = allRolls.map((entry) => ({
   href: `/photos/${entry.id}/`,
   meta: entry.data.date.toISOString().slice(0, 10),
 }));
+
+// Where I am, at a glance, on the page everyone lands on first. The full
+// itinerary lives at /travel/; this is only ever the current or last-seen
+// published stop, fixed at build time like the rest of the public trip data.
+assertValidTrip(tripData);
+const publishedTrip = publicTrip(tripData, new Date(), climate);
+const currentStop = publishedTrip.currentIndex >= 0 ? publishedTrip.stops[publishedTrip.currentIndex] : null;
+const lastSeenStop = publishedTrip.stops.at(-1) ?? null;
+const travelBadge = currentStop
+  ? { label: 'now', stop: currentStop }
+  : lastSeenStop
+    ? { label: 'last seen in', stop: lastSeenStop }
+    : null;
 ---
 
 <BaseLayout breadcrumbs={[{ label: '~/beek', href: '/' }]}>
   <section class="home">
     <div class="container">
+      <div class="home-badges">
+        {travelBadge && (
+          <a class="home-nowline" href="/travel/">
+            <span class="home-pulse" aria-hidden="true"></span>
+            <span>{travelBadge.label}: <b>{flagOf(travelBadge.stop.cc)} {travelBadge.stop.name}, {travelBadge.stop.country}</b></span>
+          </a>
+        )}
+        {latestRoll && (
+          <a class="home-nowline" href={`/photos/${latestRoll.id}/`}>
+            <span class="home-pulse" aria-hidden="true"></span>
+            <span>latest roll: <b>{latestRoll.data.title}</b></span>
+          </a>
+        )}
+      </div>
       {/* No page title: the breadcrumb (~/beek) and the tree's own root already
           name this page, and the tree *is* the content. */}
       <SiteTree workItems={workTreeItems} rollItems={rollTreeItems} />
@@ -30,5 +63,47 @@ const rollTreeItems = allRolls.map((entry) => ({
 <style>
   .home {
     padding: var(--page-content-top) 0 var(--space-16);
+  }
+
+  .home-badges {
+    /* Matches .site-tree's own max-width below, so the badges' combined width
+       lines up with the tree's edges, not the viewport's. The gap between the
+       two badges matches the margin below, so the spacing reads as one grid. */
+    display: flex;
+    flex-wrap: wrap;
+    gap: var(--space-4);
+    max-width: 52rem;
+    margin-bottom: var(--space-4);
+  }
+
+  .home-nowline {
+    display: inline-flex;
+    flex: 1 1 0;
+    align-items: center;
+    gap: var(--space-2);
+    padding: var(--space-2) var(--space-3);
+    color: var(--color-text-secondary);
+    background: var(--color-bg-secondary);
+    border: 1px solid var(--color-border);
+    border-left: 3px solid var(--color-accent-primary);
+    font-size: var(--font-size-sm);
+  }
+
+  .home-nowline:hover { box-shadow: var(--shadow-hard-accent); }
+
+  .home-nowline b { color: var(--color-text-primary); }
+
+  .home-pulse {
+    width: 7px;
+    height: 7px;
+    flex: none;
+    background: var(--color-accent-primary);
+    animation: home-blink 1.8s steps(2, start) infinite;
+  }
+
+  @keyframes home-blink { 50% { opacity: 0.35; } }
+
+  @media (prefers-reduced-motion: reduce) {
+    .home-pulse { animation: none; }
   }
 </style>

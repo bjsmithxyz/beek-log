@@ -14,31 +14,6 @@
   max-width: 46rem;
 }
 
-.travel-nowline {
-  display: inline-flex;
-  align-items: center;
-  gap: var(--space-2);
-  margin: 0;
-  padding: var(--space-2) var(--space-3);
-  color: var(--color-text-secondary);
-  background: var(--color-bg-secondary);
-  border: 1px solid var(--color-border);
-  border-left: 3px solid var(--color-accent-primary);
-  font-size: var(--font-size-sm);
-}
-
-.travel-nowline b { color: var(--color-text-primary); }
-
-.travel-pulse {
-  width: 7px;
-  height: 7px;
-  flex: none;
-  background: var(--color-accent-primary);
-  animation: travel-blink 1.8s steps(2, start) infinite;
-}
-
-@keyframes travel-blink { 50% { opacity: 0.35; } }
-
 .travel-tabs {
   display: flex;
   gap: var(--space-2);
@@ -361,8 +336,4 @@
   .climate-row { grid-template-columns: 1fr; gap: var(--space-1); }
   /* Stacked, the country ends a line — a trailing comma would dangle. */
   .timeline-comma { display: none; }
-}
-
-@media (prefers-reduced-motion: reduce) {
-  .travel-pulse { animation: none; }
 }

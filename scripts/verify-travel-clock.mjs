@@ -62,7 +62,6 @@ async function stateAt(iso) {
   return {
     day: document.querySelector('#travel-day')?.textContent?.trim(),
     stops: [...document.querySelectorAll('#travel-map-stops .map-stop')].map((node) => node.textContent?.trim()),
-    now: document.querySelector('#travel-now')?.textContent?.trim(),
   };
 }
 
@@ -82,8 +81,6 @@ assert.ok(
   document.querySelector('#travel-map-stops .map-stop.planned'),
   'the route tab must render the planned path',
 );
-assert.equal(later.now, early.now, 'the now/last-seen line is fixed at build time');
-assert.match(early.now || '', /^(now|last seen in):/, 'the page must say either where I am or where I was last');
 
 // No live or future schedule may appear in anything the page renders. Past
 // exact dates are intentionally visible; the embedded payload is excluded here
@@ -95,12 +92,21 @@ assert.doesNotMatch(rendered, /\d{4}-\d{2}-\d{2}/, 'no ISO date may be rendered'
 assert.equal(document.querySelector('#travel-timeline time'), null, 'timeline rows must not carry dates');
 assert.doesNotMatch(rendered, /nights?\b/i, 'stay durations must not be rendered');
 
-// Tab and map behaviour is unchanged by the split.
-assert.equal(document.querySelector('[data-travel-tab="route"]')?.getAttribute('aria-selected'), 'true');
+// Tab and map behaviour is unchanged by the split, except stats now opens by
+// default (the route map is lazy and only mounts once its tab is selected).
+assert.equal(document.querySelector('[data-travel-tab="stats"]')?.getAttribute('aria-selected'), 'true');
 assert.equal(document.querySelectorAll('[data-travel-panel]:not([hidden])').length, 1);
-assert.equal(document.querySelector('[data-travel-panel]:not([hidden])')?.getAttribute('data-travel-panel'), 'route');
-assert.ok(document.querySelector('#travel-map.leaflet-container'), 'Leaflet must initialise the route map');
-assert.ok(document.querySelectorAll('#travel-map .leaflet-interactive').length > 0, 'route map must render trip geometry');
+assert.equal(document.querySelector('[data-travel-panel]:not([hidden])')?.getAttribute('data-travel-panel'), 'stats');
+assert.match(
+  document.querySelector('#travel-stats')?.textContent || '',
+  /Months \+ weeks travelled/,
+  'the stats panel must show months and weeks travelled',
+);
+assert.doesNotMatch(
+  document.querySelector('#travel-stats')?.textContent || '',
+  /Rolls along the way/,
+  'the retired rolls-along-the-way stat must not ship',
+);
 assert.ok(document.querySelectorAll('#travel-map-stops .map-stop-photos a').length > 0, 'matching stops must link to related photo rolls');
 assert.equal(document.querySelector('#travel-more'), null, 'timeline must not have a collapsed-state control');
 assert.equal(document.querySelector('[data-travel-tab="road-ahead"]'), null, 'the road-ahead tab must not exist');
@@ -116,12 +122,13 @@ assert.ok(
   'the stats panel must summarise the route climate',
 );
 
-for (const name of ['stats', 'timeline', 'route']) {
+for (const name of ['route', 'timeline', 'stats', 'route']) {
   document.querySelector(`[data-travel-tab="${name}"]`)?.click();
   await new Promise((resolve) => setTimeout(resolve, name === 'route' ? 50 : 0));
   assert.equal(document.querySelector('[data-travel-tab][aria-selected="true"]')?.getAttribute('data-travel-tab'), name);
   assert.equal(document.querySelector('[data-travel-panel]:not([hidden])')?.getAttribute('data-travel-panel'), name);
 }
-assert.ok(document.querySelectorAll('#travel-map .leaflet-interactive').length > 0, 'route map must survive tab changes');
+assert.ok(document.querySelector('#travel-map.leaflet-container'), 'Leaflet must initialise the route map once selected');
+assert.ok(document.querySelectorAll('#travel-map .leaflet-interactive').length > 0, 'route map must render trip geometry and survive tab changes');
 console.log(`travel clock guard: day ${early.day} -> ${later.day}, ${early.stops.length} published stops unchanged`);
 window.close();

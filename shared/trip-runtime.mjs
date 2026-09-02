@@ -64,3 +64,28 @@ const CONTINENTS = {
 export function continentOf(countryCode) {
   return CONTINENTS[countryCode] || '—';
 }
+
+// Regional indicator flag emoji from an ISO 3166-1 alpha-2 code.
+export function flagOf(countryCode) {
+  return String(countryCode || '')
+    .toUpperCase()
+    .replace(/[^A-Z]/g, '')
+    .replace(/./g, (character) => String.fromCodePoint(127397 + character.charCodeAt(0)));
+}
+
+// Whole calendar months elapsed from `start` to `end`, plus the remaining
+// whole weeks that don't add up to another month. Calendar-based rather than
+// a flat day/30 split, so "started on the 31st" doesn't drift a stat that is
+// otherwise exact.
+export function monthsWeeksBetween(start, end) {
+  const from = parseLocalDate(start);
+  const to = parseLocalDate(end);
+  let months = (to.getFullYear() - from.getFullYear()) * 12 + (to.getMonth() - from.getMonth());
+  if (months > 0 && new Date(from.getFullYear(), from.getMonth() + months, from.getDate()) > to) {
+    months -= 1;
+  }
+  months = Math.max(0, months);
+  const anchor = new Date(from.getFullYear(), from.getMonth() + months, from.getDate());
+  const weeks = Math.max(0, Math.floor(daysBetween(isoDate(anchor), end) / 7));
+  return { months, weeks };
+}

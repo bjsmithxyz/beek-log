@@ -56,10 +56,3 @@ export function buildStopPhotoLinks(
     return [index, related];
   }));
 }
-
-/** Distinct rolls matched to any published stop. */
-export function countRollsOnRoute(stopPhotoLinks: Record<number, PhotoLink[]>): number {
-  return new Set(
-    Object.values(stopPhotoLinks).flat().map((roll) => roll.href),
-  ).size;
-}
