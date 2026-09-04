@@ -801,13 +801,35 @@
       "tentative": true
     },
     {
+      "name": "Turku",
+      "country": "Finland",
+      "cc": "FI",
+      "lat": 60.4515932,
+      "lon": 22.2669991,
+      "arrive": "2026-09-01",
+      "depart": "2026-09-04",
+      "note": "",
+      "tentative": false
+    },
+    {
+      "name": "Rauma",
+      "country": "Finland",
+      "cc": "FI",
+      "lat": 61.1289148,
+      "lon": 21.5039401,
+      "arrive": "2026-09-04",
+      "depart": "2026-09-06",
+      "note": "",
+      "tentative": false
+    },
+    {
       "name": "Helsinki",
       "country": "Finland",
       "cc": "FI",
       "lat": 60.1699,
       "lon": 24.9384,
-      "arrive": "2026-09-01",
-      "depart": "2026-09-06",
+      "arrive": "2026-09-06",
+      "depart": "2026-09-10",
       "note": "Ferry to Tallinn",
       "tentative": true
     },
