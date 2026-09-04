@@ -793,17 +793,6 @@
       "name": "Turku",
       "country": "Finland",
       "cc": "FI",
-      "lat": 60.4518,
-      "lon": 22.2666,
-      "arrive": "2026-08-31",
-      "depart": "2026-09-02",
-      "note": "Archipelago Trail bike trip (Pieni Rengastie loop) via Carfield Bike Rental",
-      "tentative": true
-    },
-    {
-      "name": "Turku",
-      "country": "Finland",
-      "cc": "FI",
       "lat": 60.4515932,
       "lon": 22.2669991,
       "arrive": "2026-09-01",
