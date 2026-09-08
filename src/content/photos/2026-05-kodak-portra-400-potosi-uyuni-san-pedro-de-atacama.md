@@ -71,6 +71,7 @@ photos:
         name: Bolivia
         lat: -17.0568696
         lng: -64.9912286
+    featured: true
   - src: ../../assets/photos/2026-05-kodak-portra-400-potosi-uyuni-san-pedro-de-atacama/007.jpg
     alt: ""
     location:
@@ -113,6 +114,7 @@ photos:
     alt: ""
   - src: ../../assets/photos/2026-05-kodak-portra-400-potosi-uyuni-san-pedro-de-atacama/019.jpg
     alt: ""
+    featured: true
   - src: ../../assets/photos/2026-05-kodak-portra-400-potosi-uyuni-san-pedro-de-atacama/020.jpg
     alt: ""
   - src: ../../assets/photos/2026-05-kodak-portra-400-potosi-uyuni-san-pedro-de-atacama/021.jpg
@@ -121,6 +123,7 @@ photos:
     alt: ""
   - src: ../../assets/photos/2026-05-kodak-portra-400-potosi-uyuni-san-pedro-de-atacama/023.jpg
     alt: ""
+    featured: true
   - src: ../../assets/photos/2026-05-kodak-portra-400-potosi-uyuni-san-pedro-de-atacama/024.jpg
     alt: ""
   - src: ../../assets/photos/2026-05-kodak-portra-400-potosi-uyuni-san-pedro-de-atacama/025.jpg
