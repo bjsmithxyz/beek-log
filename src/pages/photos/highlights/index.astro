@@ -1,12 +1,15 @@
 ---
 import BaseLayout from '../../../layouts/BaseLayout.astro';
-import { Image } from 'astro:assets';
+import Lightbox from '../../../components/Lightbox.astro';
+import { Image, getImage } from 'astro:assets';
+import { MAX_EDGE } from '@beek/shared/image-constants';
 import { getFilmStock } from '@beek/shared/film-stocks';
 import { getPhotoRolls, byDateDesc } from '../../../lib/collections';
+import { formatFilmEdgeDate } from '../../../lib/dates';
 
 const rolls = (await getPhotoRolls()).sort(byDateDesc);
 
-const highlights = rolls.flatMap((roll) =>
+const highlightsRaw = rolls.flatMap((roll) =>
   roll.data.photos
     .map((photo, index) => ({ photo, frameNumber: index + 1 }))
     .filter(({ photo }) => photo.featured)
@@ -15,15 +18,22 @@ const highlights = rolls.flatMap((roll) =>
       return {
         src: photo.src,
         alt: photo.alt,
+        caption: photo.caption,
         rollId: roll.id,
         rollTitle: roll.data.title,
         frameNumber,
         filmName: film.name,
         filmType: film.type,
         locationName: photo.location?.name ?? roll.data.location.name,
+        shortDate: formatFilmEdgeDate(roll.data.date),
       };
     })
 );
+
+const fullImages = await Promise.all(
+  highlightsRaw.map((h) => getImage({ src: h.src, width: MAX_EDGE }))
+);
+const highlights = highlightsRaw.map((h, i) => ({ ...h, fullSrc: fullImages[i].src }));
 
 const rollCount = new Set(highlights.map((h) => h.rollId)).size;
 ---
@@ -39,9 +49,7 @@ const rollCount = new Set(highlights.map((h) => h.rollId)).size;
 >
   <section class="highlights-page">
     <div class="container">
-      <a class="archive-link" href="/photos/">← all rolls</a>
       <h1 class="page-title">highlights/</h1>
-      <p class="page-desc">the selects — one flag per frame, set roll by roll, no separate curation to maintain</p>
 
       <div class="highlights-stats">
         <span><strong>{highlights.length}</strong> selects</span>
@@ -51,13 +59,24 @@ const rollCount = new Set(highlights.map((h) => h.rollId)).size;
       {highlights.length > 0 ? (
         <div class="highlights-grid">
           {highlights.map((h) => (
-            <a class="highlight-frame" href={`/photos/${h.rollId}/#frame-${h.frameNumber}`}>
-              <Image src={h.src} alt={h.alt} width={480} height={480} loading="lazy" />
+            <div class="highlight-frame">
+              <Image
+                src={h.src}
+                alt={h.alt}
+                width={480}
+                height={480}
+                loading="lazy"
+                data-lightbox
+                data-lightbox-id={`${h.rollId}-${h.frameNumber}`}
+                data-full={h.fullSrc}
+                data-caption={h.caption ?? h.alt}
+                data-meta={`${h.shortDate} · ${h.rollTitle} · ${h.locationName.toUpperCase()}`}
+              />
               <span class="highlight-cap">
                 <b>{h.rollTitle}</b>
                 <span data-type={h.filmType}>[{h.filmName}]</span>
               </span>
-            </a>
+            </div>
           ))}
         </div>
       ) : (
@@ -65,6 +84,8 @@ const rollCount = new Set(highlights.map((h) => h.rollId)).size;
       )}
     </div>
   </section>
+
+  <Lightbox />
 </BaseLayout>
 
 <style>
@@ -72,28 +93,11 @@ const rollCount = new Set(highlights.map((h) => h.rollId)).size;
     padding: var(--page-content-top) 0 var(--space-16);
   }
 
-  .archive-link {
-    display: inline-block;
-    margin-bottom: var(--space-8);
-    color: var(--color-text-muted);
-    font-size: var(--font-size-sm);
-  }
-
-  .archive-link:hover {
-    color: var(--color-accent-primary);
-  }
-
   .page-title {
     font-size: clamp(2.5rem, 6vw, 4rem);
     letter-spacing: -0.08em;
     line-height: 0.95;
     margin-bottom: var(--space-3);
-  }
-
-  .page-desc {
-    max-width: 48rem;
-    color: var(--color-text-muted);
-    font-size: var(--font-size-sm);
   }
 
   .highlights-stats {
@@ -128,6 +132,7 @@ const rollCount = new Set(highlights.map((h) => h.rollId)).size;
     height: 100%;
     aspect-ratio: 1;
     object-fit: cover;
+    cursor: pointer;
     transition: transform var(--transition-base), filter var(--transition-base);
   }
 
