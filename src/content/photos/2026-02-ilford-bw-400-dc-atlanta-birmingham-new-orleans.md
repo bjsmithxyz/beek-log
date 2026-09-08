@@ -27,6 +27,7 @@ photos:
     alt: ""
   - src: ../../assets/photos/2026-02-ilford-bw-400-dc-atlanta-birmingham-new-orleans/008.jpg
     alt: ""
+    featured: true
   - src: ../../assets/photos/2026-02-ilford-bw-400-dc-atlanta-birmingham-new-orleans/009.jpg
     alt: ""
   - src: ../../assets/photos/2026-02-ilford-bw-400-dc-atlanta-birmingham-new-orleans/010.jpg
@@ -37,6 +38,7 @@ photos:
     alt: ""
   - src: ../../assets/photos/2026-02-ilford-bw-400-dc-atlanta-birmingham-new-orleans/013.jpg
     alt: ""
+    featured: true
   - src: ../../assets/photos/2026-02-ilford-bw-400-dc-atlanta-birmingham-new-orleans/014.jpg
     alt: ""
   - src: ../../assets/photos/2026-02-ilford-bw-400-dc-atlanta-birmingham-new-orleans/015.jpg
@@ -139,6 +141,7 @@ photos:
         name: United States
         lat: 39.7837304
         lng: -100.445882
+    featured: true
   - src: ../../assets/photos/2026-02-ilford-bw-400-dc-atlanta-birmingham-new-orleans/025.jpg
     alt: ""
     location:
