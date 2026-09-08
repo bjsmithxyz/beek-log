@@ -53,6 +53,7 @@ photos:
         name: China
         lat: 34.5412252
         lng: 108.9237067
+    featured: true
   - src: ../../assets/photos/2025-08-fujifilm-400-kunming/005.jpg
     alt: Blue moon valley (蓝月谷).
     caption: The striking colour is due to copper ions in the water.
@@ -75,6 +76,7 @@ photos:
         name: China
         lat: 34.5412252
         lng: 108.9237067
+    featured: true
   - src: ../../assets/photos/2025-08-fujifilm-400-kunming/007.jpg
     alt: Blue moon valley (蓝月谷).
     location:
@@ -156,6 +158,7 @@ photos:
         name: China
         lat: 34.5412252
         lng: 108.9237067
+    featured: true
   - src: ../../assets/photos/2025-08-fujifilm-400-kunming/015.jpg
     alt: Kunming Stone Forest.
     location:
@@ -195,6 +198,7 @@ photos:
     alt: ""
   - src: ../../assets/photos/2025-08-fujifilm-400-kunming/025.jpg
     alt: Lottery.
+    featured: true
   - src: ../../assets/photos/2025-08-fujifilm-400-kunming/026.jpg
     alt: ""
   - src: ../../assets/photos/2025-08-fujifilm-400-kunming/027.jpg
