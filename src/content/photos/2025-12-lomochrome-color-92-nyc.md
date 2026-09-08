@@ -35,10 +35,12 @@ photos:
     alt: ""
   - src: ../../assets/photos/2025-12-lomochrome-color-92-nyc/012.jpg
     alt: ""
+    featured: true
   - src: ../../assets/photos/2025-12-lomochrome-color-92-nyc/013.jpg
     alt: ""
   - src: ../../assets/photos/2025-12-lomochrome-color-92-nyc/014.jpg
     alt: ""
+    featured: true
   - src: ../../assets/photos/2025-12-lomochrome-color-92-nyc/015.jpg
     alt: ""
   - src: ../../assets/photos/2025-12-lomochrome-color-92-nyc/016.jpg
@@ -55,6 +57,7 @@ photos:
     alt: ""
   - src: ../../assets/photos/2025-12-lomochrome-color-92-nyc/022.jpg
     alt: ""
+    featured: true
   - src: ../../assets/photos/2025-12-lomochrome-color-92-nyc/023.jpg
     alt: ""
   - src: ../../assets/photos/2025-12-lomochrome-color-92-nyc/024.jpg
