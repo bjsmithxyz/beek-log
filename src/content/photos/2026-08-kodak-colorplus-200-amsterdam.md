@@ -11,12 +11,14 @@ photos:
     alt: ""
   - src: ../../assets/photos/2026-08-kodak-colorplus-200-amsterdam/002.jpg
     alt: ""
+    featured: true
   - src: ../../assets/photos/2026-08-kodak-colorplus-200-amsterdam/003.jpg
     alt: ""
   - src: ../../assets/photos/2026-08-kodak-colorplus-200-amsterdam/004.jpg
     alt: ""
   - src: ../../assets/photos/2026-08-kodak-colorplus-200-amsterdam/005.jpg
     alt: ""
+    featured: true
   - src: ../../assets/photos/2026-08-kodak-colorplus-200-amsterdam/006.jpg
     alt: ""
   - src: ../../assets/photos/2026-08-kodak-colorplus-200-amsterdam/007.jpg
@@ -29,6 +31,7 @@ photos:
     alt: ""
   - src: ../../assets/photos/2026-08-kodak-colorplus-200-amsterdam/011.jpg
     alt: ""
+    featured: true
   - src: ../../assets/photos/2026-08-kodak-colorplus-200-amsterdam/012.jpg
     alt: ""
   - src: ../../assets/photos/2026-08-kodak-colorplus-200-amsterdam/013.jpg
@@ -39,14 +42,17 @@ photos:
     alt: ""
   - src: ../../assets/photos/2026-08-kodak-colorplus-200-amsterdam/016.jpg
     alt: ""
+    featured: true
   - src: ../../assets/photos/2026-08-kodak-colorplus-200-amsterdam/017.jpg
     alt: ""
   - src: ../../assets/photos/2026-08-kodak-colorplus-200-amsterdam/018.jpg
     alt: ""
   - src: ../../assets/photos/2026-08-kodak-colorplus-200-amsterdam/019.jpg
     alt: ""
+    featured: true
   - src: ../../assets/photos/2026-08-kodak-colorplus-200-amsterdam/020.jpg
     alt: ""
+    featured: true
   - src: ../../assets/photos/2026-08-kodak-colorplus-200-amsterdam/021.jpg
     alt: ""
   - src: ../../assets/photos/2026-08-kodak-colorplus-200-amsterdam/022.jpg
