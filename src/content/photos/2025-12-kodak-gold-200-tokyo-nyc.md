@@ -13,6 +13,7 @@ location:
 photos:
   - src: ../../assets/photos/2025-12-kodak-gold-200-tokyo-nyc/001.jpg
     alt: ""
+    featured: true
   - src: ../../assets/photos/2025-12-kodak-gold-200-tokyo-nyc/002.jpg
     alt: ""
   - src: ../../assets/photos/2025-12-kodak-gold-200-tokyo-nyc/003.jpg
@@ -43,6 +44,7 @@ photos:
     alt: ""
   - src: ../../assets/photos/2025-12-kodak-gold-200-tokyo-nyc/016.jpg
     alt: ""
+    featured: true
   - src: ../../assets/photos/2025-12-kodak-gold-200-tokyo-nyc/017.jpg
     alt: ""
   - src: ../../assets/photos/2025-12-kodak-gold-200-tokyo-nyc/018.jpg
