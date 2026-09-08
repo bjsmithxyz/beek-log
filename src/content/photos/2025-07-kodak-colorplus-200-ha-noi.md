@@ -13,6 +13,7 @@ location:
 photos:
   - src: ../../assets/photos/2025-07-kodak-colorplus-200-ha-noi/001.jpg
     alt: ""
+    featured: true
   - src: ../../assets/photos/2025-07-kodak-colorplus-200-ha-noi/002.jpg
     alt: ""
   - src: ../../assets/photos/2025-07-kodak-colorplus-200-ha-noi/003.jpg
@@ -49,6 +50,7 @@ photos:
         name: Vietnam
         lat: 15.9266657
         lng: 107.9650855
+    featured: true
   - src: ../../assets/photos/2025-07-kodak-colorplus-200-ha-noi/008.jpg
     alt: ""
     location:
@@ -100,6 +102,7 @@ photos:
         name: Vietnam
         lat: 15.9266657
         lng: 107.9650855
+    featured: true
   - src: ../../assets/photos/2025-07-kodak-colorplus-200-ha-noi/013.jpg
     alt: Động Hoàng Hổ.
     location:
