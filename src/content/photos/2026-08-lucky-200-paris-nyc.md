@@ -71,6 +71,7 @@ photos:
     alt: ""
   - src: ../../assets/photos/2026-08-lucky-200-paris-nyc/010.jpg
     alt: ""
+    featured: true
   - src: ../../assets/photos/2026-08-lucky-200-paris-nyc/011.jpg
     alt: ""
   - src: ../../assets/photos/2026-08-lucky-200-paris-nyc/012.jpg
@@ -97,6 +98,7 @@ photos:
     alt: ""
   - src: ../../assets/photos/2026-08-lucky-200-paris-nyc/023.jpg
     alt: ""
+    featured: true
   - src: ../../assets/photos/2026-08-lucky-200-paris-nyc/024.jpg
     alt: ""
   - src: ../../assets/photos/2026-08-lucky-200-paris-nyc/025.jpg
@@ -137,6 +139,7 @@ photos:
     alt: ""
   - src: ../../assets/photos/2026-08-lucky-200-paris-nyc/043.jpg
     alt: ""
+    featured: true
   - src: ../../assets/photos/2026-08-lucky-200-paris-nyc/044.jpg
     alt: ""
   - src: ../../assets/photos/2026-08-lucky-200-paris-nyc/045.jpg
