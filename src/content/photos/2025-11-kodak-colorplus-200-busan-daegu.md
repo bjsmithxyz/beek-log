@@ -53,6 +53,7 @@ photos:
     alt: ""
   - src: ../../assets/photos/2025-11-kodak-colorplus-200-busan-daegu/013.jpg
     alt: ""
+    featured: true
   - src: ../../assets/photos/2025-11-kodak-colorplus-200-busan-daegu/014.jpg
     alt: ""
   - src: ../../assets/photos/2025-11-kodak-colorplus-200-busan-daegu/015.jpg
@@ -67,6 +68,7 @@ photos:
     alt: ""
   - src: ../../assets/photos/2025-11-kodak-colorplus-200-busan-daegu/020.jpg
     alt: ""
+    featured: true
   - src: ../../assets/photos/2025-11-kodak-colorplus-200-busan-daegu/021.jpg
     alt: ""
   - src: ../../assets/photos/2025-11-kodak-colorplus-200-busan-daegu/022.jpg
@@ -83,6 +85,7 @@ photos:
     alt: ""
   - src: ../../assets/photos/2025-11-kodak-colorplus-200-busan-daegu/028.jpg
     alt: ""
+    featured: true
   - src: ../../assets/photos/2025-11-kodak-colorplus-200-busan-daegu/029.jpg
     alt: ""
   - src: ../../assets/photos/2025-11-kodak-colorplus-200-busan-daegu/030.jpg
