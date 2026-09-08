@@ -25,6 +25,7 @@ photos:
     alt: ""
   - src: ../../assets/photos/2025-11-kodak-colorplus-200-fukuoka/007.jpg
     alt: ""
+    featured: true
   - src: ../../assets/photos/2025-11-kodak-colorplus-200-fukuoka/008.jpg
     alt: ""
   - src: ../../assets/photos/2025-11-kodak-colorplus-200-fukuoka/009.jpg
@@ -57,6 +58,7 @@ photos:
     alt: ""
   - src: ../../assets/photos/2025-11-kodak-colorplus-200-fukuoka/023.jpg
     alt: ""
+    featured: true
   - src: ../../assets/photos/2025-11-kodak-colorplus-200-fukuoka/024.jpg
     alt: ""
   - src: ../../assets/photos/2025-11-kodak-colorplus-200-fukuoka/025.jpg
