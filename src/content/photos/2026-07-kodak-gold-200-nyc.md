@@ -29,10 +29,12 @@ photos:
     alt: ""
   - src: ../../assets/photos/2026-07-kodak-gold-200-nyc/009.jpg
     alt: ""
+    featured: true
   - src: ../../assets/photos/2026-07-kodak-gold-200-nyc/010.jpg
     alt: ""
   - src: ../../assets/photos/2026-07-kodak-gold-200-nyc/011.jpg
     alt: ""
+    featured: true
   - src: ../../assets/photos/2026-07-kodak-gold-200-nyc/012.jpg
     alt: ""
   - src: ../../assets/photos/2026-07-kodak-gold-200-nyc/013.jpg
