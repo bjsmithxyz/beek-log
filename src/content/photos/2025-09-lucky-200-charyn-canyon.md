@@ -31,6 +31,7 @@ photos:
     alt: ""
   - src: ../../assets/photos/2025-09-lucky-200-charyn-canyon/010.jpg
     alt: ""
+    featured: true
   - src: ../../assets/photos/2025-09-lucky-200-charyn-canyon/011.jpg
     alt: ""
   - src: ../../assets/photos/2025-09-lucky-200-charyn-canyon/012.jpg
