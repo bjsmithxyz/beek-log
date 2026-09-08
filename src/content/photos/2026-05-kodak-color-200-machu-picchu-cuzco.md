@@ -19,6 +19,7 @@ photos:
     alt: ""
   - src: ../../assets/photos/2026-05-kodak-color-200-machu-picchu-cuzco/004.jpg
     alt: ""
+    featured: true
   - src: ../../assets/photos/2026-05-kodak-color-200-machu-picchu-cuzco/005.jpg
     alt: ""
     location:
@@ -47,6 +48,7 @@ photos:
     alt: ""
   - src: ../../assets/photos/2026-05-kodak-color-200-machu-picchu-cuzco/014.jpg
     alt: ""
+    featured: true
   - src: ../../assets/photos/2026-05-kodak-color-200-machu-picchu-cuzco/015.jpg
     alt: ""
   - src: ../../assets/photos/2026-05-kodak-color-200-machu-picchu-cuzco/016.jpg
@@ -69,6 +71,7 @@ photos:
         name: Peru
         lat: -6.8699697
         lng: -75.0458515
+    featured: true
 ---
 
 
