@@ -46,6 +46,7 @@ photos:
   - src: ../../assets/photos/2025-08-kodak-colorplus-200-chengdu-shangri-la-chongqing/008.jpg
     alt: 成都大熊猫繁育研究基地.
     caption: Chengdu Panda Research Center.
+    featured: true
   - src: ../../assets/photos/2025-08-kodak-colorplus-200-chengdu-shangri-la-chongqing/009.jpg
     alt: ""
   - src: ../../assets/photos/2025-08-kodak-colorplus-200-chengdu-shangri-la-chongqing/010.jpg
@@ -82,6 +83,7 @@ photos:
         name: China
         lat: 34.5412252
         lng: 108.9237067
+    featured: true
   - src: ../../assets/photos/2025-08-kodak-colorplus-200-chengdu-shangri-la-chongqing/018.jpg
     alt: The spot.
     caption: A very common practice in many tourist areas is to rent the local
@@ -98,6 +100,7 @@ photos:
         lng: 108.9237067
   - src: ../../assets/photos/2025-08-kodak-colorplus-200-chengdu-shangri-la-chongqing/020.jpg
     alt: ""
+    featured: true
   - src: ../../assets/photos/2025-08-kodak-colorplus-200-chengdu-shangri-la-chongqing/021.jpg
     alt: Women exercising in park.
   - src: ../../assets/photos/2025-08-kodak-colorplus-200-chengdu-shangri-la-chongqing/022.jpg
