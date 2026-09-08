@@ -73,6 +73,7 @@ photos:
     alt: ""
   - src: ../../assets/photos/2026-08-kodacolour-200-amsterdam/031.jpg
     alt: ""
+    featured: true
   - src: ../../assets/photos/2026-08-kodacolour-200-amsterdam/032.jpg
     alt: ""
   - src: ../../assets/photos/2026-08-kodacolour-200-amsterdam/033.jpg
@@ -107,6 +108,7 @@ photos:
     alt: ""
   - src: ../../assets/photos/2026-08-kodacolour-200-amsterdam/048.jpg
     alt: ""
+    featured: true
   - src: ../../assets/photos/2026-08-kodacolour-200-amsterdam/049.jpg
     alt: ""
   - src: ../../assets/photos/2026-08-kodacolour-200-amsterdam/050.jpg
@@ -115,6 +117,7 @@ photos:
     alt: ""
   - src: ../../assets/photos/2026-08-kodacolour-200-amsterdam/052.jpg
     alt: ""
+    featured: true
   - src: ../../assets/photos/2026-08-kodacolour-200-amsterdam/053.jpg
     alt: ""
   - src: ../../assets/photos/2026-08-kodacolour-200-amsterdam/054.jpg
