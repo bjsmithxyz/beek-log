@@ -101,6 +101,7 @@ photos:
         name: Peru
         lat: -6.8699697
         lng: -75.0458515
+    featured: true
   - src: ../../assets/photos/2026-04-kodak-colorplus-200-bogota-lima-paracas-arequipa/010.jpg
     alt: ""
     location:
@@ -161,6 +162,7 @@ photos:
         name: Peru
         lat: -6.8699697
         lng: -75.0458515
+    featured: true
   - src: ../../assets/photos/2026-04-kodak-colorplus-200-bogota-lima-paracas-arequipa/016.jpg
     alt: ""
     location:
@@ -247,12 +249,15 @@ photos:
     alt: ""
   - src: ../../assets/photos/2026-04-kodak-colorplus-200-bogota-lima-paracas-arequipa/026.jpg
     alt: ""
+    featured: true
   - src: ../../assets/photos/2026-04-kodak-colorplus-200-bogota-lima-paracas-arequipa/027.jpg
     alt: ""
   - src: ../../assets/photos/2026-04-kodak-colorplus-200-bogota-lima-paracas-arequipa/028.jpg
     alt: ""
+    featured: true
   - src: ../../assets/photos/2026-04-kodak-colorplus-200-bogota-lima-paracas-arequipa/029.jpg
     alt: ""
+    featured: true
   - src: ../../assets/photos/2026-04-kodak-colorplus-200-bogota-lima-paracas-arequipa/030.jpg
     alt: ""
   - src: ../../assets/photos/2026-04-kodak-colorplus-200-bogota-lima-paracas-arequipa/031.jpg
@@ -263,6 +268,7 @@ photos:
     alt: ""
   - src: ../../assets/photos/2026-04-kodak-colorplus-200-bogota-lima-paracas-arequipa/034.jpg
     alt: ""
+    featured: true
 ---
 
 
