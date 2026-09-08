@@ -27,6 +27,7 @@ photos:
     alt: ""
   - src: ../../assets/photos/2025-09-kodak-colorplus-200-panjakent/008.jpg
     alt: ""
+    featured: true
   - src: ../../assets/photos/2025-09-kodak-colorplus-200-panjakent/009.jpg
     alt: ""
   - src: ../../assets/photos/2025-09-kodak-colorplus-200-panjakent/010.jpg
@@ -45,6 +46,7 @@ photos:
     alt: ""
   - src: ../../assets/photos/2025-09-kodak-colorplus-200-panjakent/017.jpg
     alt: ""
+    featured: true
   - src: ../../assets/photos/2025-09-kodak-colorplus-200-panjakent/018.jpg
     alt: ""
   - src: ../../assets/photos/2025-09-kodak-colorplus-200-panjakent/019.jpg
@@ -57,6 +59,7 @@ photos:
     alt: ""
   - src: ../../assets/photos/2025-09-kodak-colorplus-200-panjakent/023.jpg
     alt: ""
+    featured: true
   - src: ../../assets/photos/2025-09-kodak-colorplus-200-panjakent/024.jpg
     alt: ""
   - src: ../../assets/photos/2025-09-kodak-colorplus-200-panjakent/025.jpg
@@ -79,8 +82,10 @@ photos:
     alt: ""
   - src: ../../assets/photos/2025-09-kodak-colorplus-200-panjakent/034.jpg
     alt: ""
+    featured: true
   - src: ../../assets/photos/2025-09-kodak-colorplus-200-panjakent/035.jpg
     alt: ""
+    featured: true
 ---
 
 
