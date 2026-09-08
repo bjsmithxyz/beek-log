@@ -175,6 +175,7 @@ photos:
         name: South Korea
         lat: 36.638392
         lng: 127.6961188
+    featured: true
   - src: ../../assets/photos/2025-11-kodak-colorplus-200-sokcho-si/019.jpg
     alt: ""
     location:
@@ -247,6 +248,7 @@ photos:
         lng: 127.6961188
   - src: ../../assets/photos/2025-11-kodak-colorplus-200-sokcho-si/026.jpg
     alt: ""
+    featured: true
   - src: ../../assets/photos/2025-11-kodak-colorplus-200-sokcho-si/027.jpg
     alt: ""
   - src: ../../assets/photos/2025-11-kodak-colorplus-200-sokcho-si/028.jpg
