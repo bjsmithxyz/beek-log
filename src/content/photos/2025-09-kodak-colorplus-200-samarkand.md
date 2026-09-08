@@ -25,6 +25,7 @@ photos:
     alt: ""
   - src: ../../assets/photos/2025-09-kodak-colorplus-200-samarkand/007.jpg
     alt: ""
+    featured: true
   - src: ../../assets/photos/2025-09-kodak-colorplus-200-samarkand/008.jpg
     alt: ""
   - src: ../../assets/photos/2025-09-kodak-colorplus-200-samarkand/009.jpg
@@ -45,6 +46,7 @@ photos:
     alt: ""
   - src: ../../assets/photos/2025-09-kodak-colorplus-200-samarkand/017.jpg
     alt: ""
+    featured: true
   - src: ../../assets/photos/2025-09-kodak-colorplus-200-samarkand/018.jpg
     alt: ""
   - src: ../../assets/photos/2025-09-kodak-colorplus-200-samarkand/019.jpg
@@ -59,12 +61,14 @@ photos:
     alt: ""
   - src: ../../assets/photos/2025-09-kodak-colorplus-200-samarkand/024.jpg
     alt: ""
+    featured: true
   - src: ../../assets/photos/2025-09-kodak-colorplus-200-samarkand/025.jpg
     alt: ""
   - src: ../../assets/photos/2025-09-kodak-colorplus-200-samarkand/026.jpg
     alt: ""
   - src: ../../assets/photos/2025-09-kodak-colorplus-200-samarkand/027.jpg
     alt: ""
+    featured: true
   - src: ../../assets/photos/2025-09-kodak-colorplus-200-samarkand/028.jpg
     alt: ""
   - src: ../../assets/photos/2025-09-kodak-colorplus-200-samarkand/029.jpg
@@ -73,6 +77,7 @@ photos:
     alt: ""
   - src: ../../assets/photos/2025-09-kodak-colorplus-200-samarkand/031.jpg
     alt: ""
+    featured: true
   - src: ../../assets/photos/2025-09-kodak-colorplus-200-samarkand/032.jpg
     alt: ""
   - src: ../../assets/photos/2025-09-kodak-colorplus-200-samarkand/033.jpg
