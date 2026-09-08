@@ -42,6 +42,17 @@ collapsed `dev/` and `art/` subsections, and photo rolls into dynamically
 generated, newest-first year subsections. The tree is the homepage content
 rather than a preface to duplicate recent-content listings.
 
+The admin dashboard (`admin/src/components/AdminTree.astro`) is the same
+component pattern, but its `rolls/` branch is populated live rather than at
+build time: a client script fetches `/.netlify/functions/rolls-data` and
+`/.netlify/functions/travel-data` on load, grouping rolls into newest-first
+year subsections (`admin/src/lib/roll-tree.mjs`, unit tested on its own) and
+setting the `rolls/` and `travel/` leaf counts from the currently-committed
+data. Every leaf still links to its real page (`/rolls/<slug>/`, `/travel/`)
+rather than editing inline — only the *listing* is live, not the editors
+themselves. A fetch failure degrades each meta label to "offline" rather than
+blocking the rest of the tree.
+
 The admin repeats that format rather than inventing its own. `~/admin` is the
 same filesystem index — `beek/` links back to the public site and a collapsible
 `admin/` branch holds `rolls/` and `travel/` — and both workspaces share the

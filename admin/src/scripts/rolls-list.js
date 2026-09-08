@@ -17,7 +17,7 @@ try {
   const response = await fetch('/.netlify/functions/rolls-data', { credentials: 'same-origin' });
   const body = await response.json().catch(() => ({}));
   if (!response.ok) throw new Error(body.error || 'Could not load rolls');
-  status.textContent = `${body.rolls.length} committed rolls`;
+  status.textContent = '';
   if (body.stats) {
     const { rolls, frames, stocks, selects } = body.stats;
     stats.textContent = `${rolls} rolls · ${frames} frames · ${stocks} stocks · ${selects} selects`;

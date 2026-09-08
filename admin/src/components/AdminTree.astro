@@ -47,9 +47,9 @@ const { user } = Astro.props;
                         <span class="tree-prefix" aria-hidden="true">    │   ├── </span>
                         <span>index/</span>
                       </a>
-                      <span class="tree-meta">committed rolls</span>
+                      <span class="tree-meta" id="tree-rolls-count">loading…</span>
                     </li>
-                    <li class="tree-row">
+                    <li class="tree-row" id="tree-new-roll-item">
                       <a class="tree-main" href="/rolls/new-roll/">
                         <span class="tree-prefix" aria-hidden="true">    │   └── </span>
                         <span>new-roll/</span>
@@ -65,7 +65,7 @@ const { user } = Astro.props;
                 <span class="tree-prefix" aria-hidden="true">    └── </span>
                 <span>travel/</span>
               </a>
-              <span class="tree-meta">itinerary</span>
+              <span class="tree-meta" id="tree-travel-meta">loading…</span>
             </li>
           </ul>
         </div>
@@ -75,9 +75,13 @@ const { user } = Astro.props;
 </nav>
 
 <script>
-  document.querySelectorAll<HTMLButtonElement>('[data-tree-toggle]').forEach((button) => {
+  import { groupRollsByYear } from '../lib/roll-tree.mjs';
+
+  function bindToggle(button: HTMLButtonElement) {
+    if (button.dataset.treeReady === 'true') return;
     const panel = document.getElementById(button.getAttribute('aria-controls') || '');
     if (!(panel instanceof HTMLElement)) return;
+    button.dataset.treeReady = 'true';
     panel.inert = button.getAttribute('aria-expanded') !== 'true';
     button.addEventListener('click', () => {
       const expanded = button.getAttribute('aria-expanded') === 'true';
@@ -85,7 +89,81 @@ const { user } = Astro.props;
       panel.dataset.collapsed = String(expanded);
       panel.inert = expanded;
     });
-  });
+  }
+
+  document.querySelectorAll<HTMLButtonElement>('[data-tree-toggle]').forEach(bindToggle);
+
+  // Grows the static rolls/ branch with the real, currently-committed roll
+  // slugs — grouped by year, same shape as the public site's own tree —
+  // instead of leaving it as two hardcoded links. Slugs are already
+  // constrained to [a-z0-9-]+ by the publisher, so no escaping is needed.
+  function buildRollYears(rolls: { slug: string }[]): DocumentFragment {
+    const fragment = document.createDocumentFragment();
+    for (const { year, items } of groupRollsByYear(rolls)) {
+      const controlsId = `tree-rolls-${year}`;
+      const branch = document.createElement('li');
+      branch.className = 'tree-branch';
+      branch.dataset.treeBranch = '';
+      const rows = items.map((roll, index) => {
+        const prefix = index === items.length - 1 ? '    │   │   └── ' : '    │   │   ├── ';
+        return `<li class="tree-row">
+          <a class="tree-main" href="/rolls/${encodeURIComponent(roll.slug)}/">
+            <span class="tree-prefix" aria-hidden="true">${prefix}</span>
+            <span>${roll.slug}.md</span>
+          </a>
+        </li>`;
+      }).join('');
+      branch.innerHTML = `
+        <div class="tree-row">
+          <button class="tree-main tree-toggle" type="button" aria-expanded="false" aria-controls="${controlsId}" data-tree-toggle>
+            <span class="tree-prefix" aria-hidden="true">    │   ├── </span>
+            <span>${year}/</span>
+            <span class="tree-state" aria-hidden="true"></span>
+          </button>
+          <span class="tree-meta">${items.length} ${items.length === 1 ? 'roll' : 'rolls'}</span>
+        </div>
+        <div class="tree-collapse" id="${controlsId}" data-tree-collapse data-collapsed="true" inert>
+          <div class="tree-collapse-inner">
+            <ul>${rows}</ul>
+          </div>
+        </div>
+      `;
+      fragment.append(branch);
+    }
+    return fragment;
+  }
+
+  async function loadRolls() {
+    const count = document.getElementById('tree-rolls-count');
+    const newRollItem = document.getElementById('tree-new-roll-item');
+    try {
+      const response = await fetch('/.netlify/functions/rolls-data', { credentials: 'same-origin' });
+      const body = await response.json().catch(() => ({}));
+      if (!response.ok) throw new Error(body.error || 'Could not load rolls');
+      if (count) count.textContent = `${body.rolls.length} committed`;
+      const years = buildRollYears(body.rolls);
+      years.querySelectorAll<HTMLButtonElement>('[data-tree-toggle]').forEach(bindToggle);
+      newRollItem?.before(years);
+    } catch {
+      if (count) count.textContent = 'offline';
+    }
+  }
+
+  async function loadTravel() {
+    const meta = document.getElementById('tree-travel-meta');
+    try {
+      const response = await fetch('/.netlify/functions/travel-data', { credentials: 'same-origin' });
+      const body = await response.json().catch(() => ({}));
+      if (!response.ok) throw new Error(body.error || 'Could not load travel data');
+      const stops = body.trips?.stops?.length ?? 0;
+      if (meta) meta.textContent = `${stops} ${stops === 1 ? 'stop' : 'stops'}`;
+    } catch {
+      if (meta) meta.textContent = 'offline';
+    }
+  }
+
+  loadRolls();
+  loadTravel();
 </script>
 
 <style>
