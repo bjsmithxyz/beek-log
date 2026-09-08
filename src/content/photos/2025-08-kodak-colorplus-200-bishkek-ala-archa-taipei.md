@@ -38,6 +38,7 @@ photos:
   - src: ../../assets/photos/2025-08-kodak-colorplus-200-bishkek-ala-archa-taipei/008.jpg
     alt: The Independence Day of Kyrgyzstan.
     caption: Кыргыз Республикасынын көз карандысыздыгынын күнү
+    featured: true
   - src: ../../assets/photos/2025-08-kodak-colorplus-200-bishkek-ala-archa-taipei/009.jpg
     alt: ""
   - src: ../../assets/photos/2025-08-kodak-colorplus-200-bishkek-ala-archa-taipei/010.jpg
@@ -54,6 +55,7 @@ photos:
     alt: ""
   - src: ../../assets/photos/2025-08-kodak-colorplus-200-bishkek-ala-archa-taipei/015.jpg
     alt: ""
+    featured: true
   - src: ../../assets/photos/2025-08-kodak-colorplus-200-bishkek-ala-archa-taipei/016.jpg
     alt: ""
   - src: ../../assets/photos/2025-08-kodak-colorplus-200-bishkek-ala-archa-taipei/017.jpg
