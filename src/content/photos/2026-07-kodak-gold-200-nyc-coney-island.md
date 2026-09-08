@@ -53,10 +53,12 @@ photos:
     alt: ""
   - src: ../../assets/photos/2026-07-kodak-gold-200-nyc-coney-island/021.jpg
     alt: ""
+    featured: true
   - src: ../../assets/photos/2026-07-kodak-gold-200-nyc-coney-island/022.jpg
     alt: ""
   - src: ../../assets/photos/2026-07-kodak-gold-200-nyc-coney-island/023.jpg
     alt: ""
+    featured: true
   - src: ../../assets/photos/2026-07-kodak-gold-200-nyc-coney-island/024.jpg
     alt: ""
   - src: ../../assets/photos/2026-07-kodak-gold-200-nyc-coney-island/025.jpg
@@ -93,10 +95,12 @@ photos:
     alt: ""
   - src: ../../assets/photos/2026-07-kodak-gold-200-nyc-coney-island/041.jpg
     alt: ""
+    featured: true
   - src: ../../assets/photos/2026-07-kodak-gold-200-nyc-coney-island/042.jpg
     alt: ""
   - src: ../../assets/photos/2026-07-kodak-gold-200-nyc-coney-island/043.jpg
     alt: ""
+    featured: true
   - src: ../../assets/photos/2026-07-kodak-gold-200-nyc-coney-island/044.jpg
     alt: ""
   - src: ../../assets/photos/2026-07-kodak-gold-200-nyc-coney-island/045.jpg
@@ -121,6 +125,7 @@ photos:
     alt: ""
   - src: ../../assets/photos/2026-07-kodak-gold-200-nyc-coney-island/055.jpg
     alt: ""
+    featured: true
   - src: ../../assets/photos/2026-07-kodak-gold-200-nyc-coney-island/056.jpg
     alt: ""
   - src: ../../assets/photos/2026-07-kodak-gold-200-nyc-coney-island/057.jpg
