@@ -14,6 +14,7 @@ photos:
   - src: ../../assets/photos/2025-07-kodak-tri-x-400-chiang-mai/001.jpg
     alt: ""
     caption: Silver craftsman.
+    featured: true
   - src: ../../assets/photos/2025-07-kodak-tri-x-400-chiang-mai/002.jpg
     alt: ""
     caption: Roadworkers.
@@ -31,6 +32,7 @@ photos:
   - src: ../../assets/photos/2025-07-kodak-tri-x-400-chiang-mai/008.jpg
     alt: ""
     caption: Family.
+    featured: true
   - src: ../../assets/photos/2025-07-kodak-tri-x-400-chiang-mai/009.jpg
     alt: ""
   - src: ../../assets/photos/2025-07-kodak-tri-x-400-chiang-mai/010.jpg
