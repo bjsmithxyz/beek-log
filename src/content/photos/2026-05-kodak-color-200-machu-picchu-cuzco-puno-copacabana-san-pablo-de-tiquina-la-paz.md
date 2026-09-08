@@ -101,6 +101,7 @@ photos:
         name: Peru
         lat: -6.8699697
         lng: -75.0458515
+    featured: true
   - src: ../../assets/photos/2026-05-kodak-color-200-machu-picchu-cuzco-puno-copacabana-san-pablo-de-tiquina-la-paz/010.jpg
     alt: ""
     location:
@@ -231,6 +232,7 @@ photos:
         name: Bolivia
         lat: -17.0568696
         lng: -64.9912286
+    featured: true
   - src: ../../assets/photos/2026-05-kodak-color-200-machu-picchu-cuzco-puno-copacabana-san-pablo-de-tiquina-la-paz/023.jpg
     alt: ""
     location:
