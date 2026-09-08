@@ -68,7 +68,7 @@ including asserting the palettes are value-for-value identical.
 │   ├── content/
 │   │   ├── work/    # One markdown file per project/art entry
 │   │   └── photos/  # One markdown file per film roll
-│   ├── data/        # trips.json, world-dots.json, locations.ts, site.ts
+│   ├── data/        # trips.json, locations.ts, site.ts
 │   ├── layouts/     # BaseLayout.astro
 │   ├── pages/       # Routes: index, work, photos, travel, about, rss.xml, 404
 │   └── styles/      # global.css (design tokens)
@@ -204,18 +204,28 @@ dates, notes or tentative flags: it carries an amber privacy notice, a
 full-detail map with both travelled and planned layers, and a dated
 `arrive | depart | stop | state` table, all driven by the working draft.
 
-## The photos map
+## Photo curation: selects and highlights
 
-`/photos` renders a dot-matrix world map (`src/components/WorldMap.astro`). The
-land mask is a precomputed 240×120 grid in `src/data/world-dots.json` (dots
-south of −60° lat are dropped — Antarctica's ice reads as ocean to the mask);
-shoot locations are projected equirectangularly as pins. A small client script
-cross-highlights each pin with its roll row on hover and lifts the hovered pin
-above its neighbours so the tooltip is not clipped.
+Each photo in a roll's frontmatter carries an optional `featured: boolean`
+(default `false`), set per-frame in the hosted admin's roll editor (★ button
+on each frame card). A roll with at least one featured frame renders a
+curated **selects** grid by default on `/photos/<roll>/`, with the full
+frame-by-frame contact sheet demoted to a collapsed `<details>` disclosure
+("full roll — N frames"); a roll with no featured frames renders the full
+contact sheet directly, unchanged from before curation existed. `/photos/
+highlights/` aggregates every featured frame across every roll into one grid,
+independent of roll structure — each tile links to `/photos/<roll>/#frame-N`,
+which the roll page's `Lightbox` opens directly via its hash-deep-link
+support. `highlights` is a reserved roll slug (`shared/roll-markdown.mjs`)
+so a roll can never shadow that route.
 
-Pins are aggregated by **primary region**: `src/data/locations.ts` exports
-`aggregatePins(rolls)`, which groups every roll's effective locations by
-`region.name` (falling back to the place name), yielding one pin per country
-positioned at the region, with the member cities listed in the tooltip. Counts
-sum across the group. `effectiveLocations(roll)` still drives the per-roll `+N`
-label on `RollRow`.
+The public `/photos/` index carries no archive statistics — that block (roll
+count, frame count, per-stock and per-year breakdowns) was cut for being too
+busy for a public page, along with the dot-matrix world map that used to sit
+above it (it duplicated `/travel/`'s real route map without adding anything).
+The equivalent numbers (rolls, frames, distinct stocks, selects) now live as a
+one-line summary at the top of the admin's `/rolls/` — computed from every
+committed roll's frontmatter, for the owner's own tracking, never shown
+publicly. `src/data/locations.ts` no longer exports `aggregatePins`, which
+only ever backed the removed map/stats; `effectiveLocations(roll)` remains
+and still drives the per-roll `+N` label on `RollRow`.

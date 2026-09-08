@@ -37,6 +37,7 @@ export function buildRollMarkdown({ title, stock, date, location, draft, photos,
     if (photo.location && !sameLocation(photo.location, location)) {
       output.location = locationFrontmatter(photo.location);
     }
+    if (photo.featured) output.featured = true;
     return output;
   });
   const yaml = stringifyYaml(frontmatter).trimEnd();
@@ -51,9 +52,13 @@ export function parseRollMarkdown(text) {
 
 // Field validation shared by local and hosted roll publishing. Alt text is
 // intentionally optional; the content schema accepts an empty string.
+// Reserved: static routes under /photos/ that a roll slug must never shadow.
+const RESERVED_SLUGS = new Set(['highlights']);
+
 export function rollInputErrors({ slug, sourceSlug, stock, date, location, frames }, filmStocks = {}) {
   const errors = [];
   if (!/^[a-z0-9-]+$/.test(slug || '')) errors.push('slug must match [a-z0-9-]');
+  if (RESERVED_SLUGS.has(slug)) errors.push(`slug "${slug}" is reserved`);
   if (sourceSlug && !/^[a-z0-9-]+$/.test(sourceSlug)) errors.push('sourceSlug must match [a-z0-9-]');
   if (!(stock in filmStocks)) errors.push(`unknown stock: ${stock}`);
   if (!/^\d{4}-\d{2}-\d{2}$/.test(date || '')) errors.push('date must be YYYY-MM-DD');

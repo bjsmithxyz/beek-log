@@ -109,6 +109,26 @@ test('inventory verifier refuses an omitted source frame and occupied create tar
   ])), /already exists/);
 });
 
+test('create writes featured only for frames flagged true', () => {
+  const publication = rollPublication({
+    requestId, mode: 'create',
+    roll: { ...roll, frames: [
+      { blobSha: A, alt: '', featured: true },
+      { blobSha: B, alt: 'Street', caption: 'Evening.', featured: false },
+    ] },
+  });
+  const markdown = publication.input.operations.at(-1).content;
+  assert.match(markdown, /featured: true/);
+  assert.equal((markdown.match(/featured: true/g) || []).length, 1);
+});
+
+test('strict roll input rejects a non-boolean featured flag', () => {
+  assert.throws(() => rollPublication({
+    requestId, mode: 'create',
+    roll: { ...roll, frames: [{ blobSha: A, alt: '', featured: 'yes' }] },
+  }), /featured/);
+});
+
 test('strict roll input rejects unknown fields, bad inventories and invalid regions', () => {
   assert.throws(() => rollPublication({ requestId, mode: 'create', roll: { ...roll, unknown: true } }), /unknown/);
   assert.throws(() => rollPublication({

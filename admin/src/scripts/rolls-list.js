@@ -2,6 +2,7 @@ import { uploaderCapabilities } from '../lib/uploader-capabilities.mjs';
 
 const list = document.getElementById('roll-list');
 const status = document.getElementById('roll-list-status');
+const stats = document.getElementById('rolls-stats');
 const newLink = document.getElementById('new-roll-link');
 const unsupported = document.getElementById('uploader-unsupported');
 
@@ -17,6 +18,11 @@ try {
   const body = await response.json().catch(() => ({}));
   if (!response.ok) throw new Error(body.error || 'Could not load rolls');
   status.textContent = `${body.rolls.length} committed rolls`;
+  if (body.stats) {
+    const { rolls, frames, stocks, selects } = body.stats;
+    stats.textContent = `${rolls} rolls · ${frames} frames · ${stocks} stocks · ${selects} selects`;
+    stats.hidden = false;
+  }
   list.replaceChildren(...body.rolls.map((roll) => {
     const item = document.createElement('li');
     const link = document.createElement('a');

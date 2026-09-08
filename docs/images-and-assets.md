@@ -24,9 +24,6 @@ Sharp.
 
 ## Generated assets
 
-- `node scripts/generate-world-dots.mjs <equirectangular-image>` — regenerates
-  `src/data/world-dots.json`, the 120×60 land mask behind the photos map. Prints
-  an ASCII preview so you can eyeball the continents before committing.
 - `node scripts/generate-og-image.mjs` — regenerates `public/og-image.png`, the
   1200×630 social-share card, in the site's terminal aesthetic.
 - `npm run climate` (`scripts/fetch-climate.mjs`) — tops up

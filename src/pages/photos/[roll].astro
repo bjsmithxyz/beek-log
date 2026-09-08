@@ -2,6 +2,7 @@
 import BaseLayout from '../../layouts/BaseLayout.astro';
 import FilmStrip from '../../components/FilmStrip.astro';
 import Lightbox from '../../components/Lightbox.astro';
+import { Image } from 'astro:assets';
 import { render, type CollectionEntry } from 'astro:content';
 import { getFilmStock } from '@beek/shared/film-stocks';
 import { getPhotoRolls, byDateDesc } from '../../lib/collections';
@@ -42,7 +43,12 @@ const paddedTotalRolls = String(totalRolls).padStart(2, '0');
 const formattedDate = formatLongDate(date);
 const shortDate = formatFilmEdgeDate(date);
 
-const photosWithLoc = photos.map((p) => ({ ...p, locName: p.location?.name ?? location.name }));
+const photosWithLoc = photos.map((p, i) => ({
+  ...p,
+  locName: p.location?.name ?? location.name,
+  frameNumber: i + 1,
+}));
+const featuredPhotos = photosWithLoc.filter((p) => p.featured);
 
 const strips: (typeof photosWithLoc)[] = [];
 for (let i = 0; i < photosWithLoc.length; i += FRAMES_PER_STRIP) {
@@ -80,7 +86,7 @@ const jsonLd = {
       <header class="roll-hero">
         <div class="roll-hero-main">
           <a class="archive-link" href="/photos/">← all rolls</a>
-          <span class="roll-kicker">ROLL {paddedRollNumber} / {paddedTotalRolls} · CONTACT SHEET</span>
+          <span class="roll-kicker">ROLL {paddedRollNumber} / {paddedTotalRolls} · {featuredPhotos.length > 0 ? 'SELECTS' : 'CONTACT SHEET'}</span>
           <h1 class="title">{title}</h1>
 
           <div class="meta">
@@ -99,7 +105,12 @@ const jsonLd = {
             <span>frames</span>
             <strong>{photos.length}</strong>
           </div>
-
+          {featuredPhotos.length > 0 && (
+            <div class="spec-row">
+              <span>selects</span>
+              <strong class="selects-count">{featuredPhotos.length}</strong>
+            </div>
+          )}
         </aside>
       </header>
 
@@ -112,19 +123,59 @@ const jsonLd = {
         </div>
       )}
 
-      <div class="contact-sheet" role="region" aria-label={`Contact sheet for ${title}`}>
-        {strips.map((strip, i) => (
-          <FilmStrip
-            photos={strip}
-            stockName={film.name}
-            stockType={film.type}
-            startFrame={i * FRAMES_PER_STRIP + 1}
-            stripNumber={i + 1}
-            stripTotal={strips.length}
-            shortDate={shortDate}
-          />
-        ))}
-      </div>
+      {featuredPhotos.length > 0 ? (
+        <>
+          <div class="selects-grid" role="region" aria-label={`Selects from ${title}`}>
+            {featuredPhotos.map((p) => (
+              <figure class="select-frame">
+                <Image
+                  src={p.src}
+                  alt={p.alt}
+                  width={640}
+                  height={427}
+                  loading="lazy"
+                  data-lightbox
+                  data-lightbox-id={`frame-${p.frameNumber}`}
+                  data-caption={p.caption ?? p.alt}
+                  data-meta={`${shortDate} · ${p.locName.toUpperCase()}`}
+                />
+                <figcaption class="select-frame-no">{String(p.frameNumber).padStart(3, '0')}</figcaption>
+              </figure>
+            ))}
+          </div>
+
+          <details class="full-roll">
+            <summary>full roll — {photos.length} frames, sprockets and all →</summary>
+            <div class="contact-sheet" role="region" aria-label={`Contact sheet for ${title}`}>
+              {strips.map((strip, i) => (
+                <FilmStrip
+                  photos={strip}
+                  stockName={film.name}
+                  stockType={film.type}
+                  startFrame={i * FRAMES_PER_STRIP + 1}
+                  stripNumber={i + 1}
+                  stripTotal={strips.length}
+                  shortDate={shortDate}
+                />
+              ))}
+            </div>
+          </details>
+        </>
+      ) : (
+        <div class="contact-sheet" role="region" aria-label={`Contact sheet for ${title}`}>
+          {strips.map((strip, i) => (
+            <FilmStrip
+              photos={strip}
+              stockName={film.name}
+              stockType={film.type}
+              startFrame={i * FRAMES_PER_STRIP + 1}
+              stripNumber={i + 1}
+              stripTotal={strips.length}
+              shortDate={shortDate}
+            />
+          ))}
+        </div>
+      )}
 
       <nav class="roll-nav" aria-label="Browse rolls">
         {newer ? (
@@ -276,6 +327,90 @@ const jsonLd = {
 
   .contact-sheet {
     margin-top: var(--space-4);
+  }
+
+  .selects-count {
+    color: var(--color-accent-secondary);
+  }
+
+  .selects-grid {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: var(--space-3);
+    margin-top: var(--space-4);
+  }
+
+  .select-frame {
+    margin: 0;
+    background: #161412;
+    border: 1px solid var(--color-border);
+    padding: 4px;
+  }
+
+  .select-frame :global(img) {
+    display: block;
+    width: 100%;
+    aspect-ratio: 3 / 2;
+    object-fit: cover;
+    cursor: pointer;
+    border: 1px solid #000;
+    transition: transform var(--transition-fast), filter var(--transition-fast);
+  }
+
+  .select-frame :global(img:hover) {
+    filter: saturate(1.15) contrast(1.04);
+    transform: translateY(-2px);
+  }
+
+  .select-frame-no {
+    margin: 2px 2px 0;
+    color: var(--color-accent-secondary);
+    font-size: var(--font-size-xs);
+    letter-spacing: 0.1em;
+  }
+
+  .full-roll {
+    margin-top: var(--space-8);
+    padding-top: var(--space-5);
+    border-top: 1px solid var(--color-border);
+  }
+
+  .full-roll summary {
+    display: inline-flex;
+    align-items: center;
+    gap: var(--space-2);
+    padding: var(--space-2) var(--space-3);
+    color: var(--color-text-secondary);
+    background: var(--color-bg-secondary);
+    border: 1px solid var(--color-border-strong);
+    font-size: var(--font-size-sm);
+    cursor: pointer;
+    list-style: none;
+  }
+
+  .full-roll summary::-webkit-details-marker {
+    display: none;
+  }
+
+  .full-roll summary:hover {
+    color: var(--color-accent-primary);
+    border-color: var(--color-accent-primary);
+  }
+
+  .full-roll[open] summary {
+    margin-bottom: var(--space-2);
+  }
+
+  @media (max-width: 768px) {
+    .selects-grid {
+      grid-template-columns: repeat(2, 1fr);
+    }
+  }
+
+  @media (max-width: 420px) {
+    .selects-grid {
+      grid-template-columns: 1fr;
+    }
   }
 
   .roll-nav {

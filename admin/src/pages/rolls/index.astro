@@ -20,6 +20,7 @@ import PageHeader from '../../components/PageHeader.astro';
   </section>
 
   <p id="roll-list-status" class="list-status" role="status">Loading committed rolls…</p>
+  <p id="rolls-stats" class="rolls-stats" hidden></p>
   <ul class="roll-list" id="roll-list"></ul>
 </AdminLayout>
 
@@ -31,6 +32,7 @@ import PageHeader from '../../components/PageHeader.astro';
   .unsupported { margin-bottom: var(--space-5); border-color: var(--color-accent-secondary); }
   .unsupported h2 { margin-bottom: var(--space-2); color: var(--color-accent-secondary); }
   .list-status { color: var(--color-text-muted); font-size: var(--font-size-sm); }
+  .rolls-stats { margin-top: var(--space-1); color: var(--color-text-muted); font-size: var(--font-size-xs); }
   .roll-list { list-style: none; border-top: 1px solid var(--color-border); }
   .roll-list li { border-bottom: 1px solid var(--color-border); }
   .roll-list a { display: block; padding: .7rem .5rem; color: var(--color-text-secondary); font-size: var(--font-size-sm); }

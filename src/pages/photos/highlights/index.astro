@@ -1,0 +1,190 @@
+---
+import BaseLayout from '../../../layouts/BaseLayout.astro';
+import { Image } from 'astro:assets';
+import { getFilmStock } from '@beek/shared/film-stocks';
+import { getPhotoRolls, byDateDesc } from '../../../lib/collections';
+
+const rolls = (await getPhotoRolls()).sort(byDateDesc);
+
+const highlights = rolls.flatMap((roll) =>
+  roll.data.photos
+    .map((photo, index) => ({ photo, frameNumber: index + 1 }))
+    .filter(({ photo }) => photo.featured)
+    .map(({ photo, frameNumber }) => {
+      const film = getFilmStock(roll.data.stock);
+      return {
+        src: photo.src,
+        alt: photo.alt,
+        rollId: roll.id,
+        rollTitle: roll.data.title,
+        frameNumber,
+        filmName: film.name,
+        filmType: film.type,
+        locationName: photo.location?.name ?? roll.data.location.name,
+      };
+    })
+);
+
+const rollCount = new Set(highlights.map((h) => h.rollId)).size;
+---
+
+<BaseLayout
+  title="highlights/"
+  description={`${highlights.length} selects across ${rollCount} rolls — the archive's best frames, no contact sheet required`}
+  breadcrumbs={[
+    { label: '~/beek', href: '/' },
+    { label: 'photos', href: '/photos/' },
+    { label: 'highlights/', href: '/photos/highlights/' },
+  ]}
+>
+  <section class="highlights-page">
+    <div class="container">
+      <a class="archive-link" href="/photos/">← all rolls</a>
+      <h1 class="page-title">highlights/</h1>
+      <p class="page-desc">the selects — one flag per frame, set roll by roll, no separate curation to maintain</p>
+
+      <div class="highlights-stats">
+        <span><strong>{highlights.length}</strong> selects</span>
+        <span><strong>{rollCount}</strong> {rollCount === 1 ? 'roll' : 'rolls'}</span>
+      </div>
+
+      {highlights.length > 0 ? (
+        <div class="highlights-grid">
+          {highlights.map((h) => (
+            <a class="highlight-frame" href={`/photos/${h.rollId}/#frame-${h.frameNumber}`}>
+              <Image src={h.src} alt={h.alt} width={480} height={480} loading="lazy" />
+              <span class="highlight-cap">
+                <b>{h.rollTitle}</b>
+                <span data-type={h.filmType}>[{h.filmName}]</span>
+              </span>
+            </a>
+          ))}
+        </div>
+      ) : (
+        <p class="empty-state">// no selects marked yet — star a few frames in the admin</p>
+      )}
+    </div>
+  </section>
+</BaseLayout>
+
+<style>
+  .highlights-page {
+    padding: var(--page-content-top) 0 var(--space-16);
+  }
+
+  .archive-link {
+    display: inline-block;
+    margin-bottom: var(--space-8);
+    color: var(--color-text-muted);
+    font-size: var(--font-size-sm);
+  }
+
+  .archive-link:hover {
+    color: var(--color-accent-primary);
+  }
+
+  .page-title {
+    font-size: clamp(2.5rem, 6vw, 4rem);
+    letter-spacing: -0.08em;
+    line-height: 0.95;
+    margin-bottom: var(--space-3);
+  }
+
+  .page-desc {
+    max-width: 48rem;
+    color: var(--color-text-muted);
+    font-size: var(--font-size-sm);
+  }
+
+  .highlights-stats {
+    display: flex;
+    gap: var(--space-5);
+    margin: var(--space-4) 0 var(--space-8);
+    color: var(--color-text-muted);
+    font-size: var(--font-size-sm);
+  }
+
+  .highlights-stats strong {
+    color: var(--color-accent-primary);
+    font-weight: var(--font-weight-medium);
+  }
+
+  .highlights-grid {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 3px;
+  }
+
+  .highlight-frame {
+    position: relative;
+    display: block;
+    overflow: hidden;
+    background: #161412;
+  }
+
+  .highlight-frame img {
+    display: block;
+    width: 100%;
+    height: 100%;
+    aspect-ratio: 1;
+    object-fit: cover;
+    transition: transform var(--transition-base), filter var(--transition-base);
+  }
+
+  .highlight-frame:hover img {
+    transform: scale(1.04);
+    filter: saturate(1.1);
+  }
+
+  .highlight-cap {
+    position: absolute;
+    inset: auto 0 0 0;
+    display: flex;
+    flex-direction: column;
+    gap: 1px;
+    padding: var(--space-2) var(--space-3);
+    background: linear-gradient(to top, rgba(12, 12, 12, 0.92), transparent);
+    color: var(--color-text-secondary);
+    font-size: var(--font-size-xs);
+    opacity: 0;
+    transition: opacity var(--transition-fast);
+  }
+
+  .highlight-frame:hover .highlight-cap {
+    opacity: 1;
+  }
+
+  .highlight-cap b {
+    color: var(--color-text-primary);
+    font-weight: var(--font-weight-medium);
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+  }
+
+  .highlight-cap span[data-type='color'] {
+    color: var(--color-accent-secondary);
+  }
+
+  .empty-state {
+    color: var(--color-text-muted);
+    font-size: var(--font-size-sm);
+  }
+
+  @media (max-width: 768px) {
+    .highlights-grid {
+      grid-template-columns: repeat(3, 1fr);
+    }
+  }
+
+  @media (max-width: 480px) {
+    .highlights-grid {
+      grid-template-columns: repeat(2, 1fr);
+    }
+
+    .highlight-cap {
+      opacity: 1;
+      background: rgba(12, 12, 12, 0.75);
+    }
+  }
+</style>

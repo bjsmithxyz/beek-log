@@ -61,6 +61,7 @@ const photosCollection = defineCollection({
       alt: z.string(),
       caption: z.string().optional(),
       location: locationSchema.optional(),
+      featured: z.boolean().default(false),
     })).min(1),
   }),
 });

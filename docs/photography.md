@@ -2,9 +2,26 @@
 
 `/photos` is the film-photography section: one page per developed roll, each
 rendered as a contact sheet of negative strips (sprocket holes, film-edge
-markings, frame numbers), with a dot-matrix world map of shoot locations on the
-index. Click any frame for a full-screen lightbox showing the film stock, frame
-number, date, and that frame's location.
+markings, frame numbers). Click any frame for a full-screen lightbox showing
+the film stock, frame number, date, and that frame's location.
+
+## Selects and highlights
+
+Individual frames can be flagged `featured` (per-frame, in the admin roll
+editor). A roll with at least one featured frame shows a curated **selects**
+grid by default; the full contact sheet is still there, collapsed behind a
+"full roll — N frames" disclosure. A roll with none marked shows the full
+contact sheet directly, exactly as before — curation is opt-in per roll, not
+forced. `/photos/highlights/` collects every featured frame across the whole
+archive into one grid, independent of roll structure; each tile links straight
+into the source roll's lightbox at that exact frame.
+
+There's no separate rating scale and no per-roll "best roll" flag — best
+frames don't track with best rolls, so the flag lives on the frame.
+
+`/rolls/` in the admin also shows a one-line archive stat summary (rolls,
+frames, distinct film stocks, selects) computed from every committed roll's
+frontmatter — a private tracking aid, not shown on the public site.
 
 Rolls are managed at `https://admin.bjsmith.xyz/rolls/`. The uploader requires
 the authenticated owner and a current desktop browser with a native folder
@@ -46,14 +63,15 @@ shot on it.
 The admin writes:
 
 - `src/content/photos/<slug>.md` — frontmatter (title, stock, date, location,
-  optional per-photo locations) plus an optional markdown body for roll notes.
+  optional per-photo locations and `featured` flags) plus an optional markdown
+  body for roll notes.
 - `src/assets/photos/<slug>/001.jpg, 002.jpg, …` — frames resized to ≤2048px,
   JPEG quality 80, numbered in display order.
 
-Locations carry an optional `region` (country) alongside the specific place, so
-the map shows one pin per country with a city breakdown. The hosted admin fills
-both from one search; its location picker combines search, an interactive map,
-and reusable chips of the roll's known locations. The chosen place's country
+Locations carry an optional `region` (country) alongside the specific place.
+The hosted admin fills both from one search; its location picker combines
+search, an interactive map, and reusable chips of the roll's known locations.
+The chosen place's country
 becomes the `region` automatically. Drag the map pin to fine-tune coordinates.
 Older rolls created before this keep working
 (`region` is optional); re-open one in the admin and re-pick its locations to

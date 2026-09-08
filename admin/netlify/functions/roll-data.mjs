@@ -33,6 +33,7 @@ export default async function rollData(request) {
       alt: parsed.data.photos[index].alt || '',
       ...(parsed.data.photos[index].caption ? { caption: parsed.data.photos[index].caption } : {}),
       ...(parsed.data.photos[index].location ? { location: parsed.data.photos[index].location } : {}),
+      ...(parsed.data.photos[index].featured ? { featured: true } : {}),
     }));
     return withSessionCookie(json(200, {
       ok: true,

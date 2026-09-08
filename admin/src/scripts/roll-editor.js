@@ -65,6 +65,7 @@ async function loadExisting() {
     location: frame.location || null,
     explicit: Boolean(frame.location),
     selected: false,
+    featured: Boolean(frame.featured),
   }));
   renderLocation();
   renderFrames();

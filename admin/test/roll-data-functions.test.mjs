@@ -19,7 +19,7 @@ const markdown = buildRollMarkdown({
   title: 'London', stock: 'kodak-portra-400', date: '2026-08-02',
   location: { name: 'London', lat: 51.5, lng: -0.1 }, draft: true, body: 'Notes',
   photos: [
-    { src: `../../assets/photos/${slug}/001.jpg`, alt: '' },
+    { src: `../../assets/photos/${slug}/001.jpg`, alt: '', featured: true },
     { src: `../../assets/photos/${slug}/002.jpg`, alt: 'Street', caption: 'Night' },
   ],
 });
@@ -57,6 +57,7 @@ test('roll list exposes only guarded slugs and Markdown SHAs', async () => {
     const response = await rollsData(request('rolls-data'));
     const body = JSON.parse(await response.text());
     assert.deepEqual(body.rolls, [{ slug, markdownSha }]);
+    assert.deepEqual(body.stats, { rolls: 1, frames: 2, stocks: 1, selects: 1 });
   } finally { globalThis.fetch = originalFetch; }
 });
 
@@ -70,6 +71,8 @@ test('roll loader joins Markdown to exact sequential image inventory', async () 
     assert.equal(body.roll.frames.length, 2);
     assert.equal(body.roll.frames[1].blobSha, imageTwo);
     assert.equal(body.roll.frames[1].caption, 'Night');
+    assert.equal(body.roll.frames[0].featured, true);
+    assert.equal(body.roll.frames[1].featured, undefined);
     assert.match(body.roll.frames[0].imageUrl, new RegExp(`${commit}/src/assets/photos/${slug}/001.jpg$`));
     assert.deepEqual(body.roll.sourceFrames, [
       { path: `src/assets/photos/${slug}/001.jpg`, sha: imageOne },

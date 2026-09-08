@@ -98,6 +98,7 @@ export function currentRoll() {
       alt: frame.alt || '',
       ...(frame.caption ? { caption: frame.caption } : {}),
       ...(frame.location ? { location: frame.location } : {}),
+      ...(frame.featured ? { featured: true } : {}),
     })),
   };
 }
@@ -109,6 +110,7 @@ export function fingerprint() {
     alt: frame.alt || '',
     caption: frame.caption || '',
     location: frame.location || null,
+    featured: Boolean(frame.featured),
   }));
   return JSON.stringify(roll);
 }

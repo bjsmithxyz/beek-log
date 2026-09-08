@@ -91,7 +91,7 @@ async function pickFolder() {
         encoded: bytes,
         thumbUrl: URL.createObjectURL(thumbBlob),
         previewUrl: URL.createObjectURL(new Blob([bytes], { type: 'image/jpeg' })),
-        alt: '', caption: '', location: null, explicit: false, selected: false,
+        alt: '', caption: '', location: null, explicit: false, selected: false, featured: false,
         width: result.width, height: result.height, sourceName: result.name,
       });
     });

@@ -94,13 +94,13 @@ assert.equal(
   'the public site index must root itself at ~/beek',
 );
 
-// A section label is earned only by a page with more than one section: /photos/
-// has a map above its listing, /work/ is a single listing.
+// A section label is earned only by a page with more than one section. /photos/
+// dropped its map and is now a single listing, same as /work/.
 const photos = await documentAt('photos/index.html');
-assert.deepEqual(
-  [...photos.querySelectorAll('.section-label')].map((element) => element.textContent?.trim()),
-  ['map/', 'rolls/'],
-  'photos must label both of its sections',
+assert.equal(
+  photos.querySelector('.section-label'),
+  null,
+  'photos is now a single-section page and must stay unlabelled',
 );
 assert.equal(
   (await documentAt('work/index.html')).querySelector('.section-label'),

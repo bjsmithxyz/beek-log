@@ -15,6 +15,7 @@ const film = getFilmStock(stock);
 const preview = photos[0];
 const locCount = effectiveLocations(roll).length;
 const locLabel = locCount > 1 ? `${location.name} +${locCount - 1}` : location.name;
+const featuredCount = photos.filter((p) => p.featured).length;
 
 const formattedDate = formatListDate(date);
 const year = date.getFullYear().toString();
@@ -43,13 +44,17 @@ const year = date.getFullYear().toString();
   <span class="row-date">{formattedDate}</span>
   <span class="row-title">{title}</span>
   <span class="row-location">{locLabel}</span>
+  <span class="row-selects" title={featuredCount > 0 ? `${featuredCount} ${featuredCount === 1 ? 'select' : 'selects'}` : undefined}>
+    {featuredCount > 0 && <><span class="selects-dot" aria-hidden="true"></span>{featuredCount}</>}
+  </span>
   <span class="row-arrow" aria-hidden="true">→</span>
 </a>
 
 <style>
   .roll-row {
-    --dir-cols: 5.5rem 12rem 6.5rem 1fr 11rem 1.5rem;
+    --dir-cols: 5.5rem 12rem 6.5rem 1fr 11rem 2.75rem 1.5rem;
     position: relative;
+    align-items: start;
     scroll-margin-top: var(--space-16);
   }
 
@@ -138,7 +143,27 @@ const year = date.getFullYear().toString();
     white-space: nowrap;
   }
 
+  .row-selects {
+    display: flex;
+    align-items: center;
+    gap: 4px;
+    color: var(--color-accent-primary);
+    font-size: var(--font-size-xs);
+    font-variant-numeric: tabular-nums;
+  }
+
+  .selects-dot {
+    width: 5px;
+    height: 5px;
+    border-radius: 50%;
+    background: var(--color-accent-primary);
+  }
+
   @media (max-width: 768px) {
+    .row-selects {
+      display: none;
+    }
+
     .roll-row {
       grid-template-columns: 4.5rem 1fr auto;
       grid-template-rows: auto auto auto;

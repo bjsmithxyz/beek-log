@@ -68,7 +68,7 @@ const { mode, slug = '' } = Astro.props;
             <button class="small-button" id="bulk-frame-location" type="button">set selected location</button>
           </div>
         </div>
-        <p class="hint">Drag frames or use arrow buttons to reorder. Setting one frame location fills forward until the next explicit location.</p>
+        <p class="hint">Drag frames or use arrow buttons to reorder. Setting one frame location fills forward until the next explicit location. Star a frame (★) to mark it a select — shown on the roll page by default and pulled into <code>/photos/highlights/</code>.</p>
         <div class="frame-grid" id="frame-grid"></div>
       </section>
     </fieldset>
@@ -150,6 +150,9 @@ const { mode, slug = '' } = Astro.props;
   :global(.frame-actions) { display: flex; gap: .2rem; }
   :global(.frame-actions button) { width: 1.7rem; height: 1.7rem; padding: 0; border: 1px solid var(--border); background: var(--panel); color: var(--text-muted); }
   :global(.frame-actions button:hover) { color: var(--accent); border-color: var(--accent); }
+  :global(.frame-featured-btn) { color: var(--text-muted); }
+  :global(.frame-featured-btn[aria-pressed='true']) { color: var(--amber); border-color: var(--amber); }
+  :global(.frame-featured-btn[aria-pressed='true']:hover) { color: var(--amber); border-color: var(--amber); }
   :global(.frame-image) { width: 100%; aspect-ratio: 3 / 2; display: block; object-fit: cover; border: 0; background: var(--panel); cursor: zoom-in; }
   :global(.frame-fields) { display: grid; gap: .35rem; margin-top: .45rem; }
   :global(.frame-fields input) { font-size: var(--font-size-xs); padding: .35rem; }

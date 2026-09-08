@@ -40,6 +40,20 @@ test('buildRollMarkdown and parseRollMarkdown round-trip overrides and body', ()
   assert.equal(body, 'shot on a borrowed camera.');
 });
 
+test('buildRollMarkdown writes featured only for photos flagged true', () => {
+  const { data } = parseRollMarkdown(buildRollMarkdown({
+    ...roll,
+    photos: [
+      { src: 'x', alt: 'a', featured: true },
+      { src: 'y', alt: 'b', featured: false },
+      { src: 'z', alt: 'c' },
+    ],
+  }));
+  assert.equal(data.photos[0].featured, true);
+  assert.equal(data.photos[1].featured, undefined);
+  assert.equal(data.photos[2].featured, undefined);
+});
+
 test('buildRollMarkdown round-trips a nested region on roll and photo', () => {
   const withRegion = {
     ...roll,
@@ -65,6 +79,11 @@ const validBody = {
 
 test('rollInputErrors allows a blank alt', () => {
   assert.deepEqual(rollInputErrors(validBody, validStocks), []);
+});
+
+test('rollInputErrors rejects the reserved "highlights" slug', () => {
+  const errors = rollInputErrors({ ...validBody, slug: 'highlights' }, validStocks);
+  assert.ok(errors.some((error) => error.includes('reserved')));
 });
 
 test('rollInputErrors catches unknown stock, missing location and bad frame location', () => {

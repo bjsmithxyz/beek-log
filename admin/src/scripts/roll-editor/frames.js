@@ -25,6 +25,7 @@ export function renderFrames() {
       <div class="frame-head">
         <label class="frame-select"><input type="checkbox" data-select ${frame.selected ? 'checked' : ''}><span class="frame-number">#${String(index + 1).padStart(3, '0')}</span></label>
         <div class="frame-actions">
+          <button type="button" data-action="featured" class="frame-featured-btn" aria-pressed="${frame.featured ? 'true' : 'false'}" aria-label="${frame.featured ? 'Remove frame ' + (index + 1) + ' from selects' : 'Mark frame ' + (index + 1) + ' as a select'}">${frame.featured ? '★' : '☆'}</button>
           <button type="button" data-action="left" aria-label="Move frame ${index + 1} left" ${index === 0 ? 'disabled' : ''}>←</button>
           <button type="button" data-action="right" aria-label="Move frame ${index + 1} right" ${index === state.frames.length - 1 ? 'disabled' : ''}>→</button>
           <button type="button" data-action="location" aria-label="Set frame ${index + 1} location">⌖</button>
@@ -71,6 +72,11 @@ export function bindFrames() {
     if (!card) return;
     const index = Number(card.dataset.index);
     const action = event.target.closest('[data-action]')?.dataset.action;
+    if (action === 'featured') {
+      state.frames[index].featured = !state.frames[index].featured;
+      renderFrames();
+      updateReady();
+    }
     if (action === 'left') moveFrame(index, index - 1);
     if (action === 'right') moveFrame(index, index + 1);
     if (action === 'remove') {

@@ -77,17 +77,22 @@ function rollData(value, sourceSlug) {
     const keys = ['blobSha', 'alt'];
     if (Object.hasOwn(frame || {}, 'caption')) keys.push('caption');
     if (Object.hasOwn(frame || {}, 'location')) keys.push('location');
+    if (Object.hasOwn(frame || {}, 'featured')) keys.push('featured');
     exactKeys(frame, keys, `Frame ${index + 1}`);
     if (!SHA.test(frame.blobSha || '')) throw new PublishError(`Frame ${index + 1} blob SHA is invalid.`);
     if (typeof frame.alt !== 'string' || frame.alt.length > 500) throw new PublishError(`Frame ${index + 1} alt text is too long.`);
     if (frame.caption !== undefined && (typeof frame.caption !== 'string' || frame.caption.length > 1_000)) {
       throw new PublishError(`Frame ${index + 1} caption is too long.`);
     }
+    if (frame.featured !== undefined && typeof frame.featured !== 'boolean') {
+      throw new PublishError(`Frame ${index + 1} featured flag is invalid.`);
+    }
     return {
       blobSha: frame.blobSha,
       alt: frame.alt,
       ...(frame.caption ? { caption: frame.caption } : {}),
       ...(frame.location ? { location: location(frame.location, `Frame ${index + 1} location`) } : {}),
+      ...(frame.featured ? { featured: true } : {}),
     };
   });
   const errors = rollInputErrors({
@@ -186,6 +191,7 @@ export function rollPublication(body) {
       alt: frame.alt,
       ...(frame.caption ? { caption: frame.caption } : {}),
       ...(frame.location ? { location: frame.location } : {}),
+      ...(frame.featured ? { featured: true } : {}),
     }));
     const markdown = buildRollMarkdown({
       title: roll.title,
