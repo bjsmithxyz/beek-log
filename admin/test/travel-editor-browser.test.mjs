@@ -53,11 +53,6 @@ test('travel browser editor loads, edits, validates and opens review', async () 
     assert.equal(document.getElementById('review-panel').hidden, false);
     assert.match(document.getElementById('review-summary').textContent, /2 stops/);
     assert.equal(document.getElementById('editor-errors').hidden, true);
-
-    // Editing a stop schedules a debounced overview redraw; let it fire (it
-    // returns early with no map element) before tearing the DOM down, so no
-    // timer runs after globals are restored.
-    await new Promise((resolve) => setTimeout(resolve, 450));
   } finally {
     for (const [key, value] of Object.entries(previous)) {
       if (value === undefined) delete globalThis[key];

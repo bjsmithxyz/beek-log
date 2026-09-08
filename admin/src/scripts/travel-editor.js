@@ -182,7 +182,6 @@ async function geocodeStop(index) {
     if (result.cc) stop.cc = result.cc;
     updateDerived(index);
     updateDirtyState();
-    refreshOverview();
   } catch (error) {
     setStatus(error.message || 'Could not resolve this location.');
   } finally {
@@ -201,7 +200,6 @@ function updateDirtyState(message = null) {
 
 function renderEditor() {
   renderStops();
-  drawOverview();
   editor.disabled = publishing;
   updateDirtyState();
 }
@@ -228,23 +226,6 @@ function stopIndex(target) {
   return Number(target.closest('.stop-card')?.dataset.index);
 }
 
-// Loaded on demand: it pulls in Leaflet, which the editing UI itself never
-// needs, and it is absent entirely from the minimal DOM the unit test builds.
-let overviewModule = null;
-async function drawOverview() {
-  if (!draft || !document.getElementById('travel-overview-map')) return;
-  overviewModule ??= await import('./travel-overview.js');
-  overviewModule.renderOverview(draft);
-}
-
-// Rebuilding the map on every keystroke would be wasteful, and a half-typed
-// date or coordinate is not worth drawing. Settle first.
-let overviewTimer = null;
-function refreshOverview() {
-  clearTimeout(overviewTimer);
-  overviewTimer = setTimeout(drawOverview, 400);
-}
-
 stopList.addEventListener('input', (event) => {
   const input = event.target.closest('[data-field]');
   if (!input || !draft) return;
@@ -265,7 +246,6 @@ stopList.addEventListener('input', (event) => {
   if (field === 'name' && preview) preview.textContent = value || 'unnamed stop';
   if (field === 'name' || field === 'country') scheduleGeocode(index);
   updateDirtyState(moved ? `Unpublished changes; moved ${moved} tentative future stop${moved === 1 ? '' : 's'} forward.` : null);
-  refreshOverview();
 });
 
 stopList.addEventListener('click', (event) => {
@@ -289,7 +269,6 @@ stopList.addEventListener('click', (event) => {
   }
   renderStops();
   updateDirtyState();
-  refreshOverview();
   stopList.querySelector(`[data-index="${focusIndex}"] input[data-field="name"]`)?.focus();
 });
 
@@ -297,14 +276,13 @@ document.getElementById('add-stop').addEventListener('click', () => {
   const index = addStop(draft);
   renderStops();
   updateDirtyState();
-  refreshOverview();
   stopList.querySelector(`[data-index="${index}"] input[data-field="name"]`)?.focus();
 });
 
 document.getElementById('reload-travel').addEventListener('click', () => loadData());
 
 // Stop-list view controls: hide a time bucket, or collapse the whole list so
-// the full-itinerary section below is a short scroll away.
+// the review section below is a short scroll away.
 function bindFilter(id, hiddenClass) {
   const button = document.getElementById(id);
   button?.addEventListener('click', () => {
@@ -321,16 +299,6 @@ document.getElementById('collapse-stops')?.addEventListener('click', (event) => 
   const collapsed = stopList.classList.toggle('is-collapsed');
   button.setAttribute('aria-pressed', String(collapsed));
   button.textContent = collapsed ? 'expand all' : 'collapse all';
-});
-
-// The full-itinerary panel (map + table) can be minimised. Re-rendering the
-// overview on expand lets Leaflet recompute its size after being unhidden.
-const overviewPanel = document.querySelector('.overview-panel');
-document.getElementById('overview-collapse')?.addEventListener('click', (event) => {
-  const button = event.currentTarget;
-  const nowCollapsed = overviewPanel.toggleAttribute('data-collapsed');
-  button.setAttribute('aria-expanded', String(!nowCollapsed));
-  if (!nowCollapsed) refreshOverview();
 });
 
 reviewButton.addEventListener('click', () => {

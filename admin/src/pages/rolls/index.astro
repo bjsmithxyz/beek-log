@@ -1,11 +1,12 @@
 ---
 import AdminLayout from '../../layouts/AdminLayout.astro';
 import PageHeader from '../../components/PageHeader.astro';
+import { publicSite } from '../../data/site';
 ---
 <AdminLayout
   title="rolls"
   breadcrumbs={[
-    { label: '~/admin', href: '/' },
+    { label: '~/admin', href: publicSite },
     { label: 'rolls', href: '/rolls/' },
   ]}
 >

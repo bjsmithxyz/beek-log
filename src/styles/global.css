@@ -76,26 +76,6 @@
     --transition-slow: 200ms ease;
 }
 
-[data-theme="light"] {
-    --color-bg-primary: #f4f4f0;
-    --color-bg-secondary: #eaeae4;
-    --color-bg-tertiary: #e0e0da;
-
-    --color-text-primary: #111111;
-    --color-text-secondary: #444444;
-    --color-text-muted: #666666;
-
-    --color-accent-primary: #008833;
-    --color-accent-secondary: #cc7700;
-    --color-accent-tertiary: #0066aa;
-
-    --color-border: #cccccc;
-    --color-border-strong: #999999;
-
-    --shadow-hard: 3px 3px 0 #aaaaaa;
-    --shadow-hard-accent: 3px 3px 0 var(--color-accent-primary);
-}
-
 html {
     scroll-behavior: smooth;
     -webkit-font-smoothing: antialiased;

@@ -200,9 +200,11 @@ adding stops; a stop with no normal simply renders without weather, and
 blocked by a stale cache.
 
 `admin/src/pages/travel/` is the only surface in the system that renders exact
-dates, notes or tentative flags: it carries an amber privacy notice, a
-full-detail map with both travelled and planned layers, and a dated
-`arrive | depart | stop | state` table, all driven by the working draft.
+dates, notes or tentative flags: an amber privacy notice sits above the plain
+stop-editing list, all driven by the working draft. It no longer carries a
+full-itinerary map/table overview (`admin/src/scripts/travel-overview.js`
+was removed) — that duplicated the per-stop editor's own information with a
+second Leaflet instance for no real benefit at this project's scale.
 
 ## Photo curation: selects and highlights
 

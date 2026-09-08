@@ -13,7 +13,7 @@ import {
   personName,
   siteDescription,
   sameAs,
-  themeColors,
+  themeColor,
 } from '../data/site';
 
 interface BreadcrumbItem {
@@ -53,9 +53,6 @@ const baseGraph = [
 ];
 const pageGraph = jsonLd ? (Array.isArray(jsonLd) ? jsonLd : [jsonLd]) : [];
 const structuredData = { '@context': 'https://schema.org', '@graph': [...baseGraph, ...pageGraph] };
-
-const themeLight = themeColors.light;
-const themeDark = themeColors.dark;
 ---
 
 <!DOCTYPE html>
@@ -64,7 +61,7 @@ const themeDark = themeColors.dark;
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <meta name="generator" content={Astro.generator} />
-  <meta name="theme-color" content={themeDark} />
+  <meta name="theme-color" content={themeColor} />
 
   <title>{fullTitle}</title>
   <meta name="description" content={description} />
@@ -89,12 +86,6 @@ const themeDark = themeColors.dark;
   <JsonLd schema={structuredData} />
 
   <ClientRouter />
-
-  <script is:inline define:vars={{ themeLight, themeDark }}>
-    const theme = localStorage.getItem('theme') || (matchMedia('(prefers-color-scheme: light)').matches ? 'light' : 'dark');
-    document.documentElement.setAttribute('data-theme', theme);
-    document.querySelector('meta[name="theme-color"]')?.setAttribute('content', theme === 'light' ? themeLight : themeDark);
-  </script>
 </head>
 <body>
   <a href="#main-content" class="skip-link">skip to content</a>

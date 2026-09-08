@@ -1,13 +1,14 @@
 ---
 import AdminLayout from '../../layouts/AdminLayout.astro';
 import RollEditor from '../../components/RollEditor.astro';
+import { publicSite } from '../../data/site';
 const { slug } = Astro.params;
 if (!/^[a-z0-9-]+$/.test(slug || '')) return Astro.redirect('/rolls/');
 ---
 <AdminLayout
   title="edit roll"
   breadcrumbs={[
-    { label: '~/admin', href: '/' },
+    { label: '~/admin', href: publicSite },
     { label: 'rolls', href: '/rolls/' },
     { label: slug || '', href: `/rolls/${slug}/` },
   ]}

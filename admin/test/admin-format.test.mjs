@@ -33,55 +33,6 @@ test('admin layout uses the public page shell', async () => {
   );
 });
 
-// The two surfaces resolve the theme differently *on purpose*, and this test
-// used to require otherwise. The public site is prerendered and grants
-// script-src 'unsafe-inline', so it can bootstrap from localStorage before
-// paint. The admin withholds 'unsafe-inline' — a deliberate hardening of the
-// surface that holds GitHub tokens — which silently blocked the copied-over
-// inline script and left the admin ignoring the stored preference on every
-// load. Being SSR, the admin resolves it from a cookie instead.
-test('the public site bootstraps its theme inline, before paint', async () => {
-  const base = await publicRead('layouts/BaseLayout.astro');
-  assert.match(
-    base,
-    /const theme = localStorage\.getItem\('theme'\) \|\| \(matchMedia\('\(prefers-color-scheme: light\)'\)\.matches \? 'light' : 'dark'\);/,
-    'public bootstrap shape changed',
-  );
-});
-
-test('the admin resolves its theme server-side, because its CSP blocks inline scripts', async () => {
-  const layout = await read('layouts/AdminLayout.astro');
-  const { ADMIN_CSP } = await import('../src/server/headers.mjs');
-
-  assert.doesNotMatch(
-    ADMIN_CSP.match(/script-src[^;]*/)?.[0] || '',
-    /unsafe-inline/,
-    'if the admin ever grants unsafe-inline, revisit this whole approach',
-  );
-  assert.doesNotMatch(layout, /<script\s+is:inline/, 'an inline script here would be blocked and silently do nothing');
-  assert.match(layout, /Astro\.cookies\.get\('theme'\)/, 'admin must read the stored theme on the server');
-  assert.match(layout, /data-theme=\{theme\}/, 'admin must render the resolved theme, not a fixed default');
-  assert.match(layout, /name="theme-color"/, 'admin must set theme-color');
-
-  const footer = await read('components/Footer.astro');
-  assert.match(footer, /document\.cookie = /, 'the toggle must persist to the cookie the server reads');
-  assert.match(footer, /localStorage\.getItem\('theme'\)/, 'a preference set before the cookie must carry over');
-});
-
-test('theme toggle lives in the admin footer, above the copyright', async () => {
-  const footer = await read('components/Footer.astro');
-
-  const secondary = footer.slice(footer.indexOf('<div class="footer-secondary">'));
-  const toggleAt = secondary.indexOf('id="theme-toggle"');
-  const copyrightAt = secondary.indexOf('class="copyright"');
-
-  assert.ok(toggleAt > -1, 'footer must own the theme toggle');
-  assert.ok(copyrightAt > -1, 'footer must render the copyright');
-  assert.ok(toggleAt < copyrightAt, 'theme toggle must sit above the copyright');
-  assert.match(secondary, /class="social-link theme-toggle"/, 'toggle must use the social icon style');
-  assert.match(footer, /class="icon-sun"[\s\S]*class="icon-moon"/, 'footer must ship both theme glyphs');
-});
-
 test('admin palette shares the public token vocabulary', async () => {
   const css = await read('styles/global.css');
   const publicCss = await publicRead('styles/global.css');
@@ -109,7 +60,7 @@ test('admin palette shares the public token vocabulary', async () => {
     assert.match(publicCss, new RegExp(`${token}:`), `public must still define ${token}`);
   }
 
-  // Values must agree, so both surfaces render the same dark and light themes.
+  // Values must agree, so both surfaces render the same single dark theme.
   const paletteOf = (source, selector) => {
     const block = source.slice(source.indexOf(selector));
     const body = block.slice(block.indexOf('{') + 1, block.indexOf('}'));
@@ -123,12 +74,22 @@ test('admin palette shares the public token vocabulary', async () => {
   for (const [name, value] of Object.entries(publicDark)) {
     assert.equal(adminDark[name], value, `dark ${name} must match the public palette`);
   }
+});
 
-  const adminLight = paletteOf(css, "[data-theme='light']");
-  const publicLight = paletteOf(publicCss, '[data-theme="light"]');
-  for (const [name, value] of Object.entries(publicLight)) {
-    assert.equal(adminLight[name], value, `light ${name} must match the public palette`);
+test('dark is the only theme — no toggle, no light palette, no data-theme switching', async () => {
+  const css = await read('styles/global.css');
+  const publicCss = await publicRead('styles/global.css');
+  const adminLayout = await read('layouts/AdminLayout.astro');
+  const baseLayout = await publicRead('layouts/BaseLayout.astro');
+  const adminFooter = await read('components/Footer.astro');
+  const publicFooter = await publicRead('components/Footer.astro');
+
+  for (const source of [css, publicCss, adminLayout, baseLayout, adminFooter, publicFooter]) {
+    assert.doesNotMatch(source, /data-theme=["']light["']/, 'no source may render a light theme');
+    assert.doesNotMatch(source, /theme-toggle/, 'the theme toggle must not come back');
   }
+  assert.match(adminLayout, /data-theme="dark"/, 'admin must hardcode the dark theme');
+  assert.match(baseLayout, /data-theme="dark"/, 'public site must hardcode the dark theme');
 });
 
 test('admin shell chrome matches the public measurements', async () => {

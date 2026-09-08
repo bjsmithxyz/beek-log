@@ -111,10 +111,9 @@ assert.equal(
 assert.doesNotMatch(home.body.textContent || '', /select a path or browse recent files|beek\/recent-(?:rolls|work)\//);
 assert.equal(home.querySelector('.recent-content, section[aria-label="Recent photo rolls"], section[aria-label="Recent work"]'), null);
 assert.equal(home.querySelector('.breadcrumb-row a[href^="https://admin.bjsmith.xyz"]'), null, 'public breadcrumb row must not duplicate the admin destination');
-assert.equal(home.querySelector('.breadcrumb-row #theme-toggle'), null, 'theme toggle must not remain in the top row');
+assert.equal(home.querySelector('#theme-toggle'), null, 'the theme toggle must be gone — dark is the only theme');
 const footerSecondary = home.querySelector('footer .footer-secondary');
-assert.equal(footerSecondary?.firstElementChild?.id, 'theme-toggle', 'theme toggle must sit above the copyright');
-assert.ok(footerSecondary?.firstElementChild?.classList.contains('social-link'), 'theme toggle must use the social icon style');
+assert.equal(footerSecondary?.firstElementChild?.className, 'copyright', 'copyright must be the only footer-secondary child now the toggle is gone');
 assert.ok(home.querySelector('footer a[aria-label="instagram"] svg.brand-icon path'));
 assert.equal(home.querySelector('footer a[aria-label="instagram"] rect'), null, 'Instagram must use the sourced brand glyph, not the filled box icon');
 const siteIndex = home.querySelector('nav[aria-label="Site index"]');

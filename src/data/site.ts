@@ -12,8 +12,5 @@ export const socialLinks = [
 
 export const sameAs = socialLinks.map((l) => l.href);
 
-/** Matches `--color-bg-primary` in dark / light themes (used for theme-color meta). */
-export const themeColors = {
-  dark: '#0c0c0c',
-  light: '#f4f4f0',
-} as const;
+/** Matches `--color-bg-primary` (used for theme-color meta). Dark is the only theme. */
+export const themeColor = '#0c0c0c';

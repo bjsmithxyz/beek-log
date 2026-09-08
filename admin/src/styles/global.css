@@ -89,30 +89,6 @@
   color-scheme: dark;
 }
 
-[data-theme='light'] {
-  --color-bg-primary: #f4f4f0;
-  --color-bg-secondary: #eaeae4;
-  --color-bg-tertiary: #e0e0da;
-
-  --color-text-primary: #111111;
-  --color-text-secondary: #444444;
-  --color-text-muted: #666666;
-
-  --color-accent-primary: #008833;
-  --color-accent-secondary: #cc7700;
-  --color-accent-tertiary: #0066aa;
-
-  --color-danger: #cc2222;
-
-  --color-border: #cccccc;
-  --color-border-strong: #999999;
-
-  --shadow-hard: 3px 3px 0 #aaaaaa;
-  --shadow-hard-accent: 3px 3px 0 var(--color-accent-primary);
-
-  color-scheme: light;
-}
-
 html { font-family: var(--font-family); background: var(--color-bg-primary); color: var(--color-text-primary); -webkit-font-smoothing: antialiased; }
 body { min-height: 100vh; background: var(--color-bg-primary); font-size: var(--font-size-base); font-weight: var(--font-weight-regular); line-height: var(--line-height-base); overflow-x: hidden; }
 body::before {
@@ -160,7 +136,7 @@ img { display: block; max-width: 100%; height: auto; }
 #main-content { scroll-margin-top: 56px; }
 #main-content:focus { outline: none; }
 
-/* ——— Footer (theme toggle lives here, as on the public site) ——— */
+/* ——— Footer ——— */
 .footer { margin-top: auto; padding: var(--space-5) 0 var(--space-4); }
 .footer-inner { display: grid; grid-template-columns: minmax(0, 1fr) auto; align-items: end; gap: var(--space-3) var(--space-4); }
 .footer-primary, .footer-secondary { display: flex; flex-direction: column; gap: var(--space-2); }
@@ -168,27 +144,6 @@ img { display: block; max-width: 100%; height: auto; }
 .footer-secondary { align-items: flex-end; }
 .footer-tagline { margin: 0; color: var(--color-text-muted); font-size: var(--font-size-sm); }
 .copyright { margin: 0; color: var(--color-text-muted); font-size: var(--font-size-xs); white-space: nowrap; }
-
-.social-link {
-  display: flex;
-  width: 32px;
-  height: 32px;
-  align-items: center;
-  justify-content: center;
-  padding: 0;
-  color: var(--color-text-secondary);
-  background: transparent;
-  border: 0;
-  cursor: pointer;
-  transition: color var(--transition-fast);
-}
-.social-link svg { width: 20px; height: 20px; }
-.social-link .brand-icon { fill: currentColor; }
-.social-link:hover { color: var(--color-accent-primary); }
-.icon-sun { display: none; }
-[data-theme='light'] .icon-sun { display: block; }
-[data-theme='light'] .icon-moon { display: none; }
-
 
 /* ——— Shared page chrome ——— */
 h1, h2, h3, h4 { color: var(--color-text-primary); font-weight: var(--font-weight-medium); line-height: var(--line-height-tight); }

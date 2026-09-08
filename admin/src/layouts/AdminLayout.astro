@@ -2,7 +2,7 @@
 import '../styles/global.css';
 import Breadcrumb from '../components/Breadcrumb.astro';
 import Footer from '../components/Footer.astro';
-import { siteName, themeColors } from '../data/site';
+import { siteName, themeColor, publicSite } from '../data/site';
 
 interface BreadcrumbItem {
   label: string;
@@ -15,25 +15,18 @@ interface Props {
 }
 const {
   title = 'admin',
-  breadcrumbs = [{ label: '~/admin', href: '/' }],
+  breadcrumbs = [{ label: '~/admin', href: publicSite }],
 } = Astro.props;
 const fullTitle = title === 'admin' ? siteName : `${title} | ${siteName}`;
-
-// Resolved on the server, not by a before-paint inline script. The admin CSP
-// deliberately withholds 'unsafe-inline' from script-src — unlike the public
-// site, which grants it — so any such script is blocked and the stored
-// preference never applies. Being SSR, this surface can simply render the
-// answer. The cookie is written by the footer toggle in Footer.astro.
-const theme = Astro.cookies.get('theme')?.value === 'light' ? 'light' : 'dark';
 ---
 
 <!doctype html>
-<html lang="en" data-theme={theme}>
+<html lang="en" data-theme="dark">
   <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
     <meta name="robots" content="noindex, nofollow, noarchive" />
-    <meta name="theme-color" content={theme === 'light' ? themeColors.light : themeColors.dark} />
+    <meta name="theme-color" content={themeColor} />
     <title>{fullTitle}</title>
     <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
   </head>

@@ -1,18 +1,16 @@
 ---
 import AdminLayout from '../../layouts/AdminLayout.astro';
 import PageHeader from '../../components/PageHeader.astro';
+import { publicSite } from '../../data/site';
 ---
 <AdminLayout
   title="travel"
   breadcrumbs={[
-    { label: '~/admin', href: '/' },
+    { label: '~/admin', href: publicSite },
     { label: 'travel', href: '/travel/' },
   ]}
 >
-  <PageHeader
-    title="travel/"
-    description="Edit the committed itinerary, then publish it straight to main."
-  >
+  <PageHeader title="travel/">
     <Fragment slot="actions">
       <button class="admin-button secondary" id="reload-travel" type="button">reload</button>
       <button class="admin-button" id="review-travel" type="button" disabled>review changes →</button>
@@ -43,29 +41,6 @@ import PageHeader from '../../components/PageHeader.astro';
     </section>
   </fieldset>
 
-  <section class="overview-panel" aria-labelledby="overview-title">
-    <div class="section-heading">
-      <div class="overview-heading-text">
-        <button type="button" class="stop-collapse" id="overview-collapse" aria-expanded="true" aria-label="Collapse the full itinerary">▾</button>
-        <div>
-          <span class="section-path">trips.json/overview</span>
-          <h2 id="overview-title">full itinerary</h2>
-        </div>
-      </div>
-      <p class="overview-summary" id="travel-overview-summary"></p>
-    </div>
-    <div id="travel-overview-map" class="overview-map" role="region" aria-label="Map of the full itinerary"></div>
-    <div class="overview-table-scroll">
-      <table class="overview-table">
-        <caption class="sr-only">Every stop with its exact dates and state</caption>
-        <thead>
-          <tr><th scope="col">arrive</th><th scope="col">depart</th><th scope="col">stop</th><th scope="col">state</th></tr>
-        </thead>
-        <tbody id="travel-overview-rows"></tbody>
-      </table>
-    </div>
-  </section>
-
   <section class="review-panel" id="review-panel" aria-labelledby="review-title" hidden tabindex="-1">
     <span class="section-path">publication/review</span>
     <h2 id="review-title">review changes</h2>
@@ -77,7 +52,8 @@ import PageHeader from '../../components/PageHeader.astro';
     </div>
   </section>
 
-  <a class="back-to-top" href="#main-content" aria-label="Back to top of page">top ^</a>
+  <a class="back-to-top" href="#main-content" aria-label="Back to top of page">top ↑</a>
+  <a class="back-to-bottom" href="#site-footer" aria-label="Jump to bottom of page">bottom ↓</a>
 </AdminLayout>
 
 <script>
@@ -155,11 +131,6 @@ import PageHeader from '../../components/PageHeader.astro';
      left-aligned under the name. */
   :global(.stop-card-id) { display: flex; flex-direction: column; align-items: flex-start; gap: .5rem; min-width: 0; }
   :global(.stop-id-line) { display: flex; align-items: center; gap: .5rem; min-width: 0; }
-  /* Collapse toggle — a chevron that rotates when the full-itinerary panel is
-     minimised. */
-  :global(.stop-collapse) { flex: none; width: 1.7rem; height: 1.7rem; border: 1px solid var(--border); background: var(--bg); color: var(--text-muted); cursor: pointer; line-height: 1; transition: transform var(--transition-fast); }
-  :global(.stop-collapse:hover) { color: var(--accent); border-color: var(--accent); }
-  :global(.stop-collapse[aria-expanded='false']) { transform: rotate(-90deg); }
   :global(.stop-number) { color: var(--accent); font-size: var(--font-size-lg); }
   :global(.stop-name-preview) { color: var(--text-soft); font-size: var(--font-size-lg); overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
   :global(.stop-actions) { display: flex; flex: none; gap: .35rem; }
@@ -188,42 +159,20 @@ import PageHeader from '../../components/PageHeader.astro';
   /* The globe lives in the action bar, so .stop-actions button governs its size. */
   :global(.refresh-geo[aria-busy='true']) { opacity: .55; cursor: progress; }
 
-  /* Persistent jump-to-top, fixed to the viewport's bottom-left. */
+  /* Persistent jump-to-top/bottom, fixed to the viewport's bottom corners.
+     Raised clear of var(--space-4) so it never sits over the footer tagline. */
   :global(html) { scroll-behavior: smooth; }
   @media (prefers-reduced-motion: reduce) { :global(html) { scroll-behavior: auto; } }
-  .back-to-top {
-    position: fixed; left: var(--space-4); bottom: var(--space-4); z-index: 20;
+  .back-to-top, .back-to-bottom {
+    position: fixed; bottom: var(--space-8); z-index: 20;
     padding: .35rem .6rem; color: var(--accent); background: var(--panel);
     border: 1px solid var(--accent); box-shadow: var(--shadow-hard-accent);
     font-size: var(--font-size-xs); text-decoration: none; letter-spacing: .03em;
   }
-  .back-to-top:hover, .back-to-top:focus-visible { color: var(--bg); background: var(--accent); }
-
-  .overview-panel { margin: 1rem 0 2rem; padding: 1rem; border: 1px solid var(--border); background: var(--panel); box-shadow: var(--shadow); }
-  .overview-heading-text { display: flex; align-items: center; gap: .5rem; }
-  .overview-panel[data-collapsed] .section-heading { margin-bottom: 0; }
-  .overview-panel[data-collapsed] .overview-map,
-  .overview-panel[data-collapsed] .overview-table-scroll { display: none; }
-  .overview-summary { color: var(--text-muted); font-size: var(--font-size-xs); font-variant-numeric: tabular-nums; }
-  .overview-map { height: min(55vh, 460px); min-height: 320px; border: 1px solid var(--border-strong); background: var(--panel-strong); }
-  .overview-map :global(.leaflet-popup-content-wrapper), .overview-map :global(.leaflet-popup-tip) { border-radius: 0; background: var(--panel); color: var(--text-soft); }
-  .overview-map :global(.leaflet-popup-content-wrapper) { border: 1px solid var(--border-strong); box-shadow: var(--shadow); font: var(--font-size-xs) var(--font-family); }
-  .overview-map :global(.leaflet-control-zoom a) { border-radius: 0; }
-  .overview-map :global(.overview-muted) { color: var(--text-muted); }
-  .overview-map :global(.overview-note) { margin-top: .25rem; color: var(--text-muted); font-style: italic; }
-
-  .overview-table-scroll { margin-top: 1rem; overflow-x: auto; scrollbar-width: thin; }
-  .overview-table { width: 100%; min-width: 34rem; border-collapse: collapse; font-size: var(--font-size-xs); }
-  .overview-table th { padding: .5rem .6rem; color: var(--text-muted); border-bottom: 1px solid var(--border-strong); text-align: left; text-transform: uppercase; letter-spacing: .05em; }
-  .overview-table :global(td) { padding: .5rem .6rem; border-bottom: 1px solid var(--border); vertical-align: top; font-variant-numeric: tabular-nums; }
-  .overview-table :global(td:nth-child(-n+2)) { color: var(--text-muted); white-space: nowrap; }
-  .overview-table :global(td b) { color: var(--text); font-weight: var(--font-weight-medium); }
-  .overview-table :global(td span) { display: block; color: var(--text-muted); }
-  .overview-table :global(.state) { display: inline-block; padding: .1rem .35rem; border: 1px solid currentColor; white-space: nowrap; }
-  .overview-table :global(.state-done) { color: var(--accent); }
-  .overview-table :global(.state-here-now) { color: var(--blue); }
-  .overview-table :global(.state-planned), .overview-table :global(.state-tentative) { color: var(--amber); }
-  .overview-table :global(.state-tentative) { border-style: dashed; }
+  .back-to-top { left: var(--space-4); }
+  .back-to-bottom { right: var(--space-4); }
+  .back-to-top:hover, .back-to-top:focus-visible,
+  .back-to-bottom:hover, .back-to-bottom:focus-visible { color: var(--bg); background: var(--accent); }
 
   .review-panel { border-color: var(--amber); box-shadow: 3px 3px 0 var(--amber); }
   .review-panel h2 { margin: .35rem 0 .75rem; }
