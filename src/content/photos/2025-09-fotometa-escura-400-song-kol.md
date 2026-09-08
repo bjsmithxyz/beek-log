@@ -59,6 +59,7 @@ photos:
   - src: ../../assets/photos/2025-09-fotometa-escura-400-song-kol/017.jpg
     alt: Puppies.
     caption: ❤️
+    featured: true
   - src: ../../assets/photos/2025-09-fotometa-escura-400-song-kol/018.jpg
     alt: Yurt.
   - src: ../../assets/photos/2025-09-fotometa-escura-400-song-kol/019.jpg
