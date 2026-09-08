@@ -88,6 +88,7 @@ photos:
         name: Vietnam
         lat: 15.9266657
         lng: 107.9650855
+    featured: true
   - src: ../../assets/photos/2025-07-kodak-ultramax-400-ha-giang-sapa-kunming/009.jpg
     alt: Football.
     caption: Played by some local kids underneath this incomplete building.
@@ -129,6 +130,7 @@ photos:
         name: Vietnam
         lat: 15.9266657
         lng: 107.9650855
+    featured: true
   - src: ../../assets/photos/2025-07-kodak-ultramax-400-ha-giang-sapa-kunming/013.jpg
     alt: Bamboo forest.
     location:
@@ -170,6 +172,7 @@ photos:
         name: Vietnam
         lat: 15.9266657
         lng: 107.9650855
+    featured: true
   - src: ../../assets/photos/2025-07-kodak-ultramax-400-ha-giang-sapa-kunming/017.jpg
     alt: Hike.
     caption: Half way to Sa Pa.
@@ -201,6 +204,7 @@ photos:
         name: Vietnam
         lat: 15.9266657
         lng: 107.9650855
+    featured: true
   - src: ../../assets/photos/2025-07-kodak-ultramax-400-ha-giang-sapa-kunming/020.jpg
     alt: ""
     location:
@@ -211,6 +215,7 @@ photos:
         name: Vietnam
         lat: 15.9266657
         lng: 107.9650855
+    featured: true
   - src: ../../assets/photos/2025-07-kodak-ultramax-400-ha-giang-sapa-kunming/021.jpg
     alt: Ta Van to Sa Pa.
     caption: North Vietnam might be the most beautiful place on the planet.
