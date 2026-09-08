@@ -58,6 +58,26 @@ import { publicSite } from '../../data/site';
 
 <script>
   import '../../scripts/travel-editor.js';
+
+  // Jump-to-top/bottom links only make sense once there's somewhere to jump
+  // from — keep them hidden at the very top of the page and fade them in
+  // after a small scroll, rather than cluttering the view immediately.
+  const SHOW_JUMP_LINKS_AFTER_PX = 200;
+  const topLink = document.querySelector('.back-to-top');
+  const bottomLink = document.querySelector('.back-to-bottom');
+  let ticking = false;
+  function updateJumpLinkVisibility() {
+    ticking = false;
+    const visible = window.scrollY > SHOW_JUMP_LINKS_AFTER_PX;
+    topLink?.classList.toggle('is-visible', visible);
+    bottomLink?.classList.toggle('is-visible', visible);
+  }
+  window.addEventListener('scroll', () => {
+    if (ticking) return;
+    ticking = true;
+    requestAnimationFrame(updateJumpLinkVisibility);
+  }, { passive: true });
+  updateJumpLinkVisibility();
 </script>
 
 <style>
@@ -168,7 +188,10 @@ import { publicSite } from '../../data/site';
     padding: .35rem .6rem; color: var(--accent); background: var(--panel);
     border: 1px solid var(--accent); box-shadow: var(--shadow-hard-accent);
     font-size: var(--font-size-xs); text-decoration: none; letter-spacing: .03em;
+    opacity: 0; pointer-events: none; transition: opacity var(--transition-base);
   }
+  .back-to-top.is-visible, .back-to-bottom.is-visible { opacity: 1; pointer-events: auto; }
+  @media (prefers-reduced-motion: reduce) { .back-to-top, .back-to-bottom { transition: none; } }
   .back-to-top { left: var(--space-4); }
   .back-to-bottom { right: var(--space-4); }
   .back-to-top:hover, .back-to-top:focus-visible,

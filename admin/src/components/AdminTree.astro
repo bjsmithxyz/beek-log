@@ -178,30 +178,34 @@ const { user } = Astro.props;
     scrollbar-width: thin;
   }
 
-  .site-tree ul {
+  :global(.site-tree ul) {
     list-style: none;
   }
 
-  .tree-root,
-  .tree-row {
+  /* Year branches and roll rows are appended client-side (see buildRollYears
+     below), so they never carry Astro's scope attribute — these rules must
+     stay :global() to reach them, same as the stop-card rules in
+     travel/index.astro. */
+  :global(.tree-root),
+  :global(.tree-row) {
     min-height: 2rem;
   }
 
-  .tree-root {
+  :global(.tree-root) {
     display: inline-flex;
     align-items: center;
     color: var(--color-accent-primary);
     font-weight: var(--font-weight-medium);
   }
 
-  .tree-row {
+  :global(.tree-row) {
     display: grid;
     grid-template-columns: minmax(0, 1fr) auto;
     min-width: 38rem;
     align-items: center;
   }
 
-  .tree-main {
+  :global(.tree-main) {
     display: flex;
     width: fit-content;
     min-width: 0;
@@ -211,38 +215,38 @@ const { user } = Astro.props;
     text-align: left;
   }
 
-  button.tree-main {
+  :global(button.tree-main) {
     padding: 0;
     background: transparent;
     border: 0;
     cursor: pointer;
   }
 
-  .tree-main:hover,
-  .tree-main:focus-visible {
+  :global(.tree-main:hover),
+  :global(.tree-main:focus-visible) {
     color: var(--color-accent-primary);
   }
 
-  .tree-prefix {
+  :global(.tree-prefix) {
     flex: none;
     color: var(--color-text-muted);
     white-space: pre;
   }
 
-  .tree-state {
+  :global(.tree-state) {
     margin-left: var(--space-2);
     color: var(--color-text-muted);
   }
 
-  .tree-toggle[aria-expanded='true'] .tree-state::before {
+  :global(.tree-toggle[aria-expanded='true'] .tree-state::before) {
     content: '[-]';
   }
 
-  .tree-toggle[aria-expanded='false'] .tree-state::before {
+  :global(.tree-toggle[aria-expanded='false'] .tree-state::before) {
     content: '[+]';
   }
 
-  .tree-meta {
+  :global(.tree-meta) {
     padding-left: var(--space-6);
     color: var(--color-text-muted);
     font-size: var(--font-size-xs);
@@ -250,19 +254,19 @@ const { user } = Astro.props;
     white-space: nowrap;
   }
 
-  .tree-collapse {
+  :global(.tree-collapse) {
     display: grid;
     grid-template-rows: 1fr;
     opacity: 1;
     transition: grid-template-rows var(--transition-slow), opacity var(--transition-base);
   }
 
-  .tree-collapse[data-collapsed='true'] {
+  :global(.tree-collapse[data-collapsed='true']) {
     grid-template-rows: 0fr;
     opacity: 0;
   }
 
-  .tree-collapse-inner {
+  :global(.tree-collapse-inner) {
     min-height: 0;
     overflow: hidden;
   }
