@@ -93,6 +93,7 @@ photos:
     alt: ""
   - src: ../../assets/photos/2025-07-kodak-colorplus-200-ha-noi-ha-giang/012.jpg
     alt: Our guide and a local lad.
+    featured: true
   - src: ../../assets/photos/2025-07-kodak-colorplus-200-ha-noi-ha-giang/013.jpg
     alt: ""
   - src: ../../assets/photos/2025-07-kodak-colorplus-200-ha-noi-ha-giang/014.jpg
@@ -101,6 +102,7 @@ photos:
     alt: Keep following those mountains and you reach China.
   - src: ../../assets/photos/2025-07-kodak-colorplus-200-ha-noi-ha-giang/016.jpg
     alt: Boys in the hemp.
+    featured: true
   - src: ../../assets/photos/2025-07-kodak-colorplus-200-ha-noi-ha-giang/017.jpg
     alt: ""
   - src: ../../assets/photos/2025-07-kodak-colorplus-200-ha-noi-ha-giang/018.jpg
@@ -109,6 +111,7 @@ photos:
     alt: ""
   - src: ../../assets/photos/2025-07-kodak-colorplus-200-ha-noi-ha-giang/020.jpg
     alt: ""
+    featured: true
   - src: ../../assets/photos/2025-07-kodak-colorplus-200-ha-noi-ha-giang/021.jpg
     alt: ""
   - src: ../../assets/photos/2025-07-kodak-colorplus-200-ha-noi-ha-giang/022.jpg
@@ -125,6 +128,7 @@ photos:
     caption: A short moment, I don't know what their relationship was but the woman
       knew this lad. She was well over 100 and had been painting textiles here
       for her entire life.
+    featured: true
   - src: ../../assets/photos/2025-07-kodak-colorplus-200-ha-noi-ha-giang/027.jpg
     alt: Corn.
     caption: Drying out, a common sight in the north.
