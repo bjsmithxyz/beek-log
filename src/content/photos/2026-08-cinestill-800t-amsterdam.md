@@ -13,8 +13,10 @@ location:
 photos:
   - src: ../../assets/photos/2026-08-cinestill-800t-amsterdam/001.jpg
     alt: ""
+    featured: true
   - src: ../../assets/photos/2026-08-cinestill-800t-amsterdam/002.jpg
     alt: ""
+    featured: true
   - src: ../../assets/photos/2026-08-cinestill-800t-amsterdam/003.jpg
     alt: ""
   - src: ../../assets/photos/2026-08-cinestill-800t-amsterdam/004.jpg
@@ -25,6 +27,7 @@ photos:
     alt: ""
   - src: ../../assets/photos/2026-08-cinestill-800t-amsterdam/007.jpg
     alt: ""
+    featured: true
   - src: ../../assets/photos/2026-08-cinestill-800t-amsterdam/008.jpg
     alt: ""
   - src: ../../assets/photos/2026-08-cinestill-800t-amsterdam/009.jpg
