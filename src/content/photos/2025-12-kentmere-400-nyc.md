@@ -29,6 +29,7 @@ photos:
     alt: ""
   - src: ../../assets/photos/2025-12-kentmere-400-nyc/009.jpg
     alt: ""
+    featured: true
   - src: ../../assets/photos/2025-12-kentmere-400-nyc/010.jpg
     alt: ""
   - src: ../../assets/photos/2025-12-kentmere-400-nyc/011.jpg
@@ -57,6 +58,7 @@ photos:
     alt: ""
   - src: ../../assets/photos/2025-12-kentmere-400-nyc/023.jpg
     alt: ""
+    featured: true
   - src: ../../assets/photos/2025-12-kentmere-400-nyc/024.jpg
     alt: ""
   - src: ../../assets/photos/2025-12-kentmere-400-nyc/025.jpg
