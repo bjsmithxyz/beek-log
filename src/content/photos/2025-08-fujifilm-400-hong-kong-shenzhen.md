@@ -29,6 +29,7 @@ photos:
     alt: ""
   - src: ../../assets/photos/2025-08-fujifilm-400-hong-kong-shenzhen/009.jpg
     alt: ""
+    featured: true
   - src: ../../assets/photos/2025-08-fujifilm-400-hong-kong-shenzhen/010.jpg
     alt: ""
   - src: ../../assets/photos/2025-08-fujifilm-400-hong-kong-shenzhen/011.jpg
@@ -51,6 +52,7 @@ photos:
         name: China
         lat: 34.5412252
         lng: 108.9237067
+    featured: true
   - src: ../../assets/photos/2025-08-fujifilm-400-hong-kong-shenzhen/013.jpg
     alt: M+ HK.
     location:
@@ -71,6 +73,7 @@ photos:
         name: China
         lat: 34.5412252
         lng: 108.9237067
+    featured: true
   - src: ../../assets/photos/2025-08-fujifilm-400-hong-kong-shenzhen/015.jpg
     alt: ""
     location:
@@ -121,6 +124,7 @@ photos:
         name: China
         lat: 34.5412252
         lng: 108.9237067
+    featured: true
 ---
 
 
