@@ -17,10 +17,12 @@ photos:
     alt: ""
   - src: ../../assets/photos/2026-06-kodacolour-200-buenos-aires-austin-nyc/003.jpg
     alt: ""
+    featured: true
   - src: ../../assets/photos/2026-06-kodacolour-200-buenos-aires-austin-nyc/004.jpg
     alt: ""
   - src: ../../assets/photos/2026-06-kodacolour-200-buenos-aires-austin-nyc/005.jpg
     alt: ""
+    featured: true
   - src: ../../assets/photos/2026-06-kodacolour-200-buenos-aires-austin-nyc/006.jpg
     alt: ""
   - src: ../../assets/photos/2026-06-kodacolour-200-buenos-aires-austin-nyc/007.jpg
