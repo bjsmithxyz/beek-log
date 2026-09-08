@@ -31,6 +31,7 @@ photos:
     alt: ""
   - src: ../../assets/photos/2025-09-kodak-colorplus-200-taipei-hong-kong/010.jpg
     alt: ""
+    featured: true
   - src: ../../assets/photos/2025-09-kodak-colorplus-200-taipei-hong-kong/011.jpg
     alt: ""
   - src: ../../assets/photos/2025-09-kodak-colorplus-200-taipei-hong-kong/012.jpg
@@ -43,6 +44,7 @@ photos:
     alt: ""
   - src: ../../assets/photos/2025-09-kodak-colorplus-200-taipei-hong-kong/016.jpg
     alt: ""
+    featured: true
   - src: ../../assets/photos/2025-09-kodak-colorplus-200-taipei-hong-kong/017.jpg
     alt: ""
   - src: ../../assets/photos/2025-09-kodak-colorplus-200-taipei-hong-kong/018.jpg
@@ -77,6 +79,7 @@ photos:
         name: China
         lat: 34.5412252
         lng: 108.9237067
+    featured: true
   - src: ../../assets/photos/2025-09-kodak-colorplus-200-taipei-hong-kong/022.jpg
     alt: ""
     location:
