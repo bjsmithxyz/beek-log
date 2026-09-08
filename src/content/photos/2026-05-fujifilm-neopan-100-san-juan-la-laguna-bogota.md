@@ -13,6 +13,7 @@ location:
 photos:
   - src: ../../assets/photos/2026-05-fujifilm-neopan-100-san-juan-la-laguna-bogota/001.jpg
     alt: ""
+    featured: true
   - src: ../../assets/photos/2026-05-fujifilm-neopan-100-san-juan-la-laguna-bogota/002.jpg
     alt: ""
   - src: ../../assets/photos/2026-05-fujifilm-neopan-100-san-juan-la-laguna-bogota/003.jpg
@@ -41,12 +42,14 @@ photos:
     alt: ""
   - src: ../../assets/photos/2026-05-fujifilm-neopan-100-san-juan-la-laguna-bogota/015.jpg
     alt: ""
+    featured: true
   - src: ../../assets/photos/2026-05-fujifilm-neopan-100-san-juan-la-laguna-bogota/016.jpg
     alt: ""
   - src: ../../assets/photos/2026-05-fujifilm-neopan-100-san-juan-la-laguna-bogota/017.jpg
     alt: ""
   - src: ../../assets/photos/2026-05-fujifilm-neopan-100-san-juan-la-laguna-bogota/018.jpg
     alt: ""
+    featured: true
   - src: ../../assets/photos/2026-05-fujifilm-neopan-100-san-juan-la-laguna-bogota/019.jpg
     alt: ""
   - src: ../../assets/photos/2026-05-fujifilm-neopan-100-san-juan-la-laguna-bogota/020.jpg
