@@ -29,8 +29,10 @@ photos:
     alt: ""
   - src: ../../assets/photos/2025-09-kodak-colorplus-200-bukhara-khiva/009.jpg
     alt: ""
+    featured: true
   - src: ../../assets/photos/2025-09-kodak-colorplus-200-bukhara-khiva/010.jpg
     alt: ""
+    featured: true
   - src: ../../assets/photos/2025-09-kodak-colorplus-200-bukhara-khiva/011.jpg
     alt: ""
   - src: ../../assets/photos/2025-09-kodak-colorplus-200-bukhara-khiva/012.jpg
