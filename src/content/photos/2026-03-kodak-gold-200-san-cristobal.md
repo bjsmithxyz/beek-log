@@ -15,12 +15,14 @@ photos:
     alt: ""
   - src: ../../assets/photos/2026-03-kodak-gold-200-san-cristobal/002.jpg
     alt: ""
+    featured: true
   - src: ../../assets/photos/2026-03-kodak-gold-200-san-cristobal/003.jpg
     alt: ""
   - src: ../../assets/photos/2026-03-kodak-gold-200-san-cristobal/004.jpg
     alt: ""
   - src: ../../assets/photos/2026-03-kodak-gold-200-san-cristobal/005.jpg
     alt: ""
+    featured: true
   - src: ../../assets/photos/2026-03-kodak-gold-200-san-cristobal/006.jpg
     alt: ""
   - src: ../../assets/photos/2026-03-kodak-gold-200-san-cristobal/007.jpg
@@ -55,6 +57,7 @@ photos:
         name: Guatemala
         lat: 15.5855545
         lng: -90.345759
+    featured: true
   - src: ../../assets/photos/2026-03-kodak-gold-200-san-cristobal/011.jpg
     alt: ""
     location:
