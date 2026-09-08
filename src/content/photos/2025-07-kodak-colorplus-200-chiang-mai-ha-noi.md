@@ -41,6 +41,7 @@ photos:
         name: Thailand
         lat: 14.8971921
         lng: 100.83273
+    featured: true
   - src: ../../assets/photos/2025-07-kodak-colorplus-200-chiang-mai-ha-noi/008.jpg
     alt: Wat Rong Khun.
     location:
@@ -161,6 +162,7 @@ photos:
         name: Vietnam
         lat: 15.9266657
         lng: 107.9650855
+    featured: true
   - src: ../../assets/photos/2025-07-kodak-colorplus-200-chiang-mai-ha-noi/022.jpg
     alt: ""
     location:
@@ -191,6 +193,7 @@ photos:
         name: Vietnam
         lat: 15.9266657
         lng: 107.9650855
+    featured: true
   - src: ../../assets/photos/2025-07-kodak-colorplus-200-chiang-mai-ha-noi/025.jpg
     alt: ""
     caption: Uncle Ho's tomb.
