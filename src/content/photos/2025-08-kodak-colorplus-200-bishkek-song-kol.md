@@ -31,6 +31,7 @@ photos:
         name: Kyrgyzstan
         lat: 41.5089324
         lng: 74.724091
+    featured: true
   - src: ../../assets/photos/2025-08-kodak-colorplus-200-bishkek-song-kol/003.jpg
     alt: ""
     location:
@@ -69,6 +70,7 @@ photos:
     alt: ""
   - src: ../../assets/photos/2025-08-kodak-colorplus-200-bishkek-song-kol/009.jpg
     alt: ""
+    featured: true
   - src: ../../assets/photos/2025-08-kodak-colorplus-200-bishkek-song-kol/010.jpg
     alt: ""
   - src: ../../assets/photos/2025-08-kodak-colorplus-200-bishkek-song-kol/011.jpg
@@ -93,6 +95,7 @@ photos:
     alt: ""
   - src: ../../assets/photos/2025-08-kodak-colorplus-200-bishkek-song-kol/021.jpg
     alt: ""
+    featured: true
   - src: ../../assets/photos/2025-08-kodak-colorplus-200-bishkek-song-kol/022.jpg
     alt: ""
   - src: ../../assets/photos/2025-08-kodak-colorplus-200-bishkek-song-kol/023.jpg
@@ -111,6 +114,7 @@ photos:
     alt: ""
   - src: ../../assets/photos/2025-08-kodak-colorplus-200-bishkek-song-kol/030.jpg
     alt: ""
+    featured: true
   - src: ../../assets/photos/2025-08-kodak-colorplus-200-bishkek-song-kol/031.jpg
     alt: ""
 ---
