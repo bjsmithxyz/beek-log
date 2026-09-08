@@ -25,6 +25,7 @@ photos:
     alt: ""
   - src: ../../assets/photos/2026-08-turista-100-nyc/007.jpg
     alt: ""
+    featured: true
   - src: ../../assets/photos/2026-08-turista-100-nyc/008.jpg
     alt: ""
   - src: ../../assets/photos/2026-08-turista-100-nyc/009.jpg
@@ -57,6 +58,7 @@ photos:
     alt: ""
   - src: ../../assets/photos/2026-08-turista-100-nyc/023.jpg
     alt: ""
+    featured: true
   - src: ../../assets/photos/2026-08-turista-100-nyc/024.jpg
     alt: ""
 ---
