@@ -13,6 +13,7 @@ location:
 photos:
   - src: ../../assets/photos/2026-07-kodak-tri-x-400-nyc/001.jpg
     alt: ""
+    featured: true
   - src: ../../assets/photos/2026-07-kodak-tri-x-400-nyc/002.jpg
     alt: ""
   - src: ../../assets/photos/2026-07-kodak-tri-x-400-nyc/003.jpg
@@ -23,6 +24,7 @@ photos:
     alt: ""
   - src: ../../assets/photos/2026-07-kodak-tri-x-400-nyc/006.jpg
     alt: ""
+    featured: true
   - src: ../../assets/photos/2026-07-kodak-tri-x-400-nyc/007.jpg
     alt: ""
   - src: ../../assets/photos/2026-07-kodak-tri-x-400-nyc/008.jpg
@@ -33,6 +35,7 @@ photos:
     alt: ""
   - src: ../../assets/photos/2026-07-kodak-tri-x-400-nyc/011.jpg
     alt: ""
+    featured: true
   - src: ../../assets/photos/2026-07-kodak-tri-x-400-nyc/012.jpg
     alt: ""
   - src: ../../assets/photos/2026-07-kodak-tri-x-400-nyc/013.jpg
@@ -41,12 +44,14 @@ photos:
     alt: ""
   - src: ../../assets/photos/2026-07-kodak-tri-x-400-nyc/015.jpg
     alt: ""
+    featured: true
   - src: ../../assets/photos/2026-07-kodak-tri-x-400-nyc/016.jpg
     alt: ""
   - src: ../../assets/photos/2026-07-kodak-tri-x-400-nyc/017.jpg
     alt: ""
   - src: ../../assets/photos/2026-07-kodak-tri-x-400-nyc/018.jpg
     alt: ""
+    featured: true
   - src: ../../assets/photos/2026-07-kodak-tri-x-400-nyc/019.jpg
     alt: ""
   - src: ../../assets/photos/2026-07-kodak-tri-x-400-nyc/020.jpg
@@ -55,6 +60,7 @@ photos:
     alt: ""
   - src: ../../assets/photos/2026-07-kodak-tri-x-400-nyc/022.jpg
     alt: ""
+    featured: true
   - src: ../../assets/photos/2026-07-kodak-tri-x-400-nyc/023.jpg
     alt: ""
   - src: ../../assets/photos/2026-07-kodak-tri-x-400-nyc/024.jpg
@@ -69,6 +75,7 @@ photos:
     alt: ""
   - src: ../../assets/photos/2026-07-kodak-tri-x-400-nyc/029.jpg
     alt: ""
+    featured: true
   - src: ../../assets/photos/2026-07-kodak-tri-x-400-nyc/030.jpg
     alt: ""
   - src: ../../assets/photos/2026-07-kodak-tri-x-400-nyc/031.jpg
@@ -103,6 +110,7 @@ photos:
     alt: ""
   - src: ../../assets/photos/2026-07-kodak-tri-x-400-nyc/046.jpg
     alt: ""
+    featured: true
   - src: ../../assets/photos/2026-07-kodak-tri-x-400-nyc/047.jpg
     alt: ""
   - src: ../../assets/photos/2026-07-kodak-tri-x-400-nyc/048.jpg
@@ -133,6 +141,7 @@ photos:
     alt: ""
   - src: ../../assets/photos/2026-07-kodak-tri-x-400-nyc/061.jpg
     alt: ""
+    featured: true
   - src: ../../assets/photos/2026-07-kodak-tri-x-400-nyc/062.jpg
     alt: ""
 ---
