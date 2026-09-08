@@ -15,6 +15,7 @@ photos:
     alt: ""
   - src: ../../assets/photos/2025-11-kodak-colorplus-200-gyeongju-daegu-sokcho-andong/002.jpg
     alt: ""
+    featured: true
   - src: ../../assets/photos/2025-11-kodak-colorplus-200-gyeongju-daegu-sokcho-andong/003.jpg
     alt: ""
   - src: ../../assets/photos/2025-11-kodak-colorplus-200-gyeongju-daegu-sokcho-andong/004.jpg
@@ -49,6 +50,7 @@ photos:
         name: South Korea
         lat: 36.638392
         lng: 127.6961188
+    featured: true
   - src: ../../assets/photos/2025-11-kodak-colorplus-200-gyeongju-daegu-sokcho-andong/016.jpg
     alt: ""
     location:
@@ -109,6 +111,7 @@ photos:
         name: South Korea
         lat: 36.638392
         lng: 127.6961188
+    featured: true
   - src: ../../assets/photos/2025-11-kodak-colorplus-200-gyeongju-daegu-sokcho-andong/022.jpg
     alt: ""
     location:
@@ -149,6 +152,7 @@ photos:
         name: South Korea
         lat: 36.638392
         lng: 127.6961188
+    featured: true
   - src: ../../assets/photos/2025-11-kodak-colorplus-200-gyeongju-daegu-sokcho-andong/026.jpg
     alt: ""
     location:
@@ -179,6 +183,7 @@ photos:
         name: South Korea
         lat: 36.638392
         lng: 127.6961188
+    featured: true
   - src: ../../assets/photos/2025-11-kodak-colorplus-200-gyeongju-daegu-sokcho-andong/029.jpg
     alt: ""
     location:
@@ -189,6 +194,7 @@ photos:
         name: South Korea
         lat: 36.638392
         lng: 127.6961188
+    featured: true
 ---
 
 
