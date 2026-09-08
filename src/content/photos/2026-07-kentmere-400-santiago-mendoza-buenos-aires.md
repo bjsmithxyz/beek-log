@@ -29,6 +29,7 @@ photos:
     alt: ""
   - src: ../../assets/photos/2026-07-kentmere-400-santiago-mendoza-buenos-aires/009.jpg
     alt: ""
+    featured: true
   - src: ../../assets/photos/2026-07-kentmere-400-santiago-mendoza-buenos-aires/010.jpg
     alt: ""
   - src: ../../assets/photos/2026-07-kentmere-400-santiago-mendoza-buenos-aires/011.jpg
@@ -121,6 +122,7 @@ photos:
         name: Argentina
         lat: -34.9964963
         lng: -64.9672817
+    featured: true
   - src: ../../assets/photos/2026-07-kentmere-400-santiago-mendoza-buenos-aires/020.jpg
     alt: ""
     location:
