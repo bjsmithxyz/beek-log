@@ -854,26 +854,6 @@
       "tentative": true
     },
     {
-      "name": "Gdańsk",
-      "country": "Poland",
-      "cc": "PL",
-      "lat": 54.352,
-      "lon": 18.6466,
-      "arrive": "2026-09-16",
-      "depart": "2026-09-19",
-      "tentative": true
-    },
-    {
-      "name": "Drawsko Pomorskie",
-      "country": "Poland",
-      "cc": "PL",
-      "lat": 53.5333,
-      "lon": 15.8,
-      "arrive": "2026-09-19",
-      "depart": "2026-09-21",
-      "tentative": true
-    },
-    {
       "name": "Warsaw",
       "country": "Poland",
       "cc": "PL",
@@ -884,6 +864,16 @@
       "tentative": true
     },
     {
+      "name": "Kraków",
+      "country": "Poland",
+      "cc": "PL",
+      "lat": 50.0647,
+      "lon": 19.945,
+      "arrive": "2026-09-25",
+      "depart": "2026-10-02",
+      "tentative": true
+    },
+    {
       "name": "Katowice",
       "country": "Poland",
       "cc": "PL",
@@ -891,16 +881,6 @@
       "lon": 19.0238,
       "arrive": "2026-09-25",
       "depart": "2026-09-27",
-      "tentative": true
-    },
-    {
-      "name": "Kraków",
-      "country": "Poland",
-      "cc": "PL",
-      "lat": 50.0647,
-      "lon": 19.945,
-      "arrive": "2026-09-27",
-      "depart": "2026-10-02",
       "tentative": true
     },
     {
@@ -931,6 +911,17 @@
       "lon": 19.0402,
       "arrive": "2026-10-11",
       "depart": "2026-10-17",
+      "tentative": true
+    },
+    {
+      "name": "Zagreb",
+      "country": "Croatia",
+      "cc": "HR",
+      "lat": 45.8130967,
+      "lon": 15.9772795,
+      "arrive": "2026-10-17",
+      "depart": "2026-10-17",
+      "note": "",
       "tentative": true
     },
     {
