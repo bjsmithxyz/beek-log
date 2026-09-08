@@ -45,10 +45,12 @@ photos:
     alt: ""
   - src: ../../assets/photos/2025-10-kodak-colorplus-200-urumqi-khiva-tashkent-xian/005.jpg
     alt: ""
+    featured: true
   - src: ../../assets/photos/2025-10-kodak-colorplus-200-urumqi-khiva-tashkent-xian/006.jpg
     alt: ""
   - src: ../../assets/photos/2025-10-kodak-colorplus-200-urumqi-khiva-tashkent-xian/007.jpg
     alt: ""
+    featured: true
   - src: ../../assets/photos/2025-10-kodak-colorplus-200-urumqi-khiva-tashkent-xian/008.jpg
     alt: ""
   - src: ../../assets/photos/2025-10-kodak-colorplus-200-urumqi-khiva-tashkent-xian/009.jpg
@@ -61,6 +63,7 @@ photos:
     alt: ""
   - src: ../../assets/photos/2025-10-kodak-colorplus-200-urumqi-khiva-tashkent-xian/013.jpg
     alt: ""
+    featured: true
   - src: ../../assets/photos/2025-10-kodak-colorplus-200-urumqi-khiva-tashkent-xian/014.jpg
     alt: ""
   - src: ../../assets/photos/2025-10-kodak-colorplus-200-urumqi-khiva-tashkent-xian/015.jpg
