@@ -31,6 +31,7 @@ photos:
         name: China
         lat: 34.5412252
         lng: 108.9237067
+    featured: true
   - src: ../../assets/photos/2025-11-bol-250d-shanghai-xian/003.jpg
     alt: ""
     location:
@@ -41,6 +42,7 @@ photos:
         name: China
         lat: 34.5412252
         lng: 108.9237067
+    featured: true
   - src: ../../assets/photos/2025-11-bol-250d-shanghai-xian/004.jpg
     alt: ""
     location:
@@ -87,12 +89,14 @@ photos:
     alt: ""
   - src: ../../assets/photos/2025-11-bol-250d-shanghai-xian/018.jpg
     alt: ""
+    featured: true
   - src: ../../assets/photos/2025-11-bol-250d-shanghai-xian/019.jpg
     alt: ""
   - src: ../../assets/photos/2025-11-bol-250d-shanghai-xian/020.jpg
     alt: ""
   - src: ../../assets/photos/2025-11-bol-250d-shanghai-xian/021.jpg
     alt: ""
+    featured: true
   - src: ../../assets/photos/2025-11-bol-250d-shanghai-xian/022.jpg
     alt: ""
   - src: ../../assets/photos/2025-11-bol-250d-shanghai-xian/023.jpg
@@ -101,6 +105,7 @@ photos:
     alt: ""
   - src: ../../assets/photos/2025-11-bol-250d-shanghai-xian/025.jpg
     alt: ""
+    featured: true
   - src: ../../assets/photos/2025-11-bol-250d-shanghai-xian/026.jpg
     alt: ""
   - src: ../../assets/photos/2025-11-bol-250d-shanghai-xian/027.jpg
