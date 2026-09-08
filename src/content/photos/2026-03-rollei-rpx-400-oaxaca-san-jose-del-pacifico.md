@@ -43,6 +43,7 @@ photos:
     alt: ""
   - src: ../../assets/photos/2026-03-rollei-rpx-400-oaxaca-san-jose-del-pacifico/016.jpg
     alt: ""
+    featured: true
   - src: ../../assets/photos/2026-03-rollei-rpx-400-oaxaca-san-jose-del-pacifico/017.jpg
     alt: ""
   - src: ../../assets/photos/2026-03-rollei-rpx-400-oaxaca-san-jose-del-pacifico/018.jpg
