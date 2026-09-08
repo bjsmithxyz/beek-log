@@ -13,6 +13,7 @@ location:
 photos:
   - src: ../../assets/photos/2026-03-kodacolour-200-san-jose-del-pacifico-mazunte-san-cristobal/001.jpg
     alt: ""
+    featured: true
   - src: ../../assets/photos/2026-03-kodacolour-200-san-jose-del-pacifico-mazunte-san-cristobal/002.jpg
     alt: ""
   - src: ../../assets/photos/2026-03-kodacolour-200-san-jose-del-pacifico-mazunte-san-cristobal/003.jpg
@@ -93,6 +94,7 @@ photos:
         name: Mexico
         lat: 23.6585116
         lng: -102.0077097
+    featured: true
   - src: ../../assets/photos/2026-03-kodacolour-200-san-jose-del-pacifico-mazunte-san-cristobal/014.jpg
     alt: ""
     location:
@@ -113,6 +115,7 @@ photos:
         name: Mexico
         lat: 23.6585116
         lng: -102.0077097
+    featured: true
   - src: ../../assets/photos/2026-03-kodacolour-200-san-jose-del-pacifico-mazunte-san-cristobal/016.jpg
     alt: ""
     location:
