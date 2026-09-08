@@ -31,6 +31,7 @@ photos:
         name: Japan
         lat: 36.5748441
         lng: 139.2394179
+    featured: true
   - src: ../../assets/photos/2025-12-fujifilm-400-kagoshima-kaimondake-sakurajima-osaka/003.jpg
     alt: ""
     location:
@@ -95,6 +96,7 @@ photos:
         name: Japan
         lat: 36.5748441
         lng: 139.2394179
+    featured: true
   - src: ../../assets/photos/2025-12-fujifilm-400-kagoshima-kaimondake-sakurajima-osaka/011.jpg
     alt: ""
     location:
@@ -285,6 +287,7 @@ photos:
         name: Japan
         lat: 36.5748441
         lng: 139.2394179
+    featured: true
 ---
 
 
