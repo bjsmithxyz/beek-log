@@ -31,8 +31,10 @@ photos:
     alt: ""
   - src: ../../assets/photos/2025-08-fujifilm-400-almaty/010.jpg
     alt: ""
+    featured: true
   - src: ../../assets/photos/2025-08-fujifilm-400-almaty/011.jpg
     alt: ""
+    featured: true
   - src: ../../assets/photos/2025-08-fujifilm-400-almaty/012.jpg
     alt: ""
   - src: ../../assets/photos/2025-08-fujifilm-400-almaty/013.jpg
