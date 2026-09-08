@@ -817,10 +817,10 @@
       "cc": "FI",
       "lat": 60.1699,
       "lon": 24.9384,
-      "arrive": "2026-09-06",
+      "arrive": "2026-09-07",
       "depart": "2026-09-10",
       "note": "Ferry to Tallinn",
-      "tentative": true
+      "tentative": false
     },
     {
       "name": "Tallinn",
