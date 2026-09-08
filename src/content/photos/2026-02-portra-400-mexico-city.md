@@ -23,6 +23,7 @@ photos:
     alt: ""
   - src: ../../assets/photos/2026-02-portra-400-mexico-city/006.jpg
     alt: ""
+    featured: true
   - src: ../../assets/photos/2026-02-portra-400-mexico-city/007.jpg
     alt: ""
   - src: ../../assets/photos/2026-02-portra-400-mexico-city/008.jpg
@@ -33,6 +34,7 @@ photos:
     alt: ""
   - src: ../../assets/photos/2026-02-portra-400-mexico-city/011.jpg
     alt: ""
+    featured: true
   - src: ../../assets/photos/2026-02-portra-400-mexico-city/012.jpg
     alt: ""
   - src: ../../assets/photos/2026-02-portra-400-mexico-city/013.jpg
