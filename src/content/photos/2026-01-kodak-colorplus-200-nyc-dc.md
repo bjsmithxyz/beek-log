@@ -51,6 +51,7 @@ photos:
     alt: ""
   - src: ../../assets/photos/2026-01-kodak-colorplus-200-nyc-dc/020.jpg
     alt: ""
+    featured: true
   - src: ../../assets/photos/2026-01-kodak-colorplus-200-nyc-dc/021.jpg
     alt: ""
   - src: ../../assets/photos/2026-01-kodak-colorplus-200-nyc-dc/022.jpg
