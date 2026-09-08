@@ -51,6 +51,7 @@ photos:
         name: Guatemala
         lat: 15.5855545
         lng: -90.345759
+    featured: true
   - src: ../../assets/photos/2026-03-1hundred-800-antigua-acatenango-jaibalito/005.jpg
     alt: ""
     location:
@@ -101,6 +102,7 @@ photos:
         name: Guatemala
         lat: 15.5855545
         lng: -90.345759
+    featured: true
   - src: ../../assets/photos/2026-03-1hundred-800-antigua-acatenango-jaibalito/010.jpg
     alt: ""
     location:
@@ -135,12 +137,14 @@ photos:
     alt: ""
   - src: ../../assets/photos/2026-03-1hundred-800-antigua-acatenango-jaibalito/018.jpg
     alt: ""
+    featured: true
   - src: ../../assets/photos/2026-03-1hundred-800-antigua-acatenango-jaibalito/019.jpg
     alt: ""
   - src: ../../assets/photos/2026-03-1hundred-800-antigua-acatenango-jaibalito/020.jpg
     alt: ""
   - src: ../../assets/photos/2026-03-1hundred-800-antigua-acatenango-jaibalito/021.jpg
     alt: ""
+    featured: true
   - src: ../../assets/photos/2026-03-1hundred-800-antigua-acatenango-jaibalito/022.jpg
     alt: ""
   - src: ../../assets/photos/2026-03-1hundred-800-antigua-acatenango-jaibalito/023.jpg
@@ -169,6 +173,7 @@ photos:
         name: Guatemala
         lat: 15.5855545
         lng: -90.345759
+    featured: true
   - src: ../../assets/photos/2026-03-1hundred-800-antigua-acatenango-jaibalito/032.jpg
     alt: ""
     location:
