@@ -13,6 +13,7 @@ location:
 photos:
   - src: ../../assets/photos/2026-02-kodak-color-200-new-orleans-houston/001.jpg
     alt: ""
+    featured: true
   - src: ../../assets/photos/2026-02-kodak-color-200-new-orleans-houston/002.jpg
     alt: ""
   - src: ../../assets/photos/2026-02-kodak-color-200-new-orleans-houston/003.jpg
@@ -39,10 +40,12 @@ photos:
     alt: ""
   - src: ../../assets/photos/2026-02-kodak-color-200-new-orleans-houston/014.jpg
     alt: ""
+    featured: true
   - src: ../../assets/photos/2026-02-kodak-color-200-new-orleans-houston/015.jpg
     alt: ""
   - src: ../../assets/photos/2026-02-kodak-color-200-new-orleans-houston/016.jpg
     alt: ""
+    featured: true
   - src: ../../assets/photos/2026-02-kodak-color-200-new-orleans-houston/017.jpg
     alt: ""
   - src: ../../assets/photos/2026-02-kodak-color-200-new-orleans-houston/018.jpg
@@ -67,6 +70,7 @@ photos:
         name: United States
         lat: 39.7837304
         lng: -100.445882
+    featured: true
   - src: ../../assets/photos/2026-02-kodak-color-200-new-orleans-houston/021.jpg
     alt: ""
     location:
