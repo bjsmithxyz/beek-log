@@ -141,6 +141,7 @@ photos:
         name: Bolivia
         lat: -17.0568696
         lng: -64.9912286
+    featured: true
   - src: ../../assets/photos/2026-05-kodak-ultramax-400-la-paz-valle-de-las-animas-sucre-potosi/025.jpg
     alt: ""
     location:
@@ -211,6 +212,7 @@ photos:
         name: Bolivia
         lat: -17.0568696
         lng: -64.9912286
+    featured: true
   - src: ../../assets/photos/2026-05-kodak-ultramax-400-la-paz-valle-de-las-animas-sucre-potosi/032.jpg
     alt: ""
     location:
