@@ -13,10 +13,12 @@ location:
 photos:
   - src: ../../assets/photos/2025-08-kodak-colorplus-200-dali-lijiang-shangri-la/001.jpg
     alt: 中国.
+    featured: true
   - src: ../../assets/photos/2025-08-kodak-colorplus-200-dali-lijiang-shangri-la/002.jpg
     alt: Yours truly.
     caption: Taken after walking uphill for several kilometers in the sun after
       taking a wrong turn.
+    featured: true
   - src: ../../assets/photos/2025-08-kodak-colorplus-200-dali-lijiang-shangri-la/003.jpg
     alt: Gold.
     caption: Average Chinese gentleman.
@@ -28,6 +30,7 @@ photos:
         name: China
         lat: 34.5412252
         lng: 108.9237067
+    featured: true
   - src: ../../assets/photos/2025-08-kodak-colorplus-200-dali-lijiang-shangri-la/004.jpg
     alt: 香格里拉.
     location:
@@ -128,6 +131,7 @@ photos:
     alt: ""
   - src: ../../assets/photos/2025-08-kodak-colorplus-200-dali-lijiang-shangri-la/017.jpg
     alt: ""
+    featured: true
   - src: ../../assets/photos/2025-08-kodak-colorplus-200-dali-lijiang-shangri-la/018.jpg
     alt: ""
   - src: ../../assets/photos/2025-08-kodak-colorplus-200-dali-lijiang-shangri-la/019.jpg
