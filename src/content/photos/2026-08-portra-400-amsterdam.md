@@ -13,6 +13,7 @@ location:
 photos:
   - src: ../../assets/photos/2026-08-portra-400-amsterdam/001.jpg
     alt: ""
+    featured: true
   - src: ../../assets/photos/2026-08-portra-400-amsterdam/002.jpg
     alt: ""
   - src: ../../assets/photos/2026-08-portra-400-amsterdam/003.jpg
@@ -25,6 +26,7 @@ photos:
     alt: ""
   - src: ../../assets/photos/2026-08-portra-400-amsterdam/007.jpg
     alt: ""
+    featured: true
   - src: ../../assets/photos/2026-08-portra-400-amsterdam/008.jpg
     alt: ""
   - src: ../../assets/photos/2026-08-portra-400-amsterdam/009.jpg
@@ -39,6 +41,7 @@ photos:
     alt: ""
   - src: ../../assets/photos/2026-08-portra-400-amsterdam/014.jpg
     alt: ""
+    featured: true
   - src: ../../assets/photos/2026-08-portra-400-amsterdam/015.jpg
     alt: ""
   - src: ../../assets/photos/2026-08-portra-400-amsterdam/016.jpg
@@ -99,6 +102,7 @@ photos:
     alt: ""
   - src: ../../assets/photos/2026-08-portra-400-amsterdam/044.jpg
     alt: ""
+    featured: true
   - src: ../../assets/photos/2026-08-portra-400-amsterdam/045.jpg
     alt: ""
   - src: ../../assets/photos/2026-08-portra-400-amsterdam/046.jpg
@@ -143,6 +147,7 @@ photos:
     alt: ""
   - src: ../../assets/photos/2026-08-portra-400-amsterdam/066.jpg
     alt: ""
+    featured: true
   - src: ../../assets/photos/2026-08-portra-400-amsterdam/067.jpg
     alt: ""
 ---
