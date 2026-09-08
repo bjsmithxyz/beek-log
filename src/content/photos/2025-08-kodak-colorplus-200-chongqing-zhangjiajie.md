@@ -25,6 +25,7 @@ photos:
     alt: ""
   - src: ../../assets/photos/2025-08-kodak-colorplus-200-chongqing-zhangjiajie/007.jpg
     alt: ""
+    featured: true
   - src: ../../assets/photos/2025-08-kodak-colorplus-200-chongqing-zhangjiajie/008.jpg
     alt: ""
   - src: ../../assets/photos/2025-08-kodak-colorplus-200-chongqing-zhangjiajie/009.jpg
@@ -107,6 +108,7 @@ photos:
         name: China
         lat: 34.5412252
         lng: 108.9237067
+    featured: true
   - src: ../../assets/photos/2025-08-kodak-colorplus-200-chongqing-zhangjiajie/029.jpg
     alt: Tianmen stairway to heaven.
     location:
@@ -117,6 +119,7 @@ photos:
         name: China
         lat: 34.5412252
         lng: 108.9237067
+    featured: true
   - src: ../../assets/photos/2025-08-kodak-colorplus-200-chongqing-zhangjiajie/030.jpg
     alt: 999 steps.
     location:
@@ -137,6 +140,7 @@ photos:
         name: China
         lat: 34.5412252
         lng: 108.9237067
+    featured: true
   - src: ../../assets/photos/2025-08-kodak-colorplus-200-chongqing-zhangjiajie/032.jpg
     alt: ""
     location:
