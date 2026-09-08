@@ -45,24 +45,27 @@ photos:
     alt: ""
   - src: ../../assets/photos/2025-11-kentmere-400-seoul/017.jpg
     alt: ""
+    featured: true
   - src: ../../assets/photos/2025-11-kentmere-400-seoul/018.jpg
     alt: ""
   - src: ../../assets/photos/2025-11-kentmere-400-seoul/019.jpg
     alt: ""
+    featured: true
   - src: ../../assets/photos/2025-11-kentmere-400-seoul/020.jpg
     alt: ""
   - src: ../../assets/photos/2025-11-kentmere-400-seoul/021.jpg
-    alt: ""
+    alt: Weeb patrol.
   - src: ../../assets/photos/2025-11-kentmere-400-seoul/022.jpg
     alt: ""
   - src: ../../assets/photos/2025-11-kentmere-400-seoul/023.jpg
     alt: ""
+    featured: true
   - src: ../../assets/photos/2025-11-kentmere-400-seoul/024.jpg
-    alt: ""
+    alt: DMZ.
   - src: ../../assets/photos/2025-11-kentmere-400-seoul/025.jpg
-    alt: ""
+    alt: DMZ.
   - src: ../../assets/photos/2025-11-kentmere-400-seoul/026.jpg
-    alt: ""
+    alt: DMZ.
   - src: ../../assets/photos/2025-11-kentmere-400-seoul/027.jpg
     alt: ""
 ---
