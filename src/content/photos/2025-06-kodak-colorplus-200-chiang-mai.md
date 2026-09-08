@@ -64,6 +64,7 @@ photos:
         name: Thailand
         lat: 14.8971921
         lng: 100.83273
+    featured: true
   - src: ../../assets/photos/2025-06-kodak-colorplus-200-chiang-mai/006.jpg
     alt: ""
     location:
