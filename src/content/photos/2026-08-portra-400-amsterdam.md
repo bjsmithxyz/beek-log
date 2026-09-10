@@ -1,7 +1,7 @@
 ---
 title: Amsterdam
 stock: portra-400
-date: 2026-08-05
+date: 2026-08-01
 location:
   name: Amsterdam
   lat: 52.3730796
