@@ -1,7 +1,7 @@
 ---
 title: New York City
 stock: turista-100
-date: 2026-08-04
+date: 2026-07-01
 location:
   name: New York
   lat: 40.7127281
