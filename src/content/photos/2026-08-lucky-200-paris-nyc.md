@@ -1,7 +1,7 @@
 ---
 title: Paris / New York City
 stock: lucky-200
-date: 2026-08-07
+date: 2026-07-21
 location:
   name: Paris
   lat: 48.8588897
