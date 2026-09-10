@@ -2,9 +2,10 @@
 import BaseLayout from '../../layouts/BaseLayout.astro';
 import FilmStrip from '../../components/FilmStrip.astro';
 import Lightbox from '../../components/Lightbox.astro';
-import { Image } from 'astro:assets';
+import { Image, getImage } from 'astro:assets';
 import { render, type CollectionEntry } from 'astro:content';
 import { getFilmStock } from '@beek/shared/film-stocks';
+import { MAX_EDGE } from '@beek/shared/image-constants';
 import { getPhotoRolls, byDateDesc } from '../../lib/collections';
 import { formatLongDate, formatFilmEdgeDate } from '../../lib/dates';
 
@@ -32,13 +33,11 @@ interface Props {
 
 const FRAMES_PER_STRIP = 6;
 
-const { entry, rollNumber, totalRolls, newer, older } = Astro.props;
+const { entry, newer, older } = Astro.props;
 const { Content } = await render(entry);
 const { title, stock, date, location, photos } = entry.data;
 const film = getFilmStock(stock);
 const hasNotes = Boolean(entry.body?.trim());
-const paddedRollNumber = String(rollNumber).padStart(2, '0');
-const paddedTotalRolls = String(totalRolls).padStart(2, '0');
 
 const formattedDate = formatLongDate(date);
 const shortDate = formatFilmEdgeDate(date);
@@ -49,6 +48,9 @@ const photosWithLoc = photos.map((p, i) => ({
   frameNumber: i + 1,
 }));
 const featuredPhotos = photosWithLoc.filter((p) => p.featured);
+const featuredFullImages = await Promise.all(
+  featuredPhotos.map((p) => getImage({ src: p.src, width: MAX_EDGE }))
+);
 
 const strips: (typeof photosWithLoc)[] = [];
 for (let i = 0; i < photosWithLoc.length; i += FRAMES_PER_STRIP) {
@@ -85,8 +87,6 @@ const jsonLd = {
     <div class="container">
       <header class="roll-hero">
         <div class="roll-hero-main">
-          <a class="archive-link" href="/photos/">← all rolls</a>
-          <span class="roll-kicker">ROLL {paddedRollNumber} / {paddedTotalRolls} · {featuredPhotos.length > 0 ? 'SELECTS' : 'CONTACT SHEET'}</span>
           <h1 class="title">{title}</h1>
 
           <div class="meta">
@@ -126,7 +126,7 @@ const jsonLd = {
       {featuredPhotos.length > 0 ? (
         <>
           <div class="selects-grid" role="region" aria-label={`Selects from ${title}`}>
-            {featuredPhotos.map((p) => (
+            {featuredPhotos.map((p, i) => (
               <figure class="select-frame">
                 <Image
                   src={p.src}
@@ -136,6 +136,7 @@ const jsonLd = {
                   loading="lazy"
                   data-lightbox
                   data-lightbox-id={`frame-${p.frameNumber}`}
+                  data-full={featuredFullImages[i].src}
                   data-caption={p.caption ?? p.alt}
                   data-meta={`${shortDate} · ${p.locName.toUpperCase()}`}
                 />
@@ -145,7 +146,7 @@ const jsonLd = {
           </div>
 
           <details class="full-roll">
-            <summary>full roll — {photos.length} frames, sprockets and all →</summary>
+            <summary>full roll — {photos.length} frames →</summary>
             <div class="contact-sheet" role="region" aria-label={`Contact sheet for ${title}`}>
               {strips.map((strip, i) => (
                 <FilmStrip
@@ -215,28 +216,12 @@ const jsonLd = {
     min-width: 0;
   }
 
-  .archive-link {
-    display: inline-block;
-    margin-bottom: var(--space-8);
-    color: var(--color-text-muted);
-    font-size: var(--font-size-sm);
-  }
-
-  .archive-link:hover {
-    color: var(--color-accent-primary);
-  }
-
-  .roll-kicker,
   .notes-label {
     display: block;
     color: var(--color-accent-secondary);
     font-size: var(--font-size-xs);
     font-weight: var(--font-weight-medium);
     letter-spacing: 0.14em;
-  }
-
-  .roll-kicker {
-    margin-bottom: var(--space-3);
   }
 
   .title {
@@ -262,9 +247,6 @@ const jsonLd = {
   }
 
   .roll-specs {
-    /* start of the box aligns with the title text, clearing the back-link
-       and roll kicker stacked above the title in the left column */
-    margin-top: 6.25rem;
     padding: var(--space-4);
     background: var(--color-bg-secondary);
     border: 1px solid var(--color-border-strong);
@@ -485,12 +467,7 @@ const jsonLd = {
       gap: var(--space-6);
     }
 
-    .archive-link {
-      margin-bottom: var(--space-6);
-    }
-
     .roll-specs {
-      margin-top: 0;
       box-shadow: 4px 4px 0 var(--color-border);
     }
 
