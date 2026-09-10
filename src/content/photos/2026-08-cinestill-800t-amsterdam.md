@@ -1,7 +1,7 @@
 ---
 title: Amsterdam
 stock: cinestill-800t
-date: 2026-08-07
+date: 2026-08-01
 location:
   name: Amsterdam
   lat: 52.3730796
