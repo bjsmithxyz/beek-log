@@ -1,7 +1,7 @@
 ---
 title: Amsterdam
 stock: kodacolour-200
-date: 2026-08-06
+date: 2026-08-01
 location:
   name: Amsterdam
   lat: 52.3730796
