@@ -13,7 +13,7 @@ const totalFeatured = featuredPhotos.length;
 const rollsWithFeatured = sortedRolls.filter((r) => r.data.photos.some((p) => p.featured)).length;
 
 // A random handful of selects, fanned across the promo. Reshuffled each build.
-const PROMO_THUMBS = 6;
+const PROMO_THUMBS = 11;
 const promoThumbs = [...featuredPhotos]
   .sort(() => Math.random() - 0.5)
   .slice(0, PROMO_THUMBS);
@@ -46,7 +46,10 @@ const promoThumbs = [...featuredPhotos]
           {promoThumbs.length > 0 && (
             <div class="highlights-promo-strip" aria-hidden="true">
               {promoThumbs.map((photo, i) => (
-                <span class="promo-thumb" style={`--i:${i}`}>
+                <span
+                  class="promo-thumb"
+                  style={`--i:${i}; --fade:${(1 - (i / Math.max(promoThumbs.length - 1, 1)) * 0.82).toFixed(3)}`}
+                >
                   <Image src={photo.src} alt="" width={120} height={120} loading="lazy" />
                 </span>
               ))}
@@ -134,19 +137,22 @@ const promoThumbs = [...featuredPhotos]
     justify-content: flex-end;
     align-items: center;
     min-width: 0;
-    overflow: hidden;
+    overflow: visible;
   }
 
   .promo-thumb {
     flex: 0 0 auto;
     width: 52px;
     height: 52px;
-    margin-left: -14px;
+    margin-left: -16px;
     border: 1px solid var(--color-bg-secondary);
     background: #161412;
-    opacity: calc(1 - var(--i) * 0.16);
-    z-index: calc(10 - var(--i));
-    transition: transform var(--transition-fast);
+    opacity: var(--fade);
+    z-index: calc(30 - var(--i));
+    transition: transform var(--transition-base), opacity var(--transition-base),
+      border-color var(--transition-fast);
+    transition-delay: calc(var(--i) * 35ms);
+    will-change: transform;
   }
 
   .promo-thumb:first-child {
@@ -160,8 +166,25 @@ const promoThumbs = [...featuredPhotos]
     object-fit: cover;
   }
 
+  /* Rollover: hovering the box opens the fan — every select brightens and
+     lifts in a left-to-right ripple (the stagger comes from --i). */
   .highlights-promo:hover .promo-thumb {
-    transform: translateY(-2px);
+    opacity: 1;
+    transform: translateY(-5px);
+  }
+
+  /* Direct rollover on a single pic pops it forward, framed in accent. */
+  .highlights-promo:hover .promo-thumb:hover {
+    transform: translateY(-5px) scale(1.4);
+    z-index: 40;
+    border-color: var(--color-accent-primary);
+    transition-delay: 0ms;
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    .promo-thumb {
+      transition-delay: 0ms;
+    }
   }
 
   .highlights-promo-title {
