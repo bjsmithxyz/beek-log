@@ -2,6 +2,7 @@ node_modules
 dist
 .astro
 .netlify
+.agents
 scripts/admin/.admin.log
 .env
 .env.*
