@@ -13,7 +13,7 @@ const totalFeatured = featuredPhotos.length;
 const rollsWithFeatured = sortedRolls.filter((r) => r.data.photos.some((p) => p.featured)).length;
 
 // A random handful of selects, fanned across the promo. Reshuffled each build.
-const PROMO_THUMBS = 11;
+const PROMO_THUMBS = 16;
 const promoThumbs = [...featuredPhotos]
   .sort(() => Math.random() - 0.5)
   .slice(0, PROMO_THUMBS);
@@ -109,7 +109,7 @@ const promoThumbs = [...featuredPhotos]
     justify-content: space-between;
     gap: var(--space-4);
     margin-bottom: var(--space-8);
-    padding: var(--space-4);
+    padding: var(--space-5) var(--space-4);
     color: var(--color-text-primary);
     background: var(--color-bg-secondary);
     border: 1px solid var(--color-accent-primary);
@@ -151,7 +151,7 @@ const promoThumbs = [...featuredPhotos]
     background: #161412;
     opacity: var(--fade);
     z-index: calc(30 - var(--i));
-    transition: transform var(--transition-fast), opacity var(--transition-fast),
+    transition: transform var(--transition-fast), opacity 50ms ease,
       border-color var(--transition-fast);
     transition-delay: calc(var(--i) * 20ms);
     will-change: transform;
