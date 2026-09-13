@@ -829,8 +829,8 @@
       "lat": 59.437,
       "lon": 24.7536,
       "arrive": "2026-09-10",
-      "depart": "2026-09-12",
-      "tentative": true
+      "depart": "2026-09-14",
+      "tentative": false
     },
     {
       "name": "Riga",
@@ -838,9 +838,9 @@
       "cc": "LV",
       "lat": 56.9496,
       "lon": 24.1052,
-      "arrive": "2026-09-12",
-      "depart": "2026-09-14",
-      "tentative": true
+      "arrive": "2026-09-14",
+      "depart": "2026-09-16",
+      "tentative": false
     },
     {
       "name": "Vilnius",
