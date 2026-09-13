@@ -2,16 +2,21 @@
 import BaseLayout from '../../layouts/BaseLayout.astro';
 import RollRow from '../../components/RollRow.astro';
 import FilterBar from '../../components/FilterBar.astro';
+import { Image } from 'astro:assets';
 import { getPhotoRolls, byDateDesc } from '../../lib/collections';
 
 const sortedRolls = (await getPhotoRolls()).sort(byDateDesc);
 
 const years = [...new Set(sortedRolls.map((r) => r.data.date.getFullYear().toString()))];
-const totalFeatured = sortedRolls.reduce(
-  (sum, r) => sum + r.data.photos.filter((p) => p.featured).length,
-  0
-);
+const featuredPhotos = sortedRolls.flatMap((r) => r.data.photos.filter((p) => p.featured));
+const totalFeatured = featuredPhotos.length;
 const rollsWithFeatured = sortedRolls.filter((r) => r.data.photos.some((p) => p.featured)).length;
+
+// A random handful of selects, fanned across the promo. Reshuffled each build.
+const PROMO_THUMBS = 6;
+const promoThumbs = [...featuredPhotos]
+  .sort(() => Math.random() - 0.5)
+  .slice(0, PROMO_THUMBS);
 ---
 
 <BaseLayout
@@ -38,6 +43,15 @@ const rollsWithFeatured = sortedRolls.filter((r) => r.data.photos.some((p) => p.
               {totalFeatured} {totalFeatured === 1 ? 'select' : 'selects'} across {rollsWithFeatured} {rollsWithFeatured === 1 ? 'roll' : 'rolls'}
             </span>
           </div>
+          {promoThumbs.length > 0 && (
+            <div class="highlights-promo-strip" aria-hidden="true">
+              {promoThumbs.map((photo, i) => (
+                <span class="promo-thumb" style={`--i:${i}`}>
+                  <Image src={photo.src} alt="" width={120} height={120} loading="lazy" />
+                </span>
+              ))}
+            </div>
+          )}
           <span class="highlights-promo-go" aria-hidden="true">→</span>
         </a>
       )}
@@ -109,6 +123,45 @@ const rollsWithFeatured = sortedRolls.filter((r) => r.data.photos.some((p) => p.
     display: flex;
     flex-direction: column;
     gap: 2px;
+    flex: 0 0 auto;
+  }
+
+  /* A fanned row of selects: overlapping left-to-right, each one fading
+     further toward the arrow. Decorative, so it hides on narrow screens. */
+  .highlights-promo-strip {
+    display: flex;
+    flex: 1 1 auto;
+    justify-content: flex-end;
+    align-items: center;
+    min-width: 0;
+    overflow: hidden;
+  }
+
+  .promo-thumb {
+    flex: 0 0 auto;
+    width: 52px;
+    height: 52px;
+    margin-left: -14px;
+    border: 1px solid var(--color-bg-secondary);
+    background: #161412;
+    opacity: calc(1 - var(--i) * 0.16);
+    z-index: calc(10 - var(--i));
+    transition: transform var(--transition-fast);
+  }
+
+  .promo-thumb:first-child {
+    margin-left: 0;
+  }
+
+  .promo-thumb img {
+    display: block;
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+  }
+
+  .highlights-promo:hover .promo-thumb {
+    transform: translateY(-2px);
   }
 
   .highlights-promo-title {
@@ -198,6 +251,10 @@ const rollsWithFeatured = sortedRolls.filter((r) => r.data.photos.some((p) => p.
   @media (max-width: 768px) {
     .archive-hero {
       padding-bottom: var(--space-8);
+    }
+
+    .highlights-promo-strip {
+      display: none;
     }
 
     :global(.dir-list.is-grid) {

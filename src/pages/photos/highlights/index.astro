@@ -70,7 +70,7 @@ const rollCount = new Set(highlights.map((h) => h.rollId)).size;
                 data-lightbox-id={`${h.rollId}-${h.frameNumber}`}
                 data-full={h.fullSrc}
                 data-caption={h.caption ?? h.alt}
-                data-meta={`${h.shortDate} · ${h.rollTitle} · ${h.locationName.toUpperCase()}`}
+                data-meta={`${h.shortDate} · ${h.locationName.toUpperCase()}`}
               />
               <span class="highlight-cap">
                 <b>{h.rollTitle}</b>
@@ -115,7 +115,7 @@ const rollCount = new Set(highlights.map((h) => h.rollId)).size;
 
   .highlights-grid {
     display: grid;
-    grid-template-columns: repeat(4, 1fr);
+    grid-template-columns: repeat(5, 1fr);
     gap: 3px;
   }
 
@@ -178,7 +178,7 @@ const rollCount = new Set(highlights.map((h) => h.rollId)).size;
 
   @media (max-width: 768px) {
     .highlights-grid {
-      grid-template-columns: repeat(3, 1fr);
+      grid-template-columns: repeat(4, 1fr);
     }
   }
 
