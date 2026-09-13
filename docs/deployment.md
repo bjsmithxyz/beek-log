@@ -1,102 +1,83 @@
 # Deployment
 
-Two **Netlify** sites watch this repository:
+Two **Netlify** sites watch this repo:
 
-- public: repo root, configured by `netlify.toml`
-- admin: repository-root base plus `admin/` package directory, configured by
-  `admin/netlify.toml` (the root base is required for npm workspace resolution)
+- **public** — repo root, `netlify.toml`, static `dist/`.
+- **admin** — repo-root base + `admin/` package directory, `admin/netlify.toml`,
+  SSR `admin/dist/` (the root base is required for npm workspace resolution).
 
-Both Netlify sites always rebuild on push (path-based skips used to cancel
-in-progress content deploys and showed up as confusing "canceled" admin builds
-during normal roll publishing). After each content commit the admin publisher
-also POSTs the public Netlify build hook so `bjsmith.xyz` does not depend on
-GitHub Actions runners. `.github/workflows/refresh-travel.yml` additionally
-POSTs that hook on main pushes that touch public paths (and nightly for travel
-"here now").
+Both always rebuild on push (path-based skips caused confusing canceled builds
+during roll publishing). After each content commit the admin publisher also POSTs
+the public build hook so `bjsmith.xyz` doesn't wait on runners;
+`refresh-travel.yml` POSTs it too on public-path pushes and nightly.
 
 ## Admin deployment
 
-The production admin is `https://admin.bjsmith.xyz` with Netlify hostname
-`beekadmin.netlify.app`. Netlify uses the repository root as its base and
-`admin` as its package directory.
-
-The admin is SSR and requires the variables in `admin/.env.example`, configured
-on the admin Netlify site only. It uses a GitHub App installed solely on
-`bjsmithxyz/beek-log`; user-to-server tokens are sealed into a 24-hour host-only
-cookie and refreshed before their eight-hour expiry. The admin configuration
-sets `noindex`, a disallow-all `robots.txt`, `no-store`, frame denial and a CSP
-with self-hosted scripts only. Phase 4 adds `'wasm-unsafe-eval'` solely for the
-admin MozJPEG worker plus image sources for GitHub roll previews and OpenStreetMap
-tiles; the public policy is unchanged. Netlify static header rules do not cover SSR
-or Function responses, so `admin/src/server/headers.mjs` applies the same policy
-at the response source.
-
-Because the public HSTS policy includes subdomains, `admin.bjsmith.xyz` must
-have a valid Netlify certificate before its DNS record or public header link is
-activated.
+Production admin is `https://admin.bjsmith.xyz` (Netlify hostname
+`beekadmin.netlify.app`). It's SSR and requires the variables in
+`admin/.env.example`, set on the admin site only. It uses a GitHub App installed
+solely on `bjsmithxyz/beek-log`; user-to-server tokens are sealed into a 24-hour
+host-only cookie and refreshed before their ~8-hour expiry. Config sets
+`noindex`, disallow-all `robots.txt`, `no-store`, frame denial, and a self-only
+CSP plus `'wasm-unsafe-eval'` (MozJPEG worker) and image sources for GitHub roll
+previews and OSM tiles. Netlify static header rules don't cover SSR/Function
+responses, so `admin/src/server/headers.mjs` applies the same policy at the
+source. Because public HSTS includes subdomains, `admin.bjsmith.xyz` needs a
+valid certificate before its DNS record or header link is activated.
 
 ## Security headers
 
 `netlify.toml` sets, on all routes:
 
-- **Content-Security-Policy** — `default-src 'self'` with `'unsafe-inline'`
-  for Astro's theme bootstrap, ClientRouter, and scoped styles (static Netlify
-  headers cannot issue per-request nonces). XSS is contained at the content
-  layer: travel JSON escapes `<`, markdown HTML is rehype-sanitized, and work
-  `liveUrl`/`repoUrl` values must be `http(s)`. `font-src 'self'` works because
-  fonts are self-hosted.
-- **Strict-Transport-Security** — `max-age=31536000; includeSubDomains`.
-- **Permissions-Policy** — camera/microphone/geolocation/browsing-topics denied.
+- **CSP** — `default-src 'self'` with `'unsafe-inline'` for Astro's theme
+  bootstrap, ClientRouter, and scoped styles (static headers can't do nonces).
+  XSS is contained at the content layer: travel JSON escapes `<`, markdown is
+  rehype-sanitized, `liveUrl`/`repoUrl` must be `http(s)`. `img-src` also allows
+  CARTO tiles (travel only); `connect-src` is bare `'self'`.
+- **HSTS** — `max-age=31536000; includeSubDomains`.
+- **Permissions-Policy** — camera/mic/geolocation/browsing-topics denied.
 - **X-Frame-Options**, **X-Content-Type-Options**, **Referrer-Policy**.
 
-The single site-wide policy also allows CARTO tiles in `img-src`, which only the
-travel route uses. (`connect-src` is now bare `'self'`: the Open-Meteo grant went
-with the `road-ahead/` tab, which the travel privacy split removed — see
-`docs/architecture.md`.) This previously sat in a route-specific `/travel` rule,
-but a route-scoped CSP cannot survive `ClientRouter`: it swaps documents without
-a navigation, so the browser keeps enforcing whichever policy the first-loaded
-page carried. Reaching `/travel/` from an internal link therefore blocked every
-tile while a direct load worked — the narrower policy bought no real protection
-and broke the page.
-`scripts/netlify-config.test.mjs` fails the build if a route-scoped CSP returns,
-or if the policy stops covering an origin `travel-client.js` requests.
+The CSP is site-wide, not route-scoped: `ClientRouter` swaps documents without a
+navigation, so a route-scoped policy would leak the first-loaded page's CSP and
+break `/travel/` tiles when reached via an internal link.
+`scripts/netlify-config.test.mjs` fails the build if a route-scoped CSP returns
+or the policy stops covering an origin `travel-client.js` needs.
 
-`travel.bjsmith.xyz/*` has an explicit host-specific 301 to
-`bjsmith.xyz/travel/:splat`; the full destination is intentional so Netlify
-does not drop the `/travel` prefix.
+`travel.bjsmith.xyz/*` has a host-specific 301 to `bjsmith.xyz/travel/:splat`
+(full destination is intentional so Netlify keeps the `/travel` prefix).
 
 ## Caching
 
-Hashed build assets under `/_assets/*` are served `immutable` with a one-year
-`max-age`. HTML keeps Netlify's default revalidation.
+Hashed assets under `/_assets/*` are `immutable`, one-year `max-age`. HTML keeps
+Netlify's default revalidation.
 
 ## Monitoring
 
-Netlify Observability provides the Free plan's rolling 24-hour request view and
-requires no site code. Accessibility release gates use a current local
-Lighthouse/Chrome run against the homepage, an image-heavy roll, and `/travel/`.
-The former Netlify Lighthouse plugin was removed because its pinned browser
-tooling accumulated advisories; do not restore it without checking its full
-dependency audit.
+Netlify Observability gives the Free plan's 24-hour request view. Accessibility
+gates use a local Lighthouse run against the homepage, an image-heavy roll, and
+`/travel/`. The former Netlify Lighthouse plugin was removed for accumulating
+advisories in its pinned browser tooling — don't restore it without a full audit.
 
 ## Gotchas
 
-- **Do not add a `/* -> /404.html` redirect** to `netlify.toml`. Netlify serves
-  `404.html` for unmatched routes automatically, and the explicit rule breaks
-  dev-server routing under the Netlify adapter (it makes `astro dev` 404 any
-  route not present in the last `dist` build).
-- Do not restore the retired localhost publisher or any direct-to-`main`
-  authoring path; hosted mutations must pass through a reviewed PR.
+- **No `/* -> /404.html` redirect** in `netlify.toml`: Netlify serves `404.html`
+  automatically, and the explicit rule breaks `astro dev` routing under the
+  adapter.
+- Don't restore the retired localhost publisher or any direct-to-`main` authoring
+  path outside the reviewed hosted admin flow.
 
 ## Upgrades
 
-`astro` (7) and `@astrojs/netlify` (8) are on their current majors. The site
-retains the Netlify adapter so Astro's `<Image />` component uses Netlify Image
-CDN transformations in production. Astro 7 requires Node ≥ 22.12; this project
-requires Node ≥ 22.18 for its test suite.
+`astro` (7) and `@astrojs/netlify` (8) are on current majors; the adapter is
+retained so `<Image />` uses Netlify Image CDN transforms in production. Node
+≥ 22.18 is required (test suite).
 
-The root npm override makes Netlify's transitive `ipx` use the same patched
-Sharp release as Astro and the maintenance scripts. Remove the override only
-when `@netlify/images` natively permits that Sharp line. `npm audit` is clean as
-of the final 2026-08-03 review. Do not use `npm audit fix --force`; review and
-test dependency changes through a pull request.
+Root npm `overrides` pin shared transitive deps to patched releases:
+`@astrojs/internal-helpers` (keeps Netlify's copy in step with Astro — a mismatch
+here crashes the admin SSR function) and Sharp/`ipx` (one patched Sharp line
+across Astro, Netlify's image tooling, and the scripts). Remove an override only
+when upstream no longer needs it. Review dependency changes via PR; never
+`npm audit fix --force`. Remaining `npm audit` findings are dev/build-only
+(Netlify's local dev toolchain) with no upstream fix and are dismissed in
+Dependabot.

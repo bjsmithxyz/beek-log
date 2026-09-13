@@ -2,28 +2,22 @@
 
 ## Local setup
 
-1. Clone the repository.
-2. Install dependencies:
-   ```sh
-   npm install
-   ```
-3. Start the dev server:
-   ```sh
-   npm run dev
-   ```
-   The site runs at `http://localhost:4321`.
+```sh
+npm install
+npm run dev        # http://localhost:4321
+```
 
-Entries with `draft: true` render in the dev server but are excluded from
-production builds, RSS, and the sitemap — handy for previewing before publish.
+Entries with `draft: true` render in dev but are excluded from production builds,
+RSS, and the sitemap.
 
-## Authoring work entries
+## Authoring
 
-Add a markdown file to `src/content/work/`. Example frontmatter:
+**Work entries** — add a markdown file to `src/content/work/`:
 
 ```markdown
 ---
 title: "Project Name"
-description: "Brief description of the work."
+description: "Brief description."
 date: 2024-02-01
 category: "dev" # or "art", "photography"
 cover: "../../assets/images/cover.png"
@@ -32,51 +26,41 @@ liveUrl: "https://example.com"
 ---
 ```
 
-Film rolls are **not** authored by hand — use the authenticated hosted admin
-documented in [photography.md](photography.md).
+**Film rolls** are not hand-authored — use the hosted admin
+([photography.md](photography.md)).
 
-The public travel itinerary lives in `src/data/trips.json`. Its shared validator
-runs under `npm test` and the public build fails if the committed data is
-malformed. Production edits use the authenticated admin `/travel/` page, which
-commits allowed content directly to `main`. Code changes still use pull
-requests.
+**Travel** lives in `src/data/trips.json` (validated by `npm test` and the
+build); production edits go through the admin `/travel/` page. Code changes use
+pull requests.
 
 ## Commands
 
 | Command | Action |
 | :--- | :--- |
 | `npm run dev` | Dev server at `localhost:4321` |
-| `npm run build` | Build the production site to `./dist/` |
-| `npm run preview` | Preview the production build locally |
-| `npm run astro ...` | Run Astro CLI commands |
-| `npm test` | Run the full workspace-aware unit suite |
-| `npm run verify` | Run the required unit, public-build, travel-clock, and admin-build gate |
-| `npm run test:live` | Run credential-free DNS and production HTTP/security smoke checks |
-| `npm run dev --workspace @beek/admin` | Admin SSR dev server |
-| `npm test --workspace @beek/admin` | Admin-focused tests |
-| `npm run build --workspace @beek/admin` | Build the admin site to `admin/dist/` |
+| `npm run build` | Build to `./dist/` |
+| `npm run preview` | Preview the production build |
+| `npm test` | Full workspace unit suite |
+| `npm run verify` | Required gate: unit + public build + travel-clock + admin build |
+| `npm run test:live` | Credential-free DNS/HTTP/security smoke checks |
+| `npm run climate` | Fill `src/data/climate.json` for new stops |
 | `node scripts/compress-images.mjs [dir]` | Compress source images in place |
-| `npm run climate` | Fill in `src/data/climate.json` for any newly added stop |
+| `npm run <cmd> --workspace @beek/admin` | Run `dev` / `test` / `build` for the admin |
 
 ## Tests
 
-`npm test` runs Node's built-in test runner (`node --test`) over the `*.test.mjs`
-files. Coverage focuses on the pure logic behind the roll admin and the map:
+`npm test` runs Node's test runner (`node --test`) over `*.test.mjs`, covering
+the pure logic behind the roll admin and map:
 
-- `shared/*.test.mjs` — folder-name parsing, slug derivation, roll-Markdown
-  round-trips, location helpers, constants, and trip validation.
+- `shared/*.test.mjs` — folder/slug parsing, roll-Markdown round-trips, location
+  helpers, constants, trip validation.
 - `src/data/locations.test.mjs` — `effectiveLocations` de-duplication.
-- `admin/test/` — redirect validation, session sealing/refresh, request-guard
-  order, generic Git tree publishing to `main`, roll create/edit/delete planning,
-  travel schema/state logic, image boundaries, and browser-editor regressions.
+- `admin/test/` — redirects, session sealing/refresh, request-guard order, Git
+  tree publishing, roll/travel planning, image boundaries, editor regressions.
 
-Astro pages are also verified by building both workspaces. The public build
-checks the filesystem-style breadcrumb labels, links, and `aria-current`
-contract on representative index and detail routes, plus the public/admin links
-and keyboard-safe animated disclosures in the root filesystem index. Pull requests run
-`npm run verify` under the production Node 22.18 baseline in GitHub Actions; the
-`Project verification` job is required by the `main` ruleset. Monthly grouped
-Dependabot updates use the same gate. `astro dev` renders the admin SSR shell but
-does not emulate the production custom Netlify Functions; use mocked unit tests
-for publisher development and the authenticated production admin for a real
-content publish.
+Both workspace builds also run as verification: the public build checks
+breadcrumb labels/links/`aria-current` and the homepage index disclosures.
+PRs run `npm run verify` on Node 22.18 in GitHub Actions; the `Project
+verification` job is required by the `main` ruleset. `astro dev` renders the
+admin shell but not its production Functions — use mocked unit tests for
+publisher work and the production admin for a real publish.

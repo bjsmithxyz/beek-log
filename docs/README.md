@@ -1,20 +1,17 @@
 # Documentation
 
-Technical documentation for **bjsmith.xyz**. The top-level [README](../README.md)
-is the high-level overview; the detail lives here.
+Technical docs for **bjsmith.xyz**. The top-level [README](../README.md) is the
+overview; detail lives here.
 
-## Contents
-
-| Document | What it covers |
+| Document | Covers |
 | :--- | :--- |
-| [architecture.md](architecture.md) | Tech stack, project structure, content collections, the photos data model and map |
-| [development.md](development.md) | Local setup, authoring content, commands, tests |
+| [architecture.md](architecture.md) | Stack, structure, content collections, photos data model, travel |
+| [development.md](development.md) | Local setup, authoring, commands, tests |
 | [photography.md](photography.md) | The `/photos` section and hosted roll-publishing workflow |
-| [images-and-assets.md](images-and-assets.md) | Image compression, the Netlify Image CDN, and the asset-generation scripts |
-| [deployment.md](deployment.md) | Netlify build/deploy, security headers, caching, and gotchas |
-| [admin-infrastructure-setup.md](admin-infrastructure-setup.md) | Recreation checklist for Netlify, DNS, GitHub App OAuth, and live verification |
-| [admin-operations.md](admin-operations.md) | Deployed admin inventory, verification, secret rotation, and incident recovery |
-| [image-storage-migration.md](image-storage-migration.md) | Specification-only plan for a future R2 migration, rendering, rollback, and integrity checks |
+| [images-and-assets.md](images-and-assets.md) | Compression, Netlify Image CDN, asset scripts |
+| [deployment.md](deployment.md) | Netlify build/deploy, security headers, caching, gotchas |
+| [admin-infrastructure-setup.md](admin-infrastructure-setup.md) | Recreate Netlify, DNS, GitHub App OAuth from scratch |
+| [admin-operations.md](admin-operations.md) | Admin inventory, verification, secret rotation, recovery |
+| [image-storage-migration.md](image-storage-migration.md) | Design-only spec for a future R2 migration |
 
-Design history (specs and implementation plans) lives under
-[docs/superpowers/](superpowers/).
+Design history (specs, implementation plans) lives in [superpowers/](superpowers/).

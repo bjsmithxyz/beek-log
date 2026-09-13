@@ -1,19 +1,13 @@
 # Image storage migration specification
 
-Status: **design only**. Do not provision a bucket, rewrite Markdown, delete Git
-assets, or change production rendering as part of this specification.
+Status: **design only.** Do not provision a bucket, rewrite Markdown, delete Git
+assets, or change rendering until a trigger below is met and a plan is approved.
 
-## Recorded baseline and implementation triggers
+## Baseline and triggers
 
-Baseline measured on 2026-08-03 at commit `11b9559`:
-
-- 544 tracked roll JPEGs occupy approximately 235 MiB under
-  `src/assets/photos/`
-- the current local `.git` directory occupies approximately 313 MiB (clone and
-  garbage-collection state make this figure approximate)
-- a warm local public production build completes in approximately four seconds
-
-Recheck these figures quarterly with:
+Baseline (2026-08-03, commit `11b9559`): ~544 roll JPEGs ≈ 235 MiB under
+`src/assets/photos/`; local `.git` ≈ 313 MiB; warm public build ≈ 4 s. Recheck
+quarterly:
 
 ```sh
 du -sh src/assets/photos .git
@@ -21,267 +15,144 @@ git ls-files 'src/assets/photos/**' | wc -l
 time npm run build
 ```
 
-Begin an implementation plan—not an automatic migration—when any one of these
-conditions is met:
+Start an implementation plan (not an automatic migration) when any one holds:
 
-- tracked web-sized photo derivatives exceed 500 MiB
-- a clean clone's `.git` directory exceeds 1 GiB
-- median public deploy time exceeds ten minutes due primarily to image checkout,
-  processing, or upload
-- Netlify or GitHub storage, transfer, API, or billing limits materially affect
-  publishing
-- Git-backed blob upload failures make the hosted publisher unreliable
+- tracked web derivatives exceed 500 MiB
+- a clean clone's `.git` exceeds 1 GiB
+- median public deploy exceeds ten minutes, primarily from image handling
+- Netlify/GitHub storage, transfer, API, or billing limits materially bite
+- Git blob-upload failures make the hosted publisher unreliable
 
-Until a trigger is met, retain the simpler Git-backed pipeline and continue
-measuring. Crossing a trigger starts the staged design review below; it does not
-permit skipping the dual-read, integrity, preview, or rollback gates.
+Until then, keep the Git-backed pipeline and keep measuring. Crossing a trigger
+starts the staged review below — it never permits skipping the dual-read,
+integrity, preview, or rollback gates.
 
 ## Decision and goals
 
-If repository growth becomes operationally expensive, move future and existing
-web-sized film frames from Git to a Cloudflare R2 bucket served through a custom
-image hostname such as `images.bjsmith.xyz`. R2 is the preferred candidate
-because its object egress model is suitable for a static image site, but pricing,
-limits, custom-domain behavior, and account recovery must be rechecked before
-implementation.
-
-The migration must:
-
-- preserve every public roll URL and frame order
-- retain the current 2048px maximum canonical derivative and quality target
-- keep the public site static and free of credentials
-- keep object-store credentials confined to authenticated admin Functions
-- retain direct-to-`main` admin publishing with server path policy
-- support mixed Git-backed and object-backed rolls during migration
-- provide a reversible, hash-verified transition
-- stop future image growth in Git without requiring a history rewrite
-
-Full-resolution originals remain outside the site pipeline on the owner's
-personal endpoint and Proton Drive. R2 would hold web derivatives, not become
-the sole archive.
+If growth becomes expensive, move web-sized frames from Git to a Cloudflare R2
+bucket served via a custom hostname (e.g. `images.bjsmith.xyz`). Recheck R2
+pricing, limits, custom-domain behavior, and account recovery first. The
+migration must: preserve every roll URL and frame order; keep the 2048px/q80
+canonical derivative; keep the public site static and credential-free; confine
+R2 credentials to authenticated admin Functions; keep direct-to-`main` publishing
+with server path policy; support mixed Git- and object-backed rolls; be
+reversible and hash-verified; and stop Git image growth without a history rewrite.
+Full-resolution originals stay on the owner's endpoint + Proton Drive — R2 holds
+derivatives, not the archive.
 
 ## Bucket and origin
 
-Use a dedicated private-write bucket, for example `beek-photo-frames`, with a
-Cloudflare custom domain such as `images.bjsmith.xyz` for public reads. Do not
-publish the S3 API endpoint or permit anonymous writes/listing.
+Private-write bucket (e.g. `beek-photo-frames`); public `GET`/`HEAD` only through
+the custom domain; no listing; no anonymous writes; API credentials scoped to
+production admin Functions only. Serve `Cache-Control: public, max-age=31536000,
+immutable`, correct `image/jpeg` + byte length, no user-supplied response
+metadata. CORS only if needed (`GET`/`HEAD` from `https://bjsmith.xyz`). Add
+`https://images.bjsmith.xyz` to `img-src` in both CSPs — widen nothing else. Set
+billing alerts before rollout.
 
-Recommended controls:
+## Object identity
 
-- public `GET` and `HEAD` only through the custom domain
-- no directory listing
-- narrowly scoped R2 API credentials available only to production admin
-  Functions
-- CORS limited to `GET`/`HEAD` from `https://bjsmith.xyz` if browser CORS is
-  needed; normal `<img>` loads do not require broad CORS
-- `Cache-Control: public, max-age=31536000, immutable`
-- correct `Content-Type: image/jpeg`, explicit byte length, and no user-supplied
-  response metadata
-- Cloudflare and Netlify analytics/billing alerts before rollout
-
-The public CSP would add only `https://images.bjsmith.xyz` to `img-src`. The
-admin CSP would add the same host for previews. No script or connection source
-should be widened merely to display images.
-
-## Object identity and keys
-
-Objects are immutable and content-addressed so reorder, rename, and duplicate
-frames do not copy bytes. Use a versioned key derived from the encoded canonical
-JPEG:
+Immutable, content-addressed keys so reorder/rename/duplicate never copy bytes:
 
 ```text
 frames/v1/sha256/<first-two-hex>/<full-sha256>.jpg
 ```
 
-Store these object metadata values at upload time:
+Store per object: full SHA-256, byte length, width/height, encoder profile
+(`mozjpeg-q80-v1`), creation timestamp. Never overwrite a key; a repeat upload
+succeeds only if length + metadata agree; a digest mismatch is a hard failure.
+The storage service may return a 40-hex opaque ref (first 160 bits) for payload
+compatibility while keeping the full digest server-side; the roll planner resolves
+it. Renaming `blobSha` → `storageRef` is later cleanup, not a prerequisite.
 
-- complete SHA-256 digest
-- encoded byte length
-- width and height
-- encoder profile/version, initially `mozjpeg-q80-v1`
-- creation timestamp for orphan lifecycle decisions
+## Markdown and schema
 
-Never overwrite an existing key. A repeated byte upload is successful only when
-its length and metadata agree with the existing object. A digest mismatch is a
-hard failure.
+Roll Markdown stays canonical for ordering/metadata. During dual-read, a photo
+`src` is either the current Astro local image or a remote record
+(`{ url, width, height, sha256 }`). The schema uses a discriminated union of the
+current `image()` value and a strict remote object requiring: HTTPS on the exact
+image origin; a path matching the content-addressed key; positive bounded
+dimensions; a 64-hex lowercase SHA-256 matching the URL. Reject arbitrary hosts,
+query strings, malformed dimensions, and key/digest disagreement at build time.
 
-For compatibility with the current browser payload, the storage service can
-return a 40-hex opaque reference derived from the first 160 bits of SHA-256 while
-retaining the full digest server-side. The roll planner—not the generic Git
-publisher—resolves that reference to the complete object record. A later schema
-version should rename `blobSha` to `storageRef`; that rename is cleanup, not a
-migration prerequisite.
+## Rendering
 
-## Markdown representation
+`astro:assets`/`<Image>`/Netlify CDN don't apply to remote objects. Add a small
+project component emitting native `<img>` with explicit width/height, lazy
+loading, decoding, alt, and the existing lightbox data attributes. Initially serve
+the 2048px canonical at all breakpoints; before a large rollout, precompute
+content-addressed variants (e.g. 480/960/2048) recorded in Markdown and emitted as
+`srcset`. Don't depend on a paid runtime transform product without separate cost +
+rollback approval. Local and remote rendering must coexist until all pages, OG
+routes, RSS, maps, lightbox, and no-JS display pass the same tests; URLs don't
+change.
 
-Keep roll Markdown as the canonical ordering and descriptive metadata. During a
-dual-read transition, each photo `src` may be either the existing Astro local
-image reference or a versioned remote record:
+## Admin boundary
 
-```yaml
-photos:
-  - src:
-      url: https://images.bjsmith.xyz/frames/v1/sha256/ab/abcdef….jpg
-      width: 2048
-      height: 1365
-      sha256: abcdef…
-    alt: ""
-    caption: optional
-```
+`admin/src/lib/store-bytes.js` stays the only browser storage call; its signature
+(encoded JPEG → 40-hex `sha` + byte count) is unchanged. Retarget `blob-upload`
+behind it: apply existing method/type/origin/session/JPEG-signature/size guards;
+decode dimensions and compute SHA-256 server-side (never trust client
+metadata/key); write-if-absent to the deterministic key with immutable headers;
+`HEAD`-verify before returning the ref; surface safe errors only.
+`roll-publish.mjs` changes only its reference resolution — it builds Markdown with
+guarded object records and sends the Markdown change to the existing Git
+publisher. Rename/delete stay atomic at the repo level; immutable objects are
+GC'd later, not deleted in a request. Existing Git frames keep their path until
+migrated.
 
-The content schema should use a discriminated union of the current `image()`
-value and a strict remote object requiring:
+## Sequence (never combine steps in one release)
 
-- HTTPS on the exact configured image origin
-- a path matching the content-addressed key format
-- positive bounded dimensions
-- a 64-character lowercase SHA-256 value matching the URL
+1. Provision bucket, domain, narrow credentials, immutable headers, alerts, test
+   prefix.
+2. Ship strict remote schema + dual rendering with tests, while all Markdown stays
+   local.
+3. Retarget `storeBytes`/`blob-upload` + planner; exercise a disposable remote
+   draft and a create/edit/delete through previews.
+4. Send only new rolls to R2; monitor integrity, page weight, errors, cost before
+   backfill.
+5. Build a deterministic backfill tool (read JPEG → digest/dimensions → idempotent
+   upload → machine-readable manifest).
+6. Migrate existing rolls in small PRs; each updates Markdown and deletes only its
+   local frames after every object verifies.
+7. Verify production, hold Git history/tag + all R2 objects through the rollback
+   window, then stop accepting new Git image blobs.
 
-Do not accept arbitrary remote hosts or query strings. Build validation must
-reject malformed dimensions, duplicate frame references where not intentional,
-and object URLs whose key disagrees with their digest.
+## Integrity gate (per migrated roll)
 
-## Rendering without `astro:assets`
+Frame count/order match pre-migration; every URL uses the exact origin + canonical
+key; `HEAD` returns 200, JPEG type, immutable cache, expected length; downloaded
+bytes hash to the recorded SHA-256; decoded dimensions match Markdown and ≤2048;
+locations/captions/alt/draft/body unchanged; public build, roll route, photos
+index, OG, RSS, lightbox all work; the PR deletes no unrelated path. Store the
+manifest + verification summary in Git (never credentials or originals).
 
-Current local `ImageMetadata`, Astro `<Image>`, `getImage`, and Netlify Image CDN
-transformations do not apply directly to remote R2 objects. Replace them for
-remote frames with a small project-owned component that emits native `<img>`
-markup with explicit width, height, lazy loading, decoding, alt text, and the
-existing lightbox data attributes.
+## Backup, GC, rollback
 
-The initial migration may serve the canonical maximum-2048px JPEG at all
-breakpoints to minimize moving parts. Before a large rollout, prefer
-provider-independent precomputed variants at widths such as 480, 960, and 2048,
-recorded together in Markdown and emitted as `srcset`. Variants should also be
-content-addressed and immutable. Do not make the public site depend on a paid
-runtime image transformation product unless cost and rollback are separately
-approved.
+R2 isn't the source-original backup — keep the two-copy archive. Export periodic
+key/digest/size inventories; retain manifests in Git; test restoration from a
+full-res original. Never age-delete referenced objects; mark unreferenced uploads
+only after scanning `main`; ≥90-day grace before deleting; exclude objects
+referenced by any open PR; log only keys/digests. Abandoned publishes may leave
+immutable orphans — an accepted tradeoff (async mark-and-sweep beats deleting
+bytes during publication).
 
-Local and remote rendering must coexist until all migrated pages, Open Graph
-routes, RSS, maps, lightbox behavior, and no-JavaScript image display pass the
-same tests. Roll and page URLs do not change.
+Rollback: tag the base commit before each batch; revert the planner flag to stop
+remote publishing; revert the migration PR so Markdown + local assets return
+together; redeploy and verify URLs; keep R2 objects in place (content-addressed,
+reusable); rotate R2 credentials rather than changing public URLs on compromise.
+Because Git blobs remain in history, rollback doesn't depend on R2 during the
+initial window; don't GC objects or rewrite history until rollback exercises pass.
 
-## Retargeting the admin boundary
+## Git history
 
-`admin/src/lib/store-bytes.js` remains the only browser storage call. Its
-function signature continues to accept the encoded canonical JPEG and return a
-40-hex opaque `sha` plus byte count, so the encoder and editor do not need to
-know whether storage is Git or R2.
+Default: stop future growth without rewriting history — a `git filter-repo`
+rewrite would invalidate commit IDs, clones, links, Netlify caches, and evidence
+for modest gain. Reconsider only if measured clone/build costs become
+unacceptable; that needs a separate approved plan (mirror backup, frozen window,
+force-push coordination, cache reset, re-clones, before/after counts) and is not
+part of this migration.
 
-Retarget the authenticated `blob-upload` service behind that boundary:
-
-1. Apply the existing method, content type, origin, session, JPEG-signature, and
-   size guards.
-2. Decode dimensions and compute SHA-256 server-side; do not trust client
-   metadata or a client-selected key.
-3. Write-if-absent to the deterministic R2 key with immutable headers and
-   metadata.
-4. Verify the stored object using a `HEAD` response before returning its opaque
-   reference.
-5. Return safe progress/errors without exposing bucket credentials or API
-   responses.
-
-`admin/src/server/roll-publish.mjs` changes its storage-reference resolution,
-not the generic publisher. For a remote-backed roll it builds Markdown that
-contains guarded object records and sends only the Markdown create/update to the
-existing generic Git publisher. Rename/delete operations still remain atomic at
-the repository level; immutable R2 objects are garbage-collected later rather
-than deleted during a user request. Existing Git frames continue to use their
-current SHA path until migrated.
-
-This preserves the editor, encoder, request guards, PR controls, and generic
-publisher while changing one storage boundary and one roll-specific planner.
-
-## Migration sequence
-
-1. Provision the bucket, custom domain, narrow credentials, immutable headers,
-   billing alerts, and a non-production test prefix.
-2. Add strict remote-image schema and dual local/remote rendering with tests;
-   deploy while all production Markdown remains local.
-3. Retarget `storeBytes`/`blob-upload` and the roll planner. Publish and abandon a
-   disposable remote draft, then create/edit/delete one through previews.
-4. Send only newly created rolls to R2. Monitor object integrity, page weight,
-   error rates, and costs before backfill.
-5. Build a deterministic backfill tool that reads each committed JPEG, computes
-   its digest/dimensions, uploads idempotently, and writes a machine-readable
-   migration manifest.
-6. Migrate existing rolls in small PRs. Each PR updates Markdown and deletes only
-   the corresponding local frame paths after every object passes verification.
-7. Verify production, retain the Git history/tag and all R2 objects through the
-   rollback window, then stop accepting new Git image blobs.
-
-Never combine bucket provisioning, renderer rollout, all-object backfill, and
-Git deletion in one release.
-
-## Integrity gate
-
-For every migrated roll, an automated verifier must check:
-
-- Markdown frame count and order match the pre-migration roll
-- every remote URL uses the exact image origin and canonical key
-- `HEAD` returns 200, JPEG content type, immutable cache policy, and expected
-  byte length
-- downloaded bytes hash to the recorded full SHA-256
-- decoded dimensions match Markdown and neither edge exceeds 2048
-- primary/per-frame locations, captions, alt values, draft state, and body are
-  unchanged
-- public build, roll route, photos index, Open Graph route, RSS, and lightbox
-  still work
-- the migration PR deletes no unrelated repository path
-
-Store the migration manifest and verification summary in Git; do not store
-credentials or full-resolution originals there.
-
-## Backup, lifecycle, and garbage collection
-
-R2 is not the source-original backup. Keep the owner's existing two-copy archive.
-For web derivatives:
-
-- export a periodic inventory containing keys, digests, sizes, and metadata
-- retain versioned migration manifests in Git
-- test restoration by re-uploading a sampled object from a full-resolution
-  original and reproducing the expected canonical derivative where practical
-- never apply age-based deletion to referenced objects
-- mark unreferenced uploads as candidates only after scanning current `main`
-- use at least a 90-day grace period before deleting unreferenced objects
-- exclude objects referenced by any open admin PR during garbage collection
-- log only keys/digests, never credentials or signed URLs
-
-A failed or abandoned publication may leave immutable orphan objects. That is an
-accepted safety tradeoff; asynchronous mark-and-sweep is safer than deleting
-bytes during publication.
-
-## Rollback
-
-Before each migration batch, tag or record the exact base commit. If rendering
-or storage fails:
-
-1. Stop remote publishing by reverting the roll-planner storage feature flag.
-2. Revert the migration PR so Markdown and local Git assets return together.
-3. Redeploy and verify public roll URLs.
-4. Keep R2 objects in place during investigation; content-addressed objects are
-   harmless and may be reused.
-5. Rotate R2 credentials if compromise, rather than changing public object URLs.
-
-Because existing Git blobs remain in repository history, rollback does not
-depend on R2 availability during the initial migration window. Do not garbage
-collect remote objects or rewrite Git history until rollback exercises pass.
-
-## Git history decision
-
-Default decision: stop future growth without rewriting existing history. A
-`git filter-repo` rewrite would invalidate commit IDs, clones, subtree history,
-open links, Netlify caches, and operational evidence for modest immediate gain.
-The existing history remains a useful rollback source.
-
-Reconsider a rewrite only if measured clone/build costs become unacceptable.
-That would require a separate approved plan, mirror backup, frozen publishing
-window, force-push coordination, Netlify cache reset, collaborator re-clones,
-and before/after object-count verification. It is not part of the R2 migration.
-
-## Completion criteria
-
-The future implementation is complete only when new uploads, mixed rendering,
-backfill, rollback, orphan collection, backup restore, CSP, and cost monitoring
-have all passed production-like tests. Until then, Git-backed frames and the
-current hosted publisher remain authoritative.
+**Complete only when** new uploads, mixed rendering, backfill, rollback, orphan
+collection, backup restore, CSP, and cost monitoring all pass production-like
+tests. Until then the Git-backed pipeline is authoritative.
