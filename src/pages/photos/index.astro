@@ -113,13 +113,15 @@ const promoThumbs = [...featuredPhotos]
     color: var(--color-text-primary);
     background: var(--color-bg-secondary);
     border: 1px solid var(--color-accent-primary);
-    box-shadow: var(--shadow-hard-accent);
-    transition: transform var(--transition-fast);
+    box-shadow: 0 0 0 var(--color-accent-primary);
+    transition: box-shadow var(--transition-fast);
   }
 
+  /* The box stays put; a hard accent underglow pushes out to the
+     bottom-right on hover and retracts when the pointer leaves. */
   .highlights-promo:hover {
     color: var(--color-text-primary);
-    transform: translate(-2px, -2px);
+    box-shadow: 5px 5px 0 var(--color-accent-primary);
   }
 
   .highlights-promo-copy {
@@ -149,9 +151,9 @@ const promoThumbs = [...featuredPhotos]
     background: #161412;
     opacity: var(--fade);
     z-index: calc(30 - var(--i));
-    transition: transform var(--transition-base), opacity var(--transition-base),
+    transition: transform var(--transition-fast), opacity var(--transition-fast),
       border-color var(--transition-fast);
-    transition-delay: calc(var(--i) * 35ms);
+    transition-delay: calc(var(--i) * 20ms);
     will-change: transform;
   }
 
