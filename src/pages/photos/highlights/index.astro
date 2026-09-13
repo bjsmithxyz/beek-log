@@ -63,8 +63,10 @@ const rollCount = new Set(highlights.map((h) => h.rollId)).size;
               <Image
                 src={h.src}
                 alt={h.alt}
-                width={480}
-                height={480}
+                widths={[180, 260, 360, 480, 540, 660]}
+                sizes="(min-width: 960px) 180px, (min-width: 769px) 20vw, (min-width: 481px) 25vw, 45vw"
+                width={660}
+                height={660}
                 loading="lazy"
                 data-lightbox
                 data-lightbox-id={`${h.rollId}-${h.frameNumber}`}

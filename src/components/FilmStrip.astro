@@ -58,8 +58,10 @@ const fullImages = await Promise.all(
         <Image
           src={p.src}
           alt={p.alt}
-          width={400}
-          height={267}
+          widths={[180, 260, 360, 480, 540]}
+          sizes="(max-width: 812px) 130px, (max-width: 1125px) 16vw, 180px"
+          width={540}
+          height={360}
           class="frame-img"
           loading="lazy"
           data-lightbox
