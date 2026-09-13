@@ -15,9 +15,8 @@ const { items } = Astro.props;
   <ol>
     {items.map((item, index) => (
       <li>
-        {index > 0 && <span class="breadcrumb-separator" aria-hidden="true">/</span>}
         <a href={item.href} aria-current={index === items.length - 1 ? 'page' : undefined}>
-          {item.label}
+          {item.label}<span class="breadcrumb-slash" aria-hidden="true">/</span>
         </a>
       </li>
     ))}
@@ -51,12 +50,8 @@ const { items } = Astro.props;
     align-items: center;
   }
 
-  .breadcrumb a,
-  .breadcrumb-separator {
-    color: var(--color-text-muted);
-  }
-
   .breadcrumb a {
+    color: var(--color-text-muted);
     text-decoration: none;
   }
 

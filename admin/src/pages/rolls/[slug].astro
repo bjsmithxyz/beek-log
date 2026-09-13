@@ -8,7 +8,8 @@ if (!/^[a-z0-9-]+$/.test(slug || '')) return Astro.redirect('/rolls/');
 <AdminLayout
   title="edit roll"
   breadcrumbs={[
-    { label: '~/admin', href: publicSite },
+    { label: '~', href: publicSite },
+    { label: 'admin', href: '/' },
     { label: 'rolls', href: '/rolls/' },
     { label: slug || '', href: `/rolls/${slug}/` },
   ]}

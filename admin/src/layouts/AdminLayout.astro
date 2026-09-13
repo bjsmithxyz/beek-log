@@ -15,7 +15,10 @@ interface Props {
 }
 const {
   title = 'admin',
-  breadcrumbs = [{ label: '~/admin', href: publicSite }],
+  breadcrumbs = [
+    { label: '~', href: publicSite },
+    { label: 'admin', href: '/' },
+  ],
 } = Astro.props;
 const fullTitle = title === 'admin' ? siteName : `${title} | ${siteName}`;
 ---

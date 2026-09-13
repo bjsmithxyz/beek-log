@@ -6,7 +6,8 @@ import { publicSite } from '../../data/site';
 <AdminLayout
   title="travel"
   breadcrumbs={[
-    { label: '~/admin', href: publicSite },
+    { label: '~', href: publicSite },
+    { label: 'admin', href: '/' },
     { label: 'travel', href: '/travel/' },
   ]}
 >
@@ -45,7 +46,6 @@ import { publicSite } from '../../data/site';
     <span class="section-path">publication/review</span>
     <h2 id="review-title">review changes</h2>
     <p id="review-summary"></p>
-    <p>This commits the itinerary to <code>main</code>. Netlify rebuilds production from that commit.</p>
     <div class="review-actions">
       <button class="admin-button secondary" id="cancel-review" type="button">keep editing</button>
       <button class="admin-button" id="publish-travel" type="button">publish to main →</button>
