@@ -848,10 +848,10 @@
       "cc": "LT",
       "lat": 54.6872,
       "lon": 25.2797,
-      "arrive": "2026-09-14",
-      "depart": "2026-09-16",
+      "arrive": "2026-09-16",
+      "depart": "2026-09-18",
       "note": "Suwałki Gap crossing into Poland",
-      "tentative": true
+      "tentative": false
     },
     {
       "name": "Warsaw",
@@ -859,9 +859,9 @@
       "cc": "PL",
       "lat": 52.2297,
       "lon": 21.0122,
-      "arrive": "2026-09-21",
-      "depart": "2026-09-25",
-      "tentative": true
+      "arrive": "2026-09-18",
+      "depart": "2026-09-21",
+      "tentative": false
     },
     {
       "name": "Kraków",
@@ -869,18 +869,19 @@
       "cc": "PL",
       "lat": 50.0647,
       "lon": 19.945,
-      "arrive": "2026-09-25",
-      "depart": "2026-10-02",
+      "arrive": "2026-09-21",
+      "depart": "2026-09-25",
       "tentative": true
     },
     {
-      "name": "Katowice",
+      "name": "Zakopane",
       "country": "Poland",
       "cc": "PL",
-      "lat": 50.2649,
-      "lon": 19.0238,
+      "lat": 49.2969114,
+      "lon": 19.9504753,
       "arrive": "2026-09-25",
-      "depart": "2026-09-27",
+      "depart": "2026-09-30",
+      "note": "",
       "tentative": true
     },
     {
@@ -889,8 +890,8 @@
       "cc": "CZ",
       "lat": 50.0755,
       "lon": 14.4378,
-      "arrive": "2026-10-02",
-      "depart": "2026-10-08",
+      "arrive": "2026-10-03",
+      "depart": "2026-10-07",
       "tentative": true
     },
     {
