@@ -11,8 +11,9 @@ shared package:
 
 Content remains file-based under `src/content/` and `src/data/`; there is no
 database. Film rolls and travel data are authored through the hosted admin,
-which commits allowed content paths directly to `main`. Code and dependency
-changes still use normal pull requests.
+which commits allowed content paths directly to `main`. Commit and push code
+and dependency changes directly to `main`; do not open pull requests unless
+the user explicitly requests one.
 
 ### Node version
 
