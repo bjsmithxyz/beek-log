@@ -61,3 +61,64 @@ test('travel browser editor loads, edits, validates and opens review', async () 
     dom.window.close();
   }
 });
+
+test('a pending geocode cannot overwrite the publishing state', async () => {
+  const dom = new JSDOM(html, { url: 'https://admin.bjsmith.xyz/travel/' });
+  const previous = {
+    window: globalThis.window,
+    document: globalThis.document,
+    sessionStorage: globalThis.sessionStorage,
+    confirm: globalThis.confirm,
+    fetch: globalThis.fetch,
+  };
+  let resolveGeocode;
+  let rejectPublish;
+  globalThis.window = dom.window;
+  globalThis.document = dom.window.document;
+  globalThis.sessionStorage = dom.window.sessionStorage;
+  globalThis.confirm = () => true;
+  globalThis.fetch = async (url) => {
+    if (url === '/.netlify/functions/travel-data') {
+      return new Response(JSON.stringify({ ok: true, sha: 'a'.repeat(40), trips }), {
+        status: 200, headers: { 'Content-Type': 'application/json' },
+      });
+    }
+    if (url === '/.netlify/functions/geocode') {
+      return new Promise((resolve) => { resolveGeocode = resolve; });
+    }
+    if (url === '/.netlify/functions/publish-start') {
+      return new Promise((_, reject) => { rejectPublish = reject; });
+    }
+    throw new Error(`Unexpected request: ${url}`);
+  };
+  try {
+    await import(`../src/scripts/travel-editor.js?race-test=${Date.now()}`);
+    await new Promise((resolve) => setTimeout(resolve, 0));
+
+    const depart = document.querySelector('.stop-card input[data-field="depart"]');
+    depart.value = '2025-01-05';
+    depart.dispatchEvent(new dom.window.Event('input', { bubbles: true }));
+    document.querySelector('[data-action="geocode"]').click();
+    document.getElementById('review-travel').click();
+    document.getElementById('publish-travel').click();
+    assert.equal(document.getElementById('editor-status').textContent, 'Committing itinerary to main…');
+
+    resolveGeocode(new Response(JSON.stringify({
+      results: [{ lat: 10, lng: 20, cc: 'XY' }],
+    }), { status: 200, headers: { 'Content-Type': 'application/json' } }));
+    await new Promise((resolve) => setTimeout(resolve, 0));
+
+    assert.equal(document.getElementById('editor-status').textContent, 'Committing itinerary to main…');
+    assert.equal(document.getElementById('review-panel').hidden, false);
+    assert.equal(document.getElementById('publish-travel').disabled, true);
+
+    rejectPublish(new Error('Test cleanup'));
+    await new Promise((resolve) => setTimeout(resolve, 0));
+  } finally {
+    for (const [key, value] of Object.entries(previous)) {
+      if (value === undefined) delete globalThis[key];
+      else globalThis[key] = value;
+    }
+    dom.window.close();
+  }
+});

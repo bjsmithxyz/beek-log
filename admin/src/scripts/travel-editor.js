@@ -172,6 +172,7 @@ async function geocodeStop(index) {
   button?.setAttribute('aria-busy', 'true');
   try {
     const body = await post(endpoints.geocode, { kind: 'place', query });
+    if (publishing) return;
     const result = body.results?.[0];
     if (!result) {
       setStatus(`No location match for “${query}”.`);
@@ -183,6 +184,7 @@ async function geocodeStop(index) {
     updateDerived(index);
     updateDirtyState();
   } catch (error) {
+    if (publishing) return;
     setStatus(error.message || 'Could not resolve this location.');
   } finally {
     button?.removeAttribute('aria-busy');
@@ -190,6 +192,7 @@ async function geocodeStop(index) {
 }
 
 function updateDirtyState(message = null) {
+  if (publishing) return;
   const dirty = original && !tripsEqual(original, draft);
   reviewButton.disabled = !dirty || publishing;
   setStatus(dirty ? (message || 'Unpublished changes.') : '');
