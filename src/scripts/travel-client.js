@@ -275,7 +275,6 @@ function setupTravel() {
     }
     element.innerHTML = `
       <h3 class="climate-title">climate/</h3>
-      <p class="climate-note">typical for the month each stay began — ten-year averages from Open-Meteo (ERA5), not what the sky actually did.</p>
       <div class="climate-rows">${extremes.map(({ label, field, stop, value }) => `
         <div class="climate-row">
           <span class="climate-label">${escapeHtml(label)}</span>
