@@ -17,3 +17,11 @@ test('public markdown pipeline sanitizes raw HTML', async () => {
   assert.match(config, /rehypeRaw/);
   assert.match(config, /unified\(/);
 });
+
+test('public and admin sites disable unused Astro sessions', async () => {
+  const configs = await Promise.all([
+    readFile(new URL('../astro.config.mjs', import.meta.url), 'utf8'),
+    readFile(new URL('../admin/astro.config.mjs', import.meta.url), 'utf8'),
+  ]);
+  for (const config of configs) assert.match(config, /\bsession:\s*false/);
+});

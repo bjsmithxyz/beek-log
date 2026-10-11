@@ -5,6 +5,7 @@ export default defineConfig({
   site: 'https://admin.bjsmith.xyz',
   output: 'server',
   adapter: netlify(),
+  session: false,
   build: {
     assets: '_assets',
     inlineStylesheets: 'never',

@@ -11,6 +11,7 @@ export default defineConfig({
     // Netlify adapter routes astro:assets through the Netlify Image CDN in
     // production (on-demand edge transforms); dev still uses local sharp.
     adapter: netlify(),
+    session: false,
     integrations: [sitemap()],
     // unified + sanitize so raw HTML in markdown cannot carry script/event
     // handlers. rehype-raw must run before rehype-sanitize.
