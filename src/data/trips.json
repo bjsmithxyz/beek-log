@@ -905,13 +905,35 @@
       "tentative": false
     },
     {
+      "name": "belgrade",
+      "country": "Serbia",
+      "cc": "RS",
+      "lat": 44.8153318,
+      "lon": 20.4456588,
+      "arrive": "2026-10-15",
+      "depart": "2026-10-20",
+      "note": "",
+      "tentative": true
+    },
+    {
       "name": "Sarajevo",
       "country": "Bosnia and Herzegovina",
       "cc": "BA",
       "lat": 43.8563,
       "lon": 18.4131,
-      "arrive": "2026-10-15",
-      "depart": "2026-10-21",
+      "arrive": "2026-10-20",
+      "depart": "2026-10-27",
+      "tentative": true
+    },
+    {
+      "name": "Mostar",
+      "country": "Bosnia and Herzegovina",
+      "cc": "BA",
+      "lat": 43.3435855,
+      "lon": 17.8076584,
+      "arrive": "2026-10-27",
+      "depart": "2026-10-29",
+      "note": "",
       "tentative": true
     }
   ]
