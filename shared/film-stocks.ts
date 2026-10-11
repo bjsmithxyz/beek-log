@@ -15,6 +15,7 @@ export const filmStocks = {
   'kodak-portra-400': { name: 'Kodak Portra 400', type: 'color' },
   'portra-400': { name: 'Portra 400', type: 'color' },
   'kodak-colorplus-200': { name: 'Kodak ColorPlus 200', type: 'color' },
+  'kodak-400tm': { name: 'Kodak 400TM', type: 'bw' },
   '1hundred-800': { name: '1Hundred 800', type: 'color' },
   'kodak-gold-200': { name: 'Kodak Gold 200', type: 'color' },
   'rollei-rpx-400': { name: 'Rollei RPX 400', type: 'bw' },
