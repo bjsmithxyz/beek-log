@@ -860,7 +860,7 @@
       "lat": 52.2297,
       "lon": 21.0122,
       "arrive": "2026-09-18",
-      "depart": "2026-09-21",
+      "depart": "2026-09-22",
       "tentative": false
     },
     {
@@ -869,20 +869,9 @@
       "cc": "PL",
       "lat": 50.0647,
       "lon": 19.945,
-      "arrive": "2026-09-21",
-      "depart": "2026-09-25",
-      "tentative": true
-    },
-    {
-      "name": "Zakopane",
-      "country": "Poland",
-      "cc": "PL",
-      "lat": 49.2969114,
-      "lon": 19.9504753,
-      "arrive": "2026-09-25",
-      "depart": "2026-09-30",
-      "note": "",
-      "tentative": true
+      "arrive": "2026-09-22",
+      "depart": "2026-10-03",
+      "tentative": false
     },
     {
       "name": "Prague",
@@ -892,17 +881,18 @@
       "lon": 14.4378,
       "arrive": "2026-10-03",
       "depart": "2026-10-07",
-      "tentative": true
+      "tentative": false
     },
     {
-      "name": "Bratislava",
-      "country": "Slovakia",
-      "cc": "SK",
-      "lat": 48.1486,
-      "lon": 17.1077,
-      "arrive": "2026-10-08",
-      "depart": "2026-10-11",
-      "tentative": true
+      "name": "Vienna",
+      "country": "Austria",
+      "cc": "AT",
+      "lat": 48.2083537,
+      "lon": 16.3725042,
+      "arrive": "2026-10-07",
+      "depart": "2026-10-10",
+      "note": "",
+      "tentative": false
     },
     {
       "name": "Budapest",
@@ -910,9 +900,9 @@
       "cc": "HU",
       "lat": 47.4979,
       "lon": 19.0402,
-      "arrive": "2026-10-11",
-      "depart": "2026-10-17",
-      "tentative": true
+      "arrive": "2026-10-10",
+      "depart": "2026-10-15",
+      "tentative": false
     },
     {
       "name": "Zagreb",
