@@ -901,19 +901,20 @@
       "lat": 47.4979,
       "lon": 19.0402,
       "arrive": "2026-10-10",
-      "depart": "2026-10-15",
-      "tentative": false
+      "depart": "2026-10-17",
+      "tentative": false,
+      "note": "Bus to Serbia."
     },
     {
-      "name": "belgrade",
+      "name": "Belgrade",
       "country": "Serbia",
       "cc": "RS",
       "lat": 44.8153318,
       "lon": 20.4456588,
-      "arrive": "2026-10-15",
-      "depart": "2026-10-20",
+      "arrive": "2026-10-17",
+      "depart": "2026-10-22",
       "note": "",
-      "tentative": true
+      "tentative": false
     },
     {
       "name": "Sarajevo",
@@ -921,8 +922,8 @@
       "cc": "BA",
       "lat": 43.8563,
       "lon": 18.4131,
-      "arrive": "2026-10-20",
-      "depart": "2026-10-27",
+      "arrive": "2026-10-22",
+      "depart": "2026-10-29",
       "tentative": true
     },
     {
@@ -931,8 +932,8 @@
       "cc": "BA",
       "lat": 43.3435855,
       "lon": 17.8076584,
-      "arrive": "2026-10-27",
-      "depart": "2026-10-29",
+      "arrive": "2026-10-29",
+      "depart": "2026-10-31",
       "note": "",
       "tentative": true
     }
