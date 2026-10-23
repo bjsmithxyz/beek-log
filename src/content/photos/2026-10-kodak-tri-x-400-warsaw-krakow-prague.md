@@ -295,6 +295,7 @@ photos:
         name: Czechia
         lat: 49.7439047
         lng: 15.3381061
+    featured: true
   - src: ../../assets/photos/2026-10-kodak-tri-x-400-warsaw-krakow-prague/034.jpg
     alt: ""
     location:
@@ -305,6 +306,7 @@ photos:
         name: Czechia
         lat: 49.7439047
         lng: 15.3381061
+    featured: true
   - src: ../../assets/photos/2026-10-kodak-tri-x-400-warsaw-krakow-prague/035.jpg
     alt: ""
     location:
@@ -447,6 +449,7 @@ photos:
         name: Czechia
         lat: 49.7439047
         lng: 15.3381061
+    featured: true
   - src: ../../assets/photos/2026-10-kodak-tri-x-400-warsaw-krakow-prague/049.jpg
     alt: ""
     location:
@@ -457,7 +460,6 @@ photos:
         name: Czechia
         lat: 49.7439047
         lng: 15.3381061
-    featured: true
   - src: ../../assets/photos/2026-10-kodak-tri-x-400-warsaw-krakow-prague/050.jpg
     alt: ""
     location:
