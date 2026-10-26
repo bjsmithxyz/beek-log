@@ -1,5 +1,5 @@
 ---
-title: helsinki / tallinn / riga / vilnius / krakow
+title: Helsinki / Tallinn / Riga / Vilnius / Krakow
 stock: kodak-400tm
 date: 2026-09-05
 location:
