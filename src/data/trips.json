@@ -923,8 +923,8 @@
       "lat": 43.8563,
       "lon": 18.4131,
       "arrive": "2026-10-22",
-      "depart": "2026-10-29",
-      "tentative": true
+      "depart": "2026-10-28",
+      "tentative": false
     },
     {
       "name": "Mostar",
@@ -932,10 +932,10 @@
       "cc": "BA",
       "lat": 43.3435855,
       "lon": 17.8076584,
-      "arrive": "2026-10-29",
-      "depart": "2026-10-31",
+      "arrive": "2026-10-28",
+      "depart": "2026-10-30",
       "note": "",
-      "tentative": true
+      "tentative": false
     }
   ]
 }
