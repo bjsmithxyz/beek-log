@@ -936,6 +936,28 @@
       "depart": "2026-10-30",
       "note": "",
       "tentative": false
+    },
+    {
+      "name": "Kotor",
+      "country": "Montenegro",
+      "cc": "ME",
+      "lat": 42.4249205,
+      "lon": 18.7713332,
+      "arrive": "2026-10-30",
+      "depart": "2026-11-02",
+      "note": "",
+      "tentative": false
+    },
+    {
+      "name": "Tirana",
+      "country": "Albania",
+      "cc": "AL",
+      "lat": 41.3283781,
+      "lon": 19.8179825,
+      "arrive": "2026-11-02",
+      "depart": "2026-11-06",
+      "note": "",
+      "tentative": true
     }
   ]
 }
