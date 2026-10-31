@@ -3,9 +3,9 @@ import { includePhotoDrafts } from '@beek/shared/deploy-context';
 
 // Drafts never ship to production. Photo rolls additionally preview under
 // `astro dev` so unpublished rolls can be eyeballed locally before release;
-// work entries are not previewed (a draft project simply has no page yet).
-export const getWorkEntries = () =>
-  getCollection('work', ({ data }) => !data.draft);
+// other entries are not previewed (a draft project simply has no page yet).
+export const getOtherEntries = () =>
+  getCollection('other', ({ data }) => !data.draft);
 
 const showPhotoDrafts = includePhotoDrafts({
   dev: import.meta.env.DEV,

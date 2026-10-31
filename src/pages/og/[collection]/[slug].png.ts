@@ -1,22 +1,22 @@
 import type { APIRoute, GetStaticPaths } from 'astro';
 import { getFilmStock } from '@beek/shared/film-stocks';
-import { getWorkEntries, getPhotoRolls } from '../../../lib/collections';
+import { getOtherEntries, getPhotoRolls } from '../../../lib/collections';
 import { ogCardPng, type OgCardOptions } from '../../../lib/og-card';
 
 export const prerender = true;
 
-// One terminal-aesthetic OG card per work entry and per film roll, generated at
+// One terminal-aesthetic OG card per other entry and per film roll, generated at
 // build time into dist/og/<collection>/<slug>.png. Detail pages reference these
 // via the BaseLayout `image` prop.
 export const getStaticPaths: GetStaticPaths = async () => {
-  const work = await getWorkEntries();
+  const other = await getOtherEntries();
   const photos = await getPhotoRolls();
 
   return [
-    ...work.map((e) => ({
-      params: { collection: 'work', slug: e.id },
+    ...other.map((e) => ({
+      params: { collection: 'other', slug: e.id },
       props: {
-        eyebrow: '~/beek/work',
+        eyebrow: '~/beek/other',
         title: e.data.title,
         subtitle: `[${e.data.category}] · ${e.data.date.getFullYear()}`,
       } satisfies OgCardOptions,

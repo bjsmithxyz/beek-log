@@ -49,9 +49,9 @@ const staticPages = [
     // Directory routes are bare; single-file routes keep their extension.
     { label: 'about.md', href: '/about/' },
   ]],
-  ['work/index.html', [
+  ['other/index.html', [
     { label: '~/beek', href: '/' },
-    { label: 'work', href: '/work/' },
+    { label: 'other', href: '/other/' },
   ]],
   ['photos/index.html', [
     { label: '~/beek', href: '/' },
@@ -73,7 +73,7 @@ for (const [relativePath, expected] of staticPages) {
 
 const sectionTitles = [
   ['about/index.html', 'about.md'],
-  ['work/index.html', 'work/'],
+  ['other/index.html', 'other/'],
   ['photos/index.html', 'photos/'],
   ['travel/index.html', 'travel/'],
 ];
@@ -95,7 +95,7 @@ assert.equal(
 );
 
 // A section label is earned only by a page with more than one section. /photos/
-// dropped its map and is now a single listing, same as /work/.
+// dropped its map and is now a single listing, same as /other/.
 const photos = await documentAt('photos/index.html');
 assert.equal(
   photos.querySelector('.section-label'),
@@ -103,13 +103,13 @@ assert.equal(
   'photos is now a single-section page and must stay unlabelled',
 );
 assert.equal(
-  (await documentAt('work/index.html')).querySelector('.section-label'),
+  (await documentAt('other/index.html')).querySelector('.section-label'),
   null,
-  'work is a single-section page and must stay unlabelled',
+  'other is a single-section page and must stay unlabelled',
 );
 
-assert.doesNotMatch(home.body.textContent || '', /select a path or browse recent files|beek\/recent-(?:rolls|work)\//);
-assert.equal(home.querySelector('.recent-content, section[aria-label="Recent photo rolls"], section[aria-label="Recent work"]'), null);
+assert.doesNotMatch(home.body.textContent || '', /select a path or browse recent files|beek\/recent-(?:rolls|other)\//);
+assert.equal(home.querySelector('.recent-content, section[aria-label="Recent photo rolls"], section[aria-label="Recent other"]'), null);
 assert.equal(home.querySelector('.breadcrumb-row a[href^="https://admin.bjsmith.xyz"]'), null, 'public breadcrumb row must not duplicate the admin destination');
 assert.equal(home.querySelector('#theme-toggle'), null, 'the theme toggle must be gone — dark is the only theme');
 const footerSecondary = home.querySelector('footer .footer-secondary');
@@ -120,7 +120,7 @@ const siteIndex = home.querySelector('nav[aria-label="Site index"]');
 assert.ok(siteIndex, 'homepage must expose a filesystem site index');
 const siteIndexLinks = [...siteIndex.querySelectorAll('a')];
 const siteIndexHrefs = siteIndexLinks.map((link) => link.getAttribute('href'));
-for (const href of ['/', '/work/', '/photos/', '/travel/', '/about/']) {
+for (const href of ['/', '/other/', '/photos/', '/travel/', '/about/']) {
   assert.ok(siteIndexHrefs.includes(href), `homepage file tree must link to ${href}`);
 }
 assert.ok(!siteIndexHrefs.includes('#recent'), 'homepage tree must not duplicate the recent-content section');
@@ -131,14 +131,14 @@ assert.deepEqual(
 );
 const treeToggleLabels = [...siteIndex.querySelectorAll('[data-tree-toggle]')]
   .map((button) => button.querySelector(':scope > span:nth-child(2)')?.textContent?.trim());
-assert.deepEqual(treeToggleLabels.slice(0, 5), ['beek/', 'work/', 'dev/', 'art/', 'photos/']);
+assert.deepEqual(treeToggleLabels.slice(0, 5), ['beek/', 'other/', 'dev/', 'art/', 'photos/']);
 assert.ok(treeToggleLabels.slice(5).every((label) => /^\d{4}\/$/.test(label || '')), 'photo subsections must be years');
 
-const groupedWorkHrefs = ['tree-work-dev', 'tree-work-art']
+const groupedOtherHrefs = ['tree-other-dev', 'tree-other-art']
   .flatMap((id) => [...siteIndex.querySelectorAll(`#${id} a`)].map((link) => link.getAttribute('href')))
   .sort();
-const workHrefs = siteIndexHrefs.filter((href) => href?.startsWith('/work/') && href !== '/work/').sort();
-assert.deepEqual(groupedWorkHrefs, workHrefs, 'dev and art subsections must contain every work entry once');
+const otherHrefs = siteIndexHrefs.filter((href) => href?.startsWith('/other/') && href !== '/other/').sort();
+assert.deepEqual(groupedOtherHrefs, otherHrefs, 'dev and art subsections must contain every other entry once');
 const groupedRollHrefs = [...siteIndex.querySelectorAll('[id^="tree-photos-"] a')]
   .map((link) => link.getAttribute('href'))
   .sort();
@@ -146,7 +146,7 @@ const rollHrefs = siteIndexHrefs.filter((href) => href?.startsWith('/photos/') &
 assert.deepEqual(groupedRollHrefs, rollHrefs, 'year subsections must contain every photo roll once');
 assert.equal(home.querySelector('header nav[aria-label="Main navigation"]'), null);
 
-for (const section of ['work', 'photos']) {
+for (const section of ['other', 'photos']) {
   const entries = (await readdir(join(dist, section), { withFileTypes: true }))
     .filter((entry) => entry.isDirectory())
     .map((entry) => entry.name)

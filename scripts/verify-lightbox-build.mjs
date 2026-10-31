@@ -1,4 +1,4 @@
-// Build-time guard for the photo/work lightbox.
+// Build-time guard for the photo/other lightbox.
 //
 // Frames must answer a click as soon as their module has run. They used to
 // bind only on astro:page-load, which the ClientRouter raises from the window

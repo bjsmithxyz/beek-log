@@ -67,7 +67,7 @@ async function checkPage(relativePath, url, rowSelector, filterAttr, filter) {
 }
 
 const checked = [
-  await checkPage('work/index.html', 'https://bjsmith.xyz/work/', '.work-row[data-category]', 'data-category', 'dev'),
+  await checkPage('other/index.html', 'https://bjsmith.xyz/other/', '.other-row[data-category]', 'data-category', 'dev'),
   await checkPage('photos/index.html', 'https://bjsmith.xyz/photos/', '.roll-row[data-year]', 'data-year', '2025'),
 ].filter(Boolean).length;
 

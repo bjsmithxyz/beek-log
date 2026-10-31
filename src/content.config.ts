@@ -12,8 +12,8 @@ const httpUrl = z.string().url().refine((value) => {
   }
 }, { message: 'URL must use http or https' });
 
-const workCollection = defineCollection({
-  loader: glob({ pattern: '**/*.md', base: './src/content/work' }),
+const otherCollection = defineCollection({
+  loader: glob({ pattern: '**/*.md', base: './src/content/other' }),
   schema: ({ image }) => z.object({
     title: z.string(),
     description: z.string(),
@@ -67,6 +67,6 @@ const photosCollection = defineCollection({
 });
 
 export const collections = {
-  work: workCollection,
+  other: otherCollection,
   photos: photosCollection,
 };

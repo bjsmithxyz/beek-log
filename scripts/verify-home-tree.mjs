@@ -30,7 +30,7 @@ await import(`data:text/javascript;base64,${Buffer.from(treeController).toString
 
 const branches = [...document.querySelectorAll('[data-tree-toggle]')];
 const branchLabels = branches.map((button) => button.querySelector(':scope > span:nth-child(2)')?.textContent?.trim());
-assert.deepEqual(branchLabels.slice(0, 5), ['beek/', 'work/', 'dev/', 'art/', 'photos/']);
+assert.deepEqual(branchLabels.slice(0, 5), ['beek/', 'other/', 'dev/', 'art/', 'photos/']);
 const photoYearLabels = branchLabels.slice(5);
 assert.ok(photoYearLabels.length > 0, 'photos must expose at least one year subsection');
 assert.ok(photoYearLabels.every((label) => /^\d{4}\/$/.test(label || '')));

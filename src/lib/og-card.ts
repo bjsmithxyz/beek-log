@@ -40,7 +40,7 @@ function wrap(text: string, max = 22, maxLines = 2): string[] {
 }
 
 export interface OgCardOptions {
-  eyebrow: string; // e.g. "~/beek/work"
+  eyebrow: string; // e.g. "~/beek/other"
   title: string;
   subtitle?: string; // e.g. "[dev] · 2025"
   accent?: string; // eyebrow colour

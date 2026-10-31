@@ -2,7 +2,7 @@
 
 ## Source images
 
-Committed **pre-compressed**. After adding large work images:
+Committed **pre-compressed**. After adding large other-section images:
 
 ```sh
 node scripts/compress-images.mjs [dir]   # default: src/assets/images

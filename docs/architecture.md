@@ -31,8 +31,8 @@ workspace-local components so the admin stays isolated from the public rendering
 boundary.
 
 The homepage (`~`) is a filesystem site index: the protected `admin/`
-destination first, then a collapsible `beek/` tree (open by default; `work/` and
-`photos/` collapsed, work grouped into `dev/`/`art/`, photos into newest-first
+destination first, then a collapsible `beek/` tree (open by default; `other/` and
+`photos/` collapsed, other grouped into `dev/`/`art/`, photos into newest-first
 year subsections). The admin dashboard (`admin/src/components/AdminTree.astro`)
 repeats the format, but its `rolls/`/`travel/` branches are populated live by a
 client fetch of `/.netlify/functions/rolls-data` and `travel-data`
@@ -49,13 +49,13 @@ client fetch of `/.netlify/functions/rolls-data` and `travel-data`
 ├── admin/           # Astro SSR admin + Netlify Functions
 ├── docs/            # This documentation
 ├── src/
-│   ├── assets/      # images/ (work), photos/ (film scans, one folder per roll)
+│   ├── assets/      # images/ (other), photos/ (film scans, one folder per roll)
 │   ├── components/  # Reusable Astro components
-│   ├── content/     # work/ and photos/ markdown (one file per entry/roll)
+│   ├── content/     # other/ and photos/ markdown (one file per entry/roll)
 │   ├── data/        # trips.json, locations.ts, site.ts
 │   ├── layouts/     # BaseLayout.astro
 │   ├── lib/         # collections, highlights, dates helpers
-│   ├── pages/       # index, work, photos, travel, about, rss.xml, 404
+│   ├── pages/       # index, other, photos, travel, about, rss.xml, 404
 │   └── styles/      # global.css (design tokens)
 ├── astro.config.mjs # Netlify adapter + sitemap
 ├── netlify.toml     # Headers, caching, build settings
@@ -101,7 +101,7 @@ CSP adds `'wasm-unsafe-eval'`; the public CSP is unchanged.
 Defined in `src/content.config.ts` with Zod schemas, loaded via `glob()`, keyed
 by filename `id`, rendered with `render(entry)`.
 
-- **`work`** — dev/art/photography entries: `title`, `description`, `date`,
+- **`other`** — dev/art/photography entries: `title`, `description`, `date`,
   `category`, `tags`, `draft`, optional `liveUrl`/`repoUrl`/`cover`/`images`.
 - **`photos`** — one per film roll: `title`, `stock` (validated against
   `shared/film-stocks.ts`), `date`, roll-level `location`, `draft`, and

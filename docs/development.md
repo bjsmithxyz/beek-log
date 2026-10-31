@@ -12,7 +12,7 @@ RSS, and the sitemap.
 
 ## Authoring
 
-**Work entries** — add a markdown file to `src/content/work/`:
+**Other entries** — add a markdown file to `src/content/other/`:
 
 ```markdown
 ---

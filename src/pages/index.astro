@@ -1,19 +1,19 @@
 ---
 import BaseLayout from '../layouts/BaseLayout.astro';
 import SiteTree from '../components/SiteTree.astro';
-import { getWorkEntries, getPhotoRolls, byDateDesc } from '../lib/collections';
+import { getOtherEntries, getPhotoRolls, byDateDesc } from '../lib/collections';
 import tripData from '../data/trips.json';
 import climate from '../data/climate.json';
 import { assertValidTrip } from '@beek/shared/trip-validation';
 import { publicTrip } from '@beek/shared/trip-public';
 import { flagOf } from '@beek/shared/trip-runtime';
 
-const allWork = (await getWorkEntries()).sort(byDateDesc);
+const allOther = (await getOtherEntries()).sort(byDateDesc);
 const allRolls = (await getPhotoRolls()).sort(byDateDesc);
 const latestRoll = allRolls[0] ?? null;
-const workTreeItems = allWork.map((entry) => ({
+const otherTreeItems = allOther.map((entry) => ({
   label: `${entry.id}.md`,
-  href: `/work/${entry.id}/`,
+  href: `/other/${entry.id}/`,
   meta: entry.data.category,
 }));
 const rollTreeItems = allRolls.map((entry) => ({
@@ -55,7 +55,7 @@ const travelBadge = currentStop
       </div>
       {/* No page title: the breadcrumb (~/beek) and the tree's own root already
           name this page, and the tree *is* the content. */}
-      <SiteTree workItems={workTreeItems} rollItems={rollTreeItems} />
+      <SiteTree otherItems={otherTreeItems} rollItems={rollTreeItems} />
     </div>
   </section>
 </BaseLayout>

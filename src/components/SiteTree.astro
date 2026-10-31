@@ -6,13 +6,13 @@ interface TreeFile {
 }
 
 interface Props {
-  workItems: TreeFile[];
+  otherItems: TreeFile[];
   rollItems: TreeFile[];
 }
 
-const { workItems, rollItems } = Astro.props;
-const devWorkItems = workItems.filter((item) => item.meta === 'dev');
-const artWorkItems = workItems.filter((item) => item.meta !== 'dev');
+const { otherItems, rollItems } = Astro.props;
+const devOtherItems = otherItems.filter((item) => item.meta === 'dev');
+const artOtherItems = otherItems.filter((item) => item.meta !== 'dev');
 const rollYear = (item: TreeFile) => item.meta?.slice(0, 4) ?? 'unknown';
 const photoYears = [...new Set(rollItems.map(rollYear))]
   .sort((a, b) => b.localeCompare(a))
@@ -43,39 +43,39 @@ const photoYears = [...new Set(rollItems.map(rollYear))]
           <ul>
             <li class="tree-branch" data-tree-branch>
               <div class="tree-row">
-                <button class="tree-main tree-toggle" type="button" aria-expanded="false" aria-controls="tree-work" data-tree-toggle>
+                <button class="tree-main tree-toggle" type="button" aria-expanded="false" aria-controls="tree-other" data-tree-toggle>
                   <span class="tree-prefix" aria-hidden="true">    ├── </span>
-                  <span>work/</span>
+                  <span>other/</span>
                   <span class="tree-state" aria-hidden="true"></span>
                 </button>
-                <span class="tree-meta">{workItems.length} entries</span>
+                <span class="tree-meta">{otherItems.length} entries</span>
               </div>
-              <div class="tree-collapse" id="tree-work" data-tree-collapse data-collapsed="true" inert>
+              <div class="tree-collapse" id="tree-other" data-tree-collapse data-collapsed="true" inert>
                 <div class="tree-collapse-inner">
                   <ul>
                     <li class="tree-row">
-                      <a class="tree-main" href="/work/">
+                      <a class="tree-main" href="/other/">
                         <span class="tree-prefix" aria-hidden="true">    │   ├── </span>
                         <span>index/</span>
                       </a>
-                      <span class="tree-meta">all work</span>
+                      <span class="tree-meta">all entries</span>
                     </li>
                     <li class="tree-branch" data-tree-branch>
                       <div class="tree-row">
-                        <button class="tree-main tree-toggle" type="button" aria-expanded="false" aria-controls="tree-work-dev" data-tree-toggle>
+                        <button class="tree-main tree-toggle" type="button" aria-expanded="false" aria-controls="tree-other-dev" data-tree-toggle>
                           <span class="tree-prefix" aria-hidden="true">    │   ├── </span>
                           <span>dev/</span>
                           <span class="tree-state" aria-hidden="true"></span>
                         </button>
-                        <span class="tree-meta">{devWorkItems.length} entries</span>
+                        <span class="tree-meta">{devOtherItems.length} entries</span>
                       </div>
-                      <div class="tree-collapse" id="tree-work-dev" data-tree-collapse data-collapsed="true" inert>
+                      <div class="tree-collapse" id="tree-other-dev" data-tree-collapse data-collapsed="true" inert>
                         <div class="tree-collapse-inner">
                           <ul>
-                            {devWorkItems.map((item, index) => (
+                            {devOtherItems.map((item, index) => (
                               <li class="tree-row">
                                 <a class="tree-main" href={item.href}>
-                                  <span class="tree-prefix" aria-hidden="true">{index === devWorkItems.length - 1 ? '    │   │   └── ' : '    │   │   ├── '}</span>
+                                  <span class="tree-prefix" aria-hidden="true">{index === devOtherItems.length - 1 ? '    │   │   └── ' : '    │   │   ├── '}</span>
                                   <span>{item.label}</span>
                                 </a>
                               </li>
@@ -86,20 +86,20 @@ const photoYears = [...new Set(rollItems.map(rollYear))]
                     </li>
                     <li class="tree-branch" data-tree-branch>
                       <div class="tree-row">
-                        <button class="tree-main tree-toggle" type="button" aria-expanded="false" aria-controls="tree-work-art" data-tree-toggle>
+                        <button class="tree-main tree-toggle" type="button" aria-expanded="false" aria-controls="tree-other-art" data-tree-toggle>
                           <span class="tree-prefix" aria-hidden="true">    │   └── </span>
                           <span>art/</span>
                           <span class="tree-state" aria-hidden="true"></span>
                         </button>
-                        <span class="tree-meta">{artWorkItems.length} entries</span>
+                        <span class="tree-meta">{artOtherItems.length} entries</span>
                       </div>
-                      <div class="tree-collapse" id="tree-work-art" data-tree-collapse data-collapsed="true" inert>
+                      <div class="tree-collapse" id="tree-other-art" data-tree-collapse data-collapsed="true" inert>
                         <div class="tree-collapse-inner">
                           <ul>
-                            {artWorkItems.map((item, index) => (
+                            {artOtherItems.map((item, index) => (
                               <li class="tree-row">
                                 <a class="tree-main" href={item.href}>
-                                  <span class="tree-prefix" aria-hidden="true">{index === artWorkItems.length - 1 ? '    │       └── ' : '    │       ├── '}</span>
+                                  <span class="tree-prefix" aria-hidden="true">{index === artOtherItems.length - 1 ? '    │       └── ' : '    │       ├── '}</span>
                                   <span>{item.label}</span>
                                 </a>
                               </li>

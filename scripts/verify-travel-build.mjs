@@ -20,7 +20,7 @@ import { computeTrip } from '@beek/shared/trip-runtime';
 const dist = new URL('../dist/', import.meta.url).pathname;
 const html = await readFile(join(dist, 'travel/index.html'), 'utf8');
 
-assert.match(html, /<h1[^>]*class="page-title"[^>]*>travel\/<\/h1>/, 'travel must name itself as a directory, like work\/ and photos\/');
+assert.match(html, /<h1[^>]*class="page-title"[^>]*>travel\/<\/h1>/, 'travel must name itself as a directory, like other\/ and photos\/');
 assert.doesNotMatch(html, /Long Way Round/, 'retired travel title must not ship');
 assert.match(html, /role="tablist"[^>]*aria-label="Travel sections"/, 'travel section tabs must be built');
 assert.doesNotMatch(html, /data-travel-panel="timeline"[^>]*>\s*<div class="travel-section-head"/, 'timeline panel must not repeat the tab label');

@@ -21,6 +21,17 @@
   status = 301
   force = true
 
+# Preserve the old section URLs after renaming work/ to other/.
+[[redirects]]
+  from = "/work/*"
+  to = "/other/:splat"
+  status = 301
+
+[[redirects]]
+  from = "/og/work/*"
+  to = "/og/other/:splat"
+  status = 301
+
 # Redirects and headers
 #
 # One policy for every route. A per-route CSP cannot work here: ClientRouter

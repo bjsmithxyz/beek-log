@@ -1,20 +1,20 @@
 import rss from '@astrojs/rss';
 import { getFilmStock } from '@beek/shared/film-stocks';
-import { getWorkEntries, getPhotoRolls } from '../lib/collections';
+import { getOtherEntries, getPhotoRolls } from '../lib/collections';
 import { siteDescription, siteName } from '../data/site';
 
 export async function GET(context) {
-  const work = await getWorkEntries();
+  const other = await getOtherEntries();
   const rolls = await getPhotoRolls();
 
   const items = [
-    ...work.map((entry) => ({
+    ...other.map((entry) => ({
       title: entry.data.title,
       // A piece may carry no description; fall back rather than syndicate an
       // empty element.
       description: entry.data.description || `${entry.data.category} — ${entry.data.title}`,
       pubDate: entry.data.date,
-      link: `/work/${entry.id}/`,
+      link: `/other/${entry.id}/`,
     })),
     ...rolls.map((entry) => ({
       title: entry.data.title,

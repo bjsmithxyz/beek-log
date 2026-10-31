@@ -1,14 +1,14 @@
 ---
 import BaseLayout from '../../layouts/BaseLayout.astro';
-import WorkRow from '../../components/WorkRow.astro';
+import OtherRow from '../../components/OtherRow.astro';
 import PageHeader from '../../components/PageHeader.astro';
 import FilterBar from '../../components/FilterBar.astro';
 import DirListHeader from '../../components/DirListHeader.astro';
-import { getWorkEntries, byDateDesc } from '../../lib/collections';
+import { getOtherEntries, byDateDesc } from '../../lib/collections';
 
-const allWork = await getWorkEntries();
-const sortedWork = allWork.sort(byDateDesc);
-const categories = [...new Set(allWork.map(w => w.data.category))];
+const allOther = await getOtherEntries();
+const sortedOther = allOther.sort(byDateDesc);
+const categories = [...new Set(allOther.map(entry => entry.data.category))];
 
 // The name column takes exactly what it needs and never wraps; the description
 // takes what is left and truncates. minmax(0, 1fr) is what lets it shrink below
@@ -17,23 +17,23 @@ const LIST_COLS = '5rem 6.5rem auto minmax(0, 1fr) 1.5rem';
 ---
 
 <BaseLayout
-  title="work"
+  title="other"
   description="collection of projects, artwork, and photography"
   breadcrumbs={[
     { label: '~/beek', href: '/' },
-    { label: 'work', href: '/work/' },
+    { label: 'other', href: '/other/' },
   ]}
 >
-  <section class="work-page">
+  <section class="other-page">
     <div class="container">
       <PageHeader
-        title="work/"
-        description={`${sortedWork.length} entries`}
+        title="other/"
+        description={`${sortedOther.length} entries`}
       />
 
       <FilterBar
         options={categories}
-        rowSelector=".work-row[data-category]"
+        rowSelector=".other-row[data-category]"
         filterAttr="data-category"
       />
 
@@ -42,13 +42,13 @@ const LIST_COLS = '5rem 6.5rem auto minmax(0, 1fr) 1.5rem';
         cols={LIST_COLS}
       />
 
-      <div class="dir-list" id="work-list" style={`--dir-cols: ${LIST_COLS}`}>
-        {sortedWork.map(work => (
-          <WorkRow work={work} />
+      <div class="dir-list" id="other-list" style={`--dir-cols: ${LIST_COLS}`}>
+        {sortedOther.map(entry => (
+          <OtherRow entry={entry} />
         ))}
       </div>
 
-      {sortedWork.length === 0 && (
+      {sortedOther.length === 0 && (
         <p class="empty-state">// no entries</p>
       )}
     </div>
@@ -56,7 +56,7 @@ const LIST_COLS = '5rem 6.5rem auto minmax(0, 1fr) 1.5rem';
 </BaseLayout>
 
 <style>
-  .work-page {
+  .other-page {
     padding: var(--page-content-top) 0 var(--space-16);
   }
 </style>

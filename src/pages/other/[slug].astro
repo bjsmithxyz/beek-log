@@ -3,12 +3,12 @@ import BaseLayout from '../../layouts/BaseLayout.astro';
 import Lightbox from '../../components/Lightbox.astro';
 import { Image } from 'astro:assets';
 import { render, type CollectionEntry } from 'astro:content';
-import { getWorkEntries, byDateDesc } from '../../lib/collections';
+import { getOtherEntries, byDateDesc } from '../../lib/collections';
 import { formatLongDate } from '../../lib/dates';
 
 export async function getStaticPaths() {
-  const sorted = (await getWorkEntries()).sort(byDateDesc);
-  const neighbor = (e: CollectionEntry<'work'>) => ({ slug: e.id, title: e.data.title });
+  const sorted = (await getOtherEntries()).sort(byDateDesc);
+  const neighbor = (e: CollectionEntry<'other'>) => ({ slug: e.id, title: e.data.title });
   return sorted.map((entry, i) => ({
     params: { slug: entry.id },
     props: {
@@ -20,7 +20,7 @@ export async function getStaticPaths() {
 }
 
 interface Props {
-  entry: CollectionEntry<'work'>;
+  entry: CollectionEntry<'other'>;
   newer: { slug: string; title: string } | null;
   older: { slug: string; title: string } | null;
 }
@@ -32,8 +32,8 @@ const { title, description, date, category, tags, liveUrl, repoUrl, cover, image
 const formattedDate = formatLongDate(date);
 const categoryClass = `tag-${category}`;
 
-const ogImage = `/og/work/${entry.id}.png`;
-// A piece may carry no description — the images are the work. Where one is
+const ogImage = `/og/other/${entry.id}.png`;
+// A piece may carry no description — the images are the entry. Where one is
 // absent the page must fall back rather than publish an empty string as its
 // meta description or advertise an empty field in structured data.
 const jsonLd = {
@@ -41,7 +41,7 @@ const jsonLd = {
   name: title,
   ...(description ? { description } : {}),
   datePublished: date.toISOString(),
-  url: new URL(`/work/${entry.id}/`, Astro.site).href,
+  url: new URL(`/other/${entry.id}/`, Astro.site).href,
   image: new URL(ogImage, Astro.site).href,
   ...(repoUrl ? { codeRepository: repoUrl } : {}),
 };
@@ -54,11 +54,11 @@ const jsonLd = {
   jsonLd={jsonLd}
   breadcrumbs={[
     { label: '~/beek', href: '/' },
-    { label: 'work', href: '/work/' },
-    { label: `${entry.id}.md`, href: `/work/${entry.id}/` },
+    { label: 'other', href: '/other/' },
+    { label: `${entry.id}.md`, href: `/other/${entry.id}/` },
   ]}
 >
-  <article class="work-detail">
+  <article class="other-detail">
     <div class="container container-narrow">
       <header class="article-header">
         <span class={`category ${categoryClass}`}>[{category}]</span>
@@ -133,15 +133,15 @@ const jsonLd = {
       )}
 
       {(newer || older) && (
-        <nav class="project-nav" aria-label="More work">
+        <nav class="project-nav" aria-label="More entries">
           {newer ? (
-            <a href={`/work/${newer.slug}/`} class="project-nav-link prev">
+            <a href={`/other/${newer.slug}/`} class="project-nav-link prev">
               <span class="project-nav-dir">← newer</span>
               <span class="project-nav-title">{newer.title}</span>
             </a>
           ) : <span />}
           {older ? (
-            <a href={`/work/${older.slug}/`} class="project-nav-link next">
+            <a href={`/other/${older.slug}/`} class="project-nav-link next">
               <span class="project-nav-dir">older →</span>
               <span class="project-nav-title">{older.title}</span>
             </a>
@@ -155,7 +155,7 @@ const jsonLd = {
 </BaseLayout>
 
 <style>
-  .work-detail {
+  .other-detail {
     padding: var(--page-content-top) 0 var(--space-16);
   }
   
