@@ -955,9 +955,20 @@
       "lat": 41.3283781,
       "lon": 19.8179825,
       "arrive": "2026-11-02",
-      "depart": "2026-11-06",
+      "depart": "2026-11-15",
       "note": "",
-      "tentative": true
+      "tentative": false
+    },
+    {
+      "name": "Istanbul",
+      "country": "Turkiye",
+      "cc": "TR",
+      "lat": 41.006381,
+      "lon": 28.9758715,
+      "arrive": "2026-11-15",
+      "depart": "2026-11-22",
+      "note": "",
+      "tentative": false
     }
   ]
 }
