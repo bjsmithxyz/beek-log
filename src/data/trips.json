@@ -969,6 +969,39 @@
       "depart": "2026-11-22",
       "note": "",
       "tentative": false
+    },
+    {
+      "name": "Tbilisi",
+      "country": "Georgia",
+      "cc": "GE",
+      "lat": 41.6934591,
+      "lon": 44.8014495,
+      "arrive": "2026-11-22",
+      "depart": "2026-11-29",
+      "note": "",
+      "tentative": false
+    },
+    {
+      "name": "Kuwait",
+      "country": "Kuwait",
+      "cc": "KW",
+      "lat": 29.3796532,
+      "lon": 47.9734174,
+      "arrive": "2026-11-29",
+      "depart": "2026-11-30",
+      "note": "",
+      "tentative": true
+    },
+    {
+      "name": "Guangzhou",
+      "country": "China",
+      "cc": "CN",
+      "lat": 23.1288429,
+      "lon": 113.2589581,
+      "arrive": "2026-11-30",
+      "depart": "2026-12-06",
+      "note": "",
+      "tentative": true
     }
   ]
 }
